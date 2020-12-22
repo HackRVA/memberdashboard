@@ -1,0 +1,38 @@
+version: "3"
+services:
+    memberserver:
+        build: .
+        ports: 
+            - 3000:3000
+        # volumes: 
+        #     - .src/:/membership
+        depends_on:
+            - postgres
+        networks:
+            - membership
+        environment:
+            - DATABASE_URL=postgresql://test:test@postgres:5432/membership
+        volumes:
+            # This is go modules cache, without it you will have to
+            # re-download all dependencies after restarting container
+            - modules:/go/pkg/mod/cache
+    postgres:
+        image: postgres
+        ports:
+            - 5432:5432
+        environment:
+          - POSTGRES_DB=membership
+          - POSTGRES_USER=test
+          - POSTGRES_PASSWORD=test
+        volumes:
+            - ./test/postgres/postgres.sql:/docker-entrypoint-initdb.d/postgres.sql
+        networks:
+            - membership
+
+networks:
+    membership:
+        external: false
+
+volumes:
+    modules:
+        driver: local
