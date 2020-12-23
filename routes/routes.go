@@ -1,15 +1,26 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 
+	"log"
+
 	"github.com/gorilla/mux"
+
+	"github.com/dfirebaugh/memberserver/database"
 )
 
 // Setup - setup us up the routes
 func Setup() {
+	var err error
 	r := mux.NewRouter()
 	api := &API{}
+	api.DB, err = database.Setup()
+
+	if err != nil {
+		log.Fatal(fmt.Errorf("error setting up db: %s", err))
+	}
 
 	r.HandleFunc("/", api.info)
 	r.HandleFunc("/api/status", api.getStatuses)

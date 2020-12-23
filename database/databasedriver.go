@@ -14,11 +14,6 @@ type Database struct {
 	pool *pgxpool.Pool
 }
 
-var (
-	// DB instance of the database connection
-	DB *Database
-)
-
 func postgreSQLDatabase() (*pgxpool.Pool, error) {
 	conn, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
@@ -30,9 +25,9 @@ func postgreSQLDatabase() (*pgxpool.Pool, error) {
 	return conn, err
 }
 
-// newDB - sets up connection pool so that we can connect to the db in a
+// Setup - sets up connection pool so that we can connect to the db in a
 //   concurrently safe manner
-func newDB() (*Database, error) {
+func Setup() (*Database, error) {
 	var err error
 
 	db := &Database{}
@@ -45,16 +40,4 @@ func newDB() (*Database, error) {
 	db.pool = connection
 
 	return db, nil
-}
-
-// Setup -- initialize the db connection
-func Setup() error {
-	var err error
-	DB, err = newDB()
-
-	if err != nil {
-		return fmt.Errorf("Error initializing db connection: %s", err.Error())
-	}
-
-	return err
 }

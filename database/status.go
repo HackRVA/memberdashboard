@@ -9,7 +9,7 @@ const getStatusQuery = `SELECT id, description FROM membership.member_statuses;`
 
 // GetStatuses - gets the status from DB
 func (db *Database) GetStatuses() []string {
-	rows, err := DB.pool.Query(context.Background(), getStatusQuery)
+	rows, err := db.pool.Query(context.Background(), getStatusQuery)
 	if err != nil {
 		log.Fatalf("conn.Query failed: %v", err)
 	}

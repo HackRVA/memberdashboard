@@ -5,12 +5,10 @@ import (
 	"net/http"
 
 	"github.com/dfirebaugh/memberserver/config"
-	"github.com/dfirebaugh/memberserver/database"
 	"github.com/dfirebaugh/memberserver/routes"
 )
 
 func main() {
-	database.Setup()
 	routes.Setup()
 	c, err := config.Load("./sample.config.json")
 

@@ -9,7 +9,9 @@ import (
 )
 
 // API endpoints
-type API struct{}
+type API struct {
+	DB *database.Database
+}
 
 func (a *API) info(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -21,7 +23,7 @@ func (a *API) info(w http.ResponseWriter, req *http.Request) {
 }
 
 func (a *API) getStatuses(w http.ResponseWriter, req *http.Request) {
-	statusList := database.DB.GetStatuses()
+	statusList := a.DB.GetStatuses()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -30,7 +32,7 @@ func (a *API) getStatuses(w http.ResponseWriter, req *http.Request) {
 }
 
 func (a *API) getResources(w http.ResponseWriter, req *http.Request) {
-	resourceList := database.DB.GetResources()
+	resourceList := a.DB.GetResources()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -39,7 +41,7 @@ func (a *API) getResources(w http.ResponseWriter, req *http.Request) {
 }
 
 func (a *API) getTiers(w http.ResponseWriter, req *http.Request) {
-	tiers := database.DB.GetMemberTiers()
+	tiers := a.DB.GetMemberTiers()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -48,7 +50,7 @@ func (a *API) getTiers(w http.ResponseWriter, req *http.Request) {
 }
 
 func (a *API) getMembers(w http.ResponseWriter, req *http.Request) {
-	members := database.DB.GetMembers()
+	members := a.DB.GetMembers()
 
 	w.Header().Set("Content-Type", "application/json")
 
