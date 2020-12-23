@@ -9,12 +9,13 @@ import (
 // Setup - setup us up the routes
 func Setup() {
 	r := mux.NewRouter()
+	api := &API{}
 
-	r.HandleFunc("/", info)
-	r.HandleFunc("/api/status", getStatuses)
-	r.HandleFunc("/api/resource", getResources)
-	r.HandleFunc("/api/tier", getTiers)
-	r.HandleFunc("/api/member", getMembers)
+	r.HandleFunc("/", api.info)
+	r.HandleFunc("/api/status", api.getStatuses)
+	r.HandleFunc("/api/resource", api.getResources)
+	r.HandleFunc("/api/tier", api.getTiers)
+	r.HandleFunc("/api/member", api.getMembers)
 
 	http.Handle("/", r)
 }

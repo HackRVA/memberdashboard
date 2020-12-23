@@ -14,3 +14,9 @@ A testing environment can be spun up by running the build script.
 sh buildandrun.sh
 ```
 
+### Seed the DB with test data
+
+```
+cd test/postgres
+sh seedLocal.sh
+```

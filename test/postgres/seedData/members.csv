@@ -1,0 +1,3 @@
+id,name,email,rfid,rfid_125,member_tier_id
+1,bill,billemail,rfid,rfid125,2
+2,bob,bobemail,rfid,rfid125,2
