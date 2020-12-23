@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Dummy</title>
+    <style>
+        html {
+            background-color: beige;
+        }
+
+        page-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input-container {
+            display: flex;
+            align-content: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <page-container id="page-container">
+
+        <input-container>
+            <h2>RFID to test</h2>
+
+            <input id="rfid-input" />
+        </input-container>
+    </page-container>
+
+    <script type="module">
+        const input = document.getElementById("rfid-input");
+        const pageContainer = document.getElementById("page-container");
+        input.addEventListener("change", function (e) {
+            lookupRFIDValue(e.target.value)
+        })
+
+        /**
+         * lookupRFIDValue
+         * hit the backend of resourceDummy to do a lookup
+         * then display whether or not the rfid has access
+         */
+        async function lookupRFIDValue(rfid) {
+            console.log("lookup the rfid: ")
+            const lookup = await fetch(`/lookup`, {
+                method: "POST",
+                body: JSON.stringify({ "rfid": rfid })
+            })
+
+            const jsonResponse = await lookup.json()
+
+            console.log(jsonResponse)
+
+            if (jsonResponse.found) {
+                pageContainer.style.setProperty("background-color", "green");
+            } else {
+                pageContainer.style.setProperty("background-color", "red");
+            }
+        }
+    </script>
+</body>
+
+</html>
