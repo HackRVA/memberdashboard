@@ -23,7 +23,6 @@ func Setup() {
 	}
 
 	r.HandleFunc("/", api.info)
-	r.HandleFunc("/api/status", api.getStatuses)
 	r.HandleFunc("/api/resource", api.getResources)
 	r.HandleFunc("/api/resource/register", api.registerResource).Methods(http.MethodPost)
 	r.HandleFunc("/api/tier", api.getTiers)
