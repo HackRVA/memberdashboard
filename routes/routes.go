@@ -16,7 +16,7 @@ func Setup() {
 	var err error
 	r := mux.NewRouter()
 	api := &API{}
-	api.DB, err = database.Setup()
+	api.db, err = database.Setup()
 
 	if err != nil {
 		log.Fatal(fmt.Errorf("error setting up db: %s", err))
@@ -25,6 +25,7 @@ func Setup() {
 	r.HandleFunc("/", api.info)
 	r.HandleFunc("/api/status", api.getStatuses)
 	r.HandleFunc("/api/resource", api.getResources)
+	r.HandleFunc("/api/resource/register", api.registerResource).Methods(http.MethodPost)
 	r.HandleFunc("/api/tier", api.getTiers)
 	r.HandleFunc("/api/member", api.getMembers)
 

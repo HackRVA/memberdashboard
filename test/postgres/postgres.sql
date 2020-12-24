@@ -1,4 +1,4 @@
-DROP SCHEMA membership CASCADE;
+DROP SCHEMA IF EXISTS membership CASCADE;
 
 --
 -- Name: membership; Type: SCHEMA; Schema: -; Owner: test
@@ -47,40 +47,6 @@ ALTER TABLE membership.member_resource_id_seq OWNER TO test;
 --
 
 ALTER SEQUENCE membership.member_resource_id_seq OWNED BY membership.member_resource.id;
-
-
---
--- Name: member_statuses; Type: TABLE; Schema: membership; Owner: test
---
-
-CREATE TABLE membership.member_statuses (
-    id integer NOT NULL,
-    description text NOT NULL
-);
-
-
-ALTER TABLE membership.member_statuses OWNER TO test;
-
---
--- Name: member_statuses_id_seq; Type: SEQUENCE; Schema: membership; Owner: test
---
-
-CREATE SEQUENCE membership.member_statuses_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE membership.member_statuses_id_seq OWNER TO test;
-
---
--- Name: member_statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: membership; Owner: test
---
-
-ALTER SEQUENCE membership.member_statuses_id_seq OWNED BY membership.member_statuses.id;
 
 
 --
@@ -199,13 +165,6 @@ ALTER TABLE ONLY membership.member_resource ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
--- Name: member_statuses id; Type: DEFAULT; Schema: membership; Owner: test
---
-
-ALTER TABLE ONLY membership.member_statuses ALTER COLUMN id SET DEFAULT nextval('membership.member_statuses_id_seq'::regclass);
-
-
---
 -- Name: member_tiers id; Type: DEFAULT; Schema: membership; Owner: test
 --
 
@@ -232,14 +191,6 @@ ALTER TABLE ONLY membership.resources ALTER COLUMN id SET DEFAULT nextval('membe
 
 ALTER TABLE ONLY membership.member_resource
     ADD CONSTRAINT member_resource_pkey PRIMARY KEY (id);
-
-
---
--- Name: member_statuses member_statuses_pkey; Type: CONSTRAINT; Schema: membership; Owner: test
---
-
-ALTER TABLE ONLY membership.member_statuses
-    ADD CONSTRAINT member_statuses_pkey PRIMARY KEY (id);
 
 
 --
