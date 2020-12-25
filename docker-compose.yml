@@ -12,6 +12,7 @@ services:
             - membership
         environment:
             - DATABASE_URL=postgresql://test:test@postgres:5432/membership
+            - MEMBER_SERVER_CONFIG_FILE=./sample.config.json
         volumes:
             # This is go modules cache, without it you will have to
             # re-download all dependencies after restarting container

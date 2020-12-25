@@ -1,4 +1,11 @@
 {
-    "testValue": "this is a test value",
-    "somethingElse": "this is some other value"
+    "paypalUser": "this is a test value",
+    "paypalPWD": "this is a test value",
+    "paypalSignature": "this is a test value",
+    "paypalURL": "this is a test value",
+    "qbAccessToken": "this is a test value",
+    "qbAccessTokenSecret": "this is a test value",
+    "qbConsumerKey": "this is a test value",
+    "qbConsumerSecret": "this is a test value",
+    "qbRealmID": "this is a test value"
 }
