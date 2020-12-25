@@ -22,15 +22,6 @@ func (a *API) info(w http.ResponseWriter, req *http.Request) {
 	w.Write(j)
 }
 
-func (a *API) getStatuses(w http.ResponseWriter, req *http.Request) {
-	statusList := a.db.GetStatuses()
-
-	w.Header().Set("Content-Type", "application/json")
-
-	j, _ := json.Marshal(statusList)
-	w.Write(j)
-}
-
 func (a *API) getResources(w http.ResponseWriter, req *http.Request) {
 	resourceList := a.db.GetResources()
 
