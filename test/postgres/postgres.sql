@@ -6,13 +6,6 @@ DROP SCHEMA IF EXISTS membership CASCADE;
 
 CREATE SCHEMA membership;
 
-
-ALTER SCHEMA membership OWNER TO test;
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
-
 --
 -- Name: member_resource; Type: TABLE; Schema: membership; Owner: test
 --
@@ -103,8 +96,8 @@ CREATE TABLE membership.members (
 );
 
 
-ALTER TABLE membership.members OWNER TO test;
-
+ALTER TABLE membership.members
+    ADD CONSTRAINT unique_email UNIQUE (email);
 --
 -- Name: members_id_seq; Type: SEQUENCE; Schema: membership; Owner: test
 --
@@ -116,9 +109,6 @@ CREATE SEQUENCE membership.members_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER TABLE membership.members_id_seq OWNER TO test;
 
 --
 -- Name: members_id_seq; Type: SEQUENCE OWNED BY; Schema: membership; Owner: test
@@ -138,9 +128,6 @@ CREATE TABLE membership.resources (
     updated_at timestamp without time zone NOT NULL
 );
 
-
-ALTER TABLE membership.resources OWNER TO test;
-
 --
 -- Name: resources_id_seq; Type: SEQUENCE; Schema: membership; Owner: test
 --
@@ -152,9 +139,6 @@ CREATE SEQUENCE membership.resources_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER TABLE membership.resources_id_seq OWNER TO test;
 
 --
 -- Name: resources_id_seq; Type: SEQUENCE OWNED BY; Schema: membership; Owner: test

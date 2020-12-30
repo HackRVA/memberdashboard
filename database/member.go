@@ -7,9 +7,12 @@ import (
 )
 
 const getMemberQuery = `SELECT id, name, email, rfid, member_tier_id FROM membership.members;`
-const getMemberByNameQuery = `SELECT id, name, email, rfid, member_tier_id
+const getMemberByEmailQuery = `SELECT id, name, email, rfid, member_tier_id
 FROM membership.members
-WHERE name = $1;`
+WHERE email = $1;`
+const setMemberRFIDTag = `UPDATE membership.members
+rfid=$2
+WHERE email = $1;`
 
 // Member -- a member of the makerspace
 type Member struct {
@@ -40,10 +43,28 @@ func (db *Database) GetMembers() []Member {
 	return members
 }
 
-// GetMemberByName - lookup a resource by it's name
-func (db *Database) GetMemberByName(memberName string) (Member, error) {
+// GetMemberByEmail - lookup a resource by it's name
+func (db *Database) GetMemberByEmail(memberName string) (Member, error) {
 	var m Member
-	rows, err := db.pool.Query(context.Background(), getMemberByNameQuery, memberName)
+	rows, err := db.pool.Query(context.Background(), getMemberByEmailQuery, memberName)
+	if err != nil {
+		return m, fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	defer rows.Close()
+
+	err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.Level, &m.RFID)
+	if err != nil {
+		return m, fmt.Errorf("getResourceByName failed: %s", err)
+	}
+
+	return m, err
+}
+
+// SetRFIDTag sets the rfid tag as
+func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
+	var m Member
+	rows, err := db.pool.Query(context.Background(), setMemberRFIDTag, email, RFIDTag)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}

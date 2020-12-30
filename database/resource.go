@@ -103,7 +103,7 @@ func (db *Database) RegisterResource(name string, address string) (*Resource, er
 }
 
 // AddUserToResource - grants a user access to a resource
-func (db *Database) AddUserToResource(memberName string, resourceName string) (*MemberResourceRelation, error) {
+func (db *Database) AddUserToResource(email string, resourceName string) (*MemberResourceRelation, error) {
 	memberResource := &MemberResourceRelation{}
 
 	r, err := db.GetResourceByName(resourceName)
@@ -111,7 +111,7 @@ func (db *Database) AddUserToResource(memberName string, resourceName string) (*
 		return memberResource, err
 	}
 
-	m, err := db.GetMemberByName(memberName)
+	m, err := db.GetMemberByEmail(email)
 	if err != nil {
 		return memberResource, err
 	}
@@ -140,7 +140,7 @@ func (db *Database) GetMemberResourceRelation(m Member, r Resource) (*MemberReso
 }
 
 // RemoveUserFromResource - removes a users access to a resource
-func (db *Database) RemoveUserFromResource(memberName string, resourceName string) (*MemberResourceRelation, error) {
+func (db *Database) RemoveUserFromResource(email string, resourceName string) (*MemberResourceRelation, error) {
 	memberResource := &MemberResourceRelation{}
 
 	r, err := db.GetResourceByName(resourceName)
@@ -148,7 +148,7 @@ func (db *Database) RemoveUserFromResource(memberName string, resourceName strin
 		return memberResource, err
 	}
 
-	m, err := db.GetMemberByName(memberName)
+	m, err := db.GetMemberByEmail(email)
 	if err != nil {
 		return memberResource, err
 	}
