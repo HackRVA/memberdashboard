@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 
+	"github.com/dfirebaugh/memberserver/config"
 	"github.com/dfirebaugh/memberserver/database"
 
 	"net/http"
@@ -10,7 +11,8 @@ import (
 
 // API endpoints
 type API struct {
-	db *database.Database
+	db     *database.Database
+	config config.Config
 }
 
 func (a *API) info(w http.ResponseWriter, req *http.Request) {

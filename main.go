@@ -12,6 +12,7 @@ import (
 func main() {
 	routes.Setup()
 
+	println(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
 	c, err := config.Load(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
 
 	if err != nil {

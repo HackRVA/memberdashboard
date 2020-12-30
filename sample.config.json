@@ -1,4 +1,7 @@
 {
+    "accessSecret": "somesecret",
+    "paypalClientID": "",
+    "paypalClientSecret": "",
     "paypalUser": "this is a test value",
     "paypalPWD": "this is a test value",
     "paypalSignature": "this is a test value",

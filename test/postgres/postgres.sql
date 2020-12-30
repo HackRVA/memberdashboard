@@ -48,6 +48,13 @@ ALTER TABLE membership.member_resource_id_seq OWNER TO test;
 
 ALTER SEQUENCE membership.member_resource_id_seq OWNED BY membership.member_resource.id;
 
+CREATE TABLE membership.users
+(
+    username text NOT NULL,
+    password text NOT NULL,
+    email    text NOT NULL,
+    PRIMARY KEY (username)
+);
 
 --
 -- Name: member_tiers; Type: TABLE; Schema: membership; Owner: test

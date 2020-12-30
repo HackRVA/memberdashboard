@@ -8,6 +8,10 @@ import (
 
 // Config - values of our config
 type Config struct {
+	// AccessSecret - secret used for signing jwts
+	AccessSecret         string `json:"accessSecret"`
+	PaypalClientID       string `json:"paypalClientID"`
+	PaypalClientSecret   string `json:"paypalClientSecret"`
 	PaypalUser           string `json:"paypalUser"`
 	PaypalPWD            string `json:"paypalPWD"`
 	PaypalSignature      string `json:"paypalSignature"`
