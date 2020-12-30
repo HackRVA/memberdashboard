@@ -12,7 +12,7 @@
     "copy-files": "mkdir -p build && cp -r ./public/* ./build/",
     "serve": "npm run copy-files && es-dev-server --app-index ./build/index.html --node-resolve --watch --open",
     "rollup": "mkdir -p dist && cp -r ./public/* ./dist/ && rollup -c rollup.config.js",
-    "prerollup": "rm tsconfig.tsbuildinfo && npm run build",
+    "prerollup": "rm tsconfig.tsbuildinfo || true && npm run build",
     "dev": "npx tsc -w & npm run serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
