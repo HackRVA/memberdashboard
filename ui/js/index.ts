@@ -1,28 +1,15 @@
 import { LitElement, html, TemplateResult } from "lit-element";
-import "./components/login-form";
-import "./components/register-form";
-import "@material/mwc-button";
+import { USER_PROFILE_ACTOR_ADDRESS } from "./constants";
+import { UserActor } from "./actors/user";
+import ActorStore from "./actors/actorStore";
+import "./components/top-bar";
 
-console.log("this should load");
 class MemberDashboard extends LitElement {
-  showRegister: Boolean = false;
-  handleRegisterBtn(): void {
-    this.showRegister = !this.showRegister;
-    this.requestUpdate()
+  firstUpdated(): void {
+    ActorStore.register(USER_PROFILE_ACTOR_ADDRESS, UserActor);
   }
-
   render(): TemplateResult {
-    if (this.showRegister) {
-      return html`<register-form></register-form>`;
-    }
-
-    return html`
-      <login-form></login-form>
-      <mwc-button
-        label="Register"
-        @click=${this.handleRegisterBtn}
-      ></mwc-button>
-    `;
+    return html` <top-bar></top-bar> `;
   }
 }
 

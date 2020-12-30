@@ -15,7 +15,8 @@ const JWTExpireMinutes = 1
 const CookieName = "memberserver-token"
 
 type accessDetails struct {
-	AccessUUID string `json:"accessUUID"`
+	Authorized string `json:"authorized"`
+	Expires    string `json:"exp"`
 	UserID     string `json:"userID"`
 }
 
@@ -42,6 +43,26 @@ func (a *API) authJWT(f func(http.ResponseWriter, *http.Request)) func(http.Resp
 
 		f(w, r) // original function call
 	}
+}
+
+// getUser responds with the current logged in user
+func (a *API) getUser(w http.ResponseWriter, r *http.Request) {
+	user, err := a.ExtractTokenMetadata(r)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	userProfile, err := a.db.GetUser(user.UserID)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	j, _ := json.Marshal(userProfile)
+	w.Write(j)
 }
 
 // Signup register a user to the db
@@ -126,17 +147,12 @@ func (a *API) ExtractTokenMetadata(r *http.Request) (*accessDetails, error) {
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		accessUUID, ok := claims["access_uuid"].(string)
-		if !ok {
-			return nil, err
-		}
 		userID, ok := claims["user_id"].(string)
 		if !ok {
 			return nil, err
 		}
 		return &accessDetails{
-			AccessUUID: accessUUID,
-			UserID:     userID,
+			UserID: userID,
 		}, nil
 	}
 	return nil, err

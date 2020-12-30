@@ -33,6 +33,7 @@ func Setup() {
 	r.HandleFunc("/api/resource/register", api.authJWT(api.registerResource)).Methods(http.MethodPost)
 	r.HandleFunc("/api/tier", api.authJWT(api.getTiers))
 	r.HandleFunc("/api/member", api.authJWT(api.getMembers))
+	r.HandleFunc("/api/user", api.authJWT(api.getUser))
 
 	r.HandleFunc("/register", api.Signup)
 	r.HandleFunc("/signin", api.Signin)

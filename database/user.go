@@ -15,8 +15,15 @@ type Credentials struct {
 	Email    string `json:"email", db:"email"`
 }
 
+// UserResponse - a user object that we can send as json
+type UserResponse struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
 const registerUserQuery = `INSERT INTO membership.users values ($1, $2, $3)`
-const getUserQuery = `SELECT password from membership.users where username=$1`
+const getUserPasswordQuery = `SELECT password from membership.users where username=$1`
+const getUserQuery = `SELECT username, email from membership.users where username=$1`
 
 // RegisterUser register a user in the db
 func (db *Database) RegisterUser(username string, password string, email string) error {
@@ -53,7 +60,7 @@ func (db *Database) UserSignin(username string, password string) error {
 	storedCreds := &Credentials{}
 
 	// Get the existing entry present in the database for the given username
-	row := db.pool.QueryRow(context.Background(), getUserQuery, username).Scan(&storedCreds.Password)
+	row := db.pool.QueryRow(context.Background(), getUserPasswordQuery, username).Scan(&storedCreds.Password)
 	if row == pgx.ErrNoRows {
 		return fmt.Errorf("Unauthorized")
 	}
@@ -65,4 +72,14 @@ func (db *Database) UserSignin(username string, password string) error {
 	}
 
 	return nil
+}
+
+// GetUser returns the currently logged in user
+func (db *Database) GetUser(username string) (UserResponse, error) {
+	var userResponse UserResponse
+	row := db.pool.QueryRow(context.Background(), getUserQuery, username).Scan(&userResponse.Username, &userResponse.Email)
+	if row == pgx.ErrNoRows {
+		return userResponse, fmt.Errorf("error getting user")
+	}
+	return userResponse, nil
 }

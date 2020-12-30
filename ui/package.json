@@ -29,7 +29,13 @@
   "homepage": "https://github.com/dfirebaugh/memberserver#readme",
   "dependencies": {
     "@material/mwc-button": "^0.20.0",
+    "@material/mwc-fab": "^0.20.0",
+    "@material/mwc-icon": "^0.20.0",
+    "@material/mwc-icon-button": "^0.20.0",
+    "@material/mwc-menu": "^0.20.0",
+    "@material/mwc-snackbar": "^0.20.0",
     "@material/mwc-textfield": "^0.20.0",
+    "@material/mwc-top-app-bar-fixed": "^0.20.0",
     "lit-element": "^2.4.0"
   },
   "devDependencies": {
