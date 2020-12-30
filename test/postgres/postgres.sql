@@ -99,7 +99,6 @@ CREATE TABLE membership.members (
     name text NOT NULL,
     email text NOT NULL,
     rfid text,
-    rfid_125 text,
     member_tier_id integer NOT NULL
 );
 

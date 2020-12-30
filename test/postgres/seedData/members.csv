@@ -1,7 +1,7 @@
-id,name,email,rfid,rfid_125,member_tier_id
-1,bill,billemail,rfid,rfid125,2
-2,bob,bobemail,rfid,rfid125,2
-3,john, johnemail, rfid13, rfid125aaaaa, 2
-4,john, johnemail, rfid13, rfid125aaaaa, 2
-5,john, johnemail, rfid13, rfid125aaaaa, 2
-6,john, johnemail, rfid13, rfid125aaaaa, 2
+1,bill,billemail,rfid,2
+2,bob,bobemail,rfid,2
+3,john, johnemail, rfid13, 2
+4,john, johnemail, rfid13, 2
+5,john, johnemail, rfid13, 2
+6,john, johnemail, rfid13, 2
+7,john, johnemail, rfid13, 3
