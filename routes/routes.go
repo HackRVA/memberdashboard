@@ -30,9 +30,9 @@ func Setup() {
 
 	r.HandleFunc("/api/resource", api.authJWT(api.getResources))
 
-	r.HandleFunc("/api/resource/register", api.registerResource).Methods(http.MethodPost)
-	r.HandleFunc("/api/tier", api.getTiers)
-	r.HandleFunc("/api/member", api.getMembers)
+	r.HandleFunc("/api/resource/register", api.authJWT(api.registerResource)).Methods(http.MethodPost)
+	r.HandleFunc("/api/tier", api.authJWT(api.getTiers))
+	r.HandleFunc("/api/member", api.authJWT(api.getMembers))
 
 	r.HandleFunc("/register", api.Signup)
 	r.HandleFunc("/signin", api.Signin)

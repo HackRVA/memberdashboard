@@ -36,7 +36,7 @@ func (a *API) authJWT(f func(http.ResponseWriter, *http.Request)) func(http.Resp
 		r.Header.Set("Authorization", "bearer "+token)
 		err := a.TokenValid(r)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
 
