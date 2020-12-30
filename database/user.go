@@ -20,6 +20,18 @@ const getUserQuery = `SELECT password from membership.users where username=$1`
 
 // RegisterUser register a user in the db
 func (db *Database) RegisterUser(username string, password string, email string) error {
+	if len(username) == 0 {
+		return fmt.Errorf("not a valid user")
+	}
+
+	if len(password) == 0 {
+		return fmt.Errorf("not a valid password")
+	}
+
+	if len(username) == 0 {
+		return fmt.Errorf("not a valid email")
+	}
+
 	// Salt and hash the password using the bcrypt algorithm
 	// The second argument is the cost of hashing, which we arbitrarily set as 8 (this value can be more or less, depending on the computing power you wish to utilize)
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
