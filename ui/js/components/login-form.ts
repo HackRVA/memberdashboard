@@ -55,8 +55,8 @@ class LoginForm extends LitElement {
           @change=${this.handlePasswordInput}
         ></mwc-textfield>
       </mwc-list-item>
-      <mwc-list-item>
-        <mwc-button label="login" @click=${this.handleUserLogin}></mwc-button>
+      <mwc-list-item @click=${this.handleUserLogin}>
+        <mwc-button label="login"></mwc-button>
       </mwc-list-item>
     `;
   }

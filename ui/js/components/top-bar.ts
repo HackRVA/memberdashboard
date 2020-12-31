@@ -1,4 +1,4 @@
-import { LitElement, html, TemplateResult } from "lit-element";
+import { LitElement, html, css, CSSResult, TemplateResult } from "lit-element";
 import { USER_PROFILE_ACTOR_ADDRESS } from "../constants";
 import ActorStore from "../actors/actorStore";
 import { UserActor } from "../actors/user";
@@ -8,6 +8,7 @@ import "@material/mwc-top-app-bar-fixed";
 import "@material/mwc-icon-button";
 import "@material/mwc-menu";
 import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-icon";
 
 class TopBar extends LitElement {
   showRegister: Boolean = false;
@@ -15,6 +16,16 @@ class TopBar extends LitElement {
   snackMessage: String = "";
   username: String = "";
   email: String = "";
+
+  static get styles(): CSSResult {
+    return css`
+      login-container {
+        display: grid;
+        justify-content: center;
+        margin-top: 10vh;
+      }
+    `;
+  }
 
   async updated(): Promise<void> {
     if (this.showUserProfile) return;
@@ -68,15 +79,14 @@ class TopBar extends LitElement {
   }
 
   render(): TemplateResult {
-    let output: TemplateResult = html`<login-form
+    const login = html`<login-form
         @control-changed="${this.handleSnackbarMsg}"
       ></login-form>
-      <mwc-list-item>
-        <mwc-button
-          label="Register"
-          @click=${this.handleRegisterBtn}
-        ></mwc-button>
+      <mwc-list-item @click=${this.handleRegisterBtn}>
+        <mwc-button label="Register"></mwc-button>
       </mwc-list-item> `;
+    let output: TemplateResult = login;
+    let loginform = html``;
 
     if (this.showRegister) {
       output = html`<register-form
@@ -86,12 +96,17 @@ class TopBar extends LitElement {
 
     if (this.showUserProfile) {
       output = html`
-        <mwc-list-item>${this.username}</mwc-list-item>
-        <mwc-list-item>${this.email}</mwc-list-item>
         <mwc-list-item>
-          <mwc-button label="Logout" @click=${this.handleLogout}></mwc-button>
+          <mwc-icon slot="graphic">person</mwc-icon>
+          ${this.username}</mwc-list-item
+        >
+        <mwc-list-item>${this.email}</mwc-list-item>
+        <mwc-list-item @click=${this.handleLogout}>
+          <mwc-button label="Logout"></mwc-button>
         </mwc-list-item>
       `;
+    } else {
+      loginform = html`<login-container> ${output} </login-container>`;
     }
 
     return html`
@@ -106,6 +121,9 @@ class TopBar extends LitElement {
           slot="actionItems"
         ></mwc-icon-button>
         <mwc-menu id="menu" activatable> ${output} </mwc-menu>
+
+        ${loginform}
+
         <mwc-snackbar id="loginMessage" stacked labelText=${this.snackMessage}>
         </mwc-snackbar>
       </mwc-top-app-bar-fixed>

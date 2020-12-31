@@ -29,11 +29,12 @@ class RegisterForm extends LitElement {
     };
 
     const userActor: any = ActorStore.lookup(USER_PROFILE_ACTOR_ADDRESS);
-    const loginResponse: Promise<Boolean> = await userActor.message(
-      UserActor.MessageTypes.Login,
+    const registerResponse: Promise<Boolean> = await userActor.message(
+      UserActor.MessageTypes.RegisterUser,
       opts
     );
-    const registerMessage = loginResponse
+
+    const registerMessage = registerResponse
       ? "Success!"
       : "some kind of error registering user";
 
@@ -64,11 +65,8 @@ class RegisterForm extends LitElement {
           @change=${this.handlePasswordInput}
         ></mwc-textfield>
       </mwc-list-item>
-      <mwc-list-item>
-        <mwc-button
-          label="register"
-          @click=${this.handleUserRegister}
-        ></mwc-button>
+      <mwc-list-item @click=${this.handleUserRegister}>
+        <mwc-button label="register"></mwc-button>
       </mwc-list-item>
     `;
   }
