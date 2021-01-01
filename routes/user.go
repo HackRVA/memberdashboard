@@ -201,3 +201,21 @@ func (a *API) Signin(w http.ResponseWriter, r *http.Request) {
 	j, _ := json.Marshal(tokenJSON)
 	w.Write(j)
 }
+
+// Logout endpoint for user signin
+func (a *API) Logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     CookieName,
+		Value:    "",
+		Expires:  time.Now(),
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	w.Header().Set("Content-Type", "application/json")
+
+	j, _ := json.Marshal(struct{ Message string }{
+		Message: "user logged out!",
+	})
+	w.Write(j)
+}

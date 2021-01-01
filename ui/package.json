@@ -36,7 +36,8 @@
     "@material/mwc-snackbar": "^0.20.0",
     "@material/mwc-textfield": "^0.20.0",
     "@material/mwc-top-app-bar-fixed": "^0.20.0",
-    "lit-element": "^2.4.0"
+    "lit-element": "^2.4.0",
+    "rxjs": "^6.6.3"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^2.3.3",

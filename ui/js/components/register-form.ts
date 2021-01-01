@@ -1,7 +1,5 @@
 import { LitElement, html, TemplateResult } from "lit-element";
-import { USER_PROFILE_ACTOR_ADDRESS } from "../constants";
-import ActorStore from "../actors/actorStore";
-import { UserActor } from "../actors/user";
+import { UserService } from "../service/User";
 import "@material/mwc-textfield";
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
@@ -10,6 +8,7 @@ class RegisterForm extends LitElement {
   username: string = "";
   password: string = "";
   email: string = "";
+  userService: UserService = new UserService();
 
   handleUsernameInput(e: KeyboardEvent): void {
     this.username = (e.target as HTMLInputElement).value;
@@ -21,28 +20,29 @@ class RegisterForm extends LitElement {
   handleEmailInput(e: KeyboardEvent): void {
     this.email = (e.target as HTMLInputElement).value;
   }
-  async handleUserRegister(): Promise<void> {
-    const opts: UserActor.RegisterRequest = {
+  handleUserRegister(): void {
+    const opts: UserService.RegisterRequest = {
       username: this.username,
       password: this.password,
       email: this.email,
     };
+    this.userService.registerUser(opts).subscribe({
+      next: (result) => {
+        if ((result as { error: boolean; message: any }).error) {
+          this.onRegisterComplete("Some error logging in");
+        }
+      },
+      complete: () => this.onRegisterComplete("Success!"),
+    });
+  }
 
-    const userActor: any = ActorStore.lookup(USER_PROFILE_ACTOR_ADDRESS);
-    const registerResponse: Promise<Boolean> = await userActor.message(
-      UserActor.MessageTypes.RegisterUser,
-      opts
-    );
-
-    const registerMessage = registerResponse
-      ? "Success!"
-      : "some kind of error registering user";
-
+  onRegisterComplete(registerMessage: String) {
     const event = new CustomEvent("control-changed", {
       detail: registerMessage,
     });
     this.dispatchEvent(event);
   }
+
   render(): TemplateResult {
     return html`
       <mwc-list-item>

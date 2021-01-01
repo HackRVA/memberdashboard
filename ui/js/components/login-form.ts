@@ -1,7 +1,5 @@
 import { LitElement, html, TemplateResult } from "lit-element";
-import { USER_PROFILE_ACTOR_ADDRESS } from "../constants";
-import ActorStore from "../actors/actorStore";
-import { UserActor } from "../actors/user";
+import { UserService } from "../service/User";
 import "@material/mwc-textfield";
 import "@material/mwc-button";
 import "@material/mwc-snackbar";
@@ -10,7 +8,14 @@ import "@material/mwc-list/mwc-list-item";
 class LoginForm extends LitElement {
   username: string = "";
   password: string = "";
-  loginMessage: string = "";
+  userService: UserService = new UserService();
+
+  onLoginComplete(snackbarNotification: string): void {
+    const event = new CustomEvent("control-changed", {
+      detail: snackbarNotification,
+    });
+    this.dispatchEvent(event);
+  }
 
   handleUsernameInput(e: KeyboardEvent): void {
     this.username = (e.target as HTMLInputElement).value;
@@ -20,26 +25,21 @@ class LoginForm extends LitElement {
     this.password = (e.target as HTMLInputElement).value;
   }
 
-  async handleUserLogin(): Promise<void> {
-    const opts: UserActor.LoginRequest = {
+  handleUserLogin(): void {
+    const opts: UserService.LoginRequest = {
       username: this.username,
       password: this.password,
     };
-
-    const userActor: any = ActorStore.lookup(USER_PROFILE_ACTOR_ADDRESS);
-    const loginResponse: Promise<Boolean> = await userActor.message(
-      UserActor.MessageTypes.Login,
-      opts
-    );
-    const loginMessage = loginResponse
-      ? "Success!"
-      : "some kind of error logging in";
-
-    const event = new CustomEvent("control-changed", {
-      detail: loginMessage,
+    this.userService.login(opts).subscribe({
+      next: (result) => {
+        if ((result as { error: boolean; message: any }).error) {
+          this.onLoginComplete("Some error logging in");
+        }
+      },
+      complete: () => this.onLoginComplete("Success!"),
     });
-    this.dispatchEvent(event);
   }
+
   render(): TemplateResult {
     return html`
       <mwc-list-item>

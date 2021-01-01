@@ -37,6 +37,7 @@ func Setup() {
 
 	r.HandleFunc("/register", api.Signup)
 	r.HandleFunc("/signin", api.Signin)
+	r.HandleFunc("/logout", api.authJWT(api.Logout))
 
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./")))
 

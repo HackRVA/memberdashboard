@@ -1,9 +1,8 @@
 import { LitElement, html, css, CSSResult, TemplateResult } from "lit-element";
-import { USER_PROFILE_ACTOR_ADDRESS } from "../constants";
-import ActorStore from "../actors/actorStore";
-import { UserActor } from "../actors/user";
+import { UserService } from "../service/User";
 import "./login-form";
 import "./register-form";
+import "./member-stats";
 import "@material/mwc-top-app-bar-fixed";
 import "@material/mwc-icon-button";
 import "@material/mwc-menu";
@@ -16,6 +15,7 @@ class TopBar extends LitElement {
   snackMessage: String = "";
   username: String = "";
   email: String = "";
+  userService: UserService = new UserService();
 
   static get styles(): CSSResult {
     return css`
@@ -27,28 +27,50 @@ class TopBar extends LitElement {
     `;
   }
 
-  async updated(): Promise<void> {
+  updated(): void {
     if (this.showUserProfile) return;
 
-    const userActor: any = ActorStore.lookup(USER_PROFILE_ACTOR_ADDRESS);
-    const userProfile = await userActor.message(UserActor.MessageTypes.GetUser);
+    this.userService.getUser().subscribe({
+      next: (result: any) => {
+        if ((result as { error: boolean; message: any }).error) {
+          return console.error(
+            (result as { error: boolean; message: any }).message
+          );
+        }
+        const { username, email } = result as UserService.UserProfile;
+        this.username = username;
+        this.email = email;
+        this.showUserProfile = true;
+        this.requestUpdate();
+      },
+    });
+  }
 
-    if (!userProfile) return;
+  handleLogout(): void {
+    this.userService.logout().subscribe({
+      next: (result) => {
+        if ((result as { error: boolean; message: any }).error) {
+          this.writeToSnackbar("error logging out");
+          return;
+        }
 
-    this.username = userProfile.username;
-    this.email = userProfile.email;
-    this.showUserProfile = true;
-    this.requestUpdate();
+        this.writeToSnackbar("logging out");
+      },
+    });
   }
 
   handleSnackbarMsg(evt: Event & { detail: String }): void {
+    this.writeToSnackbar(evt.detail);
+  }
+
+  writeToSnackbar(message: String): void {
     const snackbar:
       | (HTMLElement & { show: Function })
       | null
       | undefined = this.shadowRoot?.querySelector("#loginMessage");
     if (!snackbar) return console.error("no snackbar");
 
-    this.snackMessage = evt.detail;
+    this.snackMessage = message;
 
     this.requestUpdate();
     snackbar.show();
@@ -58,8 +80,6 @@ class TopBar extends LitElement {
     this.showRegister = !this.showRegister;
     this.requestUpdate();
   }
-
-  handleLogout(): void {}
 
   handleProfileClick(): void {
     const profileBtn:
@@ -123,6 +143,7 @@ class TopBar extends LitElement {
         <mwc-menu id="menu" activatable> ${output} </mwc-menu>
 
         ${loginform}
+        <member-stats></member-stats>
 
         <mwc-snackbar id="loginMessage" stacked labelText=${this.snackMessage}>
         </mwc-snackbar>
