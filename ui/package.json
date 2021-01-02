@@ -29,6 +29,7 @@
   "homepage": "https://github.com/dfirebaugh/memberserver#readme",
   "dependencies": {
     "@material/mwc-button": "^0.20.0",
+    "@material/mwc-drawer": "^0.20.0",
     "@material/mwc-fab": "^0.20.0",
     "@material/mwc-icon": "^0.20.0",
     "@material/mwc-icon-button": "^0.20.0",

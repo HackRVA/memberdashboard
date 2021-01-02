@@ -1,9 +1,11 @@
 import { LitElement, html, css, CSSResult, TemplateResult } from "lit-element";
 import { UserService } from "../service/User";
+import "./body-element";
 import "./login-form";
 import "./register-form";
-import "./member-stats";
+import "./card-element";
 import "@material/mwc-top-app-bar-fixed";
+import "@material/mwc-drawer";
 import "@material/mwc-icon-button";
 import "@material/mwc-menu";
 import "@material/mwc-list/mwc-list-item";
@@ -22,7 +24,6 @@ class TopBar extends LitElement {
       login-container {
         display: grid;
         justify-content: center;
-        margin-top: 10vh;
       }
     `;
   }
@@ -98,6 +99,23 @@ class TopBar extends LitElement {
     menu.show();
   }
 
+  handleOpenDrawer(): void {
+    if (!this.shadowRoot) return;
+    const drawer:
+      | (HTMLElement & {
+          open: boolean;
+        })
+      | null = this.shadowRoot.querySelector("#drawer");
+    if (!drawer) return;
+
+    const container = drawer.parentNode;
+    if (!container) return;
+
+    container.addEventListener("MDCTopAppBar:nav", () => {
+      drawer.open = !drawer.open;
+    });
+  }
+
   render(): TemplateResult {
     const login = html`<login-form
         @control-changed="${this.handleSnackbarMsg}"
@@ -129,25 +147,47 @@ class TopBar extends LitElement {
       loginform = html`<login-container> ${output} </login-container>`;
     }
 
+    const body = this.showUserProfile
+      ? html` <body-element></body-element> `
+      : html` <card-element> ${loginform} </card-element> `;
+
     return html`
-      <mwc-top-app-bar-fixed>
-        <mwc-icon-button icon="menu" slot="navigationIcon"></mwc-icon-button>
-        <div slot="title">Member Dashboard</div>
-        <div slot="actionItems">${this.username}</div>
-        <mwc-icon-button
-          id="profileBtn"
-          @click=${this.handleProfileClick}
-          icon="person"
-          slot="actionItems"
-        ></mwc-icon-button>
-        <mwc-menu id="menu" activatable> ${output} </mwc-menu>
+      <mwc-drawer id="drawer" hasHeader type="modal">
+        <span slot="title">Navigation</span>
+        <div>
+          <mwc-list-item>Users </mwc-list-item>
+          <mwc-list-item>Members </mwc-list-item>
+          <mwc-list-item>Resources </mwc-list-item>
+          <mwc-list-item>Status </mwc-list-item>
+        </div>
+        <div slot="appContent">
+          <mwc-top-app-bar-fixed>
+            <mwc-icon-button
+              icon="menu"
+              slot="navigationIcon"
+              @click=${this.handleOpenDrawer}
+            ></mwc-icon-button>
+            <div slot="title">Member Dashboard</div>
+            <div slot="actionItems">${this.username}</div>
+            <mwc-icon-button
+              id="profileBtn"
+              @click=${this.handleProfileClick}
+              icon="person"
+              slot="actionItems"
+            ></mwc-icon-button>
+            <mwc-menu id="menu" activatable> ${output} </mwc-menu>
 
-        ${loginform}
-        <member-stats></member-stats>
+            ${body}
 
-        <mwc-snackbar id="loginMessage" stacked labelText=${this.snackMessage}>
-        </mwc-snackbar>
-      </mwc-top-app-bar-fixed>
+            <mwc-snackbar
+              id="loginMessage"
+              stacked
+              labelText=${this.snackMessage}
+            >
+            </mwc-snackbar>
+          </mwc-top-app-bar-fixed>
+        </div>
+      </mwc-drawer>
     `;
   }
 }
