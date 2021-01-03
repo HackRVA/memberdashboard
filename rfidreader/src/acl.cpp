@@ -21,7 +21,7 @@ void acl_init()
     }
 }
 
-void write_acl(unsigned long acl[])
+void write_acl(String acl[], uint8_t arrsize)
 {
     File file = LittleFS.open(ACL_FILE, "w+");
 
@@ -31,15 +31,20 @@ void write_acl(unsigned long acl[])
         return;
     }
 
-    for (uint8_t n = 0; n < MAXIMUM_ACL_SIZE; n++)
+    Serial.printf("checking the zero index: %s\n", acl[0].c_str());
+
+    for (uint8_t n = 0; n < arrsize; n++)
     {
+        if (!acl[n])
+            break;
         /* check to see if we are adding zero values to the acl */
-        if (acl[n] == 0)
+        if (acl[n].length() == 0)
         {
             /* skip any zero values */
             continue;
         }
 
+        Serial.printf("writing: %s\n", acl[n].c_str());
         file.println(acl[n]);
     }
 
@@ -52,15 +57,11 @@ void write_acl(unsigned long acl[])
  * if it finds the id, it will return true
  * if it doesn't, it will return false
  */
-bool find_id(byte id[])
+bool find_id(String uid)
 {
     File file = LittleFS.open(ACL_FILE, "r");
 
-    unsigned long number = *((unsigned long *)id);
-    Serial.printf("\nlooking for: %lu\n\n", number);
-
-    char buf[16];
-    ultoa(number, buf, 10);
+    Serial.printf("\nlooking for: %s\n\n", uid.c_str());
 
     if (!file)
     {
@@ -70,7 +71,7 @@ bool find_id(byte id[])
 
     bool found = false;
 
-    found = file.find(buf);
+    found = file.find(uid.c_str(), uid.length());
     if (found)
     {
         file.close();

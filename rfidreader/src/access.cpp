@@ -3,8 +3,6 @@
 
 #include "acl.h"
 
-byte readCard[4];
-
 /**
  * granted
  * Trigger the relay to open and do some user 
@@ -25,7 +23,7 @@ void granted(uint16_t setDelay)
 #if 0
       digitalWrite(relay, HIGH);    // Relock door
 #endif
-    delay(1000);     // Hold green LED on for a second
+    delay(1000); // Hold green LED on for a second
 }
 
 /**
@@ -38,23 +36,23 @@ void denied()
     Serial.println(F("You shall not pass"));
 }
 
+#define DEBUG 1
 /**
  * getID
  * Get PICC's UID
  */
-uint8_t getID(MFRC522 reader)
+String getID(MFRC522 reader)
 {
+    String uid = "";
     /* There are Mifare PICCs which have 4 byte or 7 byte UID care if you use 7 byte PICC
      I think we should assume every PICC as they have 4 byte UID
      Until we support 7 byte PICCs */
-    for (uint8_t i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < reader.uid.size; i++)
     {
-        readCard[i] = reader.uid.uidByte[i];
-        Serial.print(readCard[i], HEX);
+        uid += String(reader.uid.uidByte[i], HEX);
     }
-    Serial.println("");
-    reader.PICC_HaltA(); // Stop reading
-    return 1;
+
+    return uid;
 }
 
 /**
@@ -64,16 +62,15 @@ uint8_t getID(MFRC522 reader)
  */
 void checkID(MFRC522 reader)
 {
-    uint8_t successRead; // Variable integer to keep if we have Successful Read from Reader
+    String successRead;
 
     do
     {
         successRead = getID(reader);
+    } while ((successRead.length() / 2) != reader.uid.size);
 
-    } while (!successRead);
-
-    if (find_id(readCard))
-    { // look for the ID in flash
+    if (find_id(successRead))
+    {                 // look for the ID in flash
         granted(300); // Open the door lock for 300 ms
     }
     else

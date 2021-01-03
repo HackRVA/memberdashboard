@@ -15,13 +15,13 @@
  * we receive a list of IDs
  * note: IDs are 4 bytes long
  */
-extern void write_acl(unsigned long acl[]);
+extern void write_acl(String acl[MAXIMUM_ACL_SIZE], uint8_t arrsize);
 
 /**
  * find_id
  * Determines if the id passed in exists in the ACL
  */
-extern bool find_id(byte id[]);
+extern bool find_id(String uid);
 
 extern void acl_init();
 extern String acl_hash();

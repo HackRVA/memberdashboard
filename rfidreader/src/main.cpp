@@ -6,6 +6,7 @@
 #include "wifi.h"
 
 #define TESTING 0
+#define DEBUG 0
 
 MFRC522 mfrc522;
 
@@ -18,10 +19,11 @@ void setup()
 
 #if TESTING
 	unsigned long acl[MAXIMUM_ACL_SIZE] = {};
-	write_acl(acl);
+	write_acl(acl, 0);
 #endif
 
-	while (!Serial); // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
+	while (!Serial)
+		; // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
 }
 
 void loop()

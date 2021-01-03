@@ -7,11 +7,10 @@
 #include "acl.h"
 
 // Replace with your network credentials
-const char *ssid = "cheddar";
-const char *password = "firedog6";
+const char *ssid = "";
+const char *password = "";
 
 ESP8266WebServer server(80);
-
 
 void getACLHash()
 {
@@ -44,16 +43,15 @@ void handleUpdateACL()
                 server.send(500, "application/json", "{\"error\": \"not a valid access list\"}");
             }
 
-            unsigned long new_acl[MAXIMUM_ACL_SIZE];
+            String new_acl[array.size()];
             uint8_t i = 0;
             for (JsonVariant v : array)
             {
-                unsigned long num = strtoul(v.as<String>().c_str(), 0, 10);
-                Serial.println(v.as<String>().c_str());
-                new_acl[i] = num;
+                new_acl[i] = v.as<String>();
                 i++;
             }
-            write_acl(new_acl);
+
+            write_acl(new_acl, array.size());
         }
         server.send(200, "application/json", server.arg("plain"));
     }
@@ -66,8 +64,8 @@ void handleUpdateACL()
  */
 void handleClearACL()
 {
-    unsigned long acl[MAXIMUM_ACL_SIZE] = {};
-	write_acl(acl);
+    String acl[MAXIMUM_ACL_SIZE] = {};
+    write_acl(acl, 0);
     server.send(200, "application/json", "{\"acl\": \"" + acl_hash() + "\", \"version\": " + "\"" + "0.0.0" + "\"}");
 }
 
