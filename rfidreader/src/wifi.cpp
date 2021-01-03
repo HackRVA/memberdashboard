@@ -5,10 +5,8 @@
 #include <ESP8266WebServer.h>
 
 #include "acl.h"
-
-// Replace with your network credentials
-const char *ssid = "";
-const char *password = "";
+#include "config.h"
+#include "wifi_setup_page.h"
 
 ESP8266WebServer server(80);
 
@@ -77,6 +75,12 @@ void restServerRouting()
     server.on(F("/clear"), HTTP_POST, handleClearACL);
 }
 
+void serveWifiSetup()
+{
+    String s = adminPage;             //Read HTML contents
+    server.send(200, "text/html", s); //Send web page
+}
+
 // Manage not found URL
 void handleNotFound()
 {
@@ -97,8 +101,28 @@ void handleNotFound()
 
 void setup_wifi(void)
 {
+    config_t *conf = new config_t();
+    read_config(conf);
+
+    if (strlen(conf->ssid) == 0 || strlen(conf->password) == 0)
+    {
+        WiFi.mode(WIFI_AP);
+        WiFi.softAP("APConfig", "", 1, false, 1);
+        server.on("/", HTTP_GET, serveWifiSetup);
+        server.on("/setup-wifi", HTTP_POST, handleWifiSetup);
+
+        Serial.print("IP address: ");
+        Serial.println(WiFi.localIP());
+        // Set not found response
+        server.onNotFound(handleNotFound);
+        // Start server
+        server.begin();
+        Serial.println("HTTP server started");
+        return;
+    }
+
     WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, password);
+    WiFi.begin(conf->ssid, conf->password);
     Serial.println("");
 
     // Wait for connection
@@ -109,7 +133,7 @@ void setup_wifi(void)
     }
     Serial.println("");
     Serial.print("Connected to ");
-    Serial.println(ssid);
+    Serial.println(conf->ssid);
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 
@@ -120,6 +144,28 @@ void setup_wifi(void)
     // Start server
     server.begin();
     Serial.println("HTTP server started");
+}
+
+void handleWifiSetup()
+{
+    if (server.method() != HTTP_POST)
+    {
+        server.send(405, "text/plain", "Method Not Allowed");
+    }
+    else
+    {
+        StaticJsonDocument<256> doc;
+        deserializeJson(doc, server.arg("plain"));
+        JsonObject obj = doc.as<JsonObject>();
+
+        if (!doc.containsKey("ssid") && !doc.containsKey("password"))
+        {
+            server.send(500, "application/json", "{\"error\": \"no ssid and/or password in request \"}");
+        }
+        write_config(obj["ssid"], obj["password"]);
+        server.send(200, "application/json", server.arg("plain"));
+        setup_wifi();
+    }
 }
 
 void wifi_loop(void)
