@@ -107,7 +107,7 @@ void setup_wifi(void)
     if (strlen(conf->ssid) == 0 || strlen(conf->password) == 0)
     {
         WiFi.mode(WIFI_AP);
-        WiFi.softAP("APConfig", "", 1, false, 1);
+        WiFi.softAP("RFIDReaderConfig", "", 1, false, 1);
         server.on("/", HTTP_GET, serveWifiSetup);
         server.on("/setup-wifi", HTTP_POST, handleWifiSetup);
 

@@ -98,6 +98,10 @@ CREATE TABLE membership.members (
 
 ALTER TABLE membership.members
     ADD CONSTRAINT unique_email UNIQUE (email);
+
+ALTER TABLE membership.members
+    ADD CONSTRAINT unique_rfid UNIQUE (rfid);
+
 --
 -- Name: members_id_seq; Type: SEQUENCE; Schema: membership; Owner: test
 --
