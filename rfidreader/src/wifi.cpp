@@ -5,6 +5,7 @@
 #include <ESP8266WebServer.h>
 
 #include "acl.h"
+#include "access.h"
 #include "config.h"
 #include "wifi_setup_page.h"
 
@@ -67,12 +68,19 @@ void handleClearACL()
     server.send(200, "application/json", "{\"acl\": \"" + acl_hash() + "\", \"version\": " + "\"" + "0.0.0" + "\"}");
 }
 
+void handleRemoteOpen()
+{
+    granted(10000);
+    server.send(200, "application/json", "{\"acl\": \"" + acl_hash() + "\", \"version\": " + "\"" + "0.0.0" + "\"}");
+}
+
 // Define routing
 void restServerRouting()
 {
     server.on("/", HTTP_GET, getACLHash);
     server.on(F("/update"), HTTP_POST, handleUpdateACL);
     server.on(F("/clear"), HTTP_POST, handleClearACL);
+    server.on(F("/grant"), HTTP_POST, handleRemoteOpen);
 }
 
 void serveWifiSetup()
