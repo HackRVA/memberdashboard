@@ -39,7 +39,7 @@ The device will save this to a config file in flash and will skip this setup on 
 
 ```json
 {
-  "acl": [2755459513, 848615840]
+  "acl": ["2755459513", "848615840"]
 }
 ```
 
