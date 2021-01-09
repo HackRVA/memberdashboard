@@ -1,4 +1,4 @@
-import { LitElement, html, css, CSSResult, TemplateResult } from "lit-element";
+import { LitElement, html, css, CSSResult, TemplateResult, customElement } from "lit-element";
 import { UserService } from "../service/User";
 import "./body-element";
 import "./login-form";
@@ -11,7 +11,8 @@ import "@material/mwc-menu";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-icon";
 
-class TopBar extends LitElement {
+@customElement("top-bar")
+export class TopBar extends LitElement {
   showRegister: Boolean = false;
   showUserProfile: Boolean = false;
   snackMessage: String = "";
@@ -100,20 +101,15 @@ class TopBar extends LitElement {
   }
 
   handleOpenDrawer(): void {
-    if (!this.shadowRoot) return;
-    const drawer:
-      | (HTMLElement & {
-          open: boolean;
-        })
-      | null = this.shadowRoot.querySelector("#drawer");
-    if (!drawer) return;
+    const drawer: (HTMLElement & { open: boolean; }) | null | undefined = this.shadowRoot?.querySelector("#drawer");
 
-    const container = drawer.parentNode;
-    if (!container) return;
+    if (drawer) {
+      const container: (Node & ParentNode) | null = drawer.parentNode;
 
-    container.addEventListener("MDCTopAppBar:nav", () => {
-      drawer.open = !drawer.open;
-    });
+      container?.addEventListener("MDCTopAppBar:nav", () => {
+        drawer.open = !drawer?.open;
+      }, {once: true});
+    }
   }
 
   render(): TemplateResult {
@@ -191,5 +187,3 @@ class TopBar extends LitElement {
     `;
   }
 }
-
-customElements.define("top-bar", TopBar);
