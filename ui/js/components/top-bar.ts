@@ -1,4 +1,11 @@
-import { LitElement, html, css, CSSResult, TemplateResult, customElement } from "lit-element";
+import {
+  LitElement,
+  html,
+  css,
+  CSSResult,
+  TemplateResult,
+  customElement,
+} from "lit-element";
 import { UserService } from "../service/User";
 import "./body-element";
 import "./login-form";
@@ -101,14 +108,21 @@ export class TopBar extends LitElement {
   }
 
   handleOpenDrawer(): void {
-    const drawer: (HTMLElement & { open: boolean; }) | null | undefined = this.shadowRoot?.querySelector("#drawer");
+    const drawer:
+      | (HTMLElement & { open: boolean })
+      | null
+      | undefined = this.shadowRoot?.querySelector("#drawer");
 
     if (drawer) {
       const container: (Node & ParentNode) | null = drawer.parentNode;
 
-      container?.addEventListener("MDCTopAppBar:nav", () => {
-        drawer.open = !drawer?.open;
-      }, {once: true});
+      container?.addEventListener(
+        "MDCTopAppBar:nav",
+        () => {
+          drawer.open = !drawer?.open;
+        },
+        { once: true }
+      );
     }
   }
 

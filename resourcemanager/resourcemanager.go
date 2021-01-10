@@ -21,7 +21,7 @@ type ResourceManager struct {
 
 // ACLUpdateRequest is the json object we send to a resource when pushing an update
 type ACLUpdateRequest struct {
-	ACL []uint8 `json:"acl"`
+	ACL []string `json:"acl"`
 }
 
 // Setup initializes the resource manager

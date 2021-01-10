@@ -8,6 +8,7 @@ import {
 } from "lit-element";
 import "./card-element";
 import "./user-profile";
+import "./resource-manager";
 import "./member-stats";
 
 @customElement("body-element")
@@ -20,6 +21,7 @@ export class BodyElement extends LitElement {
       <main>
         <user-profile></user-profile>
         <member-stats></member-stats>
+        <resource-manager> </resource-manager>
       </main>
     `;
   }

@@ -47,4 +47,28 @@ export class HTTPService {
       })
     );
   }
+  delete(
+    endpoint: string,
+    options?: any
+  ): Observable<Response | any | { error: boolean; message: any }> {
+    return fromFetch(endpoint, {
+      method: "DELETE",
+      body: JSON.stringify(options),
+    }).pipe(
+      switchMap((response) => {
+        if (response.ok) {
+          // OK return data
+          return response.json();
+        } else {
+          // Server is returning a status requiring the client to try something else.
+          return of({ error: true, message: `Error ${response.status}` });
+        }
+      }),
+      catchError((err) => {
+        // Network or other error, handle appropriately
+        console.error(err);
+        return of({ error: true, message: err.message });
+      })
+    );
+  }
 }

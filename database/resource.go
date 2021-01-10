@@ -11,12 +11,25 @@ import (
 )
 
 const getResourceQuery = `SELECT id, description, device_identifier, updated_at FROM membership.resources;`
-const getResourceByNameQuery = `SELECT id, description, device_identifier, updated_at
-FROM membership.resources
-WHERE description = $1;`
 const insertResourceQuery = `INSERT INTO membership.resources(
 	description, device_identifier, updated_at)
 	VALUES ($1, $2, NOW());`
+const updateResourceQuery = `UPDATE membership.resources
+SET description='$2', device_identifier='$3', updated_at=NOW()
+WHERE id=$1;
+`
+const deleteResourceQuery = `DELETE FROM membership.resources
+WHERE id = $1;`
+const getResourceByNameQuery = `SELECT id, description, device_identifier, updated_at
+FROM membership.resources
+WHERE description = $1;`
+
+const getResourceACLByResourceIDQuery = `SELECT rfid
+FROM membership.member_resource
+LEFT JOIN membership.members
+ON membership.member_resource.member_id = membership.members.id
+WHERE resource_id = $1;`
+
 const getMemberResourceQuery = `SELECT id, member_id, resource_id, updated_at
 FROM membership.member_resource
 WHERE member_id = $1 AND resource_id = $2;`
@@ -102,6 +115,43 @@ func (db *Database) RegisterResource(name string, address string) (*Resource, er
 	return r, nil
 }
 
+// UpdateResource - updates a resource in the db
+func (db *Database) UpdateResource(id uint8, name string, address string) (*Resource, error) {
+	r := &Resource{}
+
+	log.Printf("id: %d\n", id)
+	log.Printf("name: %s\n", name)
+	log.Printf("address: %s\n", address)
+
+	// if the resource doesn't already exist let's register it
+	if id == 0 {
+		registered, err := db.RegisterResource(name, address)
+		return registered, err
+	}
+
+	r.Name = name
+	r.Address = address
+
+	row := db.pool.QueryRow(context.Background(), updateResourceQuery, r.ID, r.Name, r.Address).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
+	if row == pgx.ErrNoRows {
+		return r, errors.New("no rows affected")
+	}
+
+	return r, nil
+}
+
+// DeleteResource - delete a resource from the db
+func (db *Database) DeleteResource(id uint8) error {
+	rows, err := db.pool.Query(context.Background(), deleteResourceQuery, id)
+	if err != nil {
+		return fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	defer rows.Close()
+
+	return nil
+}
+
 // AddUserToResource - grants a user access to a resource
 func (db *Database) AddUserToResource(email string, resourceName string) (*MemberResourceRelation, error) {
 	memberResource := &MemberResourceRelation{}
@@ -167,10 +217,10 @@ func (db *Database) RemoveUserFromResource(email string, resourceName string) (*
 }
 
 // GetResourceACL returns a list of members that have access to that Resource
-func (db *Database) GetResourceACL(r Resource) ([]uint8, error) {
-	var accessList []uint8
+func (db *Database) GetResourceACL(r Resource) ([]string, error) {
+	var accessList []string
 
-	rows, err := db.pool.Query(context.Background(), getResourceQuery)
+	rows, err := db.pool.Query(context.Background(), getResourceACLByResourceIDQuery, r.ID)
 	if err != nil {
 		return accessList, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -178,7 +228,7 @@ func (db *Database) GetResourceACL(r Resource) ([]uint8, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var rfid uint8
+		var rfid string
 		err = rows.Scan(&rfid)
 		accessList = append(accessList, rfid)
 	}

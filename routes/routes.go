@@ -28,9 +28,8 @@ func Setup() {
 		log.Fatal(fmt.Errorf("error setting up db: %s", err))
 	}
 
-	r.HandleFunc("/api/resource", api.authJWT(api.getResources))
+	r.HandleFunc("/api/resource", api.authJWT(api.Resource)).Methods(http.MethodPost, http.MethodDelete, http.MethodGet)
 
-	r.HandleFunc("/api/resource/register", api.authJWT(api.registerResource)).Methods(http.MethodPost)
 	r.HandleFunc("/api/tier", api.authJWT(api.getTiers))
 	r.HandleFunc("/api/member", api.authJWT(api.getMembers))
 	r.HandleFunc("/api/user", api.authJWT(api.getUser))
