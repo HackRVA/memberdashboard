@@ -9,30 +9,19 @@ import (
 // Config - values of our config
 type Config struct {
 	// AccessSecret - secret used for signing jwts
-	AccessSecret         string `json:"accessSecret"`
-	PaypalClientID       string `json:"paypalClientID"`
-	PaypalClientSecret   string `json:"paypalClientSecret"`
-	PaypalUser           string `json:"paypalUser"`
-	PaypalPWD            string `json:"paypalPWD"`
-	PaypalSignature      string `json:"paypalSignature"`
-	PaypalURL            string `json:"paypalURL"`
-	QBAcceessToken       string `json:"qbAccessToken"`
-	QBAcceessTokenSecret string `json:"qbAccessTokenSecret"`
-	QBConsumerKey        string `json:"qbConsumerKey"`
-	QBConsumerSecret     string `json:"qbConsumerSecret"`
-	QBRealmID            string `json:"qbRealmID"`
+	AccessSecret       string `json:"accessSecret"`
+	PaypalClientID     string `json:"paypalClientID"`
+	PaypalClientSecret string `json:"paypalClientSecret"`
+	PaypalUser         string `json:"paypalUser"`
+	PaypalPWD          string `json:"paypalPWD"`
+	PaypalSignature    string `json:"paypalSignature"`
+	PaypalURL          string `json:"paypalURL"`
+	MailgunURL         string `json:"mailgunURL"`
+	MailgunKey         string `json:"mailgunKey"`
+	MailgunFromAddress string `json:"mailgunFromAddress"`
+	MailgunUser        string `json:"mailgunUser"`
+	MailgunPassword    string `json:"mailgunPassword"`
 }
-
-// "PAYPAL_USER"
-// "PAYPAL_PWD"
-// "PAYPAL_SIGNATURE"
-// "PAYPAL_VERSION"
-// "PAYPAL_URL"
-// 'QB_ACCESS_TOKEN'
-// 'QB_ACCESS_TOKEN_SECRET'
-// 'QB_CONSUMER_KEY'
-// 'QB_CONSUMER_SECRET'
-// 'QB_REALM_ID'
 
 // Load in the config file to memory
 func Load(filepath string) (Config, error) {

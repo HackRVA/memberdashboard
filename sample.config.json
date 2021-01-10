@@ -1,14 +1,14 @@
 {
-    "accessSecret": "somesecret",
-    "paypalClientID": "",
-    "paypalClientSecret": "",
+    "accessSecret": "this is a test value",
+    "paypalClientID": "this is a test value",
+    "paypalClientSecret": "this is a test value",
     "paypalUser": "this is a test value",
     "paypalPWD": "this is a test value",
     "paypalSignature": "this is a test value",
     "paypalURL": "this is a test value",
-    "qbAccessToken": "this is a test value",
-    "qbAccessTokenSecret": "this is a test value",
-    "qbConsumerKey": "this is a test value",
-    "qbConsumerSecret": "this is a test value",
-    "qbRealmID": "this is a test value"
+    "mailgunUser": "this is a test value",
+    "mailgunPassword": "this is a test value",
+    "mailgunURL": "this is a test value",
+    "mailgunKey": "this is a test value",
+    "mailgunFromAddress": "this is a test value"
 }

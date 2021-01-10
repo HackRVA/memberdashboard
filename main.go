@@ -13,14 +13,15 @@ func main() {
 	routes.Setup()
 
 	println(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
-	c, err := config.Load(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
+
+	_, err := config.Load(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
+	if len(os.Getenv("MEMBER_SERVER_CONFIG_FILE")) == 0 {
+		log.Fatal("must set the MEMBER_SERVER_CONFIG_FILE environment variable to point to config file")
+	}
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	log.Println(c.PaypalURL)
-	log.Println(c.PaypalSignature)
 
 	log.Print("Server listening on http://localhost:3000/")
 	log.Fatal(http.ListenAndServe("0.0.0.0:3000", nil))
