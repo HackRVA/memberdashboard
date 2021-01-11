@@ -15,8 +15,9 @@ const insertResourceQuery = `INSERT INTO membership.resources(
 	description, device_identifier, updated_at)
 	VALUES ($1, $2, NOW());`
 const updateResourceQuery = `UPDATE membership.resources
-SET description='$2', device_identifier='$3', updated_at=NOW()
-WHERE id=$1;
+SET description=$2, device_identifier=$3, updated_at=NOW()
+WHERE id=$1
+RETURNING *;
 `
 const deleteResourceQuery = `DELETE FROM membership.resources
 WHERE id = $1;`
@@ -119,21 +120,15 @@ func (db *Database) RegisterResource(name string, address string) (*Resource, er
 func (db *Database) UpdateResource(id uint8, name string, address string) (*Resource, error) {
 	r := &Resource{}
 
-	log.Printf("id: %d\n", id)
-	log.Printf("name: %s\n", name)
-	log.Printf("address: %s\n", address)
-
 	// if the resource doesn't already exist let's register it
 	if id == 0 {
 		registered, err := db.RegisterResource(name, address)
 		return registered, err
 	}
 
-	r.Name = name
-	r.Address = address
-
-	row := db.pool.QueryRow(context.Background(), updateResourceQuery, r.ID, r.Name, r.Address).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
+	row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
 	if row == pgx.ErrNoRows {
+		log.Printf("no rows affected %s", row.Error())
 		return r, errors.New("no rows affected")
 	}
 
