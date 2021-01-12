@@ -17,6 +17,7 @@ import "@material/mwc-icon-button";
 import "@material/mwc-menu";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-icon";
+import { router } from './../router';
 
 @customElement("top-bar")
 export class TopBar extends LitElement {
@@ -165,7 +166,9 @@ export class TopBar extends LitElement {
       <mwc-drawer id="drawer" hasHeader type="modal">
         <span slot="title">Navigation</span>
         <div>
+          <a href=${router.urlForPath('/build/users')}> 
           <mwc-list-item>Users </mwc-list-item>
+          </a>
           <mwc-list-item>Members </mwc-list-item>
           <mwc-list-item>Resources </mwc-list-item>
           <mwc-list-item>Status </mwc-list-item>
@@ -186,8 +189,7 @@ export class TopBar extends LitElement {
               slot="actionItems"
             ></mwc-icon-button>
             <mwc-menu id="menu" activatable> ${output} </mwc-menu>
-
-            ${body}
+              ${body}
 
             <mwc-snackbar
               id="loginMessage"

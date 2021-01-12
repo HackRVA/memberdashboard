@@ -37,8 +37,10 @@
     "@material/mwc-icon-button": "^0.20.0",
     "@material/mwc-menu": "^0.20.0",
     "@material/mwc-snackbar": "^0.20.0",
+    "@material/mwc-tab-bar": "^0.20.0",
     "@material/mwc-textfield": "^0.20.0",
     "@material/mwc-top-app-bar-fixed": "^0.20.0",
+    "@vaadin/router": "^1.7.2",
     "lit-element": "^2.4.0",
     "rxjs": "^6.6.3"
   },
