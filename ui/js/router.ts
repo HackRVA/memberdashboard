@@ -9,6 +9,13 @@ const routes: Route[] = [
         },
         children: [
             {
+                path: 'home',
+                component: 'home-page',
+                action: async() => {
+                    await import('./components/home-page')
+                }
+            },
+            {
                 path: 'users',
                 component: 'users-page',
                 action: async() => {

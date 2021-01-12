@@ -12,8 +12,8 @@ import { UserService } from "../service/User";
 @customElement("user-profile")
 export class UserProfile extends LitElement {
   userService: UserService = new UserService();
-  username: String = "";
-  email: String = "";
+  username: string = "";
+  email: string = "";
   static get styles(): CSSResult {
     return css``;
   }

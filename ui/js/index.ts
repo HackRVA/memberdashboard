@@ -2,13 +2,19 @@ import { LitElement, html, TemplateResult, customElement } from "lit-element";
 import '@material/mwc-tab-bar';
 import '@material/mwc-tab';
 import "./components/top-bar";
-import { Router } from '@vaadin/router'
+import { Router, RouterLocation } from '@vaadin/router'
 
 @customElement("member-dashboard")
 export class MemberDashboard extends LitElement {
 
+  onBeforeEnter(location: RouterLocation): void {
+    if (location.pathname === '/build/') {
+      Router.go('/build/home');
+    }
+  }
+
   goToHome(): void {
-    Router.go('/build')
+    Router.go('/build/home')
   }
 
   goToUsers(): void {
@@ -27,6 +33,24 @@ export class MemberDashboard extends LitElement {
     Router.go('/build/status')
   }
 
+  handleProfileClick(): void {
+    return;
+    // const profileBtn:
+    //   | HTMLElement
+    //   | null
+    //   | undefined = this.shadowRoot?.querySelector("#profileBtn");
+    // const menu:
+    //   | (HTMLElement & { anchor: HTMLElement; show: Function })
+    //   | null
+    //   | undefined = this.shadowRoot?.querySelector("#menu");
+
+    // if (!profileBtn) return console.error("profile btn doesn't exist");
+    // if (!menu) return console.error("menu element doesn't exist");
+
+    // menu.anchor = profileBtn;
+    // menu.show();
+  }
+
   render(): TemplateResult {
     
     return html`
@@ -35,7 +59,9 @@ export class MemberDashboard extends LitElement {
         <div slot="title">
           Member Dashboard
         </div>
+        <div slot="actionItems"></div>
         <mwc-icon-button
+          @click=${this.handleProfileClick}
           id="profileBtn"
           icon="person"
           slot="actionItems"
@@ -48,7 +74,6 @@ export class MemberDashboard extends LitElement {
         <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
         <mwc-tab label="Status" @click=${this.goToStatus}></mwc-tab>
       </mwc-tab-bar>
-      <div> HI</div>
 
       <slot> </slot>
     </div>`;
