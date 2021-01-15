@@ -10,7 +10,7 @@
     "build": "npx tsc",
     "postbuild": "npm run copy-files",
     "copy-files": "mkdir -p build && cp -r ./public/* ./build/",
-    "serve": "npm run copy-files && es-dev-server --app-index ./build/index.html --node-resolve --watch --open",
+    "serve": "npm run build && es-dev-server --root-dir dist --app-index index.html --open --compatibility none",
     "rollup": "mkdir -p dist && cp -r ./public/* ./dist/ && rollup -c rollup.config.js",
     "prerollup": "rm tsconfig.tsbuildinfo || true && npm run build",
     "dev": "npx tsc -w & npm run serve",

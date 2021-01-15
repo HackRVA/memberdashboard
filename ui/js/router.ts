@@ -2,7 +2,7 @@ import { Router, Route } from '@vaadin/router';
 
 const routes: Route[] = [
     {
-        path: '/build',
+        path: '/',
         component: 'member-dashboard',
         action: async() => {
             await import ('./index')

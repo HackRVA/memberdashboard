@@ -8,6 +8,7 @@ export default {
     output: {
         file: 'dist/index.js',
         format: 'esm',
+        inlineDynamicImports: true
     },
     onwarn(warning) {
         if (warning.code !== 'THIS_IS_UNDEFINED') {
