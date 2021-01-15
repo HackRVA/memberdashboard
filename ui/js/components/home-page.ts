@@ -21,11 +21,15 @@ import './register-form'
     }
     render(): TemplateResult {
       return html`
-            <card-element>
-                <login-container> 
-                    <register-form />
-                </login-container>
-            </card-element>
+        <div>          
+          <card-element>
+              <login-container> 
+                  <register-form />
+              </login-container>
+          </card-element>
+          <body-element />
+        </div>
+
       `;
     }
   }
