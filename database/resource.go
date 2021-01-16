@@ -25,6 +25,10 @@ const getResourceByNameQuery = `SELECT id, description, device_identifier, updat
 FROM membership.resources
 WHERE description = $1;`
 
+const getResourceByIDQuery = `SELECT id, description, device_identifier, updated_at
+FROM membership.resources
+WHERE id = $1;`
+
 const getResourceACLByResourceIDQuery = `SELECT rfid
 FROM membership.member_resource
 LEFT JOIN membership.members
@@ -36,9 +40,10 @@ FROM membership.member_resource
 WHERE member_id = $1 AND resource_id = $2;`
 const insertMemberResourceQuery = `INSERT INTO membership.member_resource(
 	member_id, resource_id, updated_at)
-	VALUES ($1, $2, NOW());`
+	VALUES ($1, $2, NOW())
+	RETURNING *;`
 const removeMemberResourceQuery = `DELETE FROM membership.member_resource
-WHERE id = $1;`
+WHERE member_id = $1 AND resource_id = $2;`
 
 // getAccessListQuery - get a list of rfid tags that belong to an active member
 // that have access to a specified resource
@@ -81,6 +86,17 @@ func (db *Database) GetResources() []Resource {
 	}
 
 	return resources
+}
+
+// GetResourceByID - lookup a resource by it's name
+func (db *Database) GetResourceByID(ID uint8) (Resource, error) {
+	var r Resource
+	err := db.pool.QueryRow(context.Background(), getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
+	if err != nil {
+		return r, fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	return r, err
 }
 
 // GetResourceByName - lookup a resource by it's name
@@ -148,10 +164,10 @@ func (db *Database) DeleteResource(id uint8) error {
 }
 
 // AddUserToResource - grants a user access to a resource
-func (db *Database) AddUserToResource(email string, resourceName string) (*MemberResourceRelation, error) {
+func (db *Database) AddUserToResource(email string, resourceID uint8) (*MemberResourceRelation, error) {
 	memberResource := &MemberResourceRelation{}
 
-	r, err := db.GetResourceByName(resourceName)
+	r, err := db.GetResourceByID(resourceID)
 	if err != nil {
 		return memberResource, err
 	}
@@ -185,30 +201,34 @@ func (db *Database) GetMemberResourceRelation(m Member, r Resource) (*MemberReso
 }
 
 // RemoveUserFromResource - removes a users access to a resource
-func (db *Database) RemoveUserFromResource(email string, resourceName string) (*MemberResourceRelation, error) {
+func (db *Database) RemoveUserFromResource(email string, resourceID uint8) error {
 	memberResource := &MemberResourceRelation{}
 
-	r, err := db.GetResourceByName(resourceName)
+	r, err := db.GetResourceByID(resourceID)
 	if err != nil {
-		return memberResource, err
+		return err
 	}
 
 	m, err := db.GetMemberByEmail(email)
 	if err != nil {
-		return memberResource, err
+		return err
 	}
 
 	memberResource, err = db.GetMemberResourceRelation(m, r)
 	if err != nil {
-		return memberResource, err
+		return err
 	}
 
-	row := db.pool.QueryRow(context.Background(), removeMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID, &memberResource.LastUpdated)
-	if row == pgx.ErrNoRows {
-		return memberResource, errors.New("no rows affected")
+	commandTag, err := db.pool.Exec(context.Background(), removeMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID)
+	if err != nil {
+		return err
 	}
 
-	return memberResource, nil
+	if commandTag.RowsAffected() != 1 {
+		return errors.New("No row found to delete")
+	}
+
+	return nil
 }
 
 // GetResourceACL returns a list of members that have access to that Resource

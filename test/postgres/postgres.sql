@@ -17,6 +17,9 @@ CREATE TABLE membership.member_resource (
     updated_at timestamp without time zone NOT NULL
 );
 
+ALTER TABLE membership.member_resource
+    ADD CONSTRAINT unique_relationship UNIQUE (member_id, resource_id)
+    INCLUDE (member_id, resource_id);
 
 ALTER TABLE membership.member_resource OWNER TO test;
 

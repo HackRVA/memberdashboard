@@ -22,5 +22,7 @@ export namespace ResourceService {
     id?: number;
     name: string;
     address: string;
+    // email is added to the request when attaching a member to a resource
+    email?: string; 
   }
 }

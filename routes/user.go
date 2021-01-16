@@ -11,7 +11,10 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-const JWTExpireMinutes = 1
+// JWTExpireMinutes - how long the JWT will last
+const JWTExpireMinutes = 60
+
+// CookieName - name of the cookie :3
 const CookieName = "memberserver-token"
 
 type accessDetails struct {

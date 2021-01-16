@@ -43,19 +43,12 @@ func (db *Database) GetMembers() []Member {
 	return members
 }
 
-// GetMemberByEmail - lookup a resource by it's name
-func (db *Database) GetMemberByEmail(memberName string) (Member, error) {
+// GetMemberByEmail - lookup a member by their email address
+func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 	var m Member
-	rows, err := db.pool.Query(context.Background(), getMemberByEmailQuery, memberName)
+	err := db.pool.QueryRow(context.Background(), getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
-	}
-
-	defer rows.Close()
-
-	err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.Level, &m.RFID)
-	if err != nil {
-		return m, fmt.Errorf("getResourceByName failed: %s", err)
 	}
 
 	return m, err
@@ -73,7 +66,7 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 
 	err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.Level, &m.RFID)
 	if err != nil {
-		return m, fmt.Errorf("getResourceByName failed: %s", err)
+		return m, fmt.Errorf("SetRFIDTag failed: %s", err)
 	}
 
 	return m, err

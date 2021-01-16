@@ -9,10 +9,16 @@ import (
 	"net/http"
 )
 
-// API endpoints
-type API struct {
+type resourceAPI struct {
 	db     *database.Database
 	config config.Config
+}
+
+// API endpoints
+type API struct {
+	db       *database.Database
+	config   config.Config
+	resource resourceAPI
 }
 
 func (a *API) info(w http.ResponseWriter, req *http.Request) {
