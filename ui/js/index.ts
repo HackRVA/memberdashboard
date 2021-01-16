@@ -3,6 +3,7 @@ import '@material/mwc-tab-bar';
 import '@material/mwc-tab';
 import "./components/top-bar";
 import "./components/login-form";
+import "./components/user-login-profile";
 import { Router, RouterLocation } from '@vaadin/router'
 import { UserService } from "./service/User";
 
@@ -61,7 +62,7 @@ export class MemberDashboard extends LitElement {
   displayUserProfile(): TemplateResult | undefined {
     if (this.showUserProfile) {
       return html`
-        <body-element />
+        <user-login-profile />
       `
     }
     return html `

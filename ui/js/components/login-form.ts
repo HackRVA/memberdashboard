@@ -16,6 +16,7 @@ export class LoginForm extends LitElement {
       detail: snackbarNotification,
     });
     this.dispatchEvent(event);
+    window.location.reload();
   }
 
   handleUsernameInput(e: KeyboardEvent): void {

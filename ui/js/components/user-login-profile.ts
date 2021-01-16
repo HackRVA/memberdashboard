@@ -7,24 +7,16 @@ import {
     CSSResult,
   } from "lit-element";
 import { UserService } from "../service/User";
-import './card-element';
-import './register-form'
   
-  @customElement("home-page")
-  export class HomePage extends LitElement {
+  @customElement("user-login-profile")
+  export class UserLoginProfile extends LitElement {
+    userService: UserService = new UserService();
     username: string = "";
     email: string = "";
-    userService: UserService = new UserService();
-
     static get styles(): CSSResult {
-      return css`
-        login-container {
-            display: grid;
-            justify-content: center;
-        }
-      `;
+      return css``;
     }
-
+  
     firstUpdated(): void {
       this.handleGetUserProfile();
     }
@@ -45,25 +37,31 @@ import './register-form'
       });
     }
 
-    displayHomePage(): TemplateResult {
-      if (this.username) {
-        return html`       
-        <body-element />
-        `
-      } else {
-        return html`
-        <card-element>
-          <login-container> 
-            <register-form />
-          </login-container>
-        </card-ement>
-        `
-      }
+    handleLogout(): void {
+        this.userService.logout().subscribe({
+            next: (result) => {
+                if ((result as { error: boolean; message: any }).error) {
+                    console.log("error logging out");
+                    return;
+                }
+                
+                console.log("logging out");
+                window.location.reload();
+            },
+        });
     }
 
     render(): TemplateResult {
       return html`
-        ${this.displayHomePage()}
+      <mwc-list-item>
+        <mwc-icon slot="graphic">person</mwc-icon>
+        ${this.username}</mwc-list-item
+        >
+        <mwc-list-item>${this.email}</mwc-list-item>
+        <mwc-list-item @click=${this.handleLogout}>
+        <mwc-button label="Logout"></mwc-button>
+    </mwc-list-item>
       `;
     }
   }
+  
