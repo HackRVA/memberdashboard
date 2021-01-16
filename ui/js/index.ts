@@ -1,7 +1,6 @@
 import { LitElement, html, TemplateResult, customElement } from "lit-element";
 import '@material/mwc-tab-bar';
 import '@material/mwc-tab';
-import "./components/top-bar";
 import "./components/login-form";
 import "./components/user-login-profile";
 import "./router";
