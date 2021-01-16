@@ -38,7 +38,8 @@ func Setup() {
 	r.HandleFunc("/signin", api.Signin)
 	r.HandleFunc("/logout", api.authJWT(api.Logout))
 
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./")))
+	spa := spaHandler{staticPath: ".", indexPath: "index.html"}
+	r.PathPrefix("/").Handler(spa)
 
 	http.Handle("/", r)
 }
