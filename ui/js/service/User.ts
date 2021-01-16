@@ -37,7 +37,7 @@ export namespace UserService {
   }
 
   export interface UserProfile {
-    username: String;
-    email: String;
+    username: string;
+    email: string;
   }
 }

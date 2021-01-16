@@ -1,11 +1,12 @@
-import { LitElement, html, TemplateResult } from "lit-element";
+import { LitElement, html, TemplateResult, customElement } from "lit-element";
 import { UserService } from "../service/User";
 import "@material/mwc-textfield";
 import "@material/mwc-button";
 import "@material/mwc-snackbar";
 import "@material/mwc-list/mwc-list-item";
 
-class LoginForm extends LitElement {
+@customElement('login-form')
+export class LoginForm extends LitElement {
   username: string = "";
   password: string = "";
   userService: UserService = new UserService();
@@ -15,6 +16,7 @@ class LoginForm extends LitElement {
       detail: snackbarNotification,
     });
     this.dispatchEvent(event);
+    window.location.reload();
   }
 
   handleUsernameInput(e: KeyboardEvent): void {
@@ -61,5 +63,3 @@ class LoginForm extends LitElement {
     `;
   }
 }
-
-customElements.define("login-form", LoginForm);

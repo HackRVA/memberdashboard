@@ -1,10 +1,11 @@
-import { LitElement, html, TemplateResult } from "lit-element";
+import { LitElement, html, TemplateResult, customElement } from "lit-element";
 import { UserService } from "../service/User";
 import "@material/mwc-textfield";
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 
-class RegisterForm extends LitElement {
+@customElement('register-form')
+export class RegisterForm extends LitElement {
   username: string = "";
   password: string = "";
   email: string = "";
@@ -71,5 +72,3 @@ class RegisterForm extends LitElement {
     `;
   }
 }
-
-customElements.define("register-form", RegisterForm);
