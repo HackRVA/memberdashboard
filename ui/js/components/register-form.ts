@@ -4,7 +4,7 @@ import "@material/mwc-textfield";
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 
-@customElement('register-form')
+@customElement("register-form")
 export class RegisterForm extends LitElement {
   username: string = "";
   password: string = "";

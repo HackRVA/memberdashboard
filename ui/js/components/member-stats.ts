@@ -1,7 +1,7 @@
 import { LitElement, html, TemplateResult, customElement } from "lit-element";
 import "./card-element";
 
-@customElement('member-stats')
+@customElement("member-stats")
 export class MemberCount extends LitElement {
   memberCount: Number | null = null;
 

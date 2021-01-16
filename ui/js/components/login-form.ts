@@ -5,7 +5,7 @@ import "@material/mwc-button";
 import "@material/mwc-snackbar";
 import "@material/mwc-list/mwc-list-item";
 
-@customElement('login-form')
+@customElement("login-form")
 export class LoginForm extends LitElement {
   username: string = "";
   password: string = "";

@@ -5,11 +5,11 @@ export class UserService extends HTTPService {
   login(
     loginRequest: UserService.LoginRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/signin", loginRequest);
+    return this.post("/edge/signin", loginRequest);
   }
 
   logout(): Observable<Response | { error: boolean; message: any }> {
-    return this.get("/logout");
+    return this.get("/edge/logout");
   }
 
   getUser(): Observable<Response | { error: boolean; message: any }> {
@@ -19,7 +19,7 @@ export class UserService extends HTTPService {
   registerUser(
     registerRequest: UserService.RegisterRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/register", registerRequest);
+    return this.post("/api/register", registerRequest);
   }
 }
 
