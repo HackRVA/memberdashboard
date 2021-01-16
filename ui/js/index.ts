@@ -4,6 +4,7 @@ import '@material/mwc-tab';
 import "./components/top-bar";
 import "./components/login-form";
 import "./components/user-login-profile";
+import "./router";
 import { Router, RouterLocation } from '@vaadin/router'
 import { UserService } from "./service/User";
 
