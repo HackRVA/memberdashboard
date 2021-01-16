@@ -6,7 +6,8 @@ import {
     TemplateResult,
     CSSResult,
   } from "lit-element";
-  
+import "./member-stats";
+
   @customElement("members-page")
   export class MembersPage extends LitElement {
     static get styles(): CSSResult {
@@ -14,8 +15,7 @@ import {
     }
     render(): TemplateResult {
       return html`
-            <h1> Members </h1>
+        <member-stats></member-stats>
       `;
     }
   }
-  

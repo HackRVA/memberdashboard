@@ -6,6 +6,8 @@ import {
     TemplateResult,
     CSSResult,
   } from "lit-element";
+import "./resource-manager";
+
   
   @customElement("resources-page")
   export class ResourcesPage extends LitElement {
@@ -14,8 +16,8 @@ import {
     }
     render(): TemplateResult {
       return html`
-            <h1> Resources </h1>
-      `;
+        <resource-manager> </resource-manager>
+        `;
     }
   }
   
