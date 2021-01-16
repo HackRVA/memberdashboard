@@ -44,7 +44,7 @@ func Setup() {
 	r.HandleFunc("/edge/signin", api.Signin)
 	r.HandleFunc("/edge/logout", api.authJWT(api.Logout))
 
-	spa := spaHandler{staticPath: ".", indexPath: "index.html"}
+	spa := spaHandler{staticPath: "./ui/dist/", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)
 
 	http.Handle("/", r)

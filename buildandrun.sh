@@ -4,10 +4,11 @@
 #  when the ui build folders don't exist
 cd ui
 npm run rollup
+rm tsconfig.tsbuildinfo 2> /dev/null
 cd ..
 
 # point to a config file on the system
 # this directory is mapped as a volume
 export MEMBER_SERVER_CONFIG_FILE='/etc/hackrva/config.json'
 
-docker-compose up -d --build
+docker-compose up --build
