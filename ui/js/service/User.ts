@@ -19,7 +19,7 @@ export class UserService extends HTTPService {
   registerUser(
     registerRequest: UserService.RegisterRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/register", registerRequest);
+    return this.post("/edge/register", registerRequest);
   }
 }
 
