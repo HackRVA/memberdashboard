@@ -32,3 +32,6 @@ the `sample.config.json` can be used as a template for this file.
 ```
 export MEMBER_SERVER_CONFIG_FILE="/etc/hackrva/config.json"
 ```
+
+### Generating Swagger Docs
+Follow instructions in [./docs/README.md](./docs/README.md)

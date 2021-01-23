@@ -13,7 +13,7 @@ const NOT_A_RESOURCE_ID = 0;
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
   resourceService: ResourceService = new ResourceService();
-  resources: Array<{ id: number; address: string; name: string }> | null = null;
+  resources: Array<ResourceService.ResourceRequest> | null = null;
   newAddress: string = "";
   newName: string = "";
   newID: number = 0;
@@ -88,12 +88,14 @@ export class ResourceManager extends LitElement {
 
       <mwc-textfield
         @change=${this.handleNameChange}
+        value=${this.newName}
         id="newResourceName"
         label="name"
         helper="name of device"
       ></mwc-textfield>
       <mwc-textfield
         @change=${this.handleAddressChange}
+        value=${this.newAddress}
         id="newResourceAddress"
         label="address"
         helper="address on the network"

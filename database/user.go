@@ -10,15 +10,27 @@ import (
 
 // Credentials Create a struct that models the structure of a user, both in the request body, and in the DB
 type Credentials struct {
-	Password string `json:"password", db:"password"`
-	Username string `json:"username", db:"username"`
-	Email    string `json:"email", db:"email"`
+	// Password - the user's password
+	// required: true
+	// example: somepassword
+	Password string `json:"password"`
+	// Username - ther users name
+	// required: true
+	// example: username
+	Username string `json:"username"`
+	// Email - the users email
+	// required: false
+	Email string `json:"email"`
 }
 
 // UserResponse - a user object that we can send as json
 type UserResponse struct {
+	// Username - user's name
+	// example: John
 	Username string `json:"username"`
-	Email    string `json:"email"`
+	// Email - user's Email
+	// example: john@example.com
+	Email string `json:"email"`
 }
 
 const registerUserQuery = `INSERT INTO membership.users values ($1, $2, $3)`

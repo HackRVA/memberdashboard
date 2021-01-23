@@ -7,16 +7,30 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/hashicorp/mdns"
 )
 
 // ACLCache - store the acl in memory so we can lookup values
 var ACLCache []string
 
+func lookupResource() {
+	// Make a channel for results and start listening
+
+	qp := mdns.DefaultParams("My awesome service")
+	err := mdns.Query(qp)
+	if err != nil {
+		println(err)
+	}
+}
+
 func main() {
 	r := mux.NewRouter()
 
+	lookupResource()
+
 	// serve up a frontend that we can test rfid values on
 	r.HandleFunc("/", serveFiles)
+	r.HandleFunc("/get-acl", getACL)
 	// have an enpoint that accepts acls
 	r.HandleFunc("/update", updateHandler)
 	// and endpoint to check to see if an rfid value exists
@@ -26,6 +40,7 @@ func main() {
 
 	log.Print("Server listening on http://localhost:3001/")
 	log.Fatal(http.ListenAndServe("0.0.0.0:3001", nil))
+
 }
 
 func serveFiles(w http.ResponseWriter, r *http.Request) {

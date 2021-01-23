@@ -2,8 +2,12 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Config - values of our config
@@ -24,10 +28,16 @@ type Config struct {
 }
 
 // Load in the config file to memory
-func Load(filepath string) (Config, error) {
+func Load() (Config, error) {
 	c := Config{}
 
-	file, err := ioutil.ReadFile(filepath)
+	if len(os.Getenv("MEMBER_SERVER_CONFIG_FILE")) == 0 {
+		err := errors.New("must set the MEMBER_SERVER_CONFIG_FILE environment variable to point to config file")
+		log.Errorf("error loading config: %s", err)
+		return c, err
+	}
+
+	file, err := ioutil.ReadFile(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
 	if err != nil {
 		return c, fmt.Errorf("error reading in the config file: %s", err)
 	}

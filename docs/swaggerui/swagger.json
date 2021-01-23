@@ -1,0 +1,528 @@
+{
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "Member Server API.",
+    "termsOfService": "there are no TOS at this moment, use at your own risk we take no responsibility",
+    "contact": {
+      "name": "Dustin Firebaugh",
+      "url": "https://dustinfirebaugh.com",
+      "email": "dafirebaugh@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    },
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/api/info": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "This will simply respond with some sample info",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "info"
+        ],
+        "summary": "A simple hello world.",
+        "operationId": "info",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/infoResponse"
+          }
+        }
+      }
+    },
+    "/api/resource": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "summary": "Returns a resource.",
+        "operationId": "getResourceRequest",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getResourceResponse"
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "summary": "Updates a resource.",
+        "operationId": "updateResourceRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Resource"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/postResourceResponse"
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "summary": "Deletes a resource.",
+        "operationId": "deleteResourceRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Resource"
+            }
+          }
+        ],
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/resource/member/add": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "summary": "Adds a member to a resource.",
+        "operationId": "resourceAddMemberRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/memberResourceRelation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/addMemberToResourceResponse"
+          }
+        }
+      }
+    },
+    "/api/resource/member/remove": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "summary": "Removes a member from a resource.",
+        "operationId": "resourceRemoveMemberRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/memberResourceRelation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/removeMemberToResourceResponse"
+          }
+        }
+      }
+    },
+    "/api/user": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "user"
+        ],
+        "summary": "Returns the current logged in user.",
+        "operationId": "user",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getUserResponse"
+          }
+        }
+      }
+    },
+    "/edge/login": {
+      "post": {
+        "description": "Login accepts some json with the `username` and `password`\nand returns some json that has the token string",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "loginRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Credentials"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/loginResponse"
+          }
+        }
+      }
+    },
+    "/edge/logout": {
+      "post": {
+        "description": "Logout does not require a request body",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "operationId": "logoutRequest",
+        "responses": {
+          "200": {}
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Credentials": {
+      "description": "Credentials Create a struct that models the structure of a user, both in the request body, and in the DB",
+      "type": "object",
+      "required": [
+        "password",
+        "username"
+      ],
+      "properties": {
+        "email": {
+          "description": "Email - the users email",
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "password": {
+          "description": "Password - the user's password",
+          "type": "string",
+          "x-go-name": "Password",
+          "example": "somepassword"
+        },
+        "username": {
+          "description": "Username - ther users name",
+          "type": "string",
+          "x-go-name": "Username",
+          "example": "username"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
+    "InfinityModifier": {
+      "type": "integer",
+      "format": "int8",
+      "x-go-package": "github.com/jackc/pgtype"
+    },
+    "MemberResourceRelation": {
+      "description": "MemberResourceRelation  - a relationship between resources and members",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "ID"
+        },
+        "lastUpdated": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "memberID": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "ResourceID"
+        },
+        "resourceID": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "MemberID"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
+    "Resource": {
+      "description": "Resource a resource that can accespt an access control list",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "address",
+        "lastUpdated"
+      ],
+      "properties": {
+        "address": {
+          "description": "Address of the Resource. i.e. where it can be found on the network",
+          "type": "string",
+          "x-go-name": "Address",
+          "example": "address"
+        },
+        "id": {
+          "description": "UniqueID of the Resource",
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "ID",
+          "example": 0
+        },
+        "lastUpdated": {
+          "$ref": "#/definitions/Timestamp"
+        },
+        "name": {
+          "description": "Name of the Resource",
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "name"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
+    "Status": {
+      "type": "integer",
+      "format": "uint8",
+      "x-go-package": "github.com/jackc/pgtype"
+    },
+    "Timestamp": {
+      "description": "Timestamp represents the PostgreSQL timestamp type. The PostgreSQL\ntimestamp does not have a time zone. This presents a problem when\ntranslating to and from time.Time which requires a time zone. It is highly\nrecommended to use timestamptz whenever possible. Timestamp methods either\nconvert to UTC or return an error on non-UTC times.",
+      "type": "object",
+      "properties": {
+        "InfinityModifier": {
+          "$ref": "#/definitions/InfinityModifier"
+        },
+        "Status": {
+          "$ref": "#/definitions/Status"
+        },
+        "Time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "x-go-package": "github.com/jackc/pgtype"
+    },
+    "UserResponse": {
+      "description": "UserResponse - a user object that we can send as json",
+      "type": "object",
+      "properties": {
+        "email": {
+          "description": "Email - user's Email",
+          "type": "string",
+          "x-go-name": "Email",
+          "example": "john@example.com"
+        },
+        "username": {
+          "description": "Username - user's name",
+          "type": "string",
+          "x-go-name": "Username",
+          "example": "John"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
+    "memberResourceRelation": {
+      "description": "resource to update or delete a resource",
+      "type": "object",
+      "required": [
+        "name",
+        "address",
+        "email"
+      ],
+      "properties": {
+        "address": {
+          "description": "Address of the Resource. i.e. where it can be found on the network",
+          "type": "string",
+          "x-go-name": "Address",
+          "example": "address"
+        },
+        "email": {
+          "description": "Email - this will be the member's email address\nName of the Resource",
+          "type": "string",
+          "x-go-name": "Email",
+          "example": "email"
+        },
+        "id": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "ID"
+        },
+        "name": {
+          "description": "Name of the Resource",
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "name"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
+    "tokenResponse": {
+      "description": "tokenReponse for json response of signin",
+      "type": "object",
+      "properties": {
+        "token": {
+          "description": "login response to send token string",
+          "type": "string",
+          "x-go-name": "Token",
+          "example": "\"\u003cTOKEN_STRING\u003e\""
+        }
+      },
+      "x-go-package": "memberserver/api"
+    }
+  },
+  "responses": {
+    "addMemberToResourceResponse": {
+      "schema": {
+        "$ref": "#/definitions/MemberResourceRelation"
+      }
+    },
+    "getResourceResponse": {
+      "schema": {
+        "$ref": "#/definitions/Resource"
+      }
+    },
+    "getUserResponse": {
+      "schema": {
+        "$ref": "#/definitions/UserResponse"
+      }
+    },
+    "infoResponse": {
+      "description": "InfoResponse response of info request",
+      "headers": {
+        "message": {
+          "type": "string",
+          "example": "\"{ \"message\": \"hello, world!\"}\"",
+          "description": "Info Message"
+        }
+      }
+    },
+    "loginResponse": {
+      "description": "tokenReponseBody for json response of signin",
+      "schema": {
+        "$ref": "#/definitions/tokenResponse"
+      }
+    },
+    "postResourceResponse": {
+      "schema": {
+        "$ref": "#/definitions/Resource"
+      }
+    },
+    "removeMemberToResourceResponse": {
+      "schema": {
+        "$ref": "#/definitions/MemberResourceRelation"
+      }
+    }
+  },
+  "securityDefinitions": {
+    "bearerAuth": {
+      "description": "Enter your bearer token",
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+}

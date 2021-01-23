@@ -26,6 +26,6 @@ WORKDIR /app
 
 COPY --from=frontend-build /app/dist ./ui/dist/
 COPY --from=backend-build /membership/server .
-
+COPY docs/swaggerui/ ./docs/swaggerui/
 
 ENTRYPOINT [ "./server" ]

@@ -4,13 +4,12 @@ import (
 	"context"
 	"log"
 	"net/smtp"
-	"os"
 	"time"
 
 	"github.com/jordan-wright/email"
 	"github.com/mailgun/mailgun-go/v4"
 
-	"github.com/dfirebaugh/memberserver/config"
+	"memberserver/config"
 )
 
 // Provider has config information for connecting to mailgun
@@ -25,8 +24,7 @@ type Provider struct {
 // Setup attaches config information to mailProvider object
 func Setup() (*Provider, error) {
 	mp := &Provider{}
-	println(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
-	c, err := config.Load(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
+	c, err := config.Load()
 
 	if err != nil {
 		log.Fatal(err)

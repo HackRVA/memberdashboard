@@ -52,11 +52,24 @@ FROM membership.member_resource
 INNER JOIN membership.members on (member_resource.member_id = members.id)
 WHERE resource_id = $1 AND member_tier_id > 1;`
 
-// Resource -- a resource that can accespt an access control list
+// Resource a resource that can accespt an access control list
 type Resource struct {
-	ID          uint8            `json:"id"`
-	Name        string           `json:"name"`
-	Address     string           `json:"address"`
+	// UniqueID of the Resource
+	// required: true
+	// example: 0
+	ID uint8 `json:"id"`
+	// Name of the Resource
+	// required: true
+	// example: name
+	Name string `json:"name"`
+	// Address of the Resource. i.e. where it can be found on the network
+	// required: true
+	// example: address
+	Address string `json:"address"`
+	// Email - this will be the member's email address
+	// Name of the Resource
+	// required: true
+	// example: email
 	LastUpdated pgtype.Timestamp `json:"lastUpdated"`
 }
 

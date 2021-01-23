@@ -7,11 +7,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
-	"github.com/dfirebaugh/memberserver/config"
+	"memberserver/config"
 )
 
 type paypalAccessTokenResponse struct {
@@ -19,7 +18,7 @@ type paypalAccessTokenResponse struct {
 }
 
 func getPaypalPayments(startDate time.Time, endDate time.Time) {
-	c, err := config.Load(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
+	c, err := config.Load()
 
 	if err != nil {
 		fmt.Printf("error with config: %s", err)
@@ -71,7 +70,7 @@ func getPaypalPayments(startDate time.Time, endDate time.Time) {
 // requestPaypalAccessToken - requests a BEARER access token to communicate with the api
 func requestPaypalAccessToken() (string, error) {
 	var token string
-	c, err := config.Load(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
+	c, err := config.Load()
 
 	if err != nil {
 		return token, err

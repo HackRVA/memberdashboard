@@ -5,7 +5,7 @@ export class UserService extends HTTPService {
   login(
     loginRequest: UserService.LoginRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/edge/signin", loginRequest);
+    return this.post("/edge/login", loginRequest);
   }
 
   logout(): Observable<Response | { error: boolean; message: any }> {

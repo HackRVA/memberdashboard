@@ -2,13 +2,15 @@ package resourcemanager
 
 import (
 	"bytes"
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
-	"github.com/dfirebaugh/memberserver/database"
+	"memberserver/database"
 )
 
 // Resource manager keeps the resources up to date by
@@ -66,4 +68,47 @@ func (rm *ResourceManager) UpdateResourceACL(r database.Resource) error {
 	}
 
 	return nil
+}
+
+// ACLResponse Response from a resource that is a hash of the ACL that the
+//   resource has stored
+type ACLResponse struct {
+	ACLHash string `json:"acl"`
+}
+
+// CheckStatus will make an http request to verify that the resource has the correct
+//   and up to date access list
+//   It will do this by hashing the list retrieved from the DB and comparing it
+//   with the hash that the resource reports
+func (rm *ResourceManager) CheckStatus(r database.Resource) error {
+	accessList, err := rm.db.GetResourceACL(r)
+
+	if err != nil {
+		return err
+	}
+
+	// TODO hash the accesslist
+	println(hash(accessList))
+
+	// push the update to the resource
+	resp, err := http.Get(r.Address)
+	if err != nil {
+		fmt.Println("Unable to reach the resource.")
+	} else {
+		body, _ := ioutil.ReadAll(resp.Body)
+
+		// TODO: check that the resource responds with a hash of the list
+		fmt.Println("body=", string(body))
+	}
+	return nil
+}
+
+func hash(accessList []string) string {
+	h := sha1.New()
+	h.Write([]byte(strings.Join(accessList[:], "\n")))
+	bs := h.Sum(nil)
+
+	fmt.Println(strings.Join(accessList[:], "\n"))
+	fmt.Printf("%x\n", bs)
+	return fmt.Sprintf("%x\n", bs)
 }
