@@ -97,6 +97,31 @@
         }
       }
     },
+    "/api/member": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Returns a list of the members in the system.",
+        "operationId": "getMemberList",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getMemberResponse"
+          }
+        }
+      }
+    },
     "/api/resource": {
       "get": {
         "security": [
@@ -324,6 +349,35 @@
       "format": "int8",
       "x-go-package": "github.com/jackc/pgtype"
     },
+    "Member": {
+      "description": "Member -- a member of the makerspace",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "id": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "ID"
+        },
+        "memberLevel": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "Level"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "rfid": {
+          "type": "string",
+          "x-go-name": "RFID"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
     "MemberResourceRelation": {
       "description": "MemberResourceRelation  - a relationship between resources and members",
       "type": "object",
@@ -478,6 +532,14 @@
     "addMemberToResourceResponse": {
       "schema": {
         "$ref": "#/definitions/MemberResourceRelation"
+      }
+    },
+    "getMemberResponse": {
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Member"
+        }
       }
     },
     "getResourceResponse": {
