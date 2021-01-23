@@ -6,7 +6,7 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
-import { UserService } from "../service/User";
+import { UserService } from "../service/user.service";
 
 @customElement("user-login-profile")
 export class UserLoginProfile extends LitElement {

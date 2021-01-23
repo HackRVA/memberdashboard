@@ -1,14 +1,14 @@
 import { LitElement, html, TemplateResult, customElement } from "lit-element";
-import '@material/mwc-tab-bar';
-import '@material/mwc-tab';
+import "@material/mwc-tab-bar";
+import "@material/mwc-tab";
 import "@material/mwc-top-app-bar-fixed";
 import "@material/mwc-icon-button";
 import "@material/mwc-menu";
 import "./components/login-form";
 import "./components/user-login-profile";
 import "./router";
-import { Router, RouterLocation } from '@vaadin/router'
-import { UserService } from "./service/User";
+import { Router, RouterLocation } from "@vaadin/router";
+import { UserService } from "./service/user.service";
 
 @customElement("member-dashboard")
 export class MemberDashboard extends LitElement {
@@ -18,29 +18,29 @@ export class MemberDashboard extends LitElement {
   userService: UserService = new UserService();
 
   onBeforeEnter(location: RouterLocation): void {
-    if (location.pathname === '/') {
-      Router.go('/home');
+    if (location.pathname === "/") {
+      Router.go("/home");
     }
   }
 
   goToHome(): void {
-    Router.go('/home')
+    Router.go("/home");
   }
 
   goToUsers(): void {
-    Router.go('/users')
+    Router.go("/users");
   }
 
   goToMembers(): void {
-    Router.go('/members')
+    Router.go("/members");
   }
 
   goToResources(): void {
-    Router.go('/resources')
+    Router.go("/resources");
   }
 
   goToStatus(): void {
-    Router.go('/status')
+    Router.go("/status");
   }
 
   updated(): void {
@@ -64,13 +64,9 @@ export class MemberDashboard extends LitElement {
 
   displayUserProfile(): TemplateResult | undefined {
     if (this.showUserProfile) {
-      return html`
-        <user-login-profile />
-      `
+      return html` <user-login-profile /> `;
     }
-    return html `
-      <login-form />
-    `
+    return html` <login-form /> `;
   }
 
   handleProfileClick(): void {
@@ -91,13 +87,9 @@ export class MemberDashboard extends LitElement {
   }
 
   render(): TemplateResult {
-    
-    return html`
-    <div>
+    return html` <div>
       <mwc-top-app-bar-fixed centerTitle>
-        <div slot="title">
-          Member Dashboard
-        </div>
+        <div slot="title">Member Dashboard</div>
         <div slot="actionItems"></div>
         <mwc-icon-button
           @click=${this.handleProfileClick}
@@ -105,7 +97,9 @@ export class MemberDashboard extends LitElement {
           icon="person"
           slot="actionItems"
         ></mwc-icon-button>
-        <mwc-menu id="menu" activatable> ${this.displayUserProfile()} </mwc-menu>
+        <mwc-menu id="menu" activatable>
+          ${this.displayUserProfile()}
+        </mwc-menu>
       </mwc-top-app-bar-fixed>
       <mwc-tab-bar>
         <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>

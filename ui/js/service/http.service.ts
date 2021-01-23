@@ -6,7 +6,12 @@ export class HTTPService {
   get(
     endpoint: string
   ): Observable<Response | any | { error: boolean; message: any }> {
-    return fromFetch(endpoint).pipe(
+    return fromFetch(endpoint, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+    }).pipe(
       switchMap((response) => {
         if (response.ok) {
           // OK return data
