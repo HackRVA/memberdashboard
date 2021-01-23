@@ -5,7 +5,7 @@ module.exports = {
   middlewares: [
     proxy('/edge', {
       target: 'http://localhost:3000',
-      rewrite: path => path.replace(/\/api/, '')
+      rewrite: path => path.replace(/\/edge/, '')
     }),
   ],
 };
