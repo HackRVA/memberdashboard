@@ -2,8 +2,15 @@ package api
 
 import (
 	"encoding/json"
+	"memberserver/database"
 	"net/http"
 )
+
+// swagger:response getMemberResponse
+type memberResponseBody struct {
+	// in: body
+	Body []database.Member
+}
 
 func (a *API) getTiers(w http.ResponseWriter, req *http.Request) {
 	tiers := a.db.GetMemberTiers()

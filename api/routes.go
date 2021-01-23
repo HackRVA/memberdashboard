@@ -43,6 +43,21 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getUserResponse
 	rr.HandleFunc("/user", api.getUser)
+	// swagger:route GET /api/member member getMemberList
+	//
+	// Returns a list of the members in the system.
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: getMemberResponse
+	rr.HandleFunc("/user", api.getMembers)
 	// swagger:route GET /api/resource resource getResourceRequest
 	//
 	// Returns a resource.
