@@ -45,6 +45,58 @@
         }
       }
     },
+    "/api/login": {
+      "post": {
+        "description": "Login accepts some json with the `username` and `password`\nand returns some json that has the token string",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "loginRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Credentials"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/loginResponse"
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "description": "Logout does not require a request body",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "operationId": "logoutRequest",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
     "/api/resource": {
       "get": {
         "security": [
@@ -234,58 +286,6 @@
           "200": {
             "$ref": "#/responses/getUserResponse"
           }
-        }
-      }
-    },
-    "/edge/login": {
-      "post": {
-        "description": "Login accepts some json with the `username` and `password`\nand returns some json that has the token string",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http"
-        ],
-        "tags": [
-          "auth"
-        ],
-        "summary": "Login",
-        "operationId": "loginRequest",
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Credentials"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/loginResponse"
-          }
-        }
-      }
-    },
-    "/edge/logout": {
-      "post": {
-        "description": "Logout does not require a request body",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http"
-        ],
-        "tags": [
-          "auth"
-        ],
-        "summary": "Logout",
-        "operationId": "logoutRequest",
-        "responses": {
-          "200": {}
         }
       }
     }

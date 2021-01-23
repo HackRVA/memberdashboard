@@ -152,7 +152,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//       200: infoResponse
 	rr.HandleFunc("/info", api.Info)
 
-	// swagger:route POST /edge/login auth loginRequest
+	// swagger:route POST /api/login auth loginRequest
 	//
 	// Login
 	//
@@ -169,8 +169,8 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: loginResponse
-	r.HandleFunc("/edge/login", api.authenticate).Methods(http.MethodPost)
-	// swagger:route POST /edge/logout auth logoutRequest
+	r.HandleFunc("/api/login", api.authenticate).Methods(http.MethodPost)
+	// swagger:route POST /api/logout auth logoutRequest
 	//
 	// Logout
 	//
@@ -184,7 +184,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200:
-	r.HandleFunc("/edge/logout", api.logout)
-	r.HandleFunc("/edge/register", api.signup)
+	r.HandleFunc("/api/logout", api.logout)
+	r.HandleFunc("/api/register", api.signup)
 	return rr
 }
