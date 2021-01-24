@@ -34,6 +34,9 @@ export class HTTPService {
   ): Observable<Response | any | { error: boolean; message: any }> {
     return fromFetch(endpoint, {
       method: "POST",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
       body: JSON.stringify(options),
     }).pipe(
       switchMap((response) => {
@@ -58,6 +61,9 @@ export class HTTPService {
   ): Observable<Response | any | { error: boolean; message: any }> {
     return fromFetch(endpoint, {
       method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
       body: JSON.stringify(options),
     }).pipe(
       switchMap((response) => {

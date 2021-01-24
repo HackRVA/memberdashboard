@@ -21,8 +21,6 @@ ALTER TABLE membership.member_resource
     ADD CONSTRAINT unique_relationship UNIQUE (member_id, resource_id)
     INCLUDE (member_id, resource_id);
 
-ALTER TABLE membership.member_resource OWNER TO test;
-
 --
 -- Name: member_resource_id_seq; Type: SEQUENCE; Schema: membership; Owner: test
 --
@@ -34,9 +32,6 @@ CREATE SEQUENCE membership.member_resource_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER TABLE membership.member_resource_id_seq OWNER TO test;
 
 --
 -- Name: member_resource_id_seq; Type: SEQUENCE OWNED BY; Schema: membership; Owner: test
@@ -61,9 +56,6 @@ CREATE TABLE membership.member_tiers (
     description text NOT NULL
 );
 
-
-ALTER TABLE membership.member_tiers OWNER TO test;
-
 --
 -- Name: member_tiers_id_seq; Type: SEQUENCE; Schema: membership; Owner: test
 --
@@ -76,8 +68,6 @@ CREATE SEQUENCE membership.member_tiers_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE membership.member_tiers_id_seq OWNER TO test;
 
 --
 -- Name: member_tiers_id_seq; Type: SEQUENCE OWNED BY; Schema: membership; Owner: test
@@ -243,4 +233,4 @@ ALTER TABLE ONLY membership.members
 --
 
 ALTER TABLE ONLY membership.member_resource
-    ADD CONSTRAINT resource FOREIGN KEY (resource_id) REFERENCES membership.resources(id);
+    ADD CONSTRAINT resource FOREIGN KEY (resource_id) REFERENCES membership.resources(id) ON DELETE CASCADE;
