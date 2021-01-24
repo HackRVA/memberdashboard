@@ -1,3 +1,4 @@
+"id","name","email","rfid","member_tier_id"
 1,bill,billemail,rfid0,2
 2,bob,bobemail,rfid1,2
 3,john, johnemail, rfid131, 2
