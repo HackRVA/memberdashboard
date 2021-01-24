@@ -9,15 +9,10 @@ import (
 
 // resource to update or delete a resource
 type memberResourceRelation struct {
-	ID uint8 `json:"id"`
-	// Name of the Resource
+	// ID of the Resource
 	// required: true
-	// example: name
-	Name string `json:"name"`
-	// Address of the Resource. i.e. where it can be found on the network
-	// required: true
-	// example: address
-	Address string `json:"address"`
+	// example: 0
+	ID uint8 `json:"resourceID"`
 	// Email - this will be the member's email address
 	// Name of the Resource
 	// required: true

@@ -415,12 +415,7 @@
           "x-go-name": "Name"
         },
         "resources": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "uint64"
-          },
-          "x-go-name": "Resources"
+          "$ref": "#/definitions/ResourceMap"
         },
         "rfid": {
           "type": "string",
@@ -489,6 +484,13 @@
       },
       "x-go-package": "memberserver/database"
     },
+    "ResourceMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      },
+      "x-go-package": "memberserver/database"
+    },
     "Status": {
       "type": "integer",
       "format": "uint8",
@@ -550,33 +552,22 @@
       "description": "resource to update or delete a resource",
       "type": "object",
       "required": [
-        "name",
-        "address",
+        "resourceID",
         "email"
       ],
       "properties": {
-        "address": {
-          "description": "Address of the Resource. i.e. where it can be found on the network",
-          "type": "string",
-          "x-go-name": "Address",
-          "example": "address"
-        },
         "email": {
           "description": "Email - this will be the member's email address\nName of the Resource",
           "type": "string",
           "x-go-name": "Email",
           "example": "email"
         },
-        "id": {
+        "resourceID": {
+          "description": "ID of the Resource",
           "type": "integer",
           "format": "uint8",
-          "x-go-name": "ID"
-        },
-        "name": {
-          "description": "Name of the Resource",
-          "type": "string",
-          "x-go-name": "Name",
-          "example": "name"
+          "x-go-name": "ID",
+          "example": 0
         }
       },
       "x-go-package": "memberserver/api"
