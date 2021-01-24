@@ -7,7 +7,7 @@ import {
   CSSResult,
 } from "lit-element";
 import "./card-element";
-import { UserService } from "../service/User";
+import { UserService } from "../service/user.service";
 
 @customElement("user-profile")
 export class UserProfile extends LitElement {

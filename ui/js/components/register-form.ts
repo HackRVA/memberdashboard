@@ -1,5 +1,5 @@
 import { LitElement, html, TemplateResult, customElement } from "lit-element";
-import { UserService } from "../service/User";
+import { UserService } from "../service/user.service";
 import "@material/mwc-textfield";
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";

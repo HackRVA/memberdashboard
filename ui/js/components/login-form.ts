@@ -1,5 +1,5 @@
 import { LitElement, html, TemplateResult, customElement } from "lit-element";
-import { UserService } from "../service/User";
+import { UserService } from "../service/user.service";
 import "@material/mwc-textfield";
 import "@material/mwc-button";
 import "@material/mwc-snackbar";
@@ -16,7 +16,7 @@ export class LoginForm extends LitElement {
       detail: snackbarNotification,
     });
     this.dispatchEvent(event);
-    window.location.reload();
+    // window.location.reload();
   }
 
   handleUsernameInput(e: KeyboardEvent): void {
@@ -33,12 +33,16 @@ export class LoginForm extends LitElement {
       password: this.password,
     };
     this.userService.login(opts).subscribe({
-      next: (result) => {
+      next: (result: any) => {
         if ((result as { error: boolean; message: any }).error) {
-          this.onLoginComplete("Some error logging in");
+          return console.error(
+            (result as { error: boolean; message: any }).message
+          );
         }
+        const { token } = result as UserService.Jwt;
+        localStorage.setItem("jwt", token);
+        window.location.reload();
       },
-      complete: () => this.onLoginComplete("Success!"),
     });
   }
 

@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { HTTPService } from "./HTTPService";
+import { HTTPService } from "./http.service";
 
 export class ResourceService extends HTTPService {
   getResources(): Observable<Response | { error: boolean; message: any }> {
@@ -23,6 +23,6 @@ export namespace ResourceService {
     name: string;
     address: string;
     // email is added to the request when attaching a member to a resource
-    email?: string; 
+    email?: string;
   }
 }

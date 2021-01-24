@@ -6,7 +6,7 @@ import "@material/mwc-textfield";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list";
 import "@material/mwc-checkbox";
-import { ResourceService } from "../service/Resource";
+import { ResourceService } from "../service/resource.service";
 
 const NOT_A_RESOURCE_ID = 0;
 

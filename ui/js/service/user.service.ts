@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { HTTPService } from "./HTTPService";
+import { HTTPService } from "./http.service";
 
 export class UserService extends HTTPService {
   login(
@@ -34,6 +34,10 @@ export namespace UserService {
     username: string;
     password: string;
     updateCallback?: Function;
+  }
+
+  export interface Jwt {
+    token: string;
   }
 
   export interface UserProfile {
