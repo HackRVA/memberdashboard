@@ -57,7 +57,22 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getMemberResponse
-	rr.HandleFunc("/user", api.getMembers)
+	rr.HandleFunc("/member", api.getMembers)
+	// swagger:route GET /api/tier member getTiers
+	//
+	// Returns a list the member tiers.
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: getTierResponse
+	rr.HandleFunc("/tier", api.getTiers)
 	// swagger:route GET /api/resource resource getResourceRequest
 	//
 	// Returns a resource.
@@ -146,9 +161,6 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: removeMemberToResourceResponse
 	rr.HandleFunc("/resource/member/remove", api.resource.removeMember).Methods(http.MethodDelete)
-	rr.HandleFunc("/tier", api.getTiers)
-	rr.HandleFunc("/member", api.getMembers)
-	rr.HandleFunc("/user", api.getUser)
 	// swagger:route GET /api/info info info
 	//
 	// A simple hello world.
@@ -166,7 +178,6 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: infoResponse
 	rr.HandleFunc("/info", api.Info)
-
 	// swagger:route POST /api/login auth loginRequest
 	//
 	// Login
@@ -200,6 +211,18 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200:
 	r.HandleFunc("/api/logout", api.logout)
+	// swagger:route POST /api/register auth registerRequest
+	//
+	// Register a new user of the app
+	//
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http
+	//
+	//     Responses:
+	//       200:
 	r.HandleFunc("/api/register", api.signup)
 	return rr
 }

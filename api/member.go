@@ -12,6 +12,12 @@ type memberResponseBody struct {
 	Body []database.Member
 }
 
+// swagger:response getTierResponse
+type getTierResponse struct {
+	// in: body
+	Body []database.Tier
+}
+
 func (a *API) getTiers(w http.ResponseWriter, req *http.Request) {
 	tiers := a.db.GetMemberTiers()
 

@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
@@ -177,8 +178,8 @@ func (db *Database) DeleteResource(id uint8) error {
 }
 
 // AddUserToResource - grants a user access to a resource
-func (db *Database) AddUserToResource(email string, resourceID uint8) (*MemberResourceRelation, error) {
-	memberResource := &MemberResourceRelation{}
+func (db *Database) AddUserToResource(email string, resourceID uint8) (MemberResourceRelation, error) {
+	memberResource := MemberResourceRelation{}
 
 	r, err := db.GetResourceByID(resourceID)
 	if err != nil {
@@ -202,8 +203,8 @@ func (db *Database) AddUserToResource(email string, resourceID uint8) (*MemberRe
 }
 
 // GetMemberResourceRelation retrieves a relation of a member and a resource
-func (db *Database) GetMemberResourceRelation(m Member, r Resource) (*MemberResourceRelation, error) {
-	mr := &MemberResourceRelation{}
+func (db *Database) GetMemberResourceRelation(m Member, r Resource) (MemberResourceRelation, error) {
+	mr := MemberResourceRelation{}
 
 	row := db.pool.QueryRow(context.Background(), getMemberResourceQuery, m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID, &mr.LastUpdated)
 	if row == pgx.ErrNoRows {
@@ -215,7 +216,7 @@ func (db *Database) GetMemberResourceRelation(m Member, r Resource) (*MemberReso
 
 // RemoveUserFromResource - removes a users access to a resource
 func (db *Database) RemoveUserFromResource(email string, resourceID uint8) error {
-	memberResource := &MemberResourceRelation{}
+	memberResource := MemberResourceRelation{}
 
 	r, err := db.GetResourceByID(resourceID)
 	if err != nil {

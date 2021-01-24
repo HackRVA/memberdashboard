@@ -122,6 +122,24 @@
         }
       }
     },
+    "/api/register": {
+      "post": {
+        "description": "Register a new user of the app",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "operationId": "registerRequest",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
     "/api/resource": {
       "get": {
         "security": [
@@ -289,6 +307,31 @@
         }
       }
     },
+    "/api/tier": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Returns a list the member tiers.",
+        "operationId": "getTiers",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getTierResponse"
+          }
+        }
+      }
+    },
     "/api/user": {
       "get": {
         "security": [
@@ -371,6 +414,14 @@
           "type": "string",
           "x-go-name": "Name"
         },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint64"
+          },
+          "x-go-name": "Resources"
+        },
         "rfid": {
           "type": "string",
           "x-go-name": "RFID"
@@ -442,6 +493,22 @@
       "type": "integer",
       "format": "uint8",
       "x-go-package": "github.com/jackc/pgtype"
+    },
+    "Tier": {
+      "description": "Tier - level of membership",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "ID"
+        },
+        "level": {
+          "type": "string",
+          "x-go-name": "Name"
+        }
+      },
+      "x-go-package": "memberserver/database"
     },
     "Timestamp": {
       "description": "Timestamp represents the PostgreSQL timestamp type. The PostgreSQL\ntimestamp does not have a time zone. This presents a problem when\ntranslating to and from time.Time which requires a time zone. It is highly\nrecommended to use timestamptz whenever possible. Timestamp methods either\nconvert to UTC or return an error on non-UTC times.",
@@ -545,6 +612,14 @@
     "getResourceResponse": {
       "schema": {
         "$ref": "#/definitions/Resource"
+      }
+    },
+    "getTierResponse": {
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Tier"
+        }
       }
     },
     "getUserResponse": {

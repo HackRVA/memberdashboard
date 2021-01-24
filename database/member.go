@@ -3,10 +3,20 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 )
 
-const getMemberQuery = `SELECT id, name, email, rfid, member_tier_id FROM membership.members;`
+const getMemberQuery = `SELECT id, name, email, rfid, member_tier_id,
+ARRAY(
+SELECT resource_id
+FROM membership.member_resource
+LEFT JOIN membership.resources 
+ON membership.resources.id = membership.member_resource.resource_id
+WHERE member_id = membership.members.id
+) as resources
+FROM membership.members;
+`
 const getMemberByEmailQuery = `SELECT id, name, email, rfid, member_tier_id
 FROM membership.members
 WHERE email = $1;`
@@ -16,11 +26,12 @@ WHERE email = $1;`
 
 // Member -- a member of the makerspace
 type Member struct {
-	ID    uint8  `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	RFID  string `json:"rfid"`
-	Level uint8  `json:"memberLevel"`
+	ID           uint8  `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	RFID         string `json:"rfid"`
+	Level        uint8  `json:"memberLevel"`
+	ResourcesIDs []uint `json:"resourceIDs"`
 }
 
 // GetMembers - gets the status from DB
@@ -36,7 +47,7 @@ func (db *Database) GetMembers() []Member {
 
 	for rows.Next() {
 		var m Member
-		err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level)
+		err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &m.ResourcesIDs)
 		members = append(members, m)
 	}
 
