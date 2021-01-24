@@ -1,3 +1,4 @@
+import { TabIndex } from "./enums";
 import { LitElement, html, TemplateResult, customElement } from "lit-element";
 import "@material/mwc-tab-bar";
 import "@material/mwc-tab";
@@ -69,6 +70,23 @@ export class MemberDashboard extends LitElement {
     return html` <login-form /> `;
   }
 
+  getTabIndex(pathName: string): number {
+    switch (pathName) {
+      case "/home":
+        return TabIndex.home;
+      case "/users":
+        return TabIndex.users;
+      case "/members":
+        return TabIndex.members;
+      case "/resources":
+        return TabIndex.resources;
+      case "/status":
+        return TabIndex.status;
+      default:
+        return -1;
+    }
+  }
+
   handleProfileClick(): void {
     const profileBtn:
       | HTMLElement
@@ -90,7 +108,7 @@ export class MemberDashboard extends LitElement {
     return html` <div>
       <mwc-top-app-bar-fixed centerTitle>
         <div slot="title">Member Dashboard</div>
-        <div slot="actionItems"></div>
+        <div slot="actionItems">${this.username}</div>
         <mwc-icon-button
           @click=${this.handleProfileClick}
           id="profileBtn"
@@ -101,7 +119,7 @@ export class MemberDashboard extends LitElement {
           ${this.displayUserProfile()}
         </mwc-menu>
       </mwc-top-app-bar-fixed>
-      <mwc-tab-bar>
+      <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
         <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>
         <mwc-tab label="Users" @click=${this.goToUsers}></mwc-tab>
         <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>

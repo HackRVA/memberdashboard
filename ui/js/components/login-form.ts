@@ -32,14 +32,18 @@ export class LoginForm extends LitElement {
       username: this.username,
       password: this.password,
     };
-    this.userService
-      .login(opts)
-      .subscribe((response: UserService.ILoginResponse) => {
-        if (response.token) {
-          localStorage.setItem("jwt", response.token);
-          window.location.reload();
+    this.userService.login(opts).subscribe({
+      next: (result: any) => {
+        if ((result as { error: boolean; message: any }).error) {
+          return console.error(
+            (result as { error: boolean; message: any }).message
+          );
         }
-      });
+        const { token } = result as UserService.Jwt;
+        localStorage.setItem("jwt", token);
+        window.location.reload();
+      },
+    });
   }
 
   render(): TemplateResult {

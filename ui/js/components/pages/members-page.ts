@@ -6,7 +6,7 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
-import "./../member-stats";
+import "../member-list";
 
 @customElement("members-page")
 export class MembersPage extends LitElement {
@@ -14,10 +14,7 @@ export class MembersPage extends LitElement {
     return css``;
   }
 
-  firstUpdated(): void {
-    console.log("hi");
-  }
   render(): TemplateResult {
-    return html` <member-stats></member-stats> `;
+    return html` <member-list></member-list> `;
   }
 }

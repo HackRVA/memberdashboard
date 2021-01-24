@@ -4,7 +4,7 @@ import { HTTPService } from "./http.service";
 export class UserService extends HTTPService {
   login(
     loginRequest: UserService.LoginRequest
-  ): Observable<UserService.ILoginResponse> {
+  ): Observable<Response | { error: boolean; message: any }> {
     return this.post("/edge/api/login", loginRequest);
   }
 
@@ -36,7 +36,7 @@ export namespace UserService {
     updateCallback?: Function;
   }
 
-  export interface ILoginResponse {
+  export interface Jwt {
     token: string;
   }
 
