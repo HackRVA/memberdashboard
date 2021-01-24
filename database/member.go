@@ -26,8 +26,8 @@ WHERE email = $1;`
 
 // MemberResource a resource that a member belongs to
 type MemberResource struct {
-	ResourceID uint   `json:"resource_id,omitempty"`
-	Name       string `json:"name,omitempty"`
+	ResourceID uint   `json:"resource_id"`
+	Name       string `json:"name"`
 }
 
 // Member -- a member of the makerspace
