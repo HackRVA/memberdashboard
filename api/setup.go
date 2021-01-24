@@ -1,10 +1,7 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 
@@ -25,12 +22,8 @@ type resourceAPI struct {
 }
 
 // Setup - setup us up the routes
-func Setup() *mux.Router {
+func Setup(db *database.Database) *mux.Router {
 	c, _ := config.Load()
-	db, err := database.Setup()
-	if err != nil {
-		log.Fatal(fmt.Errorf("error setting up db: %s", err))
-	}
 
 	api := API{
 		config: c,

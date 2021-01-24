@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"memberserver/api"
+	"memberserver/database"
 )
 
 func init() {
@@ -14,7 +15,12 @@ func init() {
 }
 
 func main() {
-	router := api.Setup()
+	db, err := database.Setup()
+	if err != nil {
+		log.Errorf("error setting up db: %s", err)
+	}
+
+	router := api.Setup(db)
 
 	srv := &http.Server{
 		Handler: router,
