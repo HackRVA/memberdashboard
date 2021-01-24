@@ -14,7 +14,8 @@ import (
 const getResourceQuery = `SELECT id, description, device_identifier, updated_at FROM membership.resources;`
 const insertResourceQuery = `INSERT INTO membership.resources(
 	description, device_identifier, updated_at)
-	VALUES ($1, $2, NOW());`
+	VALUES ($1, $2, NOW())
+	RETURNING *;`
 const updateResourceQuery = `UPDATE membership.resources
 SET description=$2, device_identifier=$3, updated_at=NOW()
 WHERE id=$1
@@ -76,6 +77,18 @@ type ResourceRequest struct {
 	// required: true
 	// example: 0
 	ID uint8 `json:"id"`
+	// Name of the Resource
+	// required: true
+	// example: name
+	Name string `json:"name"`
+	// Address of the Resource. i.e. where it can be found on the network
+	// required: true
+	// example: address
+	Address string `json:"address"`
+}
+
+// Resource a resource that can accespt an access control list
+type RegisterResourceRequest struct {
 	// Name of the Resource
 	// required: true
 	// example: name
@@ -150,9 +163,9 @@ func (db *Database) RegisterResource(name string, address string) (*Resource, er
 	r.Name = name
 	r.Address = address
 
-	row := db.pool.QueryRow(context.Background(), insertResourceQuery, r.Name, r.Address).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
-	if row == pgx.ErrNoRows {
-		return r, errors.New("no rows affected")
+	_, err := db.pool.Exec(context.Background(), insertResourceQuery, r.Name, r.Address)
+	if err != nil {
+		return r, fmt.Errorf("error inserting resource: %s", err.Error())
 	}
 
 	return r, nil

@@ -307,6 +307,43 @@
         }
       }
     },
+    "/api/resource/register": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "summary": "Updates a resource.",
+        "operationId": "registerResourceRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegisterResourceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/postResourceResponse"
+          }
+        }
+      }
+    },
     "/api/tier": {
       "get": {
         "security": [
@@ -465,6 +502,29 @@
           "type": "integer",
           "format": "uint8",
           "x-go-name": "MemberID"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
+    "RegisterResourceRequest": {
+      "description": "Resource a resource that can accespt an access control list",
+      "type": "object",
+      "required": [
+        "name",
+        "address"
+      ],
+      "properties": {
+        "address": {
+          "description": "Address of the Resource. i.e. where it can be found on the network",
+          "type": "string",
+          "x-go-name": "Address",
+          "example": "address"
+        },
+        "name": {
+          "description": "Name of the Resource",
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "name"
         }
       },
       "x-go-package": "memberserver/database"

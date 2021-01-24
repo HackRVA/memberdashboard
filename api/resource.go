@@ -26,6 +26,12 @@ type updateResourceRequest struct {
 	Body database.ResourceRequest
 }
 
+// swagger:parameters registerResourceRequest
+type registerResourceRequest struct {
+	// in: body
+	Body database.RegisterResourceRequest
+}
+
 // swagger:parameters deleteResourceRequest
 type deleteResourceRequest struct {
 	// in: body
@@ -169,4 +175,18 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 	// w.Header().Set("Content-Type", "application/json")
 	// j, _ := json.Marshal(r)
 	// w.Write(j)
+}
+
+func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
+	var register database.RegisterResourceRequest
+
+	r, err := rs.db.RegisterResource(register.Name, register.Address)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(r)
+	w.Write(j)
 }
