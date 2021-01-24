@@ -39,13 +39,12 @@ export class UserLoginProfile extends LitElement {
 
   handleLogout(): void {
     this.userService.logout().subscribe({
-      next: (result) => {
+      next: (result: any) => {
         if ((result as { error: boolean; message: any }).error) {
           console.log("error logging out");
           return;
         }
-
-        console.log("logging out");
+        localStorage.removeItem("jwt");
         window.location.reload();
       },
     });
