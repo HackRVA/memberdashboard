@@ -189,7 +189,7 @@
             "name": "Body",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/Resource"
+              "$ref": "#/definitions/ResourceRequest"
             }
           }
         ],
@@ -436,7 +436,7 @@
           "type": "string",
           "x-go-name": "Name"
         },
-        "resource_id": {
+        "resourceID": {
           "type": "integer",
           "format": "uint64",
           "x-go-name": "ResourceID"
@@ -475,8 +475,7 @@
       "required": [
         "id",
         "name",
-        "address",
-        "lastUpdated"
+        "address"
       ],
       "properties": {
         "address": {
@@ -494,6 +493,37 @@
         },
         "lastUpdated": {
           "$ref": "#/definitions/Timestamp"
+        },
+        "name": {
+          "description": "Name of the Resource",
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "name"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
+    "ResourceRequest": {
+      "description": "Resource a resource that can accespt an access control list",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "address"
+      ],
+      "properties": {
+        "address": {
+          "description": "Address of the Resource. i.e. where it can be found on the network",
+          "type": "string",
+          "x-go-name": "Address",
+          "example": "address"
+        },
+        "id": {
+          "description": "UniqueID of the Resource",
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "ID",
+          "example": 0
         },
         "name": {
           "description": "Name of the Resource",

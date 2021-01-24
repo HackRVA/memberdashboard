@@ -23,7 +23,7 @@ type memberResourceRelation struct {
 // swagger:parameters updateResourceRequest
 type updateResourceRequest struct {
 	// in: body
-	Body database.Resource
+	Body database.ResourceRequest
 }
 
 // swagger:parameters deleteResourceRequest

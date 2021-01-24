@@ -66,12 +66,24 @@ type Resource struct {
 	// Address of the Resource. i.e. where it can be found on the network
 	// required: true
 	// example: address
-	Address string `json:"address"`
-	// Email - this will be the member's email address
+	Address     string           `json:"address"`
+	LastUpdated pgtype.Timestamp `json:"lastUpdated"`
+}
+
+// Resource a resource that can accespt an access control list
+type ResourceRequest struct {
+	// UniqueID of the Resource
+	// required: true
+	// example: 0
+	ID uint8 `json:"id"`
 	// Name of the Resource
 	// required: true
-	// example: email
-	LastUpdated pgtype.Timestamp `json:"lastUpdated"`
+	// example: name
+	Name string `json:"name"`
+	// Address of the Resource. i.e. where it can be found on the network
+	// required: true
+	// example: address
+	Address string `json:"address"`
 }
 
 // MemberResourceRelation  - a relationship between resources and members

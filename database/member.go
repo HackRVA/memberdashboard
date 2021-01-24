@@ -26,7 +26,7 @@ WHERE email = $1;`
 
 // MemberResource a resource that a member belongs to
 type MemberResource struct {
-	ResourceID uint   `json:"resource_id"`
+	ResourceID uint   `json:"resourceID"`
 	Name       string `json:"name"`
 }
 
