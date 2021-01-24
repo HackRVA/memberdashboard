@@ -103,7 +103,7 @@ func (db *Database) GetResources() []Resource {
 }
 
 // GetResourceByID - lookup a resource by it's name
-func (db *Database) GetResourceByID(ID uint8) (Resource, error) {
+func (db *Database) GetResourceByID(ID uint) (Resource, error) {
 	var r Resource
 	err := db.pool.QueryRow(context.Background(), getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
 	if err != nil {
@@ -178,7 +178,7 @@ func (db *Database) DeleteResource(id uint8) error {
 }
 
 // AddUserToResource - grants a user access to a resource
-func (db *Database) AddUserToResource(email string, resourceID uint8) (MemberResourceRelation, error) {
+func (db *Database) AddUserToResource(email string, resourceID uint) (MemberResourceRelation, error) {
 	memberResource := MemberResourceRelation{}
 
 	r, err := db.GetResourceByID(resourceID)
@@ -215,7 +215,7 @@ func (db *Database) GetMemberResourceRelation(m Member, r Resource) (MemberResou
 }
 
 // RemoveUserFromResource - removes a users access to a resource
-func (db *Database) RemoveUserFromResource(email string, resourceID uint8) error {
+func (db *Database) RemoveUserFromResource(email string, resourceID uint) error {
 	memberResource := MemberResourceRelation{}
 
 	r, err := db.GetResourceByID(resourceID)

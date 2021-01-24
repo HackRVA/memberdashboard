@@ -24,14 +24,20 @@ const setMemberRFIDTag = `UPDATE membership.members
 rfid=$2
 WHERE email = $1;`
 
+// MemberResource a resource that a member belongs to
+type MemberResource struct {
+	ResourceID uint   `json:"resource_id,omitempty"`
+	Name       string `json:"name,omitempty"`
+}
+
 // Member -- a member of the makerspace
 type Member struct {
-	ID           uint8  `json:"id"`
-	Name         string `json:"name"`
-	Email        string `json:"email"`
-	RFID         string `json:"rfid"`
-	Level        uint8  `json:"memberLevel"`
-	ResourcesIDs []uint `json:"resourceIDs"`
+	ID        uint8            `json:"id"`
+	Name      string           `json:"name"`
+	Email     string           `json:"email"`
+	RFID      string           `json:"rfid"`
+	Level     uint8            `json:"memberLevel"`
+	Resources []MemberResource `json:"resources"`
 }
 
 // GetMembers - gets the status from DB
@@ -46,8 +52,24 @@ func (db *Database) GetMembers() []Member {
 	var members []Member
 
 	for rows.Next() {
+		var rIDs []uint
 		var m Member
-		err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &m.ResourcesIDs)
+		err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
+		if err != nil {
+			log.Errorf("error scanning row: %s", err)
+		}
+
+		// having issues with unmarshalling a jsonb object array from pgx
+		// using a less efficient approach for now
+		// TODO: fix this on the query level
+		for _, rID := range rIDs {
+			resource, err := db.GetResourceByID(rID)
+			if err != nil {
+				log.Debugf("error getting resource by id in memberResource lookup: %s\n", err.Error())
+			}
+			m.Resources = append(m.Resources, MemberResource{ResourceID: rID, Name: resource.Name})
+		}
+
 		members = append(members, m)
 	}
 

@@ -415,11 +415,31 @@
           "x-go-name": "Name"
         },
         "resources": {
-          "$ref": "#/definitions/ResourceMap"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MemberResource"
+          },
+          "x-go-name": "Resources"
         },
         "rfid": {
           "type": "string",
           "x-go-name": "RFID"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
+    "MemberResource": {
+      "description": "MemberResource a resource that a member belongs to",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "resource_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "ResourceID"
         }
       },
       "x-go-package": "memberserver/database"
@@ -481,13 +501,6 @@
           "x-go-name": "Name",
           "example": "name"
         }
-      },
-      "x-go-package": "memberserver/database"
-    },
-    "ResourceMap": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object"
       },
       "x-go-package": "memberserver/database"
     },
@@ -565,7 +578,7 @@
         "resourceID": {
           "description": "ID of the Resource",
           "type": "integer",
-          "format": "uint8",
+          "format": "uint64",
           "x-go-name": "ID",
           "example": 0
         }
