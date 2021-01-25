@@ -3,7 +3,7 @@ import { HTTPService } from "./http.service";
 
 export class MemberService extends HTTPService {
   getMembers(): Observable<Response | { error: boolean; message: any }> {
-    return this.get("/api/member");
+    return this.get("/edge/api/member");
   }
 }
 
@@ -13,7 +13,12 @@ export namespace MemberService {
     name: string;
     email: string;
     memberLevel: MemberLevel;
-    resourceIds: number[];
+    resources: Resource[];
+  }
+
+  export interface Resource {
+    name: string;
+    resourceID: number;
   }
 
   export enum MemberLevel {

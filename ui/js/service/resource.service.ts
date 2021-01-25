@@ -3,26 +3,66 @@ import { HTTPService } from "./http.service";
 
 export class ResourceService extends HTTPService {
   getResources(): Observable<Response | { error: boolean; message: any }> {
-    return this.get("/api/resource");
+    return this.get("/edge/api/resource");
   }
   register(
-    updateRequest: ResourceService.ResourceRequest
+    addRequest: ResourceService.AddResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/resource", updateRequest);
+    return this.post("/edge/api/resource/register", addRequest);
+  }
+
+  updateResource(
+    updateRequest: ResourceService.UpdateResourceRequest
+  ): Observable<Response | { error: boolean; message: any }> {
+    return this.post("/edge/api/resource", updateRequest);
   }
   deleteResource(
-    deleteRequest: ResourceService.ResourceRequest
+    deleteRequest: ResourceService.RemoveResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.delete("/api/resource", deleteRequest);
+    return this.delete("/edge/api/resource", deleteRequest);
+  }
+  addMember(
+    addMemberRequest: ResourceService.AddMemberRequest
+  ): Observable<Response | { error: boolean; message: any }> {
+    return this.post("/edge/api/resource/member/add", addMemberRequest);
+  }
+  removeMember(
+    removeMemberRequest: ResourceService.RemoveMemberRequest
+  ): Observable<Response | { error: boolean; message: any }> {
+    return this.post("/edge/api/resource/member/remove", removeMemberRequest);
   }
 }
 
 export namespace ResourceService {
-  export interface ResourceRequest {
-    id?: number;
+  export interface AddResourceRequest {
     name: string;
     address: string;
-    // email is added to the request when attaching a member to a resource
-    email?: string;
+  }
+
+  export interface UpdateResourceRequest {
+    id: number;
+    name: string;
+    address: string;
+  }
+  export interface RemoveResourceRequest {
+    id: number;
+    name: string;
+    address: string;
+  }
+
+  export interface ResourceResponse {
+    id: number;
+    address: string;
+    name: string;
+  }
+
+  export interface AddMemberRequest {
+    email: string;
+    resourceID: number;
+  }
+
+  export interface RemoveMemberRequest {
+    email: string;
+    resourceID: number;
   }
 }

@@ -13,7 +13,7 @@ const NOT_A_RESOURCE_ID = 0;
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
   resourceService: ResourceService = new ResourceService();
-  resources: Array<ResourceService.ResourceRequest> | null = null;
+  resources: Array<ResourceService.ResourceResponse> | null = null;
   newAddress: string = "";
   newName: string = "";
   newID: number = 0;
@@ -39,7 +39,6 @@ export class ResourceManager extends LitElement {
   handleRegisterResource(): void {
     this.resourceService
       .register({
-        id: this.newID,
         name: this.newName,
         address: this.newAddress,
       })
@@ -65,8 +64,13 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  handleDelete(resource: ResourceService.ResourceRequest): void {
-    this.resourceService.deleteResource(resource).subscribe({
+  handleDelete(resource: ResourceService.ResourceResponse): void {
+    const request: ResourceService.RemoveResourceRequest = {
+      id: resource.id,
+      name: resource.name,
+      address: resource.address,
+    };
+    this.resourceService.deleteResource(request).subscribe({
       complete: () => {
         this.handleGetResources();
         this.requestUpdate();
@@ -74,7 +78,7 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  handleEdit(resource: ResourceService.ResourceRequest): void {
+  handleEdit(resource: ResourceService.ResourceResponse): void {
     this.newAddress = resource.address;
     this.newName = resource.name;
     this.newID = resource.id || 0;
@@ -117,7 +121,7 @@ export class ResourceManager extends LitElement {
   resourceList(): TemplateResult | void {
     if (!this.resources) return;
     return html` <mwc-list>
-      ${this.resources.map((x: ResourceService.ResourceRequest) => {
+      ${this.resources.map((x: ResourceService.ResourceResponse) => {
         return html`<mwc-list-item>
           ${x.name} ${x.address}
           <mwc-button

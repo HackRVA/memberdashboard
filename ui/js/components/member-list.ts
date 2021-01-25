@@ -5,14 +5,21 @@ import {
   customElement,
   css,
   CSSResult,
+  property,
 } from "lit-element";
 import { MemberService } from "../service/member.service";
 import "./card-element";
+import "@material/mwc-button";
+import "@material/mwc-dialog";
 
 @customElement("member-list")
 export class MemberList extends LitElement {
-  memberCount: number = 0;
+  @property({ type: Array })
   members: MemberService.MemberResponse[] = [];
+
+  @property({ type: Number })
+  memberCount: number = 0;
+
   memberService: MemberService = new MemberService();
 
   static get styles(): CSSResult {
@@ -47,22 +54,6 @@ export class MemberList extends LitElement {
     `;
   }
 
-  firstUpdated(): void {
-    this.memberService.getMembers().subscribe({
-      next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          return console.error(
-            (result as { error: boolean; message: any }).message
-          );
-        }
-        this.members = result as MemberService.MemberResponse[];
-        this.memberCount = this.members.length;
-        this.requestUpdate();
-      },
-    });
-    this.requestUpdate();
-  }
-
   displayMemberStatus(memberLevel: number): string {
     const { MemberLevel } = MemberService;
 
@@ -79,6 +70,48 @@ export class MemberList extends LitElement {
         return "No member status found";
     }
   }
+
+  openMemberResourceModal(email: string): void {
+    console.log("email", email);
+    (this.shadowRoot?.querySelector("#memberResourceModal") as HTMLElement & {
+      show: Function;
+    }).show();
+  }
+
+  displayMembersTable(): TemplateResult {
+    return html`
+      ${this.members.map((x: MemberService.MemberResponse) => {
+        return html`
+          <tr>
+            <td class="name">${x.name}</td>
+            <td>${x.email}</td>
+            <td>${this.displayMemberStatus(x.memberLevel)}</td>
+            <td>
+              <mwc-button
+                label="Add resource"
+                @click=${() => this.openMemberResourceModal(x.email)}
+              ></mwc-button>
+            </td>
+          </tr>
+        `;
+      })}
+    `;
+  }
+
+  displayMemberResourceModal(): TemplateResult {
+    return html`
+      <mwc-dialog id="memberResourceModal">
+        <div>Add Resource</div>
+        <mwc-button slot="primaryAction" dialogAction="discard">
+          Discard
+        </mwc-button>
+        <mwc-button slot="secondaryAction" dialogAction="cancel">
+          Cancel
+        </mwc-button>
+      </mwc-dialog>
+    `;
+  }
+
   render(): TemplateResult {
     return html`
       <card-element>
@@ -94,18 +127,11 @@ export class MemberList extends LitElement {
               <th>Member Status</th>
               <th>Resources</th>
             </tr>
-            ${this.members.map((x: MemberService.MemberResponse) => {
-              return html`
-                <tr>
-                  <td class="name">${x.name}</td>
-                  <td>${x.email}</td>
-                  <td>${this.displayMemberStatus(x.memberLevel)}</td>
-                  <td>No resources</td>
-                </tr>
-              `;
-            })}
+            ${this.displayMembersTable()}
           </table>
         </div>
+
+        ${this.displayMemberResourceModal()}
       </card-element>
     `;
   }
