@@ -344,6 +344,31 @@
         }
       }
     },
+    "/api/resource/status": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "summary": "Returns status of the resources.",
+        "operationId": "getResourceStatus",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getResourceStatusResponse"
+          }
+        }
+      }
+    },
     "/api/tier": {
       "get": {
         "security": [
@@ -706,6 +731,14 @@
     "getResourceResponse": {
       "schema": {
         "$ref": "#/definitions/Resource"
+      }
+    },
+    "getResourceStatusResponse": {
+      "schema": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "boolean"
+        }
       }
     },
     "getTierResponse": {

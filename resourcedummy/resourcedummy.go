@@ -23,14 +23,30 @@ func lookupResource() {
 	}
 }
 
+func getACL(w http.ResponseWriter, req *http.Request) {
+	var ACLReq ACLRequest
+
+	err := json.NewDecoder(req.Body).Decode(&ACLReq)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	j, _ := json.Marshal(ACLCache)
+	w.Write(j)
+}
+
 func main() {
 	r := mux.NewRouter()
 
 	lookupResource()
 
 	// serve up a frontend that we can test rfid values on
-	r.HandleFunc("/", serveFiles)
+	r.HandleFunc("/gui", serveFiles)
 	r.HandleFunc("/get-acl", getACL)
+	r.HandleFunc("/", getACL)
 	// have an enpoint that accepts acls
 	r.HandleFunc("/update", updateHandler)
 	// and endpoint to check to see if an rfid value exists
@@ -38,7 +54,7 @@ func main() {
 
 	http.Handle("/", r)
 
-	log.Print("Server listening on http://localhost:3001/")
+	log.Print("Server listening on http://localhost:3001/gui")
 	log.Fatal(http.ListenAndServe("0.0.0.0:3001", nil))
 
 }
@@ -47,6 +63,10 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.URL.Path)
 	p := "." + r.URL.Path
 	if p == "./" {
+		p = "./index.html"
+	}
+
+	if p == "./gui" {
 		p = "./index.html"
 	}
 	http.ServeFile(w, r, p)

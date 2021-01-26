@@ -79,6 +79,13 @@ export class MemberList extends LitElement {
         return "No member status found";
     }
   }
+
+  displayMemberResources(resources: Array<MemberService.MemberResource>): string {
+    if (resources && resources.length > 0) {
+      return resources.map(x => x.name).join(", ")
+    }
+    return "No resources"
+  }
   render(): TemplateResult {
     return html`
       <card-element>
@@ -100,7 +107,7 @@ export class MemberList extends LitElement {
                   <td class="name">${x.name}</td>
                   <td>${x.email}</td>
                   <td>${this.displayMemberStatus(x.memberLevel)}</td>
-                  <td>No resources</td>
+                  <td>${this.displayMemberResources(x.resources)}</td>
                 </tr>
               `;
             })}

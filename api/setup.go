@@ -7,6 +7,7 @@ import (
 
 	"memberserver/config"
 	"memberserver/database"
+	"memberserver/resourcemanager"
 )
 
 // API endpoints
@@ -18,11 +19,12 @@ type API struct {
 
 type resourceAPI struct {
 	db     *database.Database
+	rm     *resourcemanager.ResourceManager
 	config config.Config
 }
 
 // Setup - setup us up the routes
-func Setup(db *database.Database) *mux.Router {
+func Setup(db *database.Database, rm *resourcemanager.ResourceManager) *mux.Router {
 	c, _ := config.Load()
 
 	api := API{
@@ -30,6 +32,7 @@ func Setup(db *database.Database) *mux.Router {
 		db:     db,
 		resource: resourceAPI{
 			db:     db,
+			rm:     rm,
 			config: c,
 		},
 	}

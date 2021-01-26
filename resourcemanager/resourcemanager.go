@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
+
 	"net/http"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"memberserver/database"
 )
@@ -27,16 +29,17 @@ type ACLUpdateRequest struct {
 }
 
 // Setup initializes the resource manager
-func Setup() *ResourceManager {
+func Setup() (*ResourceManager, error) {
 	var err error
 	rm := &ResourceManager{}
 	rm.db, err = database.Setup()
 
 	if err != nil {
-		log.Fatal(fmt.Errorf("error setting up db: %s", err))
+		log.Errorf("error setting up db: %s", err)
+		return rm, err
 	}
 
-	return rm
+	return rm, err
 }
 
 // UpdateResourceACL pulls a resource's accesslist from the DB and pushes it to the resource
@@ -59,12 +62,13 @@ func (rm *ResourceManager) UpdateResourceACL(r database.Resource) error {
 	// push the update to the resource
 	resp, err := http.Post(r.Address+"/update", "application/json", bytes.NewBuffer(j))
 	if err != nil {
-		fmt.Println("Unable to reach the resource.")
+		log.Errorf("Unable to reach the resource.")
+		return err
 	} else {
 		body, _ := ioutil.ReadAll(resp.Body)
 
 		// TODO: check that the resource responds with a hash of the list
-		fmt.Println("body=", string(body))
+		log.Debugf("body=", string(body))
 	}
 
 	return nil
@@ -93,12 +97,13 @@ func (rm *ResourceManager) CheckStatus(r database.Resource) error {
 	// push the update to the resource
 	resp, err := http.Get(r.Address)
 	if err != nil {
-		fmt.Println("Unable to reach the resource.")
+		log.Errorf("Unable to reach the resource.")
+		return err
 	} else {
 		body, _ := ioutil.ReadAll(resp.Body)
 
 		// TODO: check that the resource responds with a hash of the list
-		fmt.Println("body=", string(body))
+		log.Debugf("body=", string(body))
 	}
 	return nil
 }
@@ -108,7 +113,7 @@ func hash(accessList []string) string {
 	h.Write([]byte(strings.Join(accessList[:], "\n")))
 	bs := h.Sum(nil)
 
-	fmt.Println(strings.Join(accessList[:], "\n"))
-	fmt.Printf("%x\n", bs)
+	log.Debug(strings.Join(accessList[:], "\n"))
+	log.Debugf("%x\n", bs)
 	return fmt.Sprintf("%x\n", bs)
 }

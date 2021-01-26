@@ -8,6 +8,7 @@ import (
 
 	"memberserver/api"
 	"memberserver/database"
+	"memberserver/resourcemanager"
 )
 
 func init() {
@@ -20,7 +21,12 @@ func main() {
 		log.Errorf("error setting up db: %s", err)
 	}
 
-	router := api.Setup(db)
+	rm, err := resourcemanager.Setup()
+	if err != nil {
+		log.Errorf("error setting up resource manager: %s", err)
+	}
+
+	router := api.Setup(db, rm)
 
 	srv := &http.Server{
 		Handler: router,

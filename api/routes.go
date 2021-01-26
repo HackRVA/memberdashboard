@@ -125,6 +125,21 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200:
 	rr.HandleFunc("/resource", api.resource.Resource).Methods(http.MethodPost, http.MethodDelete, http.MethodGet)
+	// swagger:route GET /api/resource/status resource getResourceStatus
+	//
+	// Returns status of the resources.
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: getResourceStatusResponse
+	rr.HandleFunc("/resource/status", api.resource.status).Methods(http.MethodGet)
 	// swagger:route POST /api/resource/register resource registerResourceRequest
 	//
 	// Updates a resource.
