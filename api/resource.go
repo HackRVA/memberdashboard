@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"memberserver/database"
+	"memberserver/resourcemanager"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -78,7 +79,7 @@ type removeMemberToResourceResponse struct {
 // swagger:response getResourceStatusResponse
 type getResourceStatusResponse struct {
 	// in: body
-	Body map[string]bool
+	Body map[string]uint8
 }
 
 // Resource http handlers for resources
@@ -200,16 +201,20 @@ func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
 
 func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 	resources := rs.db.GetResources()
-	statusMap := make(map[string]bool)
+	statusMap := make(map[string]uint8)
 
 	for _, r := range resources {
-		err := rs.rm.CheckStatus(r)
+		status, err := rs.rm.CheckStatus(r)
 		if err != nil {
 			log.Errorf("error getting resource status: %s", err.Error())
-			statusMap[r.Name] = false
+			statusMap[r.Name] = resourcemanager.StatusOffline
 			continue
 		}
-		statusMap[r.Name] = true
+		if status == resourcemanager.StatusOutOfDate {
+			statusMap[r.Name] = resourcemanager.StatusOutOfDate
+			continue
+		}
+		statusMap[r.Name] = resourcemanager.StatusGood
 	}
 
 	w.Header().Set("Content-Type", "application/json")

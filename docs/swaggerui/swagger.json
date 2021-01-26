@@ -351,6 +351,7 @@
             "bearerAuth": []
           }
         ],
+        "description": "Returns the status of all resources.\n0 = Good\n1 = Out of Date\n3 = Offline",
         "produces": [
           "application/json"
         ],
@@ -737,7 +738,8 @@
       "schema": {
         "type": "object",
         "additionalProperties": {
-          "type": "boolean"
+          "type": "integer",
+          "format": "uint8"
         }
       }
     },

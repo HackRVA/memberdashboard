@@ -28,6 +28,15 @@ type ACLUpdateRequest struct {
 	ACL []string `json:"acl"`
 }
 
+const (
+	// StatusGood - the resource is online and up to date
+	StatusGood = iota
+	// StatusOutOfDate - the resource does not have the most up to date information
+	StatusOutOfDate
+	// StatusOffline - the resource is not reachable
+	StatusOffline
+)
+
 // Setup initializes the resource manager
 func Setup() (*ResourceManager, error) {
 	var err error
@@ -84,28 +93,31 @@ type ACLResponse struct {
 //   and up to date access list
 //   It will do this by hashing the list retrieved from the DB and comparing it
 //   with the hash that the resource reports
-func (rm *ResourceManager) CheckStatus(r database.Resource) error {
+func (rm *ResourceManager) CheckStatus(r database.Resource) (uint8, error) {
+	var status uint8
 	accessList, err := rm.db.GetResourceACL(r)
+	status = StatusOffline
 
 	if err != nil {
-		return err
+		return status, err
 	}
 
 	// TODO hash the accesslist
-	println(hash(accessList))
+	log.Debug(hash(accessList))
 
 	// push the update to the resource
 	resp, err := http.Get(r.Address)
 	if err != nil {
 		log.Errorf("Unable to reach the resource.")
-		return err
-	} else {
-		body, _ := ioutil.ReadAll(resp.Body)
-
-		// TODO: check that the resource responds with a hash of the list
-		log.Debugf("body=", string(body))
+		return status, err
 	}
-	return nil
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	// TODO: check that the resource responds with a hash of the list
+	status = StatusGood
+	log.Debugf("body=", string(body))
+
+	return status, nil
 }
 
 func hash(accessList []string) string {
