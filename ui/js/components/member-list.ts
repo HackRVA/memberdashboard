@@ -87,6 +87,7 @@ export class MemberList extends LitElement {
             <td>${x.email}</td>
             <td>${this.displayMemberStatus(x.memberLevel)}</td>
             <td>
+              ${this.displayMemberResources(x.resources)}
               <mwc-button
                 label="Add resource"
                 @click=${() => this.openMemberResourceModal(x.email)}
@@ -115,8 +116,10 @@ export class MemberList extends LitElement {
   displayMemberResources(
     resources: Array<MemberService.MemberResource>
   ): string {
-    if (resources && resources.length > 0) {
-      return resources.map((x) => x.name).join(", ");
+    if (resources?.length > 0) {
+      return resources
+        .map((x: MemberService.MemberResource) => x.name)
+        .join(", ");
     }
     return "No resources";
   }
@@ -135,16 +138,7 @@ export class MemberList extends LitElement {
               <th>Member Status</th>
               <th>Resources</th>
             </tr>
-            ${this.members.map((x: MemberService.MemberResponse) => {
-              return html`
-                <tr>
-                  <td class="name">${x.name}</td>
-                  <td>${x.email}</td>
-                  <td>${this.displayMemberStatus(x.memberLevel)}</td>
-                  <td>${this.displayMemberResources(x.resources)}</td>
-                </tr>
-              `;
-            })}
+            ${this.displayMembersTable()}
           </table>
         </div>
 
