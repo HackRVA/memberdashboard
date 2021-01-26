@@ -1,10 +1,13 @@
 package main
 
 import (
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/mdns"
@@ -23,14 +26,25 @@ func lookupResource() {
 	}
 }
 
+func getACLHash(w http.ResponseWriter, req *http.Request) {
+	h := &ACLResponse{
+		Hash: hash(ACLCache),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	j, _ := json.Marshal(h)
+	w.Write(j)
+}
+
 func main() {
 	r := mux.NewRouter()
 
 	lookupResource()
 
 	// serve up a frontend that we can test rfid values on
-	r.HandleFunc("/", serveFiles)
-	r.HandleFunc("/get-acl", getACL)
+	r.HandleFunc("/gui", serveFiles)
+	r.HandleFunc("/", getACLHash)
 	// have an enpoint that accepts acls
 	r.HandleFunc("/update", updateHandler)
 	// and endpoint to check to see if an rfid value exists
@@ -38,7 +52,7 @@ func main() {
 
 	http.Handle("/", r)
 
-	log.Print("Server listening on http://localhost:3001/")
+	log.Print("Server listening on http://localhost:3001/gui")
 	log.Fatal(http.ListenAndServe("0.0.0.0:3001", nil))
 
 }
@@ -49,13 +63,17 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 	if p == "./" {
 		p = "./index.html"
 	}
+
+	if p == "./gui" {
+		p = "./index.html"
+	}
 	http.ServeFile(w, r, p)
 }
 
 // ACLResponse -
 // we respond with a hash of the current ACL
 type ACLResponse struct {
-	Hash string `json:"hash"`
+	Hash string `json:"acl"`
 }
 
 // ACLRequest is the json body we expect to receive
@@ -117,4 +135,14 @@ func lookupHandler(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(ack)
 	w.Write(j)
+}
+
+func hash(accessList []string) string {
+	h := sha1.New()
+	h.Write([]byte(strings.Join(accessList[:], "\n")))
+	bs := h.Sum(nil)
+
+	log.Debug(strings.Join(accessList[:], "\n"))
+	log.Debugf("%x\n", bs)
+	return fmt.Sprintf("%x", bs)
 }

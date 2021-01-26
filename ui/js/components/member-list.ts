@@ -112,6 +112,14 @@ export class MemberList extends LitElement {
     `;
   }
 
+  displayMemberResources(
+    resources: Array<MemberService.MemberResource>
+  ): string {
+    if (resources && resources.length > 0) {
+      return resources.map((x) => x.name).join(", ");
+    }
+    return "No resources";
+  }
   render(): TemplateResult {
     return html`
       <card-element>
@@ -127,7 +135,16 @@ export class MemberList extends LitElement {
               <th>Member Status</th>
               <th>Resources</th>
             </tr>
-            ${this.displayMembersTable()}
+            ${this.members.map((x: MemberService.MemberResponse) => {
+              return html`
+                <tr>
+                  <td class="name">${x.name}</td>
+                  <td>${x.email}</td>
+                  <td>${this.displayMemberStatus(x.memberLevel)}</td>
+                  <td>${this.displayMemberResources(x.resources)}</td>
+                </tr>
+              `;
+            })}
           </table>
         </div>
 

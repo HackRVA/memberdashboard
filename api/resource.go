@@ -2,9 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"memberserver/database"
+	"memberserver/resourcemanager"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // resource to update or delete a resource
@@ -72,6 +74,12 @@ type addMemberToResourceResponse struct {
 type removeMemberToResourceResponse struct {
 	// in: body
 	Body database.MemberResourceRelation
+}
+
+// swagger:response getResourceStatusResponse
+type getResourceStatusResponse struct {
+	// in: body
+	Body map[string]uint8
 }
 
 // Resource http handlers for resources
@@ -188,5 +196,28 @@ func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(r)
+	w.Write(j)
+}
+
+func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
+	resources := rs.db.GetResources()
+	statusMap := make(map[string]uint8)
+
+	for _, r := range resources {
+		status, err := rs.rm.CheckStatus(r)
+		if err != nil {
+			log.Errorf("error getting resource status: %s", err.Error())
+			statusMap[r.Name] = resourcemanager.StatusOffline
+			continue
+		}
+		if status == resourcemanager.StatusOutOfDate {
+			statusMap[r.Name] = resourcemanager.StatusOutOfDate
+			continue
+		}
+		statusMap[r.Name] = resourcemanager.StatusGood
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(statusMap)
 	w.Write(j)
 }

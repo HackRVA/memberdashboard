@@ -13,12 +13,12 @@ export namespace MemberService {
     name: string;
     email: string;
     memberLevel: MemberLevel;
-    resources: Resource[];
+    resources: Array<MemberResource>;
   }
 
-  export interface Resource {
-    name: string;
+  export interface MemberResource {
     resourceID: number;
+    name: string;
   }
 
   export enum MemberLevel {
