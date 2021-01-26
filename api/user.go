@@ -13,8 +13,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// JWTExpireMinutes - how long the JWT will last
-const JWTExpireMinutes = 60
+// JWTExpireInterval - how long the JWT will last
+const JWTExpireInterval = 8
 
 // CookieName - name of the cookie :3
 const CookieName = "memberserver-token"
@@ -140,7 +140,7 @@ func (a API) getToken(name string) (string, error) {
 	//Creating Access Token
 	atClaims := Claims{}
 	atClaims.Username = name
-	atClaims.ExpiresAt = time.Now().Add(time.Minute * JWTExpireMinutes).Unix()
+	atClaims.ExpiresAt = time.Now().Add(time.Hour * JWTExpireInterval).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 
 	tokenString, err := token.SignedString([]byte(a.config.AccessSecret))
@@ -190,7 +190,7 @@ func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     CookieName,
 		Value:    token,
-		Expires:  time.Now().Add(JWTExpireMinutes * time.Minute),
+		Expires:  time.Now().Add(JWTExpireInterval * time.Hour),
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 	})
