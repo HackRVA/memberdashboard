@@ -216,6 +216,24 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: infoResponse
 	rr.HandleFunc("/info", api.Info)
+	// swagger:route POST /api/assignRFID member setRFIDRequest
+	//
+	// Assigns an RFID tag to a member
+	//
+	//   this is an unauthenticated request, for now.
+	//   it assigns an RFID tag to a member
+	//
+	//     Consumes:
+	//     - application/json
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http
+	//
+	//     Responses:
+	//       200: setRFIDResponse
+	r.HandleFunc("/api/assignRFID", api.assignRFID).Methods(http.MethodPost)
 	// swagger:route POST /api/login auth loginRequest
 	//
 	// Login
