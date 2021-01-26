@@ -117,11 +117,12 @@ func (rm ResourceManager) CheckStatus(r database.Resource) (uint8, error) {
 	if acl.ACLHash != hash(accessList) {
 		log.Debugf("attempting to update resource [%s] with new data", r.Name)
 		err = rm.UpdateResourceACL(r)
+		status = StatusOutOfDate
 		if err != nil {
 			log.Errorf("error updating resource with acl: %s", err)
-			status = StatusOutOfDate
 			return status, err
 		}
+		return status, err
 	}
 
 	// TODO: check that the resource responds with a hash of the list
