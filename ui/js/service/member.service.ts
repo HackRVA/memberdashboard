@@ -17,8 +17,8 @@ export namespace MemberService {
   }
 
   export interface MemberResource {
-    resourceID: number,
-    name: string
+    resourceID: number;
+    name: string;
   }
 
   export enum MemberLevel {

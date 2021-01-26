@@ -12,7 +12,7 @@ export class HTTPService {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
     }).pipe(
-      switchMap((response) => {
+      switchMap((response: Response) => {
         if (response.ok) {
           // OK return data
           return response.json();
@@ -39,7 +39,7 @@ export class HTTPService {
       },
       body: JSON.stringify(options),
     }).pipe(
-      switchMap((response) => {
+      switchMap((response: Response) => {
         if (response.ok) {
           // OK return data
           return response.json();
@@ -66,7 +66,34 @@ export class HTTPService {
       },
       body: JSON.stringify(options),
     }).pipe(
-      switchMap((response) => {
+      switchMap((response: Response) => {
+        if (response.ok) {
+          // OK return data
+          return response.json();
+        } else {
+          // Server is returning a status requiring the client to try something else.
+          return of({ error: true, message: `Error ${response.status}` });
+        }
+      }),
+      catchError((err) => {
+        // Network or other error, handle appropriately
+        console.error(err);
+        return of({ error: true, message: err.message });
+      })
+    );
+  }
+  put(
+    endpoint: string,
+    options?: any
+  ): Observable<Response | any | { error: boolean; message: any }> {
+    return fromFetch(endpoint, {
+      method: "PUT",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify(options),
+    }).pipe(
+      switchMap((response: Response) => {
         if (response.ok) {
           // OK return data
           return response.json();

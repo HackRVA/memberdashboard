@@ -80,11 +80,15 @@ export class MemberList extends LitElement {
     }
   }
 
-  displayMemberResources(resources: Array<MemberService.MemberResource>): string {
-    if (resources && resources.length > 0) {
-      return resources.map(x => x.name).join(", ")
+  displayMemberResources(
+    resources: Array<MemberService.MemberResource>
+  ): string {
+    if (resources?.length > 0) {
+      return resources
+        .map((x: MemberService.MemberResource) => x.name)
+        .join(", ");
     }
-    return "No resources"
+    return "No resources";
   }
   render(): TemplateResult {
     return html`

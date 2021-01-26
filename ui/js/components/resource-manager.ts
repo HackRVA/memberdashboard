@@ -13,7 +13,7 @@ const NOT_A_RESOURCE_ID = 0;
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
   resourceService: ResourceService = new ResourceService();
-  resources: Array<ResourceService.ResourceRequest> | null = null;
+  resources: Array<ResourceService.ResourceResponse> | null = null;
   newAddress: string = "";
   newName: string = "";
   newID: number = 0;
@@ -36,23 +36,58 @@ export class ResourceManager extends LitElement {
     }).show();
   }
 
-  handleRegisterResource(): void {
-    this.resourceService
-      .register({
+  handleSubmitResource(): void {
+    if (
+      this.isStringEmpty(this.newName) &&
+      this.isStringEmpty(this.newAddress)
+    ) {
+      const request: ResourceService.RegisterResourceRequest = {
+        name: this.newName,
+        address: this.newAddress,
+      };
+      this.handleRegisterResource(request);
+    } else {
+      const request: ResourceService.UpdateResourceRequest = {
         id: this.newID,
         name: this.newName,
         address: this.newAddress,
-      })
-      .subscribe();
+      };
+
+      this.handleUpdateResource(request);
+    }
 
     this.newID = NOT_A_RESOURCE_ID;
     this.newName = "";
     this.newAddress = "";
   }
 
+  handleRegisterResource(
+    request: ResourceService.RegisterResourceRequest
+  ): void {
+    this.resourceService.register(request).subscribe({
+      complete: () => {
+        this.handleGetResources();
+        this.requestUpdate();
+      },
+    });
+  }
+
+  handleUpdateResource(request: ResourceService.UpdateResourceRequest): void {
+    this.resourceService.updateResource(request).subscribe({
+      complete: () => {
+        this.handleGetResources();
+        this.requestUpdate();
+      },
+    });
+  }
+
+  isStringEmpty(value: string): boolean {
+    return value.length === 0;
+  }
+
   handleGetResources(): void {
     this.resourceService.getResources().subscribe({
-      next: (result) => {
+      next: (result: any) => {
         if ((result as { error: boolean; message: any }).error) {
           // this.onLoginComplete("Some error logging in");
           console.error("some error getting resources");
@@ -61,12 +96,14 @@ export class ResourceManager extends LitElement {
           this.requestUpdate();
         }
       },
-      // complete: () => this.onLoginComplete("Success!"),
     });
   }
 
-  handleDelete(resource: ResourceService.ResourceRequest): void {
-    this.resourceService.deleteResource(resource).subscribe({
+  handleDelete(resource: ResourceService.ResourceResponse): void {
+    const request: ResourceService.RemoveResourceRequest = {
+      id: resource.id,
+    };
+    this.resourceService.deleteResource(request).subscribe({
       complete: () => {
         this.handleGetResources();
         this.requestUpdate();
@@ -74,7 +111,7 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  handleEdit(resource: ResourceService.ResourceRequest): void {
+  handleEdit(resource: ResourceService.UpdateResourceRequest): void {
     this.newAddress = resource.address;
     this.newName = resource.name;
     this.newID = resource.id || 0;
@@ -102,7 +139,7 @@ export class ResourceManager extends LitElement {
       ></mwc-textfield>
 
       <mwc-button
-        @click=${this.handleRegisterResource}
+        @click=${this.handleSubmitResource}
         slot="primaryAction"
         dialogAction="discard"
       >
@@ -117,7 +154,7 @@ export class ResourceManager extends LitElement {
   resourceList(): TemplateResult | void {
     if (!this.resources) return;
     return html` <mwc-list>
-      ${this.resources.map((x: ResourceService.ResourceRequest) => {
+      ${this.resources.map((x: ResourceService.ResourceResponse) => {
         return html`<mwc-list-item>
           ${x.name} ${x.address}
           <mwc-button
