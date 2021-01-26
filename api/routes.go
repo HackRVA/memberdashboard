@@ -134,6 +134,8 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//    1 = Out of Date
 	//    3 = Offline
 	//
+	// if the resource is out of date, it will attempt to push an update
+	//
 	//     Produces:
 	//     - application/json
 	//

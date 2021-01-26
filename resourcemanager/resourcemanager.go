@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	"net/http"
 	"strings"
@@ -17,6 +18,9 @@ import (
 
 // Resource manager keeps the resources up to date by
 //  pushing new updates and checking in on their health
+
+// statusCheckInterval - check the resources every hour
+const statusCheckInterval = 1
 
 // ResourceManager contains functions that
 type ResourceManager struct {
@@ -47,6 +51,25 @@ func Setup() (*ResourceManager, error) {
 		log.Errorf("error setting up db: %s", err)
 		return rm, err
 	}
+
+	// quietly check the resource status on an interval
+	ticker := time.NewTicker(statusCheckInterval * time.Hour)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				resources := rm.db.GetResources()
+
+				for _, r := range resources {
+					rm.CheckStatus(r)
+				}
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
 
 	return rm, err
 }
