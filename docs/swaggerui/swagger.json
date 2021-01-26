@@ -197,7 +197,7 @@
           }
         }
       },
-      "post": {
+      "put": {
         "security": [
           {
             "bearerAuth": []
@@ -257,7 +257,7 @@
             "name": "Body",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/Resource"
+              "$ref": "#/definitions/ResourceDeleteRequest"
             }
           }
         ],
@@ -266,7 +266,7 @@
         }
       }
     },
-    "/api/resource/member/add": {
+    "/api/resource/member": {
       "post": {
         "security": [
           {
@@ -301,10 +301,8 @@
             "$ref": "#/responses/addMemberToResourceResponse"
           }
         }
-      }
-    },
-    "/api/resource/member/remove": {
-      "post": {
+      },
+      "delete": {
         "security": [
           {
             "bearerAuth": []
@@ -633,6 +631,23 @@
           "type": "string",
           "x-go-name": "Name",
           "example": "name"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
+    "ResourceDeleteRequest": {
+      "description": "ResourceDeleteRequest - request for deleting a resource",
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "description": "UniqueID of the Resource",
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "ID",
+          "example": 0
         }
       },
       "x-go-package": "memberserver/database"
