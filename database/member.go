@@ -21,8 +21,9 @@ const getMemberByEmailQuery = `SELECT id, name, email, rfid, member_tier_id
 FROM membership.members
 WHERE email = $1;`
 const setMemberRFIDTag = `UPDATE membership.members
-rfid=$2
-WHERE email = $1;`
+SET rfid=$2
+WHERE email=$1
+RETURNING rfid;`
 
 // MemberResource a resource that a member belongs to
 type MemberResource struct {
@@ -38,6 +39,12 @@ type Member struct {
 	RFID      string           `json:"rfid"`
 	Level     uint8            `json:"memberLevel"`
 	Resources []MemberResource `json:"resources"`
+}
+
+// AssignRFIDRequest -- request to associate an rfid to a member
+type AssignRFIDRequest struct {
+	Email string `json:"email"`
+	RFID  string `json:"rfid"`
 }
 
 // GetMembers - gets the status from DB
@@ -89,17 +96,15 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 
 // SetRFIDTag sets the rfid tag as
 func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
-	var m Member
-	rows, err := db.pool.Query(context.Background(), setMemberRFIDTag, email, RFIDTag)
+	m, err := db.GetMemberByEmail(email)
 	if err != nil {
-		return m, fmt.Errorf("conn.Query failed: %v", err)
+		log.Errorf("error retrieving a member with that email address %s", err.Error())
+		return m, err
 	}
 
-	defer rows.Close()
-
-	err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.Level, &m.RFID)
+	err = db.pool.QueryRow(context.Background(), setMemberRFIDTag, email, RFIDTag).Scan(&m.RFID)
 	if err != nil {
-		return m, fmt.Errorf("SetRFIDTag failed: %s", err)
+		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
 
 	return m, err

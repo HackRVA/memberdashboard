@@ -19,6 +19,39 @@
     "version": "0.0.1"
   },
   "paths": {
+    "/api/assignRFID": {
+      "post": {
+        "description": "this is an unauthenticated request, for now.\nit assigns an RFID tag to a member",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Assigns an RFID tag to a member",
+        "operationId": "setRFIDRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/AssignRFIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/setRFIDResponse"
+          }
+        }
+      }
+    },
     "/api/info": {
       "get": {
         "security": [
@@ -351,7 +384,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Returns the status of all resources.\n0 = Good\n1 = Out of Date\n3 = Offline",
+        "description": "Returns the status of all resources.\n0 = Good\n1 = Out of Date\n3 = Offline\n\nif the resource is out of date, it will attempt to push an update",
         "produces": [
           "application/json"
         ],
@@ -422,6 +455,21 @@
     }
   },
   "definitions": {
+    "AssignRFIDRequest": {
+      "description": "AssignRFIDRequest -- request to associate an rfid to a member",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "rfid": {
+          "type": "string",
+          "x-go-name": "RFID"
+        }
+      },
+      "x-go-package": "memberserver/database"
+    },
     "Credentials": {
       "description": "Credentials Create a struct that models the structure of a user, both in the request body, and in the DB",
       "type": "object",
@@ -780,6 +828,11 @@
     "removeMemberToResourceResponse": {
       "schema": {
         "$ref": "#/definitions/MemberResourceRelation"
+      }
+    },
+    "setRFIDResponse": {
+      "schema": {
+        "$ref": "#/definitions/AssignRFIDRequest"
       }
     }
   },
