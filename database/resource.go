@@ -71,6 +71,14 @@ type Resource struct {
 	LastUpdated pgtype.Timestamp `json:"lastUpdated"`
 }
 
+// ResourceDeleteRequest - request for deleting a resource
+type ResourceDeleteRequest struct {
+	// UniqueID of the Resource
+	// required: true
+	// example: 0
+	ID uint8 `json:"id"`
+}
+
 // Resource a resource that can accespt an access control list
 type ResourceRequest struct {
 	// UniqueID of the Resource

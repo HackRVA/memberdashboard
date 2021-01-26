@@ -88,7 +88,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getResourceResponse
 
-	// swagger:route POST /api/resource resource updateResourceRequest
+	// swagger:route PUT /api/resource resource updateResourceRequest
 	//
 	// Updates a resource.
 	//
@@ -124,7 +124,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200:
-	rr.HandleFunc("/resource", api.resource.Resource).Methods(http.MethodPost, http.MethodDelete, http.MethodGet)
+	rr.HandleFunc("/resource", api.resource.Resource).Methods(http.MethodPut, http.MethodDelete, http.MethodGet)
 	// swagger:route GET /api/resource/status resource getResourceStatus
 	//
 	// Returns status of the resources.
@@ -165,7 +165,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: postResourceResponse
 	rr.HandleFunc("/resource/register", api.resource.Resource).Methods(http.MethodPost)
-	// swagger:route POST /api/resource/member/add resource resourceAddMemberRequest
+	// swagger:route POST /api/resource/member resource resourceAddMemberRequest
 	//
 	// Adds a member to a resource.
 	//
@@ -182,8 +182,8 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: addMemberToResourceResponse
-	rr.HandleFunc("/resource/member/add", api.resource.addMember).Methods(http.MethodPost)
-	// swagger:route POST /api/resource/member/remove resource resourceRemoveMemberRequest
+	rr.HandleFunc("/resource/member", api.resource.addMember).Methods(http.MethodPost)
+	// swagger:route DELETE /api/resource/member resource resourceRemoveMemberRequest
 	//
 	// Removes a member from a resource.
 	//
@@ -200,7 +200,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: removeMemberToResourceResponse
-	rr.HandleFunc("/resource/member/remove", api.resource.removeMember).Methods(http.MethodDelete)
+	rr.HandleFunc("/resource/member", api.resource.removeMember).Methods(http.MethodDelete)
 	// swagger:route GET /api/info info info
 	//
 	// A simple hello world.

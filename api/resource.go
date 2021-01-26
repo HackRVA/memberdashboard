@@ -37,7 +37,7 @@ type registerResourceRequest struct {
 // swagger:parameters deleteResourceRequest
 type deleteResourceRequest struct {
 	// in: body
-	Body database.Resource
+	Body database.ResourceDeleteRequest
 }
 
 // swagger:parameters resourceAddMemberRequest
@@ -88,7 +88,7 @@ func (rs resourceAPI) Resource(w http.ResponseWriter, req *http.Request) {
 		rs.get(w, req)
 	}
 
-	if req.Method == http.MethodPost {
+	if req.Method == http.MethodPut {
 		rs.update(w, req)
 	}
 
@@ -127,14 +127,14 @@ func (rs resourceAPI) update(w http.ResponseWriter, req *http.Request) {
 }
 
 func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
-	var deleteResourceReq database.Resource
+	var deleteResourceReq database.ResourceDeleteRequest
 
 	err := json.NewDecoder(req.Body).Decode(&deleteResourceReq)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	log.Printf("attempting to delete %s", deleteResourceReq.Name)
+	log.Printf("attempting to delete %s", deleteResourceReq.ID)
 
 	err = rs.db.DeleteResource(deleteResourceReq.ID)
 	if err != nil {
