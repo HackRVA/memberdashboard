@@ -52,7 +52,7 @@ func Setup() (*ResourceManager, error) {
 }
 
 // UpdateResourceACL pulls a resource's accesslist from the DB and pushes it to the resource
-func (rm *ResourceManager) UpdateResourceACL(r database.Resource) error {
+func (rm ResourceManager) UpdateResourceACL(r database.Resource) error {
 	// get acl for that resource
 	accessList, err := rm.db.GetResourceACL(r)
 
@@ -67,18 +67,18 @@ func (rm *ResourceManager) UpdateResourceACL(r database.Resource) error {
 	if err != nil {
 		return err
 	}
+	log.Debugf("access list: %s", j)
 
 	// push the update to the resource
 	resp, err := http.Post(r.Address+"/update", "application/json", bytes.NewBuffer(j))
 	if err != nil {
 		log.Errorf("Unable to reach the resource.")
 		return err
-	} else {
-		body, _ := ioutil.ReadAll(resp.Body)
-
-		// TODO: check that the resource responds with a hash of the list
-		log.Debugf("body=", string(body))
 	}
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	// TODO: check that the resource responds with a hash of the list
+	log.Debugf("body=", string(body))
 
 	return nil
 }
@@ -93,7 +93,7 @@ type ACLResponse struct {
 //   and up to date access list
 //   It will do this by hashing the list retrieved from the DB and comparing it
 //   with the hash that the resource reports
-func (rm *ResourceManager) CheckStatus(r database.Resource) (uint8, error) {
+func (rm ResourceManager) CheckStatus(r database.Resource) (uint8, error) {
 	var status uint8
 	accessList, err := rm.db.GetResourceACL(r)
 	status = StatusOffline
@@ -102,20 +102,30 @@ func (rm *ResourceManager) CheckStatus(r database.Resource) (uint8, error) {
 		return status, err
 	}
 
-	// TODO hash the accesslist
-	log.Debug(hash(accessList))
-
 	// push the update to the resource
 	resp, err := http.Get(r.Address)
 	if err != nil {
 		log.Errorf("Unable to reach the resource.")
 		return status, err
 	}
+	var acl ACLResponse
 	body, _ := ioutil.ReadAll(resp.Body)
+
+	_ = json.Unmarshal(body, &acl)
+
+	log.Debugf("body= %s json=%s accessListHash=%s", string(body), acl.ACLHash, hash(accessList))
+	if acl.ACLHash != hash(accessList) {
+		log.Debugf("attempting to update resource [%s] with new data", r.Name)
+		err = rm.UpdateResourceACL(r)
+		if err != nil {
+			log.Errorf("error updating resource with acl: %s", err)
+			status = StatusOutOfDate
+			return status, err
+		}
+	}
 
 	// TODO: check that the resource responds with a hash of the list
 	status = StatusGood
-	log.Debugf("body=", string(body))
 
 	return status, nil
 }
@@ -127,5 +137,5 @@ func hash(accessList []string) string {
 
 	log.Debug(strings.Join(accessList[:], "\n"))
 	log.Debugf("%x\n", bs)
-	return fmt.Sprintf("%x\n", bs)
+	return fmt.Sprintf("%x", bs)
 }
