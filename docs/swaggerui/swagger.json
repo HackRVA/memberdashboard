@@ -382,7 +382,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "Returns the status of all resources.\n0 = Good\n1 = Out of Date\n3 = Offline\n\nif the resource is out of date, it will attempt to push an update",
+        "description": "Returns the status of all resources.\n0 = Good\n1 = Out of Date\n2 = Offline\n\nif the resource is out of date, it will attempt to push an update",
         "produces": [
           "application/json"
         ],
