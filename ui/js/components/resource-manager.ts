@@ -36,22 +36,58 @@ export class ResourceManager extends LitElement {
     }).show();
   }
 
-  handleRegisterResource(): void {
-    this.resourceService
-      .register({
+  handleSubmitResource(): void {
+    if (
+      this.isStringEmpty(this.newName) &&
+      this.isStringEmpty(this.newAddress)
+    ) {
+      const request: ResourceService.RegisterResourceRequest = {
         name: this.newName,
         address: this.newAddress,
-      })
-      .subscribe();
+      };
+      this.handleRegisterResource(request);
+    } else {
+      const request: ResourceService.UpdateResourceRequest = {
+        id: this.newID,
+        name: this.newName,
+        address: this.newAddress,
+      };
+
+      this.handleUpdateResource(request);
+    }
 
     this.newID = NOT_A_RESOURCE_ID;
     this.newName = "";
     this.newAddress = "";
   }
 
+  handleRegisterResource(
+    request: ResourceService.RegisterResourceRequest
+  ): void {
+    this.resourceService.register(request).subscribe({
+      complete: () => {
+        this.handleGetResources();
+        this.requestUpdate();
+      },
+    });
+  }
+
+  handleUpdateResource(request: ResourceService.UpdateResourceRequest): void {
+    this.resourceService.updateResource(request).subscribe({
+      complete: () => {
+        this.handleGetResources();
+        this.requestUpdate();
+      },
+    });
+  }
+
+  isStringEmpty(value: string): boolean {
+    return value.length === 0;
+  }
+
   handleGetResources(): void {
     this.resourceService.getResources().subscribe({
-      next: (result) => {
+      next: (result: any) => {
         if ((result as { error: boolean; message: any }).error) {
           // this.onLoginComplete("Some error logging in");
           console.error("some error getting resources");
@@ -60,15 +96,12 @@ export class ResourceManager extends LitElement {
           this.requestUpdate();
         }
       },
-      // complete: () => this.onLoginComplete("Success!"),
     });
   }
 
   handleDelete(resource: ResourceService.ResourceResponse): void {
     const request: ResourceService.RemoveResourceRequest = {
       id: resource.id,
-      name: resource.name,
-      address: resource.address,
     };
     this.resourceService.deleteResource(request).subscribe({
       complete: () => {
@@ -78,7 +111,7 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  handleEdit(resource: ResourceService.ResourceResponse): void {
+  handleEdit(resource: ResourceService.UpdateResourceRequest): void {
     this.newAddress = resource.address;
     this.newName = resource.name;
     this.newID = resource.id || 0;
@@ -106,7 +139,7 @@ export class ResourceManager extends LitElement {
       ></mwc-textfield>
 
       <mwc-button
-        @click=${this.handleRegisterResource}
+        @click=${this.handleSubmitResource}
         slot="primaryAction"
         dialogAction="discard"
       >

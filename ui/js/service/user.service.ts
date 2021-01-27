@@ -9,7 +9,7 @@ export class UserService extends HTTPService {
   }
 
   logout(): Observable<Response | { error: boolean; message: any }> {
-    return this.get("/edge/api/logout");
+    return this.post("/edge/api/logout");
   }
 
   getUser(): Observable<Response | { error: boolean; message: any }> {
