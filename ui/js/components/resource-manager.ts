@@ -37,8 +37,8 @@ export class ResourceManager extends LitElement {
     }).show();
   }
 
-  handleSubmitResource(isCreateResource: boolean): void {
-    if (isCreateResource) {
+  handleSubmitResource(isCreate: boolean): void {
+    if (isCreate) {
       const request: ResourceService.RegisterResourceRequest = {
         name: this.newName,
         address: this.newAddress,
@@ -121,8 +121,7 @@ export class ResourceManager extends LitElement {
   }
 
   updateResourceDialog(): TemplateResult {
-    const isCreateResource: boolean =
-      isEmpty(this.newName) && isEmpty(this.newAddress);
+    const isCreate: boolean = isEmpty(this.newName) && isEmpty(this.newAddress);
 
     return html`<mwc-dialog id="register">
       <div>Update/Register a Resource?</div>
@@ -143,7 +142,7 @@ export class ResourceManager extends LitElement {
       ></mwc-textfield>
 
       <mwc-button
-        @click=${() => this.handleSubmitResource(isCreateResource)}
+        @click=${() => this.handleSubmitResource(isCreate)}
         slot="primaryAction"
         dialogAction="ok"
       >
