@@ -7,7 +7,7 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list";
 import "@material/mwc-checkbox";
 import { ResourceService } from "../service/resource.service";
-import { isEmpty } from "./../function";
+import { isEmpty } from "../function";
 
 const NOT_A_RESOURCE_ID = 0;
 
@@ -114,7 +114,8 @@ export class ResourceManager extends LitElement {
     this.handleOpenRegisterResource();
   }
 
-  emptyFormNames(): void {
+  emptyFormValues(): void {
+    this.newID = NOT_A_RESOURCE_ID;
     this.newName = "";
     this.newAddress = "";
     this.requestUpdate();
@@ -150,8 +151,8 @@ export class ResourceManager extends LitElement {
       </mwc-button>
       <mwc-button
         slot="secondaryAction"
-        @click=${this.emptyFormNames}
         dialogAction="cancel"
+        @click=${this.emptyFormValues}
       >
         Cancel
       </mwc-button>
