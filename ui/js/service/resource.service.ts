@@ -8,27 +8,30 @@ export class ResourceService extends HTTPService {
   register(
     registerRequest: ResourceService.RegisterResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/resource/register", registerRequest);
+    return this.post("/edge/api/resource/register", registerRequest);
   }
   deleteResource(
     deleteRequest: ResourceService.RemoveResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
     return this.delete("/edge/api/resource", deleteRequest);
   }
-  addMember(
-    addMemberRequest: ResourceService.AddMemberRequest
+  addMemberResource(
+    addMemberResouceRequest: ResourceService.AddMemberResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/edge/api/resource/member", addMemberRequest);
+    return this.post("/edge/api/resource/member", addMemberResouceRequest);
   }
   removeMember(
-    removeMemberRequest: ResourceService.RemoveMemberRequest
+    removeMemberResourceRequest: ResourceService.RemoveMemberResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.delete("/edge/api/resource/member", removeMemberRequest);
+    return this.delete(
+      "/edge/api/resource/member",
+      removeMemberResourceRequest
+    );
   }
   updateResource(
     updateRequest: ResourceService.UpdateResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.put("/api/resource", updateRequest);
+    return this.put("/edge/api/resource", updateRequest);
   }
 }
 
@@ -45,12 +48,12 @@ export namespace ResourceService {
   export interface RemoveResourceRequest {
     id: number;
   }
-  export interface AddMemberRequest {
+  export interface AddMemberResourceRequest {
     email: string;
     resourceID: number;
   }
 
-  export interface RemoveMemberRequest {
+  export interface RemoveMemberResourceRequest {
     email: string;
     resourceID: string;
   }

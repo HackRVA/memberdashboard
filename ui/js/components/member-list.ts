@@ -1,3 +1,4 @@
+import { ResourceService } from "./../service/resource.service";
 import {
   LitElement,
   html,
@@ -11,6 +12,8 @@ import { MemberService } from "../service/member.service";
 import "./card-element";
 import "@material/mwc-button";
 import "@material/mwc-dialog";
+import "@material/mwc-select";
+import "@material/mwc-list/mwc-list-item";
 
 @customElement("member-list")
 export class MemberList extends LitElement {
@@ -20,7 +23,12 @@ export class MemberList extends LitElement {
   @property({ type: Number })
   memberCount: number = 0;
 
+  // form variables for adding/removing a resource to a member
+  email: string = "";
+  newResourceName: string = "";
+
   memberService: MemberService = new MemberService();
+  resourceService: ResourceService = new ResourceService();
 
   static get styles(): CSSResult {
     return css`
@@ -40,7 +48,7 @@ export class MemberList extends LitElement {
       th {
         text-align: left;
         padding: 8px;
-        font-size: 24px;
+        font-size: 20px;
         border: 1px solid #e1e1e1;
         width: 320px;
       }
@@ -50,6 +58,14 @@ export class MemberList extends LitElement {
       }
       .member-count {
         font-size: 18px;
+      }
+      .remove {
+        --mdc-theme-primary: #e9437a;
+      }
+      .horizontal-scrollbar {
+        overflow: auto;
+        max-width: 320px;
+        white-space: nowrap;
       }
     `;
   }
@@ -71,11 +87,19 @@ export class MemberList extends LitElement {
     }
   }
 
-  openMemberResourceModal(email: string): void {
-    console.log("email", email);
-    (this.shadowRoot?.querySelector("#memberResourceModal") as HTMLElement & {
+  openAddMemberResourceModal(email: string): void {
+    this.email = email;
+    this.requestUpdate();
+
+    (this.shadowRoot?.querySelector(
+      "#addMemberResourceModal"
+    ) as HTMLElement & {
       show: Function;
     }).show();
+  }
+
+  handleResourceChange(e: Event): void {
+    this.newResourceName = (e.target as EventTarget & { value: string }).value;
   }
 
   displayMembersTable(): TemplateResult {
@@ -87,11 +111,19 @@ export class MemberList extends LitElement {
             <td>${x.email}</td>
             <td>${this.displayMemberStatus(x.memberLevel)}</td>
             <td>
-              ${this.displayMemberResources(x.resources)}
-              <mwc-button
-                label="Add resource"
-                @click=${() => this.openMemberResourceModal(x.email)}
-              ></mwc-button>
+              <div class="horizontal-scrollbar">${this.displayMemberResources(
+                x.resources
+              )}</div>
+              <div>
+                <mwc-button
+                  label="Add resource"
+                  @click=${() => this.openAddMemberResourceModal(x.email)}
+                ></mwc-button>
+                <mwc-button
+                  class="remove"
+                  label="Remove resource"
+                  @click=${() => this.openAddMemberResourceModal(x.email)}
+                ></mwc-button>
             </td>
           </tr>
         `;
@@ -101,11 +133,21 @@ export class MemberList extends LitElement {
 
   displayMemberResourceModal(): TemplateResult {
     return html`
-      <mwc-dialog id="memberResourceModal">
+      <mwc-dialog id="addMemberResourceModal">
         <div>Add Resource</div>
-        <mwc-button slot="primaryAction" dialogAction="discard">
-          Discard
-        </mwc-button>
+        <mwc-textfield
+          label="email"
+          helper="Can't edit email"
+          readonly
+          value=${this.email}
+        ></mwc-textfield>
+        <mwc-textfield
+          label="resource"
+          helper="name of resource"
+          @change=${this.handleResourceChange}
+          value=${this.newResourceName}
+        ></mwc-textfield>
+        <mwc-button slot="primaryAction" dialogAction="ok"> Submit </mwc-button>
         <mwc-button slot="secondaryAction" dialogAction="cancel">
           Cancel
         </mwc-button>

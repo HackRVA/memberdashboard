@@ -7,6 +7,7 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list";
 import "@material/mwc-checkbox";
 import { ResourceService } from "../service/resource.service";
+import { isEmpty } from "./../function";
 
 const NOT_A_RESOURCE_ID = 0;
 
@@ -36,15 +37,15 @@ export class ResourceManager extends LitElement {
     }).show();
   }
 
-  handleSubmitResource(): void {
-    if (
-      this.isStringEmpty(this.newName) &&
-      this.isStringEmpty(this.newAddress)
-    ) {
+  handleSubmitResource(isCreateResource: boolean): void {
+    if (isCreateResource) {
       const request: ResourceService.RegisterResourceRequest = {
         name: this.newName,
         address: this.newAddress,
       };
+      this.newID = NOT_A_RESOURCE_ID;
+      this.newName = "";
+      this.newAddress = "";
       this.handleRegisterResource(request);
     } else {
       const request: ResourceService.UpdateResourceRequest = {
@@ -52,13 +53,11 @@ export class ResourceManager extends LitElement {
         name: this.newName,
         address: this.newAddress,
       };
-
+      this.newID = NOT_A_RESOURCE_ID;
+      this.newName = "";
+      this.newAddress = "";
       this.handleUpdateResource(request);
     }
-
-    this.newID = NOT_A_RESOURCE_ID;
-    this.newName = "";
-    this.newAddress = "";
   }
 
   handleRegisterResource(
@@ -81,10 +80,6 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  isStringEmpty(value: string): boolean {
-    return value.length === 0;
-  }
-
   handleGetResources(): void {
     this.resourceService.getResources().subscribe({
       next: (result: any) => {
@@ -92,7 +87,7 @@ export class ResourceManager extends LitElement {
           // this.onLoginComplete("Some error logging in");
           console.error("some error getting resources");
         } else {
-          this.resources = result as any;
+          this.resources = result as ResourceService.ResourceResponse[];
           this.requestUpdate();
         }
       },
@@ -119,7 +114,16 @@ export class ResourceManager extends LitElement {
     this.handleOpenRegisterResource();
   }
 
+  emptyFormNames(): void {
+    this.newName = "";
+    this.newAddress = "";
+    this.requestUpdate();
+  }
+
   updateResourceDialog(): TemplateResult {
+    const isCreateResource: boolean =
+      isEmpty(this.newName) && isEmpty(this.newAddress);
+
     return html`<mwc-dialog id="register">
       <div>Update/Register a Resource?</div>
 
@@ -128,24 +132,28 @@ export class ResourceManager extends LitElement {
         value=${this.newName}
         id="newResourceName"
         label="name"
-        helper="name of device"
+        helper="Name of device"
       ></mwc-textfield>
       <mwc-textfield
         @change=${this.handleAddressChange}
         value=${this.newAddress}
         id="newResourceAddress"
         label="address"
-        helper="address on the network"
+        helper="Address on the network"
       ></mwc-textfield>
 
       <mwc-button
-        @click=${this.handleSubmitResource}
+        @click=${() => this.handleSubmitResource(isCreateResource)}
         slot="primaryAction"
-        dialogAction="discard"
+        dialogAction="ok"
       >
         Submit
       </mwc-button>
-      <mwc-button slot="secondaryAction" dialogAction="cancel">
+      <mwc-button
+        slot="secondaryAction"
+        @click=${this.emptyFormNames}
+        dialogAction="cancel"
+      >
         Cancel
       </mwc-button>
     </mwc-dialog>`;
