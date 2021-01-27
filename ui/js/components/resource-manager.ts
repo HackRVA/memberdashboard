@@ -7,6 +7,7 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list";
 import "@material/mwc-checkbox";
 import { ResourceService } from "../service/resource.service";
+import { isEmpty } from "../function";
 
 const NOT_A_RESOURCE_ID = 0;
 
@@ -36,11 +37,8 @@ export class ResourceManager extends LitElement {
     }).show();
   }
 
-  handleSubmitResource(): void {
-    if (
-      this.isStringEmpty(this.newName) &&
-      this.isStringEmpty(this.newAddress)
-    ) {
+  handleSubmitResource(isCreate: boolean): void {
+    if (isCreate) {
       const request: ResourceService.RegisterResourceRequest = {
         name: this.newName,
         address: this.newAddress,
@@ -81,10 +79,6 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  isStringEmpty(value: string): boolean {
-    return value.length === 0;
-  }
-
   handleGetResources(): void {
     this.resourceService.getResources().subscribe({
       next: (result: any) => {
@@ -119,7 +113,16 @@ export class ResourceManager extends LitElement {
     this.handleOpenRegisterResource();
   }
 
+  emptyFormValues(): void {
+    this.newID = NOT_A_RESOURCE_ID;
+    this.newName = "";
+    this.newAddress = "";
+    this.requestUpdate();
+  }
+
   updateResourceDialog(): TemplateResult {
+    const isCreate: boolean = isEmpty(this.newName) && isEmpty(this.newAddress);
+
     return html`<mwc-dialog id="register">
       <div>Update/Register a Resource?</div>
 
@@ -139,13 +142,17 @@ export class ResourceManager extends LitElement {
       ></mwc-textfield>
 
       <mwc-button
-        @click=${this.handleSubmitResource}
+        @click=${() => this.handleSubmitResource(isCreate)}
         slot="primaryAction"
         dialogAction="discard"
       >
         Submit
       </mwc-button>
-      <mwc-button slot="secondaryAction" dialogAction="cancel">
+      <mwc-button
+        slot="secondaryAction"
+        dialogAction="cancel"
+        @click=${this.emptyFormValues}
+      >
         Cancel
       </mwc-button>
     </mwc-dialog>`;
