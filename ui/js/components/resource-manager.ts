@@ -43,6 +43,7 @@ export class ResourceManager extends LitElement {
         name: this.newName,
         address: this.newAddress,
       };
+      this.emptyFormValues();
       this.handleRegisterResource(request);
     } else {
       const request: ResourceService.UpdateResourceRequest = {
@@ -50,13 +51,9 @@ export class ResourceManager extends LitElement {
         name: this.newName,
         address: this.newAddress,
       };
-
+      this.emptyFormValues();
       this.handleUpdateResource(request);
     }
-
-    this.newID = NOT_A_RESOURCE_ID;
-    this.newName = "";
-    this.newAddress = "";
   }
 
   handleRegisterResource(
@@ -86,7 +83,7 @@ export class ResourceManager extends LitElement {
           // this.onLoginComplete("Some error logging in");
           console.error("some error getting resources");
         } else {
-          this.resources = result as any;
+          this.resources = result as ResourceService.ResourceResponse[];
           this.requestUpdate();
         }
       },
@@ -117,6 +114,10 @@ export class ResourceManager extends LitElement {
     this.newID = NOT_A_RESOURCE_ID;
     this.newName = "";
     this.newAddress = "";
+  }
+
+  emptyFormValuesOnClosed(): void {
+    this.emptyFormValues();
     this.requestUpdate();
   }
 
@@ -131,27 +132,27 @@ export class ResourceManager extends LitElement {
         value=${this.newName}
         id="newResourceName"
         label="name"
-        helper="name of device"
+        helper="Name of device"
       ></mwc-textfield>
       <mwc-textfield
         @change=${this.handleAddressChange}
         value=${this.newAddress}
         id="newResourceAddress"
         label="address"
-        helper="address on the network"
+        helper="Address on the network"
       ></mwc-textfield>
 
       <mwc-button
         @click=${() => this.handleSubmitResource(isCreate)}
         slot="primaryAction"
-        dialogAction="discard"
+        dialogAction="ok"
       >
         Submit
       </mwc-button>
       <mwc-button
         slot="secondaryAction"
         dialogAction="cancel"
-        @click=${this.emptyFormValues}
+        @click=${this.emptyFormValuesOnClosed}
       >
         Cancel
       </mwc-button>

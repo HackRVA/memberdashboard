@@ -6,19 +6,29 @@ export class ResourceService extends HTTPService {
     return this.get("/api/resource");
   }
   register(
-    registerRequest: ResourceService.RegisterResourceRequest
+    request: ResourceService.RegisterResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/resource/register", registerRequest);
+    return this.post("/api/resource/register", request);
   }
   deleteResource(
-    deleteRequest: ResourceService.RemoveResourceRequest
+    request: ResourceService.RemoveResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.delete("/api/resource", deleteRequest);
+    return this.delete("/api/resource", request);
+  }
+  addMemberResource(
+    request: ResourceService.AddMemberResourceRequest
+  ): Observable<Response | { error: boolean; message: any }> {
+    return this.post("/api/resource/member", request);
+  }
+  removeMemberResource(
+    request: ResourceService.RemoveMemberResourceRequest
+  ): Observable<Response | { error: boolean; message: any }> {
+    return this.delete("/api/resource/member", request);
   }
   updateResource(
-    updateRequest: ResourceService.UpdateResourceRequest
+    request: ResourceService.UpdateResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.put("/api/resource", updateRequest);
+    return this.put("/api/resource", request);
   }
 }
 
@@ -34,6 +44,15 @@ export namespace ResourceService {
   }
   export interface RemoveResourceRequest {
     id: number;
+  }
+  export interface AddMemberResourceRequest {
+    email: string;
+    resourceID: number;
+  }
+
+  export interface RemoveMemberResourceRequest {
+    email: string;
+    resourceID: number;
   }
   export interface ResourceResponse {
     address: string;

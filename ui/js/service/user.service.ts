@@ -3,9 +3,9 @@ import { HTTPService } from "./http.service";
 
 export class UserService extends HTTPService {
   login(
-    loginRequest: UserService.LoginRequest
+    request: UserService.LoginRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/login", loginRequest);
+    return this.post("/api/login", request);
   }
 
   logout(): Observable<Response | { error: boolean; message: any }> {
@@ -17,9 +17,9 @@ export class UserService extends HTTPService {
   }
 
   registerUser(
-    registerRequest: UserService.RegisterRequest
+    request: UserService.RegisterRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/register", registerRequest);
+    return this.post("/api/register", request);
   }
 }
 

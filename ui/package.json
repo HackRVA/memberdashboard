@@ -10,7 +10,7 @@
     "build": "npx tsc",
     "postbuild": "npm run copy-files",
     "copy-files": "mkdir -p build && cp -r ./public/* ./build/",
-    "dev": "concurrently --kill-others --names tsc,es-dev-server \"tsc --watch\" \"es-dev-server --app-index index.html --node-resolve --open --watch\"",
+    "dev": "concurrently --kill-others --names tsc,es-dev-server \"tsc --watch\" \"es-dev-server --app-index index.html --node-resolve --watch\"",
     "rollup": "mkdir -p dist && cp -r ./public/* ./dist/ && rollup -c rollup.config.js",
     "prerollup": "rm tsconfig.tsbuildinfo || true && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -34,7 +34,9 @@
     "@material/mwc-fab": "^0.20.0",
     "@material/mwc-icon": "^0.20.0",
     "@material/mwc-icon-button": "^0.20.0",
+    "@material/mwc-list": "^0.20.0",
     "@material/mwc-menu": "^0.20.0",
+    "@material/mwc-select": "^0.20.0",
     "@material/mwc-snackbar": "^0.20.0",
     "@material/mwc-tab-bar": "^0.20.0",
     "@material/mwc-textfield": "^0.20.0",
