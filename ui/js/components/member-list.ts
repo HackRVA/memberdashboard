@@ -157,8 +157,7 @@ export class MemberList extends LitElement {
       email: this.email,
       resourceID: this.newResourceId,
     };
-    this.email = "";
-    this.newResourceId = 0;
+    this.emptyFormValues();
     this.addMemberResource(request);
   }
 
@@ -167,8 +166,7 @@ export class MemberList extends LitElement {
       email: this.email,
       resourceID: this.newResourceId,
     };
-    this.email = "";
-    this.newResourceId = 0;
+    this.emptyFormValues();
     this.removeMemberResource(request);
   }
 
@@ -249,7 +247,7 @@ export class MemberList extends LitElement {
         <mwc-button
           slot="secondaryAction"
           dialogAction="cancel"
-          @click=${this.emptyFormValues}
+          @click=${this.emptyFormValuesOnClosed}
         >
           Cancel
         </mwc-button>
@@ -284,7 +282,7 @@ export class MemberList extends LitElement {
         <mwc-button
           slot="secondaryAction"
           dialogAction="cancel"
-          @click=${this.emptyFormValues}
+          @click=${this.emptyFormValuesOnClosed}
         >
           Cancel
         </mwc-button>
@@ -292,10 +290,13 @@ export class MemberList extends LitElement {
     `;
   }
 
+  emptyFormValuesOnClosed(): void {
+    this.emptyFormValues();
+    this.requestUpdate();
+  }
   emptyFormValues(): void {
     this.email = "";
     this.newResourceId = 0;
-    this.requestUpdate();
   }
 
   displayMemberResources(

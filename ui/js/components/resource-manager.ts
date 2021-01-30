@@ -43,9 +43,7 @@ export class ResourceManager extends LitElement {
         name: this.newName,
         address: this.newAddress,
       };
-      this.newID = NOT_A_RESOURCE_ID;
-      this.newName = "";
-      this.newAddress = "";
+      this.emptyFormValues();
       this.handleRegisterResource(request);
     } else {
       const request: ResourceService.UpdateResourceRequest = {
@@ -53,9 +51,7 @@ export class ResourceManager extends LitElement {
         name: this.newName,
         address: this.newAddress,
       };
-      this.newID = NOT_A_RESOURCE_ID;
-      this.newName = "";
-      this.newAddress = "";
+      this.emptyFormValues();
       this.handleUpdateResource(request);
     }
   }
@@ -118,6 +114,10 @@ export class ResourceManager extends LitElement {
     this.newID = NOT_A_RESOURCE_ID;
     this.newName = "";
     this.newAddress = "";
+  }
+
+  emptyFormValuesOnClosed(): void {
+    this.emptyFormValues();
     this.requestUpdate();
   }
 
@@ -152,7 +152,7 @@ export class ResourceManager extends LitElement {
       <mwc-button
         slot="secondaryAction"
         dialogAction="cancel"
-        @click=${this.emptyFormValues}
+        @click=${this.emptyFormValuesOnClosed}
       >
         Cancel
       </mwc-button>
