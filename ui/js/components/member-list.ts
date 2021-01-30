@@ -23,10 +23,13 @@ export class MemberList extends LitElement {
   @property({ type: Number })
   memberCount: number = 0;
 
+  resources: ResourceService.ResourceResponse[] = [];
+
   // form variables for adding/removing a resource to a member
   email: string = "";
-  newResourceName: string = "";
+  newResourceId: number = 0;
 
+  memberResources: Array<MemberService.MemberResource> = [];
   memberService: MemberService = new MemberService();
   resourceService: ResourceService = new ResourceService();
 
@@ -70,6 +73,10 @@ export class MemberList extends LitElement {
     `;
   }
 
+  firstUpdated(): void {
+    this.getResources();
+  }
+
   displayMemberStatus(memberLevel: number): string {
     const { MemberLevel } = MemberService;
 
@@ -87,6 +94,34 @@ export class MemberList extends LitElement {
     }
   }
 
+  getResources(): void {
+    this.resourceService.getResources().subscribe({
+      next: (result: any) => {
+        if ((result as { error: boolean; message: any }).error) {
+          // this.onLoginComplete("Some error logging in");
+          console.error("some error getting resources");
+        } else {
+          this.resources = result as ResourceService.ResourceResponse[];
+          this.requestUpdate();
+        }
+      },
+    });
+  }
+
+  getMembers(): void {
+    this.memberService.getMembers().subscribe({
+      next: (result: any) => {
+        if ((result as { error: boolean; message: any }).error) {
+          return console.error(
+            (result as { error: boolean; message: any }).message
+          );
+        }
+        this.members = result as MemberService.MemberResponse[];
+        this.memberCount = this.members.length;
+      },
+    });
+  }
+
   openAddMemberResourceModal(email: string): void {
     this.email = email;
     this.requestUpdate();
@@ -98,8 +133,63 @@ export class MemberList extends LitElement {
     }).show();
   }
 
+  openRemoveMemberResourceModal(
+    email: string,
+    memberResources: Array<MemberService.MemberResource>
+  ): void {
+    this.email = email;
+    this.memberResources = memberResources;
+    this.requestUpdate();
+
+    (this.shadowRoot?.querySelector(
+      "#removeMemberResourceModal"
+    ) as HTMLElement & {
+      show: Function;
+    }).show();
+  }
+
   handleResourceChange(e: Event): void {
-    this.newResourceName = (e.target as EventTarget & { value: string }).value;
+    this.newResourceId = +(e.target as EventTarget & { value: string }).value;
+  }
+
+  handleSubmitAddMemberResource(): void {
+    const request: ResourceService.AddMemberResourceRequest = {
+      email: this.email,
+      resourceID: this.newResourceId,
+    };
+    this.email = "";
+    this.newResourceId = 0;
+    this.addMemberResource(request);
+  }
+
+  handleSubmitRemoveMemberResource(): void {
+    const request: ResourceService.RemoveMemberResourceRequest = {
+      email: this.email,
+      resourceID: this.newResourceId,
+    };
+    this.email = "";
+    this.newResourceId = 0;
+    this.removeMemberResource(request);
+  }
+
+  removeMemberResource(
+    request: ResourceService.RemoveMemberResourceRequest
+  ): void {
+    this.resourceService.removeMemberResource(request).subscribe({
+      complete: () => {
+        this.getMembers();
+        this.requestUpdate();
+      },
+    });
+  }
+
+  addMemberResource(request: ResourceService.AddMemberResourceRequest): void {
+    this.resourceService.addMemberResource(request).subscribe({
+      complete: () => {
+        this.getMembers();
+        this.requestUpdate();
+      },
+    });
   }
 
   displayMembersTable(): TemplateResult {
@@ -122,7 +212,8 @@ export class MemberList extends LitElement {
                 <mwc-button
                   class="remove"
                   label="Remove resource"
-                  @click=${() => this.openAddMemberResourceModal(x.email)}
+                  @click=${() =>
+                    this.openRemoveMemberResourceModal(x.email, x.resources)}
                 ></mwc-button>
             </td>
           </tr>
@@ -131,7 +222,42 @@ export class MemberList extends LitElement {
     `;
   }
 
-  displayMemberResourceModal(): TemplateResult {
+  displayRemoveMemberResourceModal(): TemplateResult {
+    return html`
+      <mwc-dialog id="removeMemberResourceModal">
+        <div>Remove Resource</div>
+        <mwc-textfield
+          label="email"
+          helper="Can't edit email"
+          readonly
+          value=${this.email}
+        ></mwc-textfield>
+        <mwc-select label="Resources" @change=${this.handleResourceChange}>
+          ${this.memberResources.map((x: MemberService.MemberResource) => {
+            return html`
+              <mwc-list-item value=${x.resourceID}> ${x.name} </mwc-list-item>
+            `;
+          })}
+        </mwc-select>
+        <mwc-button
+          slot="primaryAction"
+          dialogAction="ok"
+          @click=${this.handleSubmitRemoveMemberResource}
+        >
+          Submit
+        </mwc-button>
+        <mwc-button
+          slot="secondaryAction"
+          dialogAction="cancel"
+          @click=${this.emptyFormValues}
+        >
+          Cancel
+        </mwc-button>
+      </mwc-dialog>
+    `;
+  }
+
+  displayAddMemberResourceModal(): TemplateResult {
     return html`
       <mwc-dialog id="addMemberResourceModal">
         <div>Add Resource</div>
@@ -141,18 +267,35 @@ export class MemberList extends LitElement {
           readonly
           value=${this.email}
         ></mwc-textfield>
-        <mwc-textfield
-          label="resource"
-          helper="name of resource"
-          @change=${this.handleResourceChange}
-          value=${this.newResourceName}
-        ></mwc-textfield>
-        <mwc-button slot="primaryAction" dialogAction="ok"> Submit </mwc-button>
-        <mwc-button slot="secondaryAction" dialogAction="cancel">
+        <mwc-select label="Resources" @change=${this.handleResourceChange}>
+          ${this.resources.map((x: ResourceService.ResourceResponse) => {
+            return html`
+              <mwc-list-item value=${x.id}> ${x.name} </mwc-list-item>
+            `;
+          })}
+        </mwc-select>
+        <mwc-button
+          slot="primaryAction"
+          dialogAction="ok"
+          @click=${this.handleSubmitAddMemberResource}
+        >
+          Submit
+        </mwc-button>
+        <mwc-button
+          slot="secondaryAction"
+          dialogAction="cancel"
+          @click=${this.emptyFormValues}
+        >
           Cancel
         </mwc-button>
       </mwc-dialog>
     `;
+  }
+
+  emptyFormValues(): void {
+    this.email = "";
+    this.newResourceId = 0;
+    this.requestUpdate();
   }
 
   displayMemberResources(
@@ -184,7 +327,8 @@ export class MemberList extends LitElement {
           </table>
         </div>
 
-        ${this.displayMemberResourceModal()}
+        ${this.displayAddMemberResourceModal()}
+        ${this.displayRemoveMemberResourceModal()}
       </card-element>
     `;
   }

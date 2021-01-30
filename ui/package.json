@@ -10,7 +10,7 @@
     "build": "npx tsc",
     "postbuild": "npm run copy-files",
     "copy-files": "mkdir -p build && cp -r ./public/* ./build/",
-    "dev": "concurrently --kill-others --names tsc,es-dev-server \"tsc --watch\" \"es-dev-server --app-index index.html --node-resolve --open --watch\"",
+    "dev": "concurrently --kill-others --names tsc,es-dev-server \"tsc --watch\" \"es-dev-server --app-index index.html --node-resolve --watch\"",
     "rollup": "mkdir -p dist && cp -r ./public/* ./dist/ && rollup -c rollup.config.js",
     "prerollup": "rm tsconfig.tsbuildinfo || true && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
