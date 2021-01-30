@@ -25,11 +25,6 @@ export class ResourceService extends HTTPService {
   ): Observable<Response | { error: boolean; message: any }> {
     return this.delete("/api/resource/member", request);
   }
-  removeMember(
-    request: ResourceService.RemoveMemberResourceRequest
-  ): Observable<Response | { error: boolean; message: any }> {
-    return this.delete("/api/resource/member", request);
-  }
   updateResource(
     request: ResourceService.UpdateResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
