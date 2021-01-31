@@ -1,9 +1,12 @@
 import { Observable } from "rxjs";
 import { HTTPService } from "./http.service";
+import { ENV } from "./../env";
 
 export class MemberService extends HTTPService {
+  private readonly api: string | undefined = ENV.api;
+
   getMembers(): Observable<Response | { error: boolean; message: any }> {
-    return this.get("/api/member");
+    return this.get(this.api + "/member");
   }
 }
 

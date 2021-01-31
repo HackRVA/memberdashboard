@@ -1,8 +1,8 @@
 # Member Dashboard
 
-
 ## Prerequisites
-* [nodejs](https://nodejs.org/en/)
+
+- [Node](https://nodejs.org/en/)
 
 ## Run locally
 
