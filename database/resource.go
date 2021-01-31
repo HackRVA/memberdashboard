@@ -185,8 +185,8 @@ func (db *Database) UpdateResource(id uint8, name string, address string) (*Reso
 
 	// if the resource doesn't already exist let's register it
 	if id == 0 {
-		registered, err := db.RegisterResource(name, address)
-		return registered, err
+		log.Error("invalid resourseID of 0")
+		return r, errors.New("invalid resourseID of 0")
 	}
 
 	row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)

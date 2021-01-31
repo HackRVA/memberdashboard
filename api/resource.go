@@ -72,10 +72,10 @@ type getResourceStatusResponse struct {
 
 // swagger:response removeMemberSuccessResponse
 type removeMemberSuccessResponse struct {
-	Body removeMemberSuccess
+	Body endpointSuccess
 }
 
-type removeMemberSuccess struct {
+type endpointSuccess struct {
 	Ack bool `json:"ack"`
 }
 
@@ -140,6 +140,10 @@ func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(endpointSuccess{
+		Ack: true,
+	})
+	w.Write(j)
 }
 
 func (rs resourceAPI) addMember(w http.ResponseWriter, req *http.Request) {
@@ -178,7 +182,7 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(removeMemberSuccess{
+	j, _ := json.Marshal(endpointSuccess{
 		Ack: true,
 	})
 	w.Write(j)
@@ -186,6 +190,12 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 
 func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
 	var register database.RegisterResourceRequest
+
+	err := json.NewDecoder(req.Body).Decode(&register)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	r, err := rs.db.RegisterResource(register.Name, register.Address)
 	if err != nil {

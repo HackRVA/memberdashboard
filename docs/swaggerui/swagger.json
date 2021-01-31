@@ -731,6 +731,16 @@
       },
       "x-go-package": "memberserver/database"
     },
+    "endpointSuccess": {
+      "type": "object",
+      "properties": {
+        "ack": {
+          "type": "boolean",
+          "x-go-name": "Ack"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
     "memberResourceRelation": {
       "description": "resource to update or delete a resource",
       "type": "object",
@@ -751,16 +761,6 @@
           "format": "uint64",
           "x-go-name": "ID",
           "example": 0
-        }
-      },
-      "x-go-package": "memberserver/api"
-    },
-    "removeMemberSuccess": {
-      "type": "object",
-      "properties": {
-        "ack": {
-          "type": "boolean",
-          "x-go-name": "Ack"
         }
       },
       "x-go-package": "memberserver/api"
@@ -843,7 +843,7 @@
     },
     "removeMemberSuccessResponse": {
       "schema": {
-        "$ref": "#/definitions/removeMemberSuccess"
+        "$ref": "#/definitions/endpointSuccess"
       },
       "headers": {
         "Body": {}
