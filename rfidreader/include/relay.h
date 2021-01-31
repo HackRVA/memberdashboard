@@ -1,0 +1,2 @@
+#define RELAY_PIN D3
+#define RELAY_GRANT_DELAY 2000

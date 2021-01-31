@@ -2,6 +2,7 @@
 #include <MFRC522.h>
 
 #include "acl.h"
+#include "relay.h"
 
 /**
  * granted
@@ -14,14 +15,14 @@ void granted(uint16_t setDelay)
 {
     Serial.println(F("Welcome, You shall pass"));
 #if 0
-      digitalWrite(blueLed, LED_OFF);   // Turn off blue LED
-      digitalWrite(redLed, LED_OFF);  // Turn off red LED
-      digitalWrite(greenLed, LED_ON);   // Turn on green LED
-      digitalWrite(relay, LOW);     // Unlock door!
+    digitalWrite(blueLed, LED_OFF);   // Turn off blue LED
+    digitalWrite(redLed, LED_OFF);  // Turn off red LED
+    digitalWrite(greenLed, LED_ON);   // Turn on green LED
 #endif
+    digitalWrite(RELAY_PIN, HIGH);     // Unlock door!
     delay(setDelay); // Hold door lock open for given seconds
+    digitalWrite(RELAY_PIN, LOW);    // Relock door
 #if 0
-      digitalWrite(relay, HIGH);    // Relock door
 #endif
     delay(1000); // Hold green LED on for a second
 }
@@ -71,7 +72,7 @@ void checkID(MFRC522 reader)
 
     if (find_id(successRead))
     {                 // look for the ID in flash
-        granted(300); // Open the door lock for 300 ms
+        granted(RELAY_GRANT_DELAY); // Open the door lock for 300 ms
     }
     else
     { // If not, show that the ID was not valid

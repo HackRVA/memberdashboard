@@ -107,6 +107,8 @@ void handleNotFound()
     server.send(404, "text/plain", message);
 }
 
+void handleWifiSetup();
+
 void setup_wifi(void)
 {
     config_t *conf = new config_t();
@@ -131,7 +133,7 @@ void setup_wifi(void)
 
     WiFi.mode(WIFI_STA);
     WiFi.begin(conf->ssid, conf->password);
-    Serial.println("");
+    Serial.printf("ssid: %s\npassword: %s\n", conf->ssid, conf->password);
 
     // Wait for connection
     while (WiFi.status() != WL_CONNECTED)

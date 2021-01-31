@@ -4,6 +4,7 @@
 #include "rfid.h"
 #include "acl.h"
 #include "wifi.h"
+#include "relay.h"
 
 #define TESTING 0
 #define DEBUG 0
@@ -16,6 +17,7 @@ void setup()
 	mfrc522 = setup_rfid_reader();
 	acl_init();
 	setup_wifi();
+	pinMode(RELAY_PIN, OUTPUT);
 
 #if TESTING
 	unsigned long acl[MAXIMUM_ACL_SIZE] = {};
