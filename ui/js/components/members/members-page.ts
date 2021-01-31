@@ -1,4 +1,4 @@
-import { MemberService } from "./../../service/member.service";
+import { MemberService } from "../../service/member.service";
 import {
   LitElement,
   html,
@@ -8,7 +8,7 @@ import {
   CSSResult,
   property,
 } from "lit-element";
-import "../member-list";
+import "./member-list";
 
 @customElement("members-page")
 export class MembersPage extends LitElement {

@@ -6,10 +6,11 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
-import { UserService } from "../service/user.service";
+import "./../shared/card-element";
+import { UserService } from "../../service/user.service";
 
-@customElement("user-login-profile")
-export class UserLoginProfile extends LitElement {
+@customElement("user-profile")
+export class UserProfile extends LitElement {
   userService: UserService = new UserService();
   username: string = "";
   email: string = "";
@@ -36,30 +37,14 @@ export class UserLoginProfile extends LitElement {
       },
     });
   }
-
-  handleLogout(): void {
-    this.userService.logout().subscribe({
-      next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          console.log("error logging out");
-          return;
-        }
-        localStorage.removeItem("jwt");
-        window.location.reload();
-      },
-    });
-  }
-
   render(): TemplateResult {
     return html`
-      <mwc-list-item>
-        <mwc-icon slot="graphic">person</mwc-icon>
-        ${this.username}</mwc-list-item
-      >
-      <mwc-list-item>${this.email}</mwc-list-item>
-      <mwc-list-item @click=${this.handleLogout}>
-        <mwc-button label="Logout"></mwc-button>
-      </mwc-list-item>
-    `;
+    <card-element>
+      <profile-container>
+        <profile-label>User Profile</profile-title>
+        <username-label>${this.username}</username-label>
+        <email-label>${this.email}</email-label>
+      </profile-container>
+    </card-element>`;
   }
 }

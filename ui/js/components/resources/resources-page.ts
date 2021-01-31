@@ -6,7 +6,7 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
-import "./../resource-manager";
+import "./resource-manager";
 
 @customElement("resources-page")
 export class ResourcesPage extends LitElement {

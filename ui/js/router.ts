@@ -12,35 +12,35 @@ const routes: Route[] = [
         path: "home",
         component: "home-page",
         action: async () => {
-          await import("./components/pages/home-page");
+          await import("./components/home/home-page");
         },
       },
       {
         path: "users",
         component: "users-page",
         action: async () => {
-          await import("./components/pages/users-page");
+          await import("./components/users/users-page");
         },
       },
       {
         path: "members",
         component: "members-page",
         action: async () => {
-          await import("./components/pages/members-page");
+          await import("./components/members/members-page");
         },
       },
       {
         path: "resources",
         component: "resources-page",
         action: async () => {
-          await import("./components/pages/resources-page");
+          await import("./components/resources/resources-page");
         },
       },
       {
         path: "status",
         component: "status-page",
         action: async () => {
-          await import("./components/pages/status-page");
+          await import("./components/status/status-page");
         },
       },
     ],

@@ -1,4 +1,4 @@
-import { ResourceService } from "./../service/resource.service";
+import { ResourceService } from "../../service/resource.service";
 import {
   LitElement,
   html,
@@ -8,8 +8,8 @@ import {
   CSSResult,
   property,
 } from "lit-element";
-import { MemberService } from "../service/member.service";
-import "./card-element";
+import { MemberService } from "../../service/member.service";
+import "../shared/card-element";
 import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/mwc-select";

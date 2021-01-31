@@ -3,32 +3,32 @@ import { HTTPService } from "./http.service";
 
 export class ResourceService extends HTTPService {
   getResources(): Observable<Response | { error: boolean; message: any }> {
-    return this.get("/api/resource");
+    return this.get("/edge/api/resource");
   }
   register(
     request: ResourceService.RegisterResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/resource/register", request);
+    return this.post("/edge/api/resource/register", request);
   }
   deleteResource(
     request: ResourceService.RemoveResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.delete("/api/resource", request);
+    return this.delete("/edge/api/resource", request);
   }
   addMemberResource(
     request: ResourceService.AddMemberResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/resource/member", request);
+    return this.post("/edge/api/resource/member", request);
   }
   removeMemberResource(
     request: ResourceService.RemoveMemberResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.delete("/api/resource/member", request);
+    return this.delete("/edge/api/resource/member", request);
   }
   updateResource(
     request: ResourceService.UpdateResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.put("/api/resource", request);
+    return this.put("/edge/api/resource", request);
   }
 }
 

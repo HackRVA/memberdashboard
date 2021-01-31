@@ -6,16 +6,24 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
-import "./card-element";
-import { UserService } from "../service/user.service";
+import { UserService } from "../../service/user.service";
+import "../shared/card-element";
+import "../shared/register-form";
+import "../shared/body-element";
 
-@customElement("user-profile")
-export class UserProfile extends LitElement {
-  userService: UserService = new UserService();
+@customElement("home-page")
+export class HomePage extends LitElement {
   username: string = "";
   email: string = "";
+  userService: UserService = new UserService();
+
   static get styles(): CSSResult {
-    return css``;
+    return css`
+      login-container {
+        display: grid;
+        justify-content: center;
+      }
+    `;
   }
 
   firstUpdated(): void {
@@ -37,13 +45,22 @@ export class UserProfile extends LitElement {
       },
     });
   }
+
+  displayHomePage(): TemplateResult {
+    if (this.username) {
+      return html` <h1>Home</h1> `;
+    } else {
+      return html`
+        <card-element>
+          <login-container>
+            <register-form />
+          </login-container>
+        </card-element>
+      `;
+    }
+  }
+
   render(): TemplateResult {
-    return html` <card-element>
-      <profile-container>
-      <profile-label>User Profile</profile-title>
-      <username-label>${this.username}</username-label>
-      <email-label>${this.email}</email-label>
-       </profile-container>
-    </card-element>`;
+    return html` ${this.displayHomePage()} `;
   }
 }

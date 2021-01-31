@@ -1,13 +1,13 @@
 import { LitElement, html, customElement, TemplateResult } from "lit-element";
-import "./card-element";
+import "../shared/card-element";
 import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/mwc-textfield";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list";
 import "@material/mwc-checkbox";
-import { ResourceService } from "../service/resource.service";
-import { isEmpty } from "../function";
+import { ResourceService } from "../../service/resource.service";
+import { isEmpty } from "../../function";
 
 const NOT_A_RESOURCE_ID = 0;
 
