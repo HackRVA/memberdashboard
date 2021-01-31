@@ -199,7 +199,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     - bearerAuth:
 	//
 	//     Responses:
-	//       200: removeMemberToResourceResponse
+	//       200: removeMemberSuccessResponse
 	rr.HandleFunc("/resource/member", api.resource.removeMember).Methods(http.MethodDelete)
 	// swagger:route GET /api/info info info
 	//

@@ -322,18 +322,9 @@
         ],
         "summary": "Removes a member from a resource.",
         "operationId": "resourceRemoveMemberRequest",
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/memberResourceRelation"
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "$ref": "#/responses/removeMemberToResourceResponse"
+            "$ref": "#/responses/removeMemberSuccessResponse"
           }
         }
       }
@@ -764,6 +755,16 @@
       },
       "x-go-package": "memberserver/api"
     },
+    "removeMemberSuccess": {
+      "type": "object",
+      "properties": {
+        "ack": {
+          "type": "boolean",
+          "x-go-name": "Ack"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
     "tokenResponse": {
       "description": "tokenReponse for json response of signin",
       "type": "object",
@@ -840,9 +841,12 @@
         "$ref": "#/definitions/Resource"
       }
     },
-    "removeMemberToResourceResponse": {
+    "removeMemberSuccessResponse": {
       "schema": {
-        "$ref": "#/definitions/MemberResourceRelation"
+        "$ref": "#/definitions/removeMemberSuccess"
+      },
+      "headers": {
+        "Body": {}
       }
     },
     "setRFIDResponse": {

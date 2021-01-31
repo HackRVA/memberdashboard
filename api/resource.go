@@ -46,12 +46,6 @@ type resourceAddMemberRequest struct {
 	Body memberResourceRelation
 }
 
-// swagger:parameters resourceRemoveMemberRequest
-type resourceRemoveMemberRequest struct {
-	// in: body
-	Body memberResourceRelation
-}
-
 // swagger:response getResourceResponse
 type getResourceResponse struct {
 	// in: body
@@ -70,16 +64,19 @@ type addMemberToResourceResponse struct {
 	Body database.MemberResourceRelation
 }
 
-// swagger:response removeMemberToResourceResponse
-type removeMemberToResourceResponse struct {
-	// in: body
-	Body database.MemberResourceRelation
-}
-
 // swagger:response getResourceStatusResponse
 type getResourceStatusResponse struct {
 	// in: body
 	Body map[string]uint8
+}
+
+// swagger:response removeMemberSuccessResponse
+type removeMemberSuccessResponse struct {
+	Body removeMemberSuccess
+}
+
+type removeMemberSuccess struct {
+	Ack bool `json:"ack"`
 }
 
 // Resource http handlers for resources
@@ -180,9 +177,11 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// w.Header().Set("Content-Type", "application/json")
-	// j, _ := json.Marshal(r)
-	// w.Write(j)
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(removeMemberSuccess{
+		Ack: true,
+	})
+	w.Write(j)
 }
 
 func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
