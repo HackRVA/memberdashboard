@@ -6,7 +6,7 @@ import "@material/mwc-top-app-bar-fixed";
 import "@material/mwc-icon-button";
 import "@material/mwc-menu";
 import "./components/shared/login-form";
-import "./components/users/user-login-profile";
+import "./components/user/user-login-profile";
 import "./router";
 import { Router, RouterLocation } from "@vaadin/router";
 import { UserService } from "./service/user.service";
@@ -28,8 +28,8 @@ export class MemberDashboard extends LitElement {
     Router.go("/home");
   }
 
-  goToUsers(): void {
-    Router.go("/users");
+  goToUser(): void {
+    Router.go("/user");
   }
 
   goToMembers(): void {
@@ -74,8 +74,8 @@ export class MemberDashboard extends LitElement {
     switch (pathName) {
       case "/home":
         return TabIndex.home;
-      case "/users":
-        return TabIndex.users;
+      case "/user":
+        return TabIndex.user;
       case "/members":
         return TabIndex.members;
       case "/resources":
@@ -121,7 +121,7 @@ export class MemberDashboard extends LitElement {
       </mwc-top-app-bar-fixed>
       <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
         <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>
-        <mwc-tab label="Users" @click=${this.goToUsers}></mwc-tab>
+        <mwc-tab label="User" @click=${this.goToUser}></mwc-tab>
         <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>
         <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
         <mwc-tab label="Status" @click=${this.goToStatus}></mwc-tab>

@@ -7,12 +7,12 @@ import {
   CSSResult,
 } from "lit-element";
 
-@customElement("users-page")
-export class UsersPage extends LitElement {
+@customElement("user-page")
+export class UserPage extends LitElement {
   static get styles(): CSSResult {
     return css``;
   }
   render(): TemplateResult {
-    return html` <h1>Users</h1> `;
+    return html` <h1>User</h1> `;
   }
 }

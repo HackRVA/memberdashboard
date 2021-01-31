@@ -16,10 +16,10 @@ const routes: Route[] = [
         },
       },
       {
-        path: "users",
-        component: "users-page",
+        path: "user",
+        component: "user-page",
         action: async () => {
-          await import("./components/users/users-page");
+          await import("./components/user/user-page");
         },
       },
       {

@@ -6,7 +6,7 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
-import "./../shared/card-element";
+import "../shared/card-element";
 import { UserService } from "../../service/user.service";
 
 @customElement("user-profile")
