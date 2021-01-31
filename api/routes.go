@@ -164,7 +164,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: postResourceResponse
-	rr.HandleFunc("/resource/register", api.resource.Resource).Methods(http.MethodPost)
+	rr.HandleFunc("/resource/register", api.resource.register).Methods(http.MethodPost)
 	// swagger:route POST /api/resource/member resource resourceAddMemberRequest
 	//
 	// Adds a member to a resource.
