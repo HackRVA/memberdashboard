@@ -1,25 +1,28 @@
 import { Observable } from "rxjs";
+import { ENV } from "../env";
 import { HTTPService } from "./http.service";
 
 export class UserService extends HTTPService {
+  private readonly api: string | undefined = ENV.api;
+
   login(
     request: UserService.LoginRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/login", request);
+    return this.post(this.api + "/login", request);
   }
 
   logout(): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/logout");
+    return this.post(this.api + "/logout");
   }
 
   getUser(): Observable<Response | { error: boolean; message: any }> {
-    return this.get("/api/user");
+    return this.get(this.api + "/user");
   }
 
   registerUser(
     request: UserService.RegisterRequest
   ): Observable<Response | { error: boolean; message: any }> {
-    return this.post("/api/register", request);
+    return this.post(this.api + "/register", request);
   }
 }
 

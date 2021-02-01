@@ -16,7 +16,12 @@ export default {
         }
     },
     plugins: [
-        replace({ 'Reflect.decorate': 'undefined' }),
+        replace(
+            { 
+                'Reflect.decorate': 'undefined',
+                process: JSON.stringify({ env: { API: '/api' } }) 
+            }
+        ),
         resolve(),
         terser({
             module: true,
