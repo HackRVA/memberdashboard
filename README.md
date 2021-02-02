@@ -6,6 +6,22 @@ If a member has made a payment in the past 30 days, they will be considered an a
 
 Maintain Access Control lists for who has access to what.
 
+## Install prereqs
+
+you need to install at least:
+docker-compose
+go
+go-swagger
+typescript
+npm
+
+Then follow README from the ui directory to instal the npm modules
+
+maybe do this one separately
+```
+npm install --global rollup
+```
+
 ## Start the app
 
 This project uses docker.
@@ -16,6 +32,8 @@ sh buildandrun.sh
 ```
 
 ### Seed the DB with test data
+
+Create a membership database and grant rights to user test
 
 ```
 cd test/postgres
