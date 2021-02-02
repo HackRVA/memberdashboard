@@ -1,4 +1,5 @@
 import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 import { ENV } from "../env";
 import { HTTPService } from "./http.service";
 
@@ -11,8 +12,8 @@ export class UserService extends HTTPService {
     return this.post(this.api + "/login", request);
   }
 
-  logout(): Observable<Response | { error: boolean; message: any }> {
-    return this.post(this.api + "/logout");
+  logout(): Observable<null> {
+    return this.post(this.api + "/logout").pipe(map(() => null));
   }
 
   getUser(): Observable<Response | { error: boolean; message: any }> {

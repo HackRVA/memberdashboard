@@ -11,14 +11,6 @@ export class LoginForm extends LitElement {
   password: string = "";
   userService: UserService = new UserService();
 
-  onLoginComplete(snackbarNotification: string): void {
-    const event = new CustomEvent("control-changed", {
-      detail: snackbarNotification,
-    });
-    this.dispatchEvent(event);
-    // window.location.reload();
-  }
-
   handleUsernameInput(e: KeyboardEvent): void {
     this.username = (e.target as HTMLInputElement).value;
   }
