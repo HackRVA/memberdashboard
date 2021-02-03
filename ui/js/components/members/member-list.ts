@@ -28,6 +28,7 @@ export class MemberList extends LitElement {
   // form variables for adding/removing a resource to a member
   email: string = "";
   newResourceId: number = 0;
+  newRFID: string = "";
 
   memberResources: Array<MemberService.MemberResource> = [];
   memberService: MemberService = new MemberService();
@@ -41,6 +42,7 @@ export class MemberList extends LitElement {
       .member-container {
         display: grid;
         justify-content: center;
+        align-items: center;
         text-align: center;
         margin: 44px;
       }
@@ -60,7 +62,11 @@ export class MemberList extends LitElement {
         border-spacing: 0px;
       }
       .member-count {
-        font-size: 18px;
+        line-height: 21px;
+        margin-left: calc(1vw + 123px);
+      }
+      .rfid-button {
+        float: right;
       }
       .remove {
         --mdc-theme-primary: #e9437a;
@@ -125,12 +131,7 @@ export class MemberList extends LitElement {
   openAddMemberResourceModal(email: string): void {
     this.email = email;
     this.requestUpdate();
-
-    (this.shadowRoot?.querySelector(
-      "#addMemberResourceModal"
-    ) as HTMLElement & {
-      show: Function;
-    }).show();
+    this.openModal("#addMemberResourceModal");
   }
 
   openRemoveMemberResourceModal(
@@ -140,16 +141,19 @@ export class MemberList extends LitElement {
     this.email = email;
     this.memberResources = memberResources;
     this.requestUpdate();
-
-    (this.shadowRoot?.querySelector(
-      "#removeMemberResourceModal"
-    ) as HTMLElement & {
-      show: Function;
-    }).show();
+    this.openModal("#removeMemberResourceModal");
   }
 
   handleResourceChange(e: Event): void {
     this.newResourceId = +(e.target as EventTarget & { value: string }).value;
+  }
+
+  handleEmailChange(e: Event): void {
+    this.email = (e.target as EventTarget & { value: string }).value;
+  }
+
+  handleRFIDChange(e: Event): void {
+    this.newRFID = (e.target as EventTarget & { value: string }).value;
   }
 
   handleSubmitAddMemberResource(): void {
@@ -170,6 +174,15 @@ export class MemberList extends LitElement {
     this.removeMemberResource(request);
   }
 
+  handleSubmitForAssigningMemberToRFID(): void {
+    const request: MemberService.AssignRFIDRequest = {
+      email: this.email,
+      rfid: this.newRFID,
+    };
+    this.emptyFormValues();
+    this.assignMemberToRFID(request);
+  }
+
   removeMemberResource(
     request: ResourceService.RemoveMemberResourceRequest
   ): void {
@@ -183,6 +196,15 @@ export class MemberList extends LitElement {
 
   addMemberResource(request: ResourceService.AddMemberResourceRequest): void {
     this.resourceService.addMemberResource(request).subscribe({
+      complete: () => {
+        this.getMembers();
+        this.requestUpdate();
+      },
+    });
+  }
+
+  assignMemberToRFID(request: MemberService.AssignRFIDRequest): void {
+    this.memberService.assignRFID(request).subscribe({
       complete: () => {
         this.getMembers();
         this.requestUpdate();
@@ -290,6 +312,40 @@ export class MemberList extends LitElement {
     `;
   }
 
+  displayAddUpdateRFIDModal(): TemplateResult {
+    return html`
+      <mwc-dialog id="assignRFIDModal">
+        <div>Assign RFID</div>
+        <mwc-textfield
+          @change=${this.handleEmailChange}
+          label="email"
+          helper="member's email"
+          value=${this.email}
+        ></mwc-textfield>
+        <mwc-textfield
+          @change=${this.handleRFIDChange}
+          label="RFID"
+          helper="RFID"
+          value=${this.newRFID}
+        ></mwc-textfield>
+        <mwc-button
+          slot="primaryAction"
+          dialogAction="ok"
+          @click=${this.handleSubmitForAssigningMemberToRFID}
+        >
+          Submit
+        </mwc-button>
+        <mwc-button
+          slot="secondaryAction"
+          dialogAction="cancel"
+          @click=${this.emptyFormValuesOnClosed}
+        >
+          Cancel
+        </mwc-button>
+      </mwc-dialog>
+    `;
+  }
+
   emptyFormValuesOnClosed(): void {
     this.emptyFormValues();
     this.requestUpdate();
@@ -297,6 +353,7 @@ export class MemberList extends LitElement {
   emptyFormValues(): void {
     this.email = "";
     this.newResourceId = 0;
+    this.newRFID = "";
   }
 
   displayMemberResources(
@@ -309,13 +366,32 @@ export class MemberList extends LitElement {
     }
     return "No resources";
   }
+
+  openRFIDModal(): void {
+    this.openModal("#assignRFIDModal");
+  }
+
+  openModal(elementId: string): void {
+    (this.shadowRoot?.querySelector(elementId) as HTMLElement & {
+      show: Function;
+    }).show();
+  }
+
   render(): TemplateResult {
     return html`
       <card-element>
         <div class="member-container">
           <h1>Members</h1>
-          <div class="member-count">
-            <b>Member count: </b> ${this.memberCount}
+          <div class="member-count-rfid">
+            <span class="member-count">
+              <b>Member count: </b> 
+              ${this.memberCount} 
+            </span>
+            <mwc-button 
+              class="rfid-button" 
+              label="Assign rfid" 
+              dense 
+              @click=${this.openRFIDModal}> </mvc-button>
           </div>
           <table>
             <tr>
@@ -330,6 +406,7 @@ export class MemberList extends LitElement {
 
         ${this.displayAddMemberResourceModal()}
         ${this.displayRemoveMemberResourceModal()}
+        ${this.displayAddUpdateRFIDModal()}
       </card-element>
     `;
   }

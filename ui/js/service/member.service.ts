@@ -8,9 +8,19 @@ export class MemberService extends HTTPService {
   getMembers(): Observable<Response | { error: boolean; message: any }> {
     return this.get(this.api + "/member");
   }
+
+  assignRFID(
+    request: MemberService.AssignRFIDRequest
+  ): Observable<Response | { error: boolean; message: any }> {
+    return this.post(this.api + "/assignRFID", request);
+  }
 }
 
 export namespace MemberService {
+  export interface AssignRFIDRequest {
+    email: string;
+    rfid: string;
+  }
   export interface MemberResponse {
     id: number;
     name: string;
