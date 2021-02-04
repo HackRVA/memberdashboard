@@ -18,21 +18,32 @@ services:
             # re-download all dependencies after restarting container
             - modules:/go/pkg/mod/cache
             - /etc/hackrva/:/etc/hackrva/
-        # wait for the db to come up
-        command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./server'
     postgres:
         image: postgres
         ports:
             - 5432:5432
         environment:
-          - POSTGRES_DB=membership
-          - POSTGRES_USER=test
-          - POSTGRES_PASSWORD=test
-        # volumes:
-            # - ./test/postgres/:/docker-entrypoint-initdb.d/
+          - POSTGRES_DB=${POSTGRES_DB}
+          - POSTGRES_USER=${POSTGRES_USER}
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        volumes:
+            - ./test/postgres/postgres.sql:/docker-entrypoint-initdb.d/postgres.sql
         networks:
             - membership
-
+    backup:
+        build:
+          context: ./dr
+        environment:
+          - BACKUP_DIR=${BACKUP_DIR}
+          - POSTGRES_HOST=${POSTGRES_HOST}
+          - POSTGRES_DB=${POSTGRES_DB}
+          - POSTGRES_USER=${POSTGRES_USER}
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        volumes:
+          - ./postgres-data:/var/lib/postgresql
+          - /mnt/NAS/HRVAbackups/:/backup/NAS
+        networks:
+            - membership
 networks:
     membership:
         external: false
