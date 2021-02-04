@@ -2,6 +2,9 @@ package paymentproviders
 
 import (
 	"time"
+
+	"github.com/Rhymond/go-money"
+	log "github.com/sirupsen/logrus"
 )
 
 // PaymentProvider enum
@@ -14,29 +17,39 @@ const (
 	Paypal
 )
 
+type paypalAuth struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+}
+
 // Payment represents a payment made
 // this will be pulled down from the providers
 type Payment struct {
 	ID string
 	// Date is when the payment was made
 	Date       time.Time
-	Amount     float32
+	Amount     money.Money
 	Provider   PaymentProvider
 	CustomerID uint8
-	// UpdatedAt is when the record was updated in our DB
-	UpdatedAt time.Time
+	Email      string
 }
 
 // GetPayments reach out the payment providers and download
 // payments
 func GetPayments() {
-	startDate, _ := time.Parse(time.RFC3339, "2014-07-01T00:00:00-0700")
-	endDate, _ := time.Parse(time.RFC3339, "2014-07-30T23:59:59-0700")
-	getPaypalPayments(startDate, endDate)
-	getQBPayments()
-}
+	startDate := time.Now().AddDate(0, -1, 0).Format(time.RFC3339) // subtract one month
+	endDate := time.Now().Format(time.RFC3339)
 
-func getQBPayments() {
+	payments, err := getPaypalPayments(startDate, endDate)
+	if err != nil {
+		log.Errorf("error getting payments: %s\n", err.Error())
+	}
+
+	for _, p := range payments {
+		log.Printf("%s, %s, %s", p.Email, p.Amount.Display(), p.Date.String())
+	}
+
+	// TODO: add payments to DB
 }
 
 func hashPayment() string {

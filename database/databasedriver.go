@@ -21,7 +21,7 @@ func postgreSQLDatabase() (*pgxpool.Pool, error) {
 		os.Exit(1)
 	}
 
-	fmt.Println("Successfully connected!")
+	fmt.Println("Successfully connected to DB!")
 	return conn, err
 }
 
