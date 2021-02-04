@@ -1,13 +1,8 @@
 // Package Classification Member Server API.
 //
-// Terms Of Service:
-//
-// there are no TOS at this moment, use at your own risk we take no responsibility
-//
 //     Schemes: http, https
 //     Version: 0.0.1
 //     License: MIT http://opensource.org/licenses/MIT
-//     Contact: Dustin Firebaugh<dafirebaugh@gmail.com> https://dustinfirebaugh.com
 //
 //    SecurityDefinitions:
 //    bearerAuth:
