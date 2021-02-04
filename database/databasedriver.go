@@ -41,3 +41,14 @@ func Setup() (*Database, error) {
 
 	return db, nil
 }
+
+// Close - close connection to the db
+func (db *Database) Release() error {
+	ctx := context.Background()
+	conn, err := db.pool.Acquire(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Release()
+	return nil
+}

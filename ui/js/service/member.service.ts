@@ -12,7 +12,7 @@ export class MemberService extends HTTPService {
 
 export namespace MemberService {
   export interface MemberResponse {
-    id: number;
+    id: string;
     name: string;
     email: string;
     memberLevel: MemberLevel;
@@ -20,7 +20,7 @@ export namespace MemberService {
   }
 
   export interface MemberResource {
-    resourceID: number;
+    resourceID: string;
     name: string;
   }
 

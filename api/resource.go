@@ -14,7 +14,7 @@ type memberResourceRelation struct {
 	// ID of the Resource
 	// required: true
 	// example: 0
-	ID uint `json:"resourceID"`
+	ID string `json:"resourceID"`
 	// Email - this will be the member's email address
 	// Name of the Resource
 	// required: true

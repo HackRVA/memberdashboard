@@ -501,8 +501,7 @@
           "x-go-name": "Email"
         },
         "id": {
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID"
         },
         "memberLevel": {
@@ -537,8 +536,7 @@
           "x-go-name": "Name"
         },
         "resourceID": {
-          "type": "integer",
-          "format": "uint64",
+          "type": "string",
           "x-go-name": "ResourceID"
         }
       },
@@ -549,22 +547,19 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID"
         },
         "lastUpdated": {
           "$ref": "#/definitions/Timestamp"
         },
         "memberID": {
-          "type": "integer",
-          "format": "uint8",
-          "x-go-name": "ResourceID"
+          "type": "string",
+          "x-go-name": "MemberID"
         },
         "resourceID": {
-          "type": "integer",
-          "format": "uint8",
-          "x-go-name": "MemberID"
+          "type": "string",
+          "x-go-name": "ResourceID"
         }
       },
       "x-go-package": "memberserver/database"
@@ -609,10 +604,9 @@
         },
         "id": {
           "description": "UniqueID of the Resource",
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID",
-          "example": 0
+          "example": "0"
         },
         "lastUpdated": {
           "$ref": "#/definitions/Timestamp"
@@ -635,10 +629,9 @@
       "properties": {
         "id": {
           "description": "UniqueID of the Resource",
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID",
-          "example": 0
+          "example": "\"\""
         }
       },
       "x-go-package": "memberserver/database"
@@ -660,10 +653,9 @@
         },
         "id": {
           "description": "UniqueID of the Resource",
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID",
-          "example": 0
+          "example": "0"
         },
         "name": {
           "description": "Name of the Resource",
@@ -757,10 +749,9 @@
         },
         "resourceID": {
           "description": "ID of the Resource",
-          "type": "integer",
-          "format": "uint64",
+          "type": "string",
           "x-go-name": "ID",
-          "example": 0
+          "example": "0"
         }
       },
       "x-go-package": "memberserver/api"

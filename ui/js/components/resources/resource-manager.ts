@@ -9,7 +9,7 @@ import "@material/mwc-checkbox";
 import { ResourceService } from "../../service/resource.service";
 import { isEmpty } from "../../function";
 
-const NOT_A_RESOURCE_ID = 0;
+const NOT_A_RESOURCE_ID = "";
 
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
@@ -17,7 +17,7 @@ export class ResourceManager extends LitElement {
   resources: Array<ResourceService.ResourceResponse> | null = null;
   newAddress: string = "";
   newName: string = "";
-  newID: number = 0;
+  newID: string = "";
 
   firstUpdated(): void {
     this.handleGetResources();
@@ -105,7 +105,7 @@ export class ResourceManager extends LitElement {
   handleEdit(resource: ResourceService.UpdateResourceRequest): void {
     this.newAddress = resource.address;
     this.newName = resource.name;
-    this.newID = resource.id || 0;
+    this.newID = resource.id;
     this.requestUpdate();
     this.handleOpenRegisterResource();
   }

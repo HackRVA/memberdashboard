@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const getMemberQuery = `SELECT id, name, email, rfid, member_tier_id,
+const getMemberQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
 ARRAY(
 SELECT resource_id
 FROM membership.member_resource
@@ -17,7 +17,7 @@ WHERE member_id = membership.members.id
 ) as resources
 FROM membership.members;
 `
-const getMemberByEmailQuery = `SELECT id, name, email, rfid, member_tier_id
+const getMemberByEmailQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id
 FROM membership.members
 WHERE email = $1;`
 const setMemberRFIDTag = `UPDATE membership.members
@@ -25,15 +25,20 @@ SET rfid=$2
 WHERE email=$1
 RETURNING rfid;`
 
+const insertMemberQuery = `INSERT INTO membership.members(
+	name, email, rfid, member_tier_id)
+	VALUES ($1, $2, null, 1)
+RETURNING id, name, email;`
+
 // MemberResource a resource that a member belongs to
 type MemberResource struct {
-	ResourceID uint   `json:"resourceID"`
+	ResourceID string `json:"resourceID"`
 	Name       string `json:"name"`
 }
 
 // Member -- a member of the makerspace
 type Member struct {
-	ID        uint8            `json:"id"`
+	ID        string           `json:"id"`
 	Name      string           `json:"name"`
 	Email     string           `json:"email"`
 	RFID      string           `json:"rfid"`
@@ -59,7 +64,7 @@ func (db *Database) GetMembers() []Member {
 	var members []Member
 
 	for rows.Next() {
-		var rIDs []uint
+		var rIDs []string
 		var m Member
 		err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
 		if err != nil {
@@ -103,6 +108,18 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 	}
 
 	err = db.pool.QueryRow(context.Background(), setMemberRFIDTag, email, RFIDTag).Scan(&m.RFID)
+	if err != nil {
+		return m, fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	return m, err
+}
+
+// AddMember adds a member to the database
+func (db *Database) AddMember(email string, name string) (Member, error) {
+	var m Member
+
+	err := db.pool.QueryRow(context.Background(), insertMemberQuery, name, email).Scan(&m.ID, &m.Name, &m.Email)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}

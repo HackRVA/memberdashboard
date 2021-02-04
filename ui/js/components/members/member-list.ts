@@ -27,7 +27,7 @@ export class MemberList extends LitElement {
 
   // form variables for adding/removing a resource to a member
   email: string = "";
-  newResourceId: number = 0;
+  newResourceId: string = "";
 
   memberResources: Array<MemberService.MemberResource> = [];
   memberService: MemberService = new MemberService();
@@ -149,7 +149,7 @@ export class MemberList extends LitElement {
   }
 
   handleResourceChange(e: Event): void {
-    this.newResourceId = +(e.target as EventTarget & { value: string }).value;
+    this.newResourceId = (e.target as EventTarget & { value: string }).value;
   }
 
   handleSubmitAddMemberResource(): void {
@@ -296,7 +296,7 @@ export class MemberList extends LitElement {
   }
   emptyFormValues(): void {
     this.email = "";
-    this.newResourceId = 0;
+    this.newResourceId = "";
   }
 
   displayMemberResources(

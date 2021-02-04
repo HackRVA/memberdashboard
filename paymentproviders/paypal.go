@@ -114,6 +114,7 @@ func getPaypalPayments(startDate string, endDate string) ([]Payment, error) {
 		// i don't think this will handle pennies, but i don't think it matters
 		p.Amount = *money.New((int64)(t.Transaction.Amount.Value)*100, t.Transaction.Amount.CurrencyCode)
 		p.Email = t.Payer.Email
+		p.Name = t.Payer.Name.FullName
 		p.Date, err = time.Parse(timeLayout, t.Transaction.Date)
 		if err != nil {
 			log.Errorf("error in date of a transaction: %s\n", err.Error())
