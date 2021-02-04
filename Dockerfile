@@ -6,6 +6,16 @@ COPY . .
 RUN go mod vendor
 RUN go build -o server
 
+FROM alpine:latest as swaggerui-build
+
+# Install git
+RUN apk update && apk add \
+  git
+
+WORKDIR /swaggerui
+# pull down swaggerui so we can serve up the dist folder
+RUN git clone https://github.com/swagger-api/swagger-ui.git
+
 # create a file named Dockerfile
 FROM node:latest as frontend-build
 
@@ -31,6 +41,7 @@ WORKDIR /app
 
 COPY --from=frontend-build /app/dist ./ui/dist/
 COPY --from=backend-build /membership/server .
+COPY --from=swaggerui-build /swaggerui/swagger-ui/dist ./docs/swaggerui/
 COPY docs/swaggerui/ ./docs/swaggerui/
 
 ENTRYPOINT [ "./server" ]
