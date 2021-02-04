@@ -27,7 +27,7 @@ services:
           - POSTGRES_USER=test
           - POSTGRES_PASSWORD=test
         volumes:
-            - ./test/postgres/postgres.sql:/docker-entrypoint-initdb.d/postgres.sql
+            - ./test/postgres/:/docker-entrypoint-initdb.d/
         networks:
             - membership
 
