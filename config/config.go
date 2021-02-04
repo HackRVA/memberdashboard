@@ -16,9 +16,6 @@ type Config struct {
 	AccessSecret       string `json:"accessSecret"`
 	PaypalClientID     string `json:"paypalClientID"`
 	PaypalClientSecret string `json:"paypalClientSecret"`
-	PaypalUser         string `json:"paypalUser"`
-	PaypalPWD          string `json:"paypalPWD"`
-	PaypalSignature    string `json:"paypalSignature"`
 	PaypalURL          string `json:"paypalURL"`
 	MailgunURL         string `json:"mailgunURL"`
 	MailgunKey         string `json:"mailgunKey"`
