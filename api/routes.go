@@ -68,6 +68,29 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getTierResponse
 	rr.HandleFunc("/tier", api.getTiers)
+	// swagger:route GET /api/payments/refresh payments getRefreshPayments
+	//
+	// Refresh payment information
+	//
+	// Submits a request to update member status information
+	//   This will reach out to paypal and pull down the latest
+	//   transaction information and then evaluate each member's
+	//   membership status
+	//
+	//  This should happen automatically every day, but if we decide we
+	//   want to manually update it.  This will give us the option to do so.
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: getPaymentRefreshResponse
+	rr.HandleFunc("/payments/refresh", api.refreshPayments)
 	// swagger:route GET /api/resource resource getResourceRequest
 	//
 	// Returns a resource.

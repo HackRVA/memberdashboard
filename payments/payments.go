@@ -20,7 +20,7 @@ func GetPayments() {
 		log.Errorf("error setting up db: %s", err)
 	}
 
-	payments, err := GetLastMonthsPayments()
+	payments, err := getLastMonthsPayments()
 	if err != nil {
 		log.Errorf("error getting payments: %s", err.Error())
 	}
@@ -30,35 +30,15 @@ func GetPayments() {
 		if err != nil {
 			log.Errorf("error adding payment to db: %s, %s, %s, %s: %s", p.Email, p.Amount.Display(), p.Date.String(), p.MemberID, err.Error())
 		}
-
-		err = db.EvaluateMemberStatus(p.MemberID)
-		if err != nil {
-			log.Errorf("error evaluating member's status: %s", err.Error())
-		}
 	}
 
 	db.Release()
 }
 
-// GetLastMonthsPayments fetches payments from paypal
+// getLastMonthsPayments fetches payments from paypal
 //  to see if members have paid their dues
-func GetLastMonthsPayments() ([]database.Payment, error) {
+func getLastMonthsPayments() ([]database.Payment, error) {
 	startDate := time.Now().AddDate(0, -1, 0).Format(time.RFC3339) // subtract one month
-	endDate := time.Now().Format(time.RFC3339)
-
-	p, err := getPaypalPayments(startDate, endDate)
-	if err != nil {
-		log.Errorf("error getting payments %s", err.Error())
-		return p, err
-	}
-
-	return mapMemberIDToPayments(p), err
-}
-
-// GetLastYearsPayments fetches payments from paypal
-//  this is to populate the db with members
-func GetLastYearsPayments() ([]database.Payment, error) {
-	startDate := time.Now().AddDate(-1, 0, 0).Format(time.RFC3339) // subtract one year
 	endDate := time.Now().Format(time.RFC3339)
 
 	p, err := getPaypalPayments(startDate, endDate)

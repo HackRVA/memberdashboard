@@ -149,6 +149,32 @@
         }
       }
     },
+    "/api/payments/refresh": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Submits a request to update member status information\nThis will reach out to paypal and pull down the latest\ntransaction information and then evaluate each member's\nmembership status\n\nThis should happen automatically every day, but if we decide we\nwant to manually update it.  This will give us the option to do so.",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "payments"
+        ],
+        "summary": "Refresh payment information",
+        "operationId": "getRefreshPayments",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getPaymentRefreshResponse"
+          }
+        }
+      }
+    },
     "/api/register": {
       "post": {
         "description": "Register a new user of the app",
@@ -776,6 +802,14 @@
         "items": {
           "$ref": "#/definitions/Member"
         }
+      }
+    },
+    "getPaymentRefreshResponse": {
+      "schema": {
+        "$ref": "#/definitions/endpointSuccess"
+      },
+      "headers": {
+        "Body": {}
       }
     },
     "getResourceResponse": {

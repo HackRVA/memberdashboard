@@ -9,6 +9,7 @@ import (
 	"memberserver/api"
 	"memberserver/database"
 	"memberserver/resourcemanager"
+	"memberserver/scheduler"
 )
 
 func init() {
@@ -35,6 +36,8 @@ func main() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
+
+	scheduler.Setup()
 
 	log.Debug("Server listening on http://localhost:3000/")
 	log.Fatal(srv.ListenAndServe())

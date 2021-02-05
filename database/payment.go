@@ -10,8 +10,8 @@ import (
 )
 
 // memberGracePeriod if the member has made a payment in the last 45 days they will remain in a grace period
-const memberGracePeriod = 45
-const membershipMonth = 30
+const memberGracePeriod = 46
+const membershipMonth = 31
 
 const insertPaymentQuery = `
 INSERT INTO membership.payments(
@@ -22,7 +22,7 @@ RETURNING *;`
 // checkRecentPayment - if the member doesn't have a recent payment,
 //    we will revoke their membership
 const checkLastPaymentQuery = `
-SELECT current_date - date as last_payment, amount
+SELECT current_date - date as last_payment, amount, email
 FROM membership.payments
 LEFT JOIN membership.members
 ON membership.payments.member_id = membership.members.id
@@ -87,11 +87,12 @@ func (db *Database) AddPayment(payment Payment) (Payment, error) {
 func (db *Database) EvaluateMemberStatus(memberID string) error {
 	var daysSincePayment int64
 	var amount int64
+	var email string
 
 	// TODO: see if they have multiple memberships
 	numMemberships := 1
 
-	err := db.pool.QueryRow(context.Background(), checkLastPaymentQuery, memberID, numMemberships).Scan(&daysSincePayment, &amount)
+	err := db.pool.QueryRow(context.Background(), checkLastPaymentQuery, memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -99,6 +100,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	log.Debugf("days since payment: %d payment amount: %d", daysSincePayment, amount)
 
 	if daysSincePayment > memberGracePeriod { // revoke
+		// sendRevokedEmail(email)
 		rows, err := db.pool.Query(context.Background(), updateMembershipLevelQuery, memberID, Inactive)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
@@ -107,6 +109,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	} else if daysSincePayment <= memberGracePeriod {
 		if daysSincePayment > membershipMonth {
 			// send notification because they are in a grace period
+			// sendGracePeriodMessage(email)
 		}
 
 		// a valid member
@@ -132,4 +135,22 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	}
 
 	return nil
+}
+
+func sendGracePeriodMessage(address string) {
+	// mp, err := mail.Setup()
+	// if err != nil {
+	// 	log.Errorf("error setting up mailprovider when attempting to send email notification")
+	// }
+
+	// mp.SendSMTP(address, "hackrva grace period", "you're membership is entering a grace period.  Please try to pay your hackrva membership dues soon.")
+}
+
+func sendRevokedEmail(address string) {
+	// mp, err := mail.Setup()
+	// if err != nil {
+	// 	log.Errorf("error setting up mailprovider when attempting to send email notification")
+	// }
+
+	// mp.SendSMTP(address, "hackrva membership revoked", "Unfortunately, hackrva hasn't received your membership dues.  Your membership has been revoked until a payment is received.  Please reach out to us if you have any concerns.")
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"memberserver/database"
+	"memberserver/payments"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -31,6 +32,11 @@ type setRFIDResponse struct {
 type setRFIDRequest struct {
 	// in: body
 	Body database.AssignRFIDRequest
+}
+
+// swagger:response getPaymentRefreshResponse
+type getPaymentRefreshResponse struct {
+	Body endpointSuccess
 }
 
 func (a API) getTiers(w http.ResponseWriter, req *http.Request) {
@@ -69,5 +75,23 @@ func (a API) assignRFID(w http.ResponseWriter, req *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(r)
+	w.Write(j)
+}
+
+func (a API) refreshPayments(w http.ResponseWriter, req *http.Request) {
+	payments.GetPayments()
+	members := a.db.GetMembers()
+
+	for _, m := range members {
+		err := a.db.EvaluateMemberStatus(m.ID)
+		if err != nil {
+			log.Errorf("error evaluating member's status: %s", err.Error())
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(endpointSuccess{
+		Ack: true,
+	})
 	w.Write(j)
 }
