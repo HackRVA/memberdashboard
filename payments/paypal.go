@@ -1,4 +1,4 @@
-package paymentproviders
+package payments
 
 import (
 	"encoding/base64"
@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"memberserver/config"
+	"memberserver/database"
 
 	"github.com/Rhymond/go-money"
 	log "github.com/sirupsen/logrus"
@@ -53,8 +54,8 @@ type transactionAmount struct {
 
 var accessToken = ""
 
-func getPaypalPayments(startDate string, endDate string) ([]Payment, error) {
-	var payments []Payment
+func getPaypalPayments(startDate string, endDate string) ([]database.Payment, error) {
+	var payments []database.Payment
 	c, err := config.Load()
 	if err != nil {
 		fmt.Printf("error with config: %s", err)
@@ -109,7 +110,7 @@ func getPaypalPayments(startDate string, endDate string) ([]Payment, error) {
 			continue
 		}
 
-		var p Payment
+		var p database.Payment
 
 		// i don't think this will handle pennies, but i don't think it matters
 		p.Amount = *money.New((int64)(t.Transaction.Amount.Value)*100, t.Transaction.Amount.CurrencyCode)
@@ -119,7 +120,7 @@ func getPaypalPayments(startDate string, endDate string) ([]Payment, error) {
 		if err != nil {
 			log.Errorf("error in date of a transaction: %s\n", err.Error())
 		}
-		p.Provider = Paypal
+		p.Provider = database.Paypal
 
 		payments = append(payments, p)
 	}

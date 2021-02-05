@@ -85,6 +85,8 @@ export class MemberList extends LitElement {
         return "Inactive";
       case MemberLevel.student:
         return "Student";
+      case MemberLevel.classic:
+        return "Classic";
       case MemberLevel.standard:
         return "Standard";
       case MemberLevel.premium:

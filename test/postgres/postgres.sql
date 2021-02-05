@@ -1,5 +1,5 @@
 DROP SCHEMA IF EXISTS membership CASCADE;
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION "pgcrypto";
 
 --
 -- Name: membership; Type: SCHEMA; Schema: -; Owner: test
@@ -30,13 +30,15 @@ CREATE TABLE membership.users
     PRIMARY KEY (username)
 );
 
+
 --
 -- Name: member_tiers; Type: TABLE; Schema: membership; Owner: test
 --
 
 CREATE TABLE membership.member_tiers (
     id integer NOT NULL,
-    description text NOT NULL
+    description text NOT NULL,
+    price integer NOT NULL
 );
 
 --
@@ -64,7 +66,7 @@ ALTER SEQUENCE membership.member_tiers_id_seq OWNED BY membership.member_tiers.i
 --
 
 CREATE TABLE membership.members (
-    id UUID DEFAULT gen_random_uuid(),
+    id UUID UNIQUE DEFAULT gen_random_uuid(),
     name text NOT NULL,
     email text NOT NULL,
     rfid text,
@@ -79,6 +81,19 @@ ALTER TABLE membership.members
     ADD CONSTRAINT unique_rfid UNIQUE (rfid);
 
 
+CREATE TABLE membership.payments
+(
+    id uuid UNIQUE DEFAULT gen_random_uuid(),
+    date date NOT NULL,
+    amount numeric NOT NULL,
+    member_id uuid NOT NULL,
+    CONSTRAINT unique_payments PRIMARY KEY (date, amount, member_id),
+    CONSTRAINT member_payment FOREIGN KEY (member_id)
+        REFERENCES membership.members (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
 
 --
 -- Name: resources; Type: TABLE; Schema: membership; Owner: test
