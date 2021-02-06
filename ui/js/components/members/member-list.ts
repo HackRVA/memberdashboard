@@ -1,3 +1,8 @@
+import { defaultSnackbar } from "../shared/default-snackbar";
+import { openComponent } from "./../../function";
+import { RFIDModal } from "./modals/rfid-modal";
+import { AddMemberResourceModal } from "./modals/add-member-resource-modal";
+import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
 import { ResourceService } from "../../service/resource.service";
 import {
   LitElement,
@@ -14,6 +19,7 @@ import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-snackbar";
 
 @customElement("member-list")
 export class MemberList extends LitElement {
@@ -27,6 +33,7 @@ export class MemberList extends LitElement {
 
   // form variables for adding/removing a resource to a member
   email: string = "";
+  newRFID: string = "";
   newResourceId: string = "";
 
   memberResources: Array<MemberService.MemberResource> = [];
@@ -41,6 +48,7 @@ export class MemberList extends LitElement {
       .member-container {
         display: grid;
         justify-content: center;
+        align-items: center;
         text-align: center;
         margin: 44px;
       }
@@ -60,7 +68,11 @@ export class MemberList extends LitElement {
         border-spacing: 0px;
       }
       .member-count {
-        font-size: 18px;
+        line-height: 21px;
+        margin-left: calc(1vw + 123px);
+      }
+      .rfid-button {
+        float: right;
       }
       .remove {
         --mdc-theme-primary: #e9437a;
@@ -127,12 +139,7 @@ export class MemberList extends LitElement {
   openAddMemberResourceModal(email: string): void {
     this.email = email;
     this.requestUpdate();
-
-    (this.shadowRoot?.querySelector(
-      "#addMemberResourceModal"
-    ) as HTMLElement & {
-      show: Function;
-    }).show();
+    openComponent("#addMemberResourceModal", this.shadowRoot);
   }
 
   openRemoveMemberResourceModal(
@@ -142,16 +149,19 @@ export class MemberList extends LitElement {
     this.email = email;
     this.memberResources = memberResources;
     this.requestUpdate();
-
-    (this.shadowRoot?.querySelector(
-      "#removeMemberResourceModal"
-    ) as HTMLElement & {
-      show: Function;
-    }).show();
+    openComponent("#removeMemberResourceModal", this.shadowRoot);
   }
 
   handleResourceChange(e: Event): void {
     this.newResourceId = (e.target as EventTarget & { value: string }).value;
+  }
+
+  handleEmailChange(e: Event): void {
+    this.email = (e.target as EventTarget & { value: string }).value;
+  }
+
+  handleRFIDChange(e: Event): void {
+    this.newRFID = (e.target as EventTarget & { value: string }).value;
   }
 
   handleSubmitAddMemberResource(): void {
@@ -172,6 +182,15 @@ export class MemberList extends LitElement {
     this.removeMemberResource(request);
   }
 
+  handleSubmitForAssigningMemberToRFID(): void {
+    const request: MemberService.AssignRFIDRequest = {
+      email: this.email.trim(),
+      rfid: this.newRFID,
+    };
+    this.emptyFormValues();
+    this.assignMemberToRFID(request);
+  }
+
   removeMemberResource(
     request: ResourceService.RemoveMemberResourceRequest
   ): void {
@@ -187,6 +206,16 @@ export class MemberList extends LitElement {
     this.resourceService.addMemberResource(request).subscribe({
       complete: () => {
         this.getMembers();
+        this.requestUpdate();
+      },
+    });
+  }
+
+  assignMemberToRFID(request: MemberService.AssignRFIDRequest): void {
+    this.memberService.assignRFID(request).subscribe({
+      complete: () => {
+        this.getMembers();
+        this.displaySuccessMessage();
         this.requestUpdate();
       },
     });
@@ -223,73 +252,44 @@ export class MemberList extends LitElement {
   }
 
   displayRemoveMemberResourceModal(): TemplateResult {
-    return html`
-      <mwc-dialog id="removeMemberResourceModal">
-        <div>Remove Resource</div>
-        <mwc-textfield
-          label="email"
-          helper="Can't edit email"
-          readonly
-          value=${this.email}
-        ></mwc-textfield>
-        <mwc-select label="Resources" @change=${this.handleResourceChange}>
-          ${this.memberResources.map((x: MemberService.MemberResource) => {
-            return html`
-              <mwc-list-item value=${x.resourceID}> ${x.name} </mwc-list-item>
-            `;
-          })}
-        </mwc-select>
-        <mwc-button
-          slot="primaryAction"
-          dialogAction="ok"
-          @click=${this.handleSubmitRemoveMemberResource}
-        >
-          Submit
-        </mwc-button>
-        <mwc-button
-          slot="secondaryAction"
-          dialogAction="cancel"
-          @click=${this.emptyFormValuesOnClosed}
-        >
-          Cancel
-        </mwc-button>
-      </mwc-dialog>
-    `;
+    const modalData: MemberService.RemoveMemberResourceModalData = {
+      email: this.email,
+      memberResources: this.memberResources ?? [],
+      handleResourceChange: this.handleResourceChange,
+      handleSubmitRemoveMemberResource: this.handleSubmitRemoveMemberResource,
+      emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
+    };
+
+    return removeMemberResourceModal(modalData);
   }
 
   displayAddMemberResourceModal(): TemplateResult {
-    return html`
-      <mwc-dialog id="addMemberResourceModal">
-        <div>Add Resource</div>
-        <mwc-textfield
-          label="email"
-          helper="Can't edit email"
-          readonly
-          value=${this.email}
-        ></mwc-textfield>
-        <mwc-select label="Resources" @change=${this.handleResourceChange}>
-          ${this.resources.map((x: ResourceService.ResourceResponse) => {
-            return html`
-              <mwc-list-item value=${x.id}> ${x.name} </mwc-list-item>
-            `;
-          })}
-        </mwc-select>
-        <mwc-button
-          slot="primaryAction"
-          dialogAction="ok"
-          @click=${this.handleSubmitAddMemberResource}
-        >
-          Submit
-        </mwc-button>
-        <mwc-button
-          slot="secondaryAction"
-          dialogAction="cancel"
-          @click=${this.emptyFormValuesOnClosed}
-        >
-          Cancel
-        </mwc-button>
-      </mwc-dialog>
-    `;
+    const modalData: MemberService.AddMemberResourceModalData = {
+      email: this.email,
+      resources: this.resources ?? [],
+      handleResourceChange: this.handleResourceChange,
+      handleSubmitAddMemberResource: this.handleSubmitAddMemberResource,
+      emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
+    };
+
+    return AddMemberResourceModal(modalData);
+  }
+
+  displayAddUpdateRFIDModal(): TemplateResult {
+    const modalData: MemberService.RFIDModalData = {
+      email: this.email,
+      rfid: this.newRFID,
+      handleEmailChange: this.handleEmailChange,
+      handleRFIDChange: this.handleRFIDChange,
+      handleSubmitForAssigningMemberToRFID: this
+        .handleSubmitForAssigningMemberToRFID,
+      emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
+    };
+    return RFIDModal(modalData);
+  }
+
+  displaySuccessMessage(): void {
+    openComponent("#success", this.shadowRoot);
   }
 
   emptyFormValuesOnClosed(): void {
@@ -298,6 +298,7 @@ export class MemberList extends LitElement {
   }
   emptyFormValues(): void {
     this.email = "";
+    this.newRFID = "";
     this.newResourceId = "";
   }
 
@@ -311,13 +312,26 @@ export class MemberList extends LitElement {
     }
     return "No resources";
   }
+
+  openRFIDModal(): void {
+    openComponent("#assignRFIDModal", this.shadowRoot);
+  }
+
   render(): TemplateResult {
     return html`
       <card-element>
         <div class="member-container">
           <h1>Members</h1>
-          <div class="member-count">
-            <b>Member count: </b> ${this.memberCount}
+          <div class="member-count-rfid">
+            <span class="member-count">
+              <b>Member count: </b> 
+              ${this.memberCount} 
+            </span>
+            <mwc-button 
+              class="rfid-button" 
+              label="Assign rfid" 
+              dense 
+              @click=${this.openRFIDModal}> </mvc-button>
           </div>
           <table>
             <tr>
@@ -332,6 +346,8 @@ export class MemberList extends LitElement {
 
         ${this.displayAddMemberResourceModal()}
         ${this.displayRemoveMemberResourceModal()}
+        ${this.displayAddUpdateRFIDModal()}
+        ${defaultSnackbar("success", "success")}
       </card-element>
     `;
   }

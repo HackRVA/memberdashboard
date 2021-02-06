@@ -11,11 +11,29 @@ export class PaymentService extends HTTPService {
 }
 
 export namespace PaymentService {
-  interface ChartOptions {}
+  export interface ChartOptions {
+    title: string;
+    pieHole: number;
+    legend: string;
+    curveType: string;
+  }
+
+  export interface ChartCols {
+    label: string;
+    type: string;
+  }
+
   export interface PaymentChartResponse {
-    id?: string;
-    type?: string;
+    type: string;
     options: ChartOptions;
+    rows: any[]; // returns an array of arrays of string and number
+    cols: ChartCols[];
+  }
+
+  export interface ChartAttributes {
+    id: string;
+    type: string;
+    options: string;
     rows: string;
     cols: string;
   }

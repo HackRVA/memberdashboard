@@ -1,3 +1,12 @@
 export const isEmpty = (value: string | any[]): boolean => {
   return value.length === 0;
 };
+
+export const openComponent = (
+  elementId: string,
+  shadowRoot: ShadowRoot | null
+): void => {
+  (shadowRoot?.querySelector(elementId) as HTMLElement & {
+    show: Function;
+  }).show();
+};
