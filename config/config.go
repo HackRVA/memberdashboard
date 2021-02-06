@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -37,7 +36,7 @@ func Load() (Config, error) {
 
 	file, err := ioutil.ReadFile(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
 	if err != nil {
-		return c, fmt.Errorf("error reading in the config file: %s", err)
+		log.Debugf("error reading in the config file: %s", err)
 	}
 
 	c.AccessSecret = os.Getenv("ACCESS_SECRET")
@@ -53,5 +52,5 @@ func Load() (Config, error) {
 	_ = json.Unmarshal([]byte(file), &c)
 
 	// if we still don't have an access secret let's generate a random one
-	return c, err
+	return c, nil
 }

@@ -17,10 +17,11 @@ services:
             - PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID}
             - PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET}
             - PAYPAL_API_URL=${PAYPAL_API_URL}
-            - MAILGUN_USER=${MAILGUN_USER}
-            - MAILGUN_PASSWORD=${MAILGUN_PASSWORD}
+            - MAILGUN_API_URL=${MAILGUN_API_URL}
             - MAILGUN_KEY=${MAILGUN_KEY}
             - MAILGUN_FROM_ADDRESS=${MAILGUN_FROM_ADDRESS}
+            - MAILGUN_USER=${MAILGUN_USER}
+            - MAILGUN_PASSWORD=${MAILGUN_PASSWORD}
         volumes:
             # This is go modules cache, without it you will have to
             # re-download all dependencies after restarting container
