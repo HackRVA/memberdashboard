@@ -9,6 +9,22 @@ If a member has made a payment in the past 30 days, they will be considered an a
  * the server will maintain access lists and periodically push those access lists to the microcontrollers on the network
  * The microcontroller (aka a resource) stores its access list locally so it's not dependant on the network when someone wants to access the space
 
+## Install prereqs
+
+you need to install at least:
+docker-compose
+go
+go-swagger
+typescript
+npm
+
+Then follow README from the ui directory to instal the npm modules
+
+maybe do this one separately
+```
+npm install --global rollup
+```
+
 ## Start the app
 
 This project uses docker.
@@ -19,6 +35,8 @@ sh buildandrun.sh
 ```
 
 ### Seed the DB with test data
+
+Create a membership database and grant rights to user test
 
 ```
 cd test/postgres
