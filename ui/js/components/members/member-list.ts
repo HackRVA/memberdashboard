@@ -1,3 +1,5 @@
+import { defaultSnackbar } from "../shared/default-snackbar";
+import { openComponent } from "./../../function";
 import { RFIDModal } from "./modals/rfid-modal";
 import { AddMemberResourceModal } from "./modals/add-member-resource-modal";
 import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
@@ -17,6 +19,7 @@ import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-snackbar";
 
 @customElement("member-list")
 export class MemberList extends LitElement {
@@ -136,7 +139,7 @@ export class MemberList extends LitElement {
   openAddMemberResourceModal(email: string): void {
     this.email = email;
     this.requestUpdate();
-    this.openModal("#addMemberResourceModal");
+    openComponent("#addMemberResourceModal", this.shadowRoot);
   }
 
   openRemoveMemberResourceModal(
@@ -146,7 +149,7 @@ export class MemberList extends LitElement {
     this.email = email;
     this.memberResources = memberResources;
     this.requestUpdate();
-    this.openModal("#removeMemberResourceModal");
+    openComponent("#removeMemberResourceModal", this.shadowRoot);
   }
 
   handleResourceChange(e: Event): void {
@@ -212,6 +215,7 @@ export class MemberList extends LitElement {
     this.memberService.assignRFID(request).subscribe({
       complete: () => {
         this.getMembers();
+        this.displaySuccessMessage();
         this.requestUpdate();
       },
     });
@@ -284,6 +288,10 @@ export class MemberList extends LitElement {
     return RFIDModal(modalData);
   }
 
+  displaySuccessMessage(): void {
+    openComponent("#success", this.shadowRoot);
+  }
+
   emptyFormValuesOnClosed(): void {
     this.emptyFormValues();
     this.requestUpdate();
@@ -306,13 +314,7 @@ export class MemberList extends LitElement {
   }
 
   openRFIDModal(): void {
-    this.openModal("#assignRFIDModal");
-  }
-
-  openModal(elementId: string): void {
-    (this.shadowRoot?.querySelector(elementId) as HTMLElement & {
-      show: Function;
-    }).show();
+    openComponent("#assignRFIDModal", this.shadowRoot);
   }
 
   render(): TemplateResult {
@@ -345,6 +347,7 @@ export class MemberList extends LitElement {
         ${this.displayAddMemberResourceModal()}
         ${this.displayRemoveMemberResourceModal()}
         ${this.displayAddUpdateRFIDModal()}
+        ${defaultSnackbar("success", "success")}
       </card-element>
     `;
   }
