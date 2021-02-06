@@ -32,8 +32,7 @@ func Load() (Config, error) {
 
 	if len(os.Getenv("MEMBER_SERVER_CONFIG_FILE")) == 0 {
 		err := errors.New("must set the MEMBER_SERVER_CONFIG_FILE environment variable to point to config file")
-		log.Errorf("error loading config: %s", err)
-		return c, err
+		log.Debugf("error loading config: %s  Attempting to use environment variables", err)
 	}
 
 	file, err := ioutil.ReadFile(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
