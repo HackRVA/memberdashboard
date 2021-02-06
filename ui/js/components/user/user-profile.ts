@@ -5,46 +5,38 @@ import {
   customElement,
   TemplateResult,
   CSSResult,
+  property,
 } from "lit-element";
-import "../shared/card-element";
 import { UserService } from "../../service/user.service";
 
 @customElement("user-profile")
 export class UserProfile extends LitElement {
-  userService: UserService = new UserService();
+  @property({ type: String })
   username: string = "";
+
+  @property({ type: String })
   email: string = "";
+
+  userService: UserService = new UserService();
   static get styles(): CSSResult {
-    return css``;
+    return css`
+      .user-profile-container {
+        font-size: 24px;
+      }
+
+      .username,
+      .email {
+        line-height: 32px;
+      }
+    `;
   }
 
-  firstUpdated(): void {
-    this.handleGetUserProfile();
-  }
-
-  handleGetUserProfile(): void {
-    this.userService.getUser().subscribe({
-      next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          return console.error(
-            (result as { error: boolean; message: any }).message
-          );
-        }
-        const { username, email } = result as UserService.UserProfile;
-        this.username = username;
-        this.email = email;
-        this.requestUpdate();
-      },
-    });
-  }
   render(): TemplateResult {
     return html`
-    <card-element>
-      <profile-container>
-        <profile-label>User Profile</profile-title>
-        <username-label>${this.username}</username-label>
-        <email-label>${this.email}</email-label>
-      </profile-container>
-    </card-element>`;
+      <div class="user-profile-container">
+        <div class="username">${this.username}</div>
+        <div class="email">${this.email}</div>
+      </div>
+    `;
   }
 }

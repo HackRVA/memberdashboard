@@ -9,7 +9,6 @@ import {
 import { UserService } from "../../service/user.service";
 import "../shared/card-element";
 import "../shared/register-form";
-import "../shared/body-element";
 
 @customElement("home-page")
 export class HomePage extends LitElement {
