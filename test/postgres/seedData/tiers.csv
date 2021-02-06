@@ -1,5 +1,6 @@
-id,description
-1,Inactive
-2,Student
-3,Standard
-4,Premium
+id,description,price
+1,Inactive,0
+2,Student,15
+3,Classic,30
+4,Standard,35
+5,Premium,50

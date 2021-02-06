@@ -59,7 +59,7 @@ type Resource struct {
 	// UniqueID of the Resource
 	// required: true
 	// example: 0
-	ID uint8 `json:"id"`
+	ID string `json:"id"`
 	// Name of the Resource
 	// required: true
 	// example: name
@@ -75,8 +75,8 @@ type Resource struct {
 type ResourceDeleteRequest struct {
 	// UniqueID of the Resource
 	// required: true
-	// example: 0
-	ID uint8 `json:"id"`
+	// example: ""
+	ID string `json:"id"`
 }
 
 // Resource a resource that can accespt an access control list
@@ -84,7 +84,7 @@ type ResourceRequest struct {
 	// UniqueID of the Resource
 	// required: true
 	// example: 0
-	ID uint8 `json:"id"`
+	ID string `json:"id"`
 	// Name of the Resource
 	// required: true
 	// example: name
@@ -109,9 +109,9 @@ type RegisterResourceRequest struct {
 
 // MemberResourceRelation  - a relationship between resources and members
 type MemberResourceRelation struct {
-	ID          uint8            `json:"id"`
-	MemberID    uint8            `json:"resourceID"`
-	ResourceID  uint8            `json:"memberID"`
+	ID          string           `json:"id"`
+	MemberID    string           `json:"memberID"`
+	ResourceID  string           `json:"resourceID"`
 	LastUpdated pgtype.Timestamp `json:"lastUpdated"`
 }
 
@@ -136,7 +136,7 @@ func (db *Database) GetResources() []Resource {
 }
 
 // GetResourceByID - lookup a resource by it's name
-func (db *Database) GetResourceByID(ID uint) (Resource, error) {
+func (db *Database) GetResourceByID(ID string) (Resource, error) {
 	var r Resource
 	err := db.pool.QueryRow(context.Background(), getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
 	if err != nil {
@@ -180,11 +180,11 @@ func (db *Database) RegisterResource(name string, address string) (*Resource, er
 }
 
 // UpdateResource - updates a resource in the db
-func (db *Database) UpdateResource(id uint8, name string, address string) (*Resource, error) {
+func (db *Database) UpdateResource(id string, name string, address string) (*Resource, error) {
 	r := &Resource{}
 
 	// if the resource doesn't already exist let's register it
-	if id == 0 {
+	if id == "" {
 		log.Error("invalid resourseID of 0")
 		return r, errors.New("invalid resourseID of 0")
 	}
@@ -199,7 +199,7 @@ func (db *Database) UpdateResource(id uint8, name string, address string) (*Reso
 }
 
 // DeleteResource - delete a resource from the db
-func (db *Database) DeleteResource(id uint8) error {
+func (db *Database) DeleteResource(id string) error {
 	rows, err := db.pool.Query(context.Background(), deleteResourceQuery, id)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
@@ -211,7 +211,7 @@ func (db *Database) DeleteResource(id uint8) error {
 }
 
 // AddUserToResource - grants a user access to a resource
-func (db *Database) AddUserToResource(email string, resourceID uint) (MemberResourceRelation, error) {
+func (db *Database) AddUserToResource(email string, resourceID string) (MemberResourceRelation, error) {
 	memberResource := MemberResourceRelation{}
 
 	r, err := db.GetResourceByID(resourceID)
@@ -248,7 +248,7 @@ func (db *Database) GetMemberResourceRelation(m Member, r Resource) (MemberResou
 }
 
 // RemoveUserFromResource - removes a users access to a resource
-func (db *Database) RemoveUserFromResource(email string, resourceID uint) error {
+func (db *Database) RemoveUserFromResource(email string, resourceID string) error {
 	memberResource := MemberResourceRelation{}
 
 	r, err := db.GetResourceByID(resourceID)

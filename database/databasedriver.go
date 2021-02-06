@@ -21,7 +21,7 @@ func postgreSQLDatabase() (*pgxpool.Pool, error) {
 		os.Exit(1)
 	}
 
-	fmt.Println("Successfully connected!")
+	fmt.Println("Successfully connected to DB!")
 	return conn, err
 }
 
@@ -40,4 +40,15 @@ func Setup() (*Database, error) {
 	db.pool = connection
 
 	return db, nil
+}
+
+// Close - close connection to the db
+func (db *Database) Release() error {
+	ctx := context.Background()
+	conn, err := db.pool.Acquire(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Release()
+	return nil
 }

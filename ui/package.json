@@ -27,6 +27,7 @@
   "proxy": "http://localhost:3000",
   "homepage": "https://github.com/dfirebaugh/memberserver#readme",
   "dependencies": {
+    "@google-web-components/google-chart": "^4.0.2",
     "@material/mwc-button": "^0.20.0",
     "@material/mwc-checkbox": "^0.20.0",
     "@material/mwc-dialog": "^0.20.0",

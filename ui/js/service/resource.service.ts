@@ -42,24 +42,24 @@ export namespace ResourceService {
   }
   export interface UpdateResourceRequest {
     address: string;
-    id: number;
+    id: string;
     name: string;
   }
   export interface RemoveResourceRequest {
-    id: number;
+    id: string;
   }
   export interface AddMemberResourceRequest {
     email: string;
-    resourceID: number;
+    resourceID: string;
   }
 
   export interface RemoveMemberResourceRequest {
     email: string;
-    resourceID: number;
+    resourceID: string;
   }
   export interface ResourceResponse {
     address: string;
-    id: number;
+    id: string;
     name: string;
   }
   export enum ResourceStatus {

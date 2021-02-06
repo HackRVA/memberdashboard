@@ -22,7 +22,7 @@ export namespace MemberService {
     rfid: string;
   }
   export interface MemberResponse {
-    id: number;
+    id: string;
     name: string;
     email: string;
     memberLevel: MemberLevel;
@@ -30,14 +30,15 @@ export namespace MemberService {
   }
 
   export interface MemberResource {
-    resourceID: number;
+    resourceID: string;
     name: string;
   }
 
   export enum MemberLevel {
     inactive = 1,
     student = 2,
-    standard = 3,
-    premium = 4,
+    classic = 3,
+    standard = 4,
+    premium = 5,
   }
 }

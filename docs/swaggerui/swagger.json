@@ -6,12 +6,6 @@
   "swagger": "2.0",
   "info": {
     "title": "Member Server API.",
-    "termsOfService": "there are no TOS at this moment, use at your own risk we take no responsibility",
-    "contact": {
-      "name": "Dustin Firebaugh",
-      "url": "https://dustinfirebaugh.com",
-      "email": "dafirebaugh@gmail.com"
-    },
     "license": {
       "name": "MIT",
       "url": "http://opensource.org/licenses/MIT"
@@ -151,6 +145,57 @@
         "responses": {
           "200": {
             "$ref": "#/responses/getMemberResponse"
+          }
+        }
+      }
+    },
+    "/api/payments/charts": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get Chart information of payments",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "payments"
+        ],
+        "operationId": "getPaymentChart",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getPaymentChartResponse"
+          }
+        }
+      }
+    },
+    "/api/payments/refresh": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Submits a request to update member status information\nThis will reach out to paypal and pull down the latest\ntransaction information and then evaluate each member's\nmembership status\n\nThis should happen automatically every day, but if we decide we\nwant to manually update it.  This will give us the option to do so.",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "payments"
+        ],
+        "summary": "Refresh payment information",
+        "operationId": "getRefreshPayments",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getPaymentRefreshResponse"
           }
         }
       }
@@ -501,8 +546,7 @@
           "x-go-name": "Email"
         },
         "id": {
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID"
         },
         "memberLevel": {
@@ -537,8 +581,7 @@
           "x-go-name": "Name"
         },
         "resourceID": {
-          "type": "integer",
-          "format": "uint64",
+          "type": "string",
           "x-go-name": "ResourceID"
         }
       },
@@ -549,25 +592,53 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID"
         },
         "lastUpdated": {
           "$ref": "#/definitions/Timestamp"
         },
         "memberID": {
-          "type": "integer",
-          "format": "uint8",
-          "x-go-name": "ResourceID"
+          "type": "string",
+          "x-go-name": "MemberID"
         },
         "resourceID": {
-          "type": "integer",
-          "format": "uint8",
-          "x-go-name": "MemberID"
+          "type": "string",
+          "x-go-name": "ResourceID"
         }
       },
       "x-go-package": "memberserver/database"
+    },
+    "PaymentChart": {
+      "description": "PaymentChart - deliver information to the frontend so that\nwe can display a monthly payment chart",
+      "type": "object",
+      "properties": {
+        "cols": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/chartCol"
+          },
+          "x-go-name": "Cols"
+        },
+        "options": {
+          "$ref": "#/definitions/chartOptions"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "x-go-name": "Rows"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "memberserver/api"
     },
     "RegisterResourceRequest": {
       "description": "Resource a resource that can accespt an access control list",
@@ -609,10 +680,9 @@
         },
         "id": {
           "description": "UniqueID of the Resource",
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID",
-          "example": 0
+          "example": "0"
         },
         "lastUpdated": {
           "$ref": "#/definitions/Timestamp"
@@ -635,10 +705,9 @@
       "properties": {
         "id": {
           "description": "UniqueID of the Resource",
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID",
-          "example": 0
+          "example": "\"\""
         }
       },
       "x-go-package": "memberserver/database"
@@ -660,10 +729,9 @@
         },
         "id": {
           "description": "UniqueID of the Resource",
-          "type": "integer",
-          "format": "uint8",
+          "type": "string",
           "x-go-name": "ID",
-          "example": 0
+          "example": "0"
         },
         "name": {
           "description": "Name of the Resource",
@@ -731,6 +799,43 @@
       },
       "x-go-package": "memberserver/database"
     },
+    "chartCol": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "x-go-name": "Label"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
+    "chartOptions": {
+      "type": "object",
+      "properties": {
+        "curveType": {
+          "type": "string",
+          "x-go-name": "CurveType"
+        },
+        "legend": {
+          "type": "string",
+          "x-go-name": "Legend"
+        },
+        "pieHole": {
+          "type": "number",
+          "format": "double",
+          "x-go-name": "PieHole"
+        },
+        "title": {
+          "type": "string",
+          "x-go-name": "Title"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
     "endpointSuccess": {
       "type": "object",
       "properties": {
@@ -757,10 +862,9 @@
         },
         "resourceID": {
           "description": "ID of the Resource",
-          "type": "integer",
-          "format": "uint64",
+          "type": "string",
           "x-go-name": "ID",
-          "example": 0
+          "example": "0"
         }
       },
       "x-go-package": "memberserver/api"
@@ -791,6 +895,25 @@
         "items": {
           "$ref": "#/definitions/Member"
         }
+      }
+    },
+    "getPaymentChartResponse": {
+      "description": "PaymentResponse response of payment chart information",
+      "headers": {
+        "paymentCharts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PaymentChart"
+          }
+        }
+      }
+    },
+    "getPaymentRefreshResponse": {
+      "schema": {
+        "$ref": "#/definitions/endpointSuccess"
+      },
+      "headers": {
+        "Body": {}
       }
     },
     "getResourceResponse": {
