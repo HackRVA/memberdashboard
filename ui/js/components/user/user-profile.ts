@@ -21,11 +21,13 @@ export class UserProfile extends LitElement {
   static get styles(): CSSResult {
     return css`
       .user-profile-container {
-        font-size: 24px;
+        padding: 32px;
+        margin-bottom: 24px;
       }
 
       .username,
       .email {
+        font-size: 20px;
         line-height: 32px;
       }
     `;
