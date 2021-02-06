@@ -1,6 +1,7 @@
 import { Observable } from "rxjs";
 import { HTTPService } from "./http.service";
 import { ENV } from "./../env";
+import { ResourceService } from "./resource.service";
 
 export class MemberService extends HTTPService {
   private readonly api: string | undefined = ENV.api;
@@ -17,6 +18,31 @@ export class MemberService extends HTTPService {
 }
 
 export namespace MemberService {
+  export interface RemoveMemberResourceModalData {
+    email: string;
+    memberResources: MemberResource[];
+    handleResourceChange: Function;
+    handleSubmitRemoveMemberResource: Function;
+    emptyFormValuesOnClosed: Function;
+  }
+
+  export interface AddMemberResourceModalData {
+    email: string;
+    resources: ResourceService.ResourceResponse[];
+    handleResourceChange: Function;
+    handleSubmitAddMemberResource: Function;
+    emptyFormValuesOnClosed: Function;
+  }
+
+  export interface RFIDModalData {
+    email: string;
+    rfid: string;
+    handleEmailChange: Function;
+    handleRFIDChange: Function;
+    handleSubmitForAssigningMemberToRFID: Function;
+    emptyFormValuesOnClosed: Function;
+  }
+
   export interface AssignRFIDRequest {
     email: string;
     rfid: string;

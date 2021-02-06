@@ -1,3 +1,6 @@
+import { RFIDModal } from "./modals/rfid-modal";
+import { AddMemberResourceModal } from "./modals/add-member-resource-modal";
+import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
 import { ResourceService } from "../../service/resource.service";
 import {
   LitElement,
@@ -178,7 +181,7 @@ export class MemberList extends LitElement {
 
   handleSubmitForAssigningMemberToRFID(): void {
     const request: MemberService.AssignRFIDRequest = {
-      email: this.email,
+      email: this.email.trim(),
       rfid: this.newRFID,
     };
     this.emptyFormValues();
@@ -245,107 +248,40 @@ export class MemberList extends LitElement {
   }
 
   displayRemoveMemberResourceModal(): TemplateResult {
-    return html`
-      <mwc-dialog id="removeMemberResourceModal">
-        <div>Remove Resource</div>
-        <mwc-textfield
-          label="email"
-          helper="Can't edit email"
-          readonly
-          value=${this.email}
-        ></mwc-textfield>
-        <mwc-select label="Resources" @change=${this.handleResourceChange}>
-          ${this.memberResources.map((x: MemberService.MemberResource) => {
-            return html`
-              <mwc-list-item value=${x.resourceID}> ${x.name} </mwc-list-item>
-            `;
-          })}
-        </mwc-select>
-        <mwc-button
-          slot="primaryAction"
-          dialogAction="ok"
-          @click=${this.handleSubmitRemoveMemberResource}
-        >
-          Submit
-        </mwc-button>
-        <mwc-button
-          slot="secondaryAction"
-          dialogAction="cancel"
-          @click=${this.emptyFormValuesOnClosed}
-        >
-          Cancel
-        </mwc-button>
-      </mwc-dialog>
-    `;
+    const modalData: MemberService.RemoveMemberResourceModalData = {
+      email: this.email,
+      memberResources: this.memberResources ?? [],
+      handleResourceChange: this.handleResourceChange,
+      handleSubmitRemoveMemberResource: this.handleSubmitRemoveMemberResource,
+      emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
+    };
+
+    return removeMemberResourceModal(modalData);
   }
 
   displayAddMemberResourceModal(): TemplateResult {
-    return html`
-      <mwc-dialog id="addMemberResourceModal">
-        <div>Add Resource</div>
-        <mwc-textfield
-          label="email"
-          helper="Can't edit email"
-          readonly
-          value=${this.email}
-        ></mwc-textfield>
-        <mwc-select label="Resources" @change=${this.handleResourceChange}>
-          ${this.resources.map((x: ResourceService.ResourceResponse) => {
-            return html`
-              <mwc-list-item value=${x.id}> ${x.name} </mwc-list-item>
-            `;
-          })}
-        </mwc-select>
-        <mwc-button
-          slot="primaryAction"
-          dialogAction="ok"
-          @click=${this.handleSubmitAddMemberResource}
-        >
-          Submit
-        </mwc-button>
-        <mwc-button
-          slot="secondaryAction"
-          dialogAction="cancel"
-          @click=${this.emptyFormValuesOnClosed}
-        >
-          Cancel
-        </mwc-button>
-      </mwc-dialog>
-    `;
+    const modalData: MemberService.AddMemberResourceModalData = {
+      email: this.email,
+      resources: this.resources ?? [],
+      handleResourceChange: this.handleResourceChange,
+      handleSubmitAddMemberResource: this.handleSubmitAddMemberResource,
+      emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
+    };
+
+    return AddMemberResourceModal(modalData);
   }
 
   displayAddUpdateRFIDModal(): TemplateResult {
-    return html`
-      <mwc-dialog id="assignRFIDModal">
-        <div>Assign RFID</div>
-        <mwc-textfield
-          @change=${this.handleEmailChange}
-          label="email"
-          helper="member's email"
-          value=${this.email}
-        ></mwc-textfield>
-        <mwc-textfield
-          @change=${this.handleRFIDChange}
-          label="RFID"
-          helper="RFID"
-          value=${this.newRFID}
-        ></mwc-textfield>
-        <mwc-button
-          slot="primaryAction"
-          dialogAction="ok"
-          @click=${this.handleSubmitForAssigningMemberToRFID}
-        >
-          Submit
-        </mwc-button>
-        <mwc-button
-          slot="secondaryAction"
-          dialogAction="cancel"
-          @click=${this.emptyFormValuesOnClosed}
-        >
-          Cancel
-        </mwc-button>
-      </mwc-dialog>
-    `;
+    const modalData: MemberService.RFIDModalData = {
+      email: this.email,
+      rfid: this.newRFID,
+      handleEmailChange: this.handleEmailChange,
+      handleRFIDChange: this.handleRFIDChange,
+      handleSubmitForAssigningMemberToRFID: this
+        .handleSubmitForAssigningMemberToRFID,
+      emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
+    };
+    return RFIDModal(modalData);
   }
 
   emptyFormValuesOnClosed(): void {
