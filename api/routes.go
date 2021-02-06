@@ -91,6 +91,22 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getPaymentRefreshResponse
 	rr.HandleFunc("/payments/refresh", api.refreshPayments)
+	// swagger:route GET /api/payments/charts payments getPaymentChart
+	//
+	// Get Chart information of payments
+	//
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: getPaymentChartResponse
+	rr.HandleFunc("/payments/charts", api.getPaymentChart)
 	// swagger:route GET /api/resource resource getResourceRequest
 	//
 	// Returns a resource.

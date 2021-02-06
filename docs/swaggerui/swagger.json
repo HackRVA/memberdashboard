@@ -149,6 +149,31 @@
         }
       }
     },
+    "/api/payments/charts": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get Chart information of payments",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "payments"
+        ],
+        "operationId": "getPaymentChart",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getPaymentChartResponse"
+          }
+        }
+      }
+    },
     "/api/payments/refresh": {
       "get": {
         "security": [
@@ -584,6 +609,37 @@
       },
       "x-go-package": "memberserver/database"
     },
+    "PaymentChart": {
+      "description": "PaymentChart - deliver information to the frontend so that\nwe can display a monthly payment chart",
+      "type": "object",
+      "properties": {
+        "cols": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/chartCol"
+          },
+          "x-go-name": "Cols"
+        },
+        "options": {
+          "$ref": "#/definitions/chartOptions"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "x-go-name": "Rows"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
     "RegisterResourceRequest": {
       "description": "Resource a resource that can accespt an access control list",
       "type": "object",
@@ -743,6 +799,43 @@
       },
       "x-go-package": "memberserver/database"
     },
+    "chartCol": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "x-go-name": "Label"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
+    "chartOptions": {
+      "type": "object",
+      "properties": {
+        "curveType": {
+          "type": "string",
+          "x-go-name": "CurveType"
+        },
+        "legend": {
+          "type": "string",
+          "x-go-name": "Legend"
+        },
+        "pieHole": {
+          "type": "number",
+          "format": "double",
+          "x-go-name": "PieHole"
+        },
+        "title": {
+          "type": "string",
+          "x-go-name": "Title"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
     "endpointSuccess": {
       "type": "object",
       "properties": {
@@ -801,6 +894,17 @@
         "type": "array",
         "items": {
           "$ref": "#/definitions/Member"
+        }
+      }
+    },
+    "getPaymentChartResponse": {
+      "description": "PaymentResponse response of payment chart information",
+      "headers": {
+        "paymentCharts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PaymentChart"
+          }
         }
       }
     },

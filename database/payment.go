@@ -13,6 +13,10 @@ import (
 const memberGracePeriod = 46
 const membershipMonth = 31
 
+const getPaymentsQuery = `
+SELECT id, date, amount
+FROM membership.payments;`
+
 const insertPaymentQuery = `
 INSERT INTO membership.payments(
 date, amount, member_id)
@@ -67,6 +71,33 @@ type Payment struct {
 	Name     string
 }
 
+// GetPayments - get list of payments that we have in the db
+func (db *Database) GetPayments() ([]Payment, error) {
+	rows, err := db.pool.Query(context.Background(), getPaymentsQuery)
+	if err != nil {
+		log.Fatalf("conn.Query failed: %v", err)
+	}
+
+	defer rows.Close()
+
+	var payments []Payment
+
+	for rows.Next() {
+		var p Payment
+		var amount int64
+		err = rows.Scan(&p.ID, &p.Date, &amount)
+		if err != nil {
+			log.Errorf("error scanning row: %s", err)
+		}
+
+		p.Amount = *money.New(amount*100, "USD")
+
+		payments = append(payments, p)
+	}
+
+	return payments, nil
+}
+
 // AddPayment adds a member to the database
 func (db *Database) AddPayment(payment Payment) (Payment, error) {
 	var p Payment
@@ -114,18 +145,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 
 		// a valid member
 		// determine their membership level
-		var mLevel MemberLevel
-		if amount == 15 {
-			mLevel = Student
-		} else if amount == 30 {
-			mLevel = Classic
-		} else if amount == 35 {
-			mLevel = Standard
-		} else if amount == 50 {
-			mLevel = Premium
-		} else {
-			log.Debugf("got some other amount: %d", amount)
-		}
+		mLevel := MemberLevelFromAmount[amount]
 
 		rows, err := db.pool.Query(context.Background(), updateMembershipLevelQuery, memberID, mLevel)
 		if err != nil {
