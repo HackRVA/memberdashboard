@@ -1,5 +1,5 @@
 import { defaultSnackbar } from "../shared/default-snackbar";
-import { openComponent } from "./../../function";
+import { showComponent } from "./../../function";
 import { RFIDModal } from "./modals/rfid-modal";
 import { AddMemberResourceModal } from "./modals/add-member-resource-modal";
 import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
@@ -139,7 +139,7 @@ export class MemberList extends LitElement {
   openAddMemberResourceModal(email: string): void {
     this.email = email;
     this.requestUpdate();
-    openComponent("#addMemberResourceModal", this.shadowRoot);
+    showComponent("#addMemberResourceModal", this.shadowRoot);
   }
 
   openRemoveMemberResourceModal(
@@ -149,7 +149,7 @@ export class MemberList extends LitElement {
     this.email = email;
     this.memberResources = memberResources;
     this.requestUpdate();
-    openComponent("#removeMemberResourceModal", this.shadowRoot);
+    showComponent("#removeMemberResourceModal", this.shadowRoot);
   }
 
   handleResourceChange(e: Event): void {
@@ -289,7 +289,7 @@ export class MemberList extends LitElement {
   }
 
   displaySuccessMessage(): void {
-    openComponent("#success", this.shadowRoot);
+    showComponent("#success", this.shadowRoot);
   }
 
   emptyFormValuesOnClosed(): void {
@@ -314,7 +314,7 @@ export class MemberList extends LitElement {
   }
 
   openRFIDModal(): void {
-    openComponent("#assignRFIDModal", this.shadowRoot);
+    showComponent("#assignRFIDModal", this.shadowRoot);
   }
 
   render(): TemplateResult {
