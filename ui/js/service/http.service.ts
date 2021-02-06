@@ -1,4 +1,4 @@
-import { of, Observable } from "rxjs";
+import { of, Observable, throwError } from "rxjs";
 import { fromFetch } from "rxjs/fetch";
 import { switchMap, catchError } from "rxjs/operators";
 
@@ -18,13 +18,16 @@ export class HTTPService {
           return response.json();
         } else {
           // Server is returning a status requiring the client to try something else.
-          return of({ error: true, message: `Error ${response.status}` });
+          return throwError({
+            error: true,
+            message: `Error ${response.status}`,
+          });
         }
       }),
       catchError((err) => {
         // Network or other error, handle appropriately
         console.error(err);
-        return of({ error: true, message: err.message });
+        return throwError({ error: true, message: err.message });
       })
     );
   }
@@ -45,13 +48,16 @@ export class HTTPService {
           return response.json();
         } else {
           // Server is returning a status requiring the client to try something else.
-          return of({ error: true, message: `Error ${response.status}` });
+          return throwError({
+            error: true,
+            message: `Error ${response.status}`,
+          });
         }
       }),
       catchError((err) => {
         // Network or other error, handle appropriately
         console.error(err);
-        return of({ error: true, message: err.message });
+        return throwError({ error: true, message: err.message });
       })
     );
   }
@@ -72,13 +78,16 @@ export class HTTPService {
           return response.json();
         } else {
           // Server is returning a status requiring the client to try something else.
-          return of({ error: true, message: `Error ${response.status}` });
+          return throwError({
+            error: true,
+            message: `Error ${response.status}`,
+          });
         }
       }),
       catchError((err) => {
         // Network or other error, handle appropriately
         console.error(err);
-        return of({ error: true, message: err.message });
+        return throwError({ error: true, message: err.message });
       })
     );
   }
@@ -99,13 +108,16 @@ export class HTTPService {
           return response.json();
         } else {
           // Server is returning a status requiring the client to try something else.
-          return of({ error: true, message: `Error ${response.status}` });
+          return throwError({
+            error: true,
+            message: `Error ${response.status}`,
+          });
         }
       }),
       catchError((err) => {
         // Network or other error, handle appropriately
         console.error(err);
-        return of({ error: true, message: err.message });
+        return throwError({ error: true, message: err.message });
       })
     );
   }
