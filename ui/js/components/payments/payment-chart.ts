@@ -2,6 +2,7 @@ import { LitElement, html, customElement, css, CSSResult } from "lit-element";
 import "@google-web-components/google-chart";
 import { PaymentService } from "../../service/payment.service";
 import "../shared/card-element";
+import { GoogleChart } from "@google-web-components/google-chart";
 
 @customElement("payment-chart")
 export class NewElement extends LitElement {
@@ -22,8 +23,7 @@ export class NewElement extends LitElement {
 
   addChart(chartData: PaymentService.PaymentChartResponse) {
     const chartContainer = this.shadowRoot?.querySelector("#chart-container");
-
-    const newChartAttributes: any = {
+    const newChartAttributes: PaymentService.ChartAttributes = {
       id: "new-chart",
       type: chartData.type,
       options: JSON.stringify(chartData.options),
@@ -31,7 +31,7 @@ export class NewElement extends LitElement {
       cols: JSON.stringify(chartData.cols),
     };
 
-    var newChart = document.createElement("google-chart");
+    const newChart: GoogleChart = document.createElement("google-chart");
 
     let key: keyof typeof newChartAttributes;
     for (key in newChartAttributes) {
