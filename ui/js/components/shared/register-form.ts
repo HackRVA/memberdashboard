@@ -1,74 +1,142 @@
-import { LitElement, html, TemplateResult, customElement } from "lit-element";
+import { showComponent } from "./../../function";
+import { defaultSnackbar } from "./default-snackbar";
+import {
+  LitElement,
+  html,
+  TemplateResult,
+  customElement,
+  CSSResult,
+  css,
+} from "lit-element";
 import { UserService } from "../../service/user.service";
 import "@material/mwc-textfield";
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
+import "@vaadin/vaadin-text-field/vaadin-text-field";
+import "@vaadin/vaadin-text-field/vaadin-email-field";
+import "@vaadin/vaadin-text-field/vaadin-password-field";
+import "@vaadin/vaadin-form-layout";
+import "@vaadin/vaadin-button";
+import { EmailFieldElement } from "@vaadin/vaadin-text-field/vaadin-email-field";
+import { TextFieldElement } from "@vaadin/vaadin-text-field/vaadin-text-field";
+import { PasswordFieldElement } from "@vaadin/vaadin-text-field/vaadin-password-field";
 
 @customElement("register-form")
 export class RegisterForm extends LitElement {
-  username: string = "";
-  password: string = "";
-  email: string = "";
   userService: UserService = new UserService();
 
-  handleUsernameInput(e: KeyboardEvent): void {
-    this.username = (e.target as HTMLInputElement).value;
+  // form template
+  usernameFieldTemplate: TextFieldElement;
+  emailFieldTemplate: EmailFieldElement;
+  passwordFieldTemplate: PasswordFieldElement;
+
+  static get styles(): CSSResult {
+    return css`
+      vaadin-form-layout {
+        max-width: 240px;
+      }
+
+      vaadin-text-field,
+      vaadin-email-field,
+      vaadin-password-field {
+        margin-bottom: 12px;
+      }
+
+      vaadin-button {
+        margin-top: 8px;
+      }
+    `;
   }
 
-  handlePasswordInput(e: KeyboardEvent): void {
-    this.password = (e.target as HTMLInputElement).value;
+  firstUpdated(): void {
+    this.usernameFieldTemplate = this.shadowRoot.querySelector(
+      "#username-text-field"
+    );
+    this.emailFieldTemplate = this.shadowRoot.querySelector(
+      "vaadin-email-field"
+    );
+    this.passwordFieldTemplate = this.shadowRoot.querySelector(
+      "vaadin-password-field"
+    );
   }
-  handleEmailInput(e: KeyboardEvent): void {
-    this.email = (e.target as HTMLInputElement).value;
-  }
+
   handleUserRegister(): void {
     const opts: UserService.RegisterRequest = {
-      username: this.username,
-      password: this.password,
-      email: this.email,
+      username: this.usernameFieldTemplate?.value,
+      password: this.passwordFieldTemplate?.value,
+      email: this.emailFieldTemplate?.value,
     };
     this.userService.registerUser(opts).subscribe({
-      next: (result) => {
-        if ((result as { error: boolean; message: any }).error) {
-          this.onRegisterComplete("Some error logging in");
-        }
-      },
-      complete: () => this.onRegisterComplete("Success!"),
+      complete: () => this.displaySuccessMsg(),
+      error: () => this.displayErrorMsg(),
     });
   }
 
-  onRegisterComplete(registerMessage: String) {
-    const event = new CustomEvent("control-changed", {
-      detail: registerMessage,
-    });
-    this.dispatchEvent(event);
+  displaySuccessMsg(): void {
+    showComponent("#success", this.shadowRoot);
+  }
+
+  displayErrorMsg(): void {
+    showComponent("#error", this.shadowRoot);
+  }
+
+  displayInvalidMsg(): void {
+    showComponent("#invalid", this.shadowRoot);
+  }
+
+  handleText(): void {
+    if (this.isValid()) {
+      this.handleUserRegister();
+    } else {
+      this.displayInvalidMsg();
+    }
+  }
+
+  isValid(): boolean {
+    return (
+      this.usernameFieldTemplate?.validate() &&
+      this.emailFieldTemplate?.validate() &&
+      this.passwordFieldTemplate?.validate()
+    );
   }
 
   render(): TemplateResult {
     return html`
-      <mwc-list-item>
-        <mwc-textfield
-          label="Username"
-          @change=${this.handleUsernameInput}
-        ></mwc-textfield>
-      </mwc-list-item>
-      <mwc-list-item>
-        <mwc-textfield
-          type="email"
-          label="Email"
-          @change=${this.handleEmailInput}
-        ></mwc-textfield>
-      </mwc-list-item>
-      <mwc-list-item>
-        <mwc-textfield
-          type="password"
-          label="Password"
-          @change=${this.handlePasswordInput}
-        ></mwc-textfield>
-      </mwc-list-item>
-      <mwc-list-item @click=${this.handleUserRegister}>
-        <mwc-button label="register"></mwc-button>
-      </mwc-list-item>
+      <div>
+        <vaadin-form-layout>
+          <vaadin-text-field
+            id="username-text-field"
+            required
+            label="Username"
+            placeholder="username"
+            clear-button-visible
+          ></vaadin-text-field>
+          <vaadin-email-field
+            required
+            label="Email"
+            placeholder="email"
+            error-message="Please enter a valid email address"
+            clear-button-visible
+          ></vaadin-email-field>
+          <vaadin-password-field
+            required
+            label="Password"
+            reveal-button-hidden
+            placeholder="password"
+            clear-button-visible
+          ></vaadin-password-field>
+          <vaadin-button
+            .disabled=${this.isValid()}
+            theme="primary"
+            @click=${this.handleText}
+          >
+            Register</vaadin-button
+          >
+        </vaadin-form-layout>
+        ${defaultSnackbar("success", "success")}
+        ${defaultSnackbar("invalid", "invalid")}
+        ${defaultSnackbar("error", "error")}
+      </div>
     `;
   }
 }

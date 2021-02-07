@@ -21,6 +21,11 @@ export class HomePage extends LitElement {
       login-container {
         display: grid;
         justify-content: center;
+        padding: 24px;
+      }
+
+      .center {
+        text-align: center;
       }
     `;
   }
@@ -47,10 +52,15 @@ export class HomePage extends LitElement {
 
   displayHomePage(): TemplateResult {
     if (this.username) {
-      return html` <h1>Home</h1> `;
+      return html`
+        <card-element>
+          <h1>Home</h1>
+        </card-element>
+      `;
     } else {
       return html`
         <card-element>
+          <h1>Home</h1>
           <login-container>
             <register-form />
           </login-container>
