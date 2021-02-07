@@ -274,7 +274,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	// Login
 	//
-	// Login accepts some json with the `username` and `password`
+	// Login accepts some json with the `email` and `password`
 	//   and returns some json that has the token string
 	//
 	//     Consumes:
@@ -314,7 +314,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Schemes: http
 	//
 	//     Responses:
-	//       200:
+	//       200: endpointSuccessResponse
 	r.HandleFunc("/api/register", api.signup)
 	return rr
 }

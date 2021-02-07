@@ -21,6 +21,8 @@ import { UserService } from "../../service/user.service";
 
 @customElement("login-form")
 export class LoginForm extends LitElement {
+  email: string = "";
+  password: string = "";
   userService: UserService = new UserService();
   loginFormTemplate: LoginFormElement;
 
@@ -62,7 +64,7 @@ export class LoginForm extends LitElement {
 
   handleUserLogin(event: CustomEvent): void {
     const opts: UserService.LoginRequest = {
-      username: event.detail.username,
+      email: event.detail.username,
       password: event.detail.password,
     };
     this.userService.login(opts).subscribe({

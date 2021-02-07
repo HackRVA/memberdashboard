@@ -65,9 +65,8 @@ export class RegisterForm extends LitElement {
 
   handleUserRegister(): void {
     const opts: UserService.RegisterRequest = {
-      username: this.usernameFieldTemplate?.value,
-      password: this.passwordFieldTemplate?.value,
       email: this.emailFieldTemplate?.value,
+      password: this.passwordFieldTemplate?.value,
     };
     this.userService.registerUser(opts).subscribe({
       complete: () => this.displaySuccessMsg(),

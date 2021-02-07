@@ -12,7 +12,6 @@ import "../shared/register-form";
 
 @customElement("home-page")
 export class HomePage extends LitElement {
-  username: string = "";
   email: string = "";
   userService: UserService = new UserService();
 
@@ -42,8 +41,7 @@ export class HomePage extends LitElement {
             (result as { error: boolean; message: any }).message
           );
         }
-        const { username, email } = result as UserService.UserProfile;
-        this.username = username;
+        const { email } = result as UserService.UserProfile;
         this.email = email;
         this.requestUpdate();
       },
@@ -51,12 +49,8 @@ export class HomePage extends LitElement {
   }
 
   displayHomePage(): TemplateResult {
-    if (this.username) {
-      return html`
-        <card-element>
-          <h1>Home</h1>
-        </card-element>
-      `;
+    if (this.email) {
+      return html` <h1>Home</h1> `;
     } else {
       return html`
         <card-element>

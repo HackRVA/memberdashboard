@@ -20,9 +20,6 @@ import "@material/mwc-button";
 @customElement("user-page")
 export class UserPage extends LitElement {
   @property({ type: String })
-  username: string = "";
-
-  @property({ type: String })
   email: string = "";
 
   newRFID: string = "";
@@ -46,8 +43,7 @@ export class UserPage extends LitElement {
             (result as { error: boolean; message: any }).message
           );
         }
-        const { username, email } = result as UserService.UserProfile;
-        this.username = username;
+        const { email } = result as UserService.UserProfile;
         this.email = email;
         this.requestUpdate();
       },
@@ -130,7 +126,7 @@ export class UserPage extends LitElement {
           dense 
           @click=${this.openRFIDModal}> </mvc-button>
         </div>
-        <user-profile .username=${this.username} .email=${this.email} />
+        <user-profile .email=${this.email} />
         </card-element> 
         ${this.displayAddUpdateRFIDModal()}
         ${defaultSnackbar("error", "error")}

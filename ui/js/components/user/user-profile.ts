@@ -12,9 +12,6 @@ import { UserService } from "../../service/user.service";
 @customElement("user-profile")
 export class UserProfile extends LitElement {
   @property({ type: String })
-  username: string = "";
-
-  @property({ type: String })
   email: string = "";
 
   userService: UserService = new UserService();
@@ -25,7 +22,6 @@ export class UserProfile extends LitElement {
         margin-bottom: 24px;
       }
 
-      .username,
       .email {
         font-size: 20px;
         line-height: 32px;
@@ -36,7 +32,6 @@ export class UserProfile extends LitElement {
   render(): TemplateResult {
     return html`
       <div class="user-profile-container">
-        <div class="username">${this.username}</div>
         <div class="email">${this.email}</div>
       </div>
     `;
