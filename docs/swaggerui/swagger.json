@@ -74,7 +74,7 @@
     },
     "/api/login": {
       "post": {
-        "description": "Login accepts some json with the `username` and `password`\nand returns some json that has the token string",
+        "description": "Login accepts some json with the `email` and `password`\nand returns some json that has the token string",
         "consumes": [
           "application/json"
         ],
@@ -212,9 +212,20 @@
         "tags": [
           "auth"
         ],
-        "operationId": "registerRequest",
+        "operationId": "registerUserRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Credentials"
+            }
+          }
+        ],
         "responses": {
-          "200": {}
+          "200": {
+            "$ref": "#/responses/endpointSuccessResponse"
+          }
         }
       }
     },
@@ -508,8 +519,7 @@
       "description": "Credentials Create a struct that models the structure of a user, both in the request body, and in the DB",
       "type": "object",
       "required": [
-        "password",
-        "username"
+        "password"
       ],
       "properties": {
         "email": {
@@ -522,12 +532,6 @@
           "type": "string",
           "x-go-name": "Password",
           "example": "somepassword"
-        },
-        "username": {
-          "description": "Username - ther users name",
-          "type": "string",
-          "x-go-name": "Username",
-          "example": "username"
         }
       },
       "x-go-package": "memberserver/database"
@@ -789,12 +793,6 @@
           "type": "string",
           "x-go-name": "Email",
           "example": "john@example.com"
-        },
-        "username": {
-          "description": "Username - user's name",
-          "type": "string",
-          "x-go-name": "Username",
-          "example": "John"
         }
       },
       "x-go-package": "memberserver/database"
@@ -887,6 +885,13 @@
     "addMemberToResourceResponse": {
       "schema": {
         "$ref": "#/definitions/MemberResourceRelation"
+      }
+    },
+    "endpointSuccessResponse": {
+      "headers": {
+        "ack": {
+          "type": "boolean"
+        }
       }
     },
     "getMemberResponse": {

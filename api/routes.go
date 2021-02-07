@@ -303,7 +303,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200:
 	r.HandleFunc("/api/logout", api.logout)
-	// swagger:route POST /api/register auth registerRequest
+	// swagger:route POST /api/register auth registerUserRequest
 	//
 	// Register a new user of the app
 	//
