@@ -1,5 +1,4 @@
-import { showComponent } from "./../../function";
-import { defaultSnackbar } from "./default-snackbar";
+// lit element
 import {
   LitElement,
   html,
@@ -8,10 +7,8 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import { UserService } from "../../service/user.service";
-import "@material/mwc-textfield";
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
+// vaadin
 import "@vaadin/vaadin-text-field/vaadin-text-field";
 import "@vaadin/vaadin-text-field/vaadin-email-field";
 import "@vaadin/vaadin-text-field/vaadin-password-field";
@@ -20,6 +17,11 @@ import "@vaadin/vaadin-button";
 import { EmailFieldElement } from "@vaadin/vaadin-text-field/vaadin-email-field";
 import { TextFieldElement } from "@vaadin/vaadin-text-field/vaadin-text-field";
 import { PasswordFieldElement } from "@vaadin/vaadin-text-field/vaadin-password-field";
+
+// membership
+import { showComponent } from "./../../function";
+import { UserService } from "../../service/user.service";
+import { defaultSnackbar } from "./default-snackbar";
 
 @customElement("register-form")
 export class RegisterForm extends LitElement {
@@ -44,6 +46,7 @@ export class RegisterForm extends LitElement {
 
       vaadin-button {
         margin-top: 8px;
+        background-color: #6200ee;
       }
     `;
   }
@@ -113,15 +116,15 @@ export class RegisterForm extends LitElement {
           ></vaadin-text-field>
           <vaadin-email-field
             required
-            label="Email"
-            placeholder="email"
+            label="Email address"
+            placeholder="email address"
             error-message="Please enter a valid email address"
             clear-button-visible
           ></vaadin-email-field>
           <vaadin-password-field
+            id="password"
             required
             label="Password"
-            reveal-button-hidden
             placeholder="password"
             clear-button-visible
           ></vaadin-password-field>
@@ -130,8 +133,8 @@ export class RegisterForm extends LitElement {
             theme="primary"
             @click=${this.handleText}
           >
-            Register</vaadin-button
-          >
+            Register
+          </vaadin-button>
         </vaadin-form-layout>
         ${defaultSnackbar("success", "success")}
         ${defaultSnackbar("invalid", "invalid")}

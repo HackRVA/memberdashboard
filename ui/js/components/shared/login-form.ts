@@ -1,28 +1,69 @@
-import { LitElement, html, TemplateResult, customElement } from "lit-element";
-import { UserService } from "../../service/user.service";
-import "@material/mwc-textfield";
-import "@material/mwc-button";
+// lit element
+import {
+  LitElement,
+  html,
+  TemplateResult,
+  customElement,
+  CSSResult,
+  css,
+} from "lit-element";
+
+// material
 import "@material/mwc-snackbar";
-import "@material/mwc-list/mwc-list-item";
+
+// vaadin
+import "@vaadin/vaadin-login/vaadin-login-form";
+import { LoginFormElement } from "@vaadin/vaadin-login/vaadin-login-form";
+import { LoginI18n } from "@vaadin/vaadin-login/src/interfaces";
+
+// membership
+import { UserService } from "../../service/user.service";
 
 @customElement("login-form")
 export class LoginForm extends LitElement {
-  username: string = "";
-  password: string = "";
   userService: UserService = new UserService();
+  loginFormTemplate: LoginFormElement;
 
-  handleUsernameInput(e: KeyboardEvent): void {
-    this.username = (e.target as HTMLInputElement).value;
+  static get styles(): CSSResult {
+    return css`
+      vaadin-button {
+        background-color: #6200ee;
+      }
+    `;
   }
 
-  handlePasswordInput(e: KeyboardEvent): void {
-    this.password = (e.target as HTMLInputElement).value;
+  firstUpdated(): void {
+    this.loginFormTemplate = this.shadowRoot?.querySelector(
+      "vaadin-login-form"
+    );
+
+    this.loginFormTemplate.i18n = this.updateI18n();
   }
 
-  handleUserLogin(): void {
+  updateI18n(): LoginI18n {
+    const newLoginil8n = {
+      form: {
+        title: "Welcome back",
+        username: "Email address",
+        password: "Password",
+        submit: "Log in",
+        forgotPassword: "", // eventually add this back in
+      },
+    };
+
+    const i18n: LoginI18n = Object.assign(
+      {},
+      this.loginFormTemplate.i18n,
+      newLoginil8n
+    );
+
+    return i18n;
+  }
+
+  handleUserLogin(event: CustomEvent): void {
     const opts: UserService.LoginRequest = {
-      username: this.username,
-      password: this.password,
+      username: event.detail.username,
+      password: event.detail.password,
     };
     this.userService.login(opts).subscribe({
       next: (result: any) => {
@@ -40,22 +81,7 @@ export class LoginForm extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <mwc-list-item>
-        <mwc-textfield
-          label="Username"
-          @change=${this.handleUsernameInput}
-        ></mwc-textfield>
-      </mwc-list-item>
-      <mwc-list-item>
-        <mwc-textfield
-          type="password"
-          label="Password"
-          @change=${this.handlePasswordInput}
-        ></mwc-textfield>
-      </mwc-list-item>
-      <mwc-list-item @click=${this.handleUserLogin}>
-        <mwc-button label="login"></mwc-button>
-      </mwc-list-item>
+      <vaadin-login-form @login=${this.handleUserLogin}> </vaadin-login-form>
     `;
   }
 }
