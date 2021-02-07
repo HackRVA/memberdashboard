@@ -7,12 +7,12 @@ import "@material/mwc-list/mwc-list-item";
 
 @customElement("login-form")
 export class LoginForm extends LitElement {
-  username: string = "";
+  email: string = "";
   password: string = "";
   userService: UserService = new UserService();
 
-  handleUsernameInput(e: KeyboardEvent): void {
-    this.username = (e.target as HTMLInputElement).value;
+  handleEmailInput(e: KeyboardEvent): void {
+    this.email = (e.target as HTMLInputElement).value;
   }
 
   handlePasswordInput(e: KeyboardEvent): void {
@@ -21,7 +21,7 @@ export class LoginForm extends LitElement {
 
   handleUserLogin(): void {
     const opts: UserService.LoginRequest = {
-      username: this.username,
+      email: this.email,
       password: this.password,
     };
     this.userService.login(opts).subscribe({
@@ -42,8 +42,8 @@ export class LoginForm extends LitElement {
     return html`
       <mwc-list-item>
         <mwc-textfield
-          label="Username"
-          @change=${this.handleUsernameInput}
+          label="Email"
+          @change=${this.handleEmailInput}
         ></mwc-textfield>
       </mwc-list-item>
       <mwc-list-item>

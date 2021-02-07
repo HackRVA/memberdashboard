@@ -24,10 +24,9 @@ ALTER TABLE membership.member_resource
 
 CREATE TABLE membership.users
 (
-    username text NOT NULL,
-    password text NOT NULL,
     email    text NOT NULL,
-    PRIMARY KEY (username)
+    password text NOT NULL,
+    PRIMARY KEY (email)
 );
 
 

@@ -23,7 +23,7 @@ const CookieName = "memberserver-token"
 var jwtKey = []byte("my_secret_key")
 
 type Claims struct {
-	Username string `json:"username"`
+	Email string `json:"email"`
 	jwt.StandardClaims
 }
 
@@ -69,9 +69,9 @@ func authMiddleware(next http.Handler) http.Handler {
 			w.Write([]byte("Error verifying JWT token: " + err.Error()))
 			return
 		}
-		name := claims.(jwt.MapClaims)["username"].(string)
+		name := claims.(jwt.MapClaims)["email"].(string)
 
-		r.Header.Set("name", name)
+		r.Header.Set("email", name)
 		r.Header.Set("Authorization", "bearer "+tokenString)
 
 		next.ServeHTTP(w, r)
@@ -80,7 +80,7 @@ func authMiddleware(next http.Handler) http.Handler {
 
 // getUser responds with the current logged in user
 func (a API) getUser(w http.ResponseWriter, r *http.Request) {
-	userProfile, err := a.db.GetUser(r.Header.Get("name"))
+	userProfile, err := a.db.GetUser(r.Header.Get("email"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -108,7 +108,7 @@ func (a API) signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = a.db.RegisterUser(creds.Username, creds.Password, creds.Email)
+	err = a.db.RegisterUser(creds.Email, creds.Password)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -135,11 +135,11 @@ func (a API) logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-func (a API) getToken(name string) (string, error) {
+func (a API) getToken(email string) (string, error) {
 
 	//Creating Access Token
 	atClaims := Claims{}
-	atClaims.Username = name
+	atClaims.Email = email
 	atClaims.ExpiresAt = time.Now().Add(time.Hour * JWTExpireInterval).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 
@@ -168,7 +168,7 @@ func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = a.db.UserSignin(creds.Username, creds.Password)
+	err = a.db.UserSignin(creds.Email, creds.Password)
 	if err != nil {
 		fmt.Printf("error signing in: %s", err)
 		w.WriteHeader(http.StatusUnauthorized)
@@ -178,7 +178,7 @@ func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 	// If we reach this point, that means the users password was correct, and that they are authorized
 	// The default 200 status is sent
 
-	token, err := a.getToken(creds.Username)
+	token, err := a.getToken(creds.Email)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return

@@ -29,13 +29,12 @@ export class UserService extends HTTPService {
 
 export namespace UserService {
   export interface RegisterRequest {
-    username: string;
     password: string;
     email: string;
   }
 
   export interface LoginRequest {
-    username: string;
+    email: string;
     password: string;
     updateCallback?: Function;
   }
@@ -45,7 +44,6 @@ export namespace UserService {
   }
 
   export interface UserProfile {
-    username: string;
     email: string;
   }
 }

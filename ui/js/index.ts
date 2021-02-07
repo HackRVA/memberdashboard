@@ -14,7 +14,6 @@ import { UserService } from "./service/user.service";
 @customElement("member-dashboard")
 export class MemberDashboard extends LitElement {
   showUserProfile: boolean = false;
-  username: string = "";
   email: string = "";
   userService: UserService = new UserService();
 
@@ -58,8 +57,7 @@ export class MemberDashboard extends LitElement {
             (result as { error: boolean; message: any }).message
           );
         }
-        const { username, email } = result as UserService.UserProfile;
-        this.username = username;
+        const { email } = result as UserService.UserProfile;
         this.email = email;
         this.showUserProfile = true;
         this.requestUpdate();
@@ -114,7 +112,7 @@ export class MemberDashboard extends LitElement {
     return html` <div>
       <mwc-top-app-bar-fixed centerTitle>
         <div slot="title">Member Dashboard</div>
-        <div slot="actionItems">${this.username}</div>
+        <div slot="actionItems">${this.email}</div>
         <mwc-icon-button
           @click=${this.handleProfileClick}
           id="profileBtn"

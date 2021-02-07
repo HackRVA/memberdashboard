@@ -14,10 +14,6 @@ type Credentials struct {
 	// required: true
 	// example: somepassword
 	Password string `json:"password"`
-	// Username - ther users name
-	// required: true
-	// example: username
-	Username string `json:"username"`
 	// Email - the users email
 	// required: false
 	Email string `json:"email"`
@@ -25,29 +21,22 @@ type Credentials struct {
 
 // UserResponse - a user object that we can send as json
 type UserResponse struct {
-	// Username - user's name
-	// example: John
-	Username string `json:"username"`
 	// Email - user's Email
 	// example: john@example.com
 	Email string `json:"email"`
 }
 
-const registerUserQuery = `INSERT INTO membership.users values ($1, $2, $3)`
-const getUserPasswordQuery = `SELECT password from membership.users where username=$1`
-const getUserQuery = `SELECT username, email from membership.users where username=$1`
+const registerUserQuery = `INSERT INTO membership.users values ($1, $2)`
+const getUserPasswordQuery = `SELECT password from membership.users where email=$1`
+const getUserQuery = `SELECT email from membership.users where email=$1`
 
 // RegisterUser register a user in the db
-func (db *Database) RegisterUser(username string, password string, email string) error {
-	if len(username) == 0 {
-		return fmt.Errorf("not a valid user")
-	}
-
+func (db *Database) RegisterUser(password string, email string) error {
 	if len(password) == 0 {
 		return fmt.Errorf("not a valid password")
 	}
 
-	if len(username) == 0 {
+	if len(email) == 0 {
 		return fmt.Errorf("not a valid email")
 	}
 
@@ -55,8 +44,8 @@ func (db *Database) RegisterUser(username string, password string, email string)
 	// The second argument is the cost of hashing, which we arbitrarily set as 8 (this value can be more or less, depending on the computing power you wish to utilize)
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
 
-	// Next, insert the username, along with the hashed password into the database
-	rows, err := db.pool.Query(context.Background(), registerUserQuery, username, string(hashedPassword), email)
+	// Next, insert the email, along with the hashed password into the database
+	rows, err := db.pool.Query(context.Background(), registerUserQuery, email, string(hashedPassword))
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -67,12 +56,12 @@ func (db *Database) RegisterUser(username string, password string, email string)
 }
 
 // UserSignin - user login
-func (db *Database) UserSignin(username string, password string) error {
+func (db *Database) UserSignin(email string, password string) error {
 	// We create another instance of `Credentials` to store the credentials we get from the database
 	storedCreds := &Credentials{}
 
-	// Get the existing entry present in the database for the given username
-	row := db.pool.QueryRow(context.Background(), getUserPasswordQuery, username).Scan(&storedCreds.Password)
+	// Get the existing entry present in the database for the given user
+	row := db.pool.QueryRow(context.Background(), getUserPasswordQuery, email).Scan(&storedCreds.Password)
 	if row == pgx.ErrNoRows {
 		return fmt.Errorf("Unauthorized")
 	}
@@ -87,9 +76,9 @@ func (db *Database) UserSignin(username string, password string) error {
 }
 
 // GetUser returns the currently logged in user
-func (db *Database) GetUser(username string) (UserResponse, error) {
+func (db *Database) GetUser(email string) (UserResponse, error) {
 	var userResponse UserResponse
-	row := db.pool.QueryRow(context.Background(), getUserQuery, username).Scan(&userResponse.Username, &userResponse.Email)
+	row := db.pool.QueryRow(context.Background(), getUserQuery, email).Scan(&userResponse.Email)
 	if row == pgx.ErrNoRows {
 		return userResponse, fmt.Errorf("error getting user")
 	}

@@ -6,14 +6,9 @@ import "@material/mwc-list/mwc-list-item";
 
 @customElement("register-form")
 export class RegisterForm extends LitElement {
-  username: string = "";
   password: string = "";
   email: string = "";
   userService: UserService = new UserService();
-
-  handleUsernameInput(e: KeyboardEvent): void {
-    this.username = (e.target as HTMLInputElement).value;
-  }
 
   handlePasswordInput(e: KeyboardEvent): void {
     this.password = (e.target as HTMLInputElement).value;
@@ -23,7 +18,6 @@ export class RegisterForm extends LitElement {
   }
   handleUserRegister(): void {
     const opts: UserService.RegisterRequest = {
-      username: this.username,
       password: this.password,
       email: this.email,
     };
@@ -48,13 +42,6 @@ export class RegisterForm extends LitElement {
     return html`
       <mwc-list-item>
         <mwc-textfield
-          label="Username"
-          @change=${this.handleUsernameInput}
-        ></mwc-textfield>
-      </mwc-list-item>
-      <mwc-list-item>
-        <mwc-textfield
-          type="email"
           label="Email"
           @change=${this.handleEmailInput}
         ></mwc-textfield>

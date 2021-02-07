@@ -11,7 +11,6 @@ import { UserService } from "../../service/user.service";
 @customElement("user-login-profile")
 export class UserLoginProfile extends LitElement {
   userService: UserService = new UserService();
-  username: string = "";
   email: string = "";
   static get styles(): CSSResult {
     return css``;
@@ -29,8 +28,7 @@ export class UserLoginProfile extends LitElement {
             (result as { error: boolean; message: any }).message
           );
         }
-        const { username, email } = result as UserService.UserProfile;
-        this.username = username;
+        const { email } = result as UserService.UserProfile;
         this.email = email;
         this.requestUpdate();
       },
@@ -50,7 +48,7 @@ export class UserLoginProfile extends LitElement {
     return html`
       <mwc-list-item>
         <mwc-icon slot="graphic">person</mwc-icon>
-        ${this.username}</mwc-list-item
+        ${this.email}</mwc-list-item
       >
       <mwc-list-item>${this.email}</mwc-list-item>
       <mwc-list-item @click=${this.handleLogout}>
