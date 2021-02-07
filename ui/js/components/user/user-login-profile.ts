@@ -51,7 +51,6 @@ export class UserLoginProfile extends LitElement {
         <mwc-icon slot="graphic">person</mwc-icon>
         ${this.email}</mwc-list-item
       >
-      <mwc-list-item>${this.email}</mwc-list-item>
       <mwc-list-item @click=${this.handleLogout}>
         <mwc-button label="Logout"></mwc-button>
       </mwc-list-item>

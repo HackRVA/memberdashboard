@@ -15,7 +15,6 @@ import "@vaadin/vaadin-text-field/vaadin-password-field";
 import "@vaadin/vaadin-form-layout";
 import "@vaadin/vaadin-button";
 import { EmailFieldElement } from "@vaadin/vaadin-text-field/vaadin-email-field";
-import { TextFieldElement } from "@vaadin/vaadin-text-field/vaadin-text-field";
 import { PasswordFieldElement } from "@vaadin/vaadin-text-field/vaadin-password-field";
 
 // membership
@@ -28,7 +27,6 @@ export class RegisterForm extends LitElement {
   userService: UserService = new UserService();
 
   // form template
-  usernameFieldTemplate: TextFieldElement;
   emailFieldTemplate: EmailFieldElement;
   passwordFieldTemplate: PasswordFieldElement;
 
@@ -52,9 +50,6 @@ export class RegisterForm extends LitElement {
   }
 
   firstUpdated(): void {
-    this.usernameFieldTemplate = this.shadowRoot.querySelector(
-      "#username-text-field"
-    );
     this.emailFieldTemplate = this.shadowRoot.querySelector(
       "vaadin-email-field"
     );
@@ -96,7 +91,6 @@ export class RegisterForm extends LitElement {
 
   isValid(): boolean {
     return (
-      this.usernameFieldTemplate?.validate() &&
       this.emailFieldTemplate?.validate() &&
       this.passwordFieldTemplate?.validate()
     );
@@ -106,13 +100,6 @@ export class RegisterForm extends LitElement {
     return html`
       <div>
         <vaadin-form-layout>
-          <vaadin-text-field
-            id="username-text-field"
-            required
-            label="Username"
-            placeholder="username"
-            clear-button-visible
-          ></vaadin-text-field>
           <vaadin-email-field
             required
             label="Email address"
