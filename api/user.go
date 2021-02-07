@@ -112,6 +112,7 @@ func (a API) signup(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	// We reach this point if the credentials we correctly stored in the database, and the default status of 200 is sent back
