@@ -113,7 +113,13 @@ func (a API) signup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+
 	// We reach this point if the credentials we correctly stored in the database, and the default status of 200 is sent back
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(endpointSuccess{
+		Ack: true,
+	})
+	w.Write(j)
 }
 
 // Logout endpoint for user signin

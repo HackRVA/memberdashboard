@@ -40,6 +40,14 @@ func (db *Database) RegisterUser(password string, email string) error {
 		return fmt.Errorf("not a valid email")
 	}
 
+	var userResponse UserResponse
+
+	// require that a user be a member
+	row := db.pool.QueryRow(context.Background(), getMemberByEmailQuery, email).Scan(&userResponse.Email)
+	if row == pgx.ErrNoRows {
+		return fmt.Errorf("error you must be a member to register")
+	}
+
 	// Salt and hash the password using the bcrypt algorithm
 	// The second argument is the cost of hashing, which we arbitrarily set as 8 (this value can be more or less, depending on the computing power you wish to utilize)
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)

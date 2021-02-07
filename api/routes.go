@@ -314,7 +314,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Schemes: http
 	//
 	//     Responses:
-	//       200:
+	//       200: endpointSuccessResponse
 	r.HandleFunc("/api/register", api.signup)
 	return rr
 }

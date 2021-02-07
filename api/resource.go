@@ -75,6 +75,7 @@ type removeMemberSuccessResponse struct {
 	Body endpointSuccess
 }
 
+// swagger:response endpointSuccessResponse
 type endpointSuccess struct {
 	Ack bool `json:"ack"`
 }
