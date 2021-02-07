@@ -1,5 +1,7 @@
 DROP SCHEMA IF EXISTS membership CASCADE;
 
+CREATE EXTENSION IF NOT EXISTS citext;
+
 --
 -- Name: membership; Type: SCHEMA; Schema: -; Owner: test
 --
@@ -83,7 +85,7 @@ ALTER SEQUENCE membership.member_tiers_id_seq OWNED BY membership.member_tiers.i
 CREATE TABLE membership.members (
     id integer NOT NULL,
     name text NOT NULL,
-    email text NOT NULL,
+    email citext NOT NULL,
     rfid text,
     member_tier_id integer NOT NULL
 );
