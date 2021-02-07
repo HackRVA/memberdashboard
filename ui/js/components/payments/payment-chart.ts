@@ -24,7 +24,7 @@ export class NewElement extends LitElement {
   addChart(chartData: PaymentService.PaymentChartResponse) {
     const chartContainer = this.shadowRoot?.querySelector("#chart-container");
     const newChartAttributes: PaymentService.ChartAttributes = {
-      id: "new-chart",
+      id: chartData.id,
       type: chartData.type,
       options: JSON.stringify(chartData.options),
       rows: JSON.stringify(chartData.rows),

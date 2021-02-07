@@ -24,6 +24,7 @@ export namespace PaymentService {
   }
 
   export interface PaymentChartResponse {
+    id: string;
     type: string;
     options: ChartOptions;
     rows: any[]; // returns an array of arrays of string and number
