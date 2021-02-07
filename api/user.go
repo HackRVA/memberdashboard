@@ -54,6 +54,12 @@ type userResponseBody struct {
 	Body database.UserResponse
 }
 
+// swagger:parameters registerUserRequest
+type userRegisterRequest struct {
+	// in: body
+	Body database.Credentials
+}
+
 func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := r.Header.Get("Authorization")
@@ -112,6 +118,7 @@ func (a API) signup(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	// We reach this point if the credentials we correctly stored in the database, and the default status of 200 is sent back
