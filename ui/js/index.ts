@@ -65,7 +65,7 @@ export class MemberDashboard extends LitElement {
     });
   }
 
-  displayUserProfile(): TemplateResult | undefined {
+  displayUserProfile(): TemplateResult {
     if (this.showUserProfile) {
       return html` <user-login-profile /> `;
     }
@@ -92,17 +92,13 @@ export class MemberDashboard extends LitElement {
   }
 
   handleProfileClick(): void {
-    const profileBtn:
-      | HTMLElement
-      | null
-      | undefined = this.shadowRoot?.querySelector("#profileBtn");
-    const menu:
-      | (HTMLElement & { anchor: HTMLElement; show: Function })
-      | null
-      | undefined = this.shadowRoot?.querySelector("#menu");
-
-    if (!profileBtn) return console.error("profile btn doesn't exist");
-    if (!menu) return console.error("menu element doesn't exist");
+    const profileBtn: HTMLElement = this.shadowRoot?.querySelector(
+      "#profileBtn"
+    );
+    const menu: HTMLElement & {
+      anchor: HTMLElement;
+      show: Function;
+    } = this.shadowRoot?.querySelector("#menu");
 
     menu.anchor = profileBtn;
     menu.show();
