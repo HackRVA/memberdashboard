@@ -10,62 +10,60 @@ import {
 
 // material
 import "@material/mwc-snackbar";
-
-// vaadin
-import "@vaadin/vaadin-login/vaadin-login-form";
-import { LoginFormElement } from "@vaadin/vaadin-login/vaadin-login-form";
-import { LoginI18n } from "@vaadin/vaadin-login/src/interfaces";
+import "@material/mwc-formfield";
+import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership
 import { UserService } from "../../service/user.service";
 
 @customElement("login-form")
 export class LoginForm extends LitElement {
-  email: string = "";
-  password: string = "";
+  // form template
+  emailFieldTemplate: TextField;
+  passwordFieldTemplate: TextField;
+
   userService: UserService = new UserService();
-  loginFormTemplate: LoginFormElement;
 
   static get styles(): CSSResult {
     return css`
-      vaadin-button {
-        background-color: #6200ee;
+      mwc-formfield {
+        display: block;
+        margin-bottom: 16px;
+      }
+      mwc-button {
+        float: right;
+        margin-bottom: 12px;
+      }
+      .login-form {
+        padding: 20px;
       }
     `;
   }
 
   firstUpdated(): void {
-    this.loginFormTemplate = this.shadowRoot?.querySelector(
-      "vaadin-login-form"
-    );
-
-    this.loginFormTemplate.i18n = this.updateI18n();
+    this.emailFieldTemplate = this.shadowRoot?.querySelector("#email");
+    this.passwordFieldTemplate = this.shadowRoot?.querySelector("#password");
   }
 
-  updateI18n(): LoginI18n {
-    const newLoginil8n = {
-      form: {
-        title: "Welcome back",
-        username: "Email address",
-        password: "Password",
-        submit: "Log in",
-        forgotPassword: "", // eventually add this back in
-      },
-    };
-
-    const i18n: LoginI18n = Object.assign(
-      {},
-      this.loginFormTemplate.i18n,
-      newLoginil8n
-    );
-
-    return i18n;
+  handleSubmit(): void {
+    if (this.isValid()) {
+      this.handleUserLogin();
+    } else {
+      console.error("invalid");
+    }
   }
 
-  handleUserLogin(event: CustomEvent): void {
+  isValid(): boolean {
+    return (
+      this.emailFieldTemplate.validity.valid &&
+      this.passwordFieldTemplate.validity.valid
+    );
+  }
+
+  handleUserLogin(): void {
     const opts: UserService.LoginRequest = {
-      email: event.detail.username,
-      password: event.detail.password,
+      email: this.emailFieldTemplate?.value,
+      password: this.passwordFieldTemplate?.value,
     };
     this.userService.login(opts).subscribe({
       next: (result: any) => {
@@ -83,7 +81,25 @@ export class LoginForm extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <vaadin-login-form @login=${this.handleUserLogin}> </vaadin-login-form>
+      <div class="login-form">
+        <mwc-formfield>
+          <mwc-textfield
+            id="email"
+            required
+            type="email"
+            label="Email"
+          ></mwc-textfield>
+        </mwc-formfield>
+        <mwc-formfield>
+          <mwc-textfield
+            id="password"
+            required
+            type="password"
+            label="Password"
+          ></mwc-textfield>
+        </mwc-formfield>
+        <mwc-button label="login" @click=${this.handleSubmit}></mwc-button>
+      </div>
     `;
   }
 }

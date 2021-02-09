@@ -8,15 +8,13 @@ import {
   css,
 } from "lit-element";
 
-// vaadin
-import "@vaadin/vaadin-text-field/vaadin-text-field";
-import "@vaadin/vaadin-text-field/vaadin-email-field";
-import "@vaadin/vaadin-text-field/vaadin-password-field";
-import "@vaadin/vaadin-form-layout";
-import "@vaadin/vaadin-button";
-import { EmailFieldElement } from "@vaadin/vaadin-text-field/vaadin-email-field";
-import { PasswordFieldElement } from "@vaadin/vaadin-text-field/vaadin-password-field";
-
+// material
+import "@material/mwc-button";
+import "@material/mwc-list";
+import "@material/mwc-textfield";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-formfield";
+import { TextField } from "@material/mwc-textfield/mwc-textfield";
 // membership
 import { showComponent } from "./../../function";
 import { UserService } from "../../service/user.service";
@@ -27,35 +25,25 @@ export class RegisterForm extends LitElement {
   userService: UserService = new UserService();
 
   // form template
-  emailFieldTemplate: EmailFieldElement;
-  passwordFieldTemplate: PasswordFieldElement;
+  emailFieldTemplate: TextField;
+  passwordFieldTemplate: TextField;
 
   static get styles(): CSSResult {
     return css`
-      vaadin-form-layout {
-        max-width: 240px;
+      mwc-formfield {
+        display: block;
+        margin-bottom: 16px;
       }
-
-      vaadin-text-field,
-      vaadin-email-field,
-      vaadin-password-field {
+      mwc-button {
+        float: right;
         margin-bottom: 12px;
-      }
-
-      vaadin-button {
-        margin-top: 8px;
-        background-color: #6200ee;
       }
     `;
   }
 
   firstUpdated(): void {
-    this.emailFieldTemplate = this.shadowRoot.querySelector(
-      "vaadin-email-field"
-    );
-    this.passwordFieldTemplate = this.shadowRoot.querySelector(
-      "vaadin-password-field"
-    );
+    this.emailFieldTemplate = this.shadowRoot.querySelector("#email");
+    this.passwordFieldTemplate = this.shadowRoot.querySelector("#password");
   }
 
   handleUserRegister(): void {
@@ -81,7 +69,7 @@ export class RegisterForm extends LitElement {
     showComponent("#invalid", this.shadowRoot);
   }
 
-  handleText(): void {
+  handleSubmit(): void {
     if (this.isValid()) {
       this.handleUserRegister();
     } else {
@@ -91,37 +79,31 @@ export class RegisterForm extends LitElement {
 
   isValid(): boolean {
     return (
-      this.emailFieldTemplate?.validate() &&
-      this.passwordFieldTemplate?.validate()
+      this.emailFieldTemplate.validity.valid &&
+      this.passwordFieldTemplate.validity.valid
     );
   }
 
   render(): TemplateResult {
     return html`
       <div>
-        <vaadin-form-layout>
-          <vaadin-email-field
+        <mwc-formfield>
+          <mwc-textfield
+            id="email"
             required
-            label="Email address"
-            placeholder="email address"
-            error-message="Please enter a valid email address"
-            clear-button-visible
-          ></vaadin-email-field>
-          <vaadin-password-field
+            type="email"
+            label="Email"
+          ></mwc-textfield>
+        </mwc-formfield>
+        <mwc-formfield>
+          <mwc-textfield
             id="password"
             required
+            type="password"
             label="Password"
-            placeholder="password"
-            clear-button-visible
-          ></vaadin-password-field>
-          <vaadin-button
-            .disabled=${this.isValid()}
-            theme="primary"
-            @click=${this.handleText}
-          >
-            Register
-          </vaadin-button>
-        </vaadin-form-layout>
+          ></mwc-textfield>
+        </mwc-formfield>
+        <mwc-button label="register" @click=${this.handleSubmit}></mwc-button>
         ${defaultSnackbar("success", "success")}
         ${defaultSnackbar("invalid", "invalid")}
         ${defaultSnackbar("error", "error")}
