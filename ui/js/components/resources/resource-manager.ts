@@ -1,13 +1,18 @@
+// lit element
 import { LitElement, html, customElement, TemplateResult } from "lit-element";
-import "../shared/card-element";
+
+// material
 import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/mwc-textfield";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list";
 import "@material/mwc-checkbox";
+
+// membership
+import "../shared/card-element";
 import { ResourceService } from "../../service/resource.service";
-import { isEmpty } from "../../function";
+import { isEmpty, showComponent } from "../../function";
 
 const NOT_A_RESOURCE_ID = "";
 
@@ -32,9 +37,7 @@ export class ResourceManager extends LitElement {
   }
 
   handleOpenRegisterResource(): void {
-    (this.shadowRoot?.querySelector("#register") as HTMLElement & {
-      show: Function;
-    }).show();
+    showComponent("#register", this.shadowRoot);
   }
 
   handleSubmitResource(isCreate: boolean): void {
@@ -179,18 +182,19 @@ export class ResourceManager extends LitElement {
   }
 
   render(): TemplateResult {
-    return html` <card-element>
-      <h1>Resource Manager</h1>
-      <mwc-button
-        @click=${this.handleOpenRegisterResource}
-        dense
-        unelevated
-        label="create"
-      ></mwc-button>
+    return html`
+      <div>
+        <mwc-button
+          @click=${this.handleOpenRegisterResource}
+          dense
+          unelevated
+          label="create"
+        ></mwc-button>
 
-      <div>${this.resourceList()}</div>
+        <div>${this.resourceList()}</div>
 
-      ${this.updateResourceDialog()}
-    </card-element>`;
+        ${this.updateResourceDialog()}
+      </div>
+    `;
   }
 }

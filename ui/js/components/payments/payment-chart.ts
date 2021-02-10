@@ -13,6 +13,7 @@ export class NewElement extends LitElement {
       #payment-chart-container {
         display: flex;
         justify-content: center;
+        padding: 36px;
       }
     `;
   }
@@ -60,11 +61,9 @@ export class NewElement extends LitElement {
   }
   render() {
     return html`
-      <card-element>
-        <div id="payment-chart-container">
-          <chart-container id="chart-container"> </chart-container>
-        </div>
-      </card-element>
+      <div id="payment-chart-container">
+        <chart-container id="chart-container"> </chart-container>
+      </div>
     `;
   }
 }

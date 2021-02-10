@@ -1,3 +1,4 @@
+// lit element
 import {
   LitElement,
   html,
@@ -6,13 +7,14 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
+
+// membership
 import { UserService } from "../../service/user.service";
 import "../shared/card-element";
 import "../shared/register-form";
 
 @customElement("home-page")
 export class HomePage extends LitElement {
-  email: string = "";
   userService: UserService = new UserService();
 
   static get styles(): CSSResult {
@@ -29,41 +31,26 @@ export class HomePage extends LitElement {
     `;
   }
 
-  firstUpdated(): void {
-    this.handleGetUserProfile();
-  }
-
-  handleGetUserProfile(): void {
-    this.userService.getUser().subscribe({
-      next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          return console.error(
-            (result as { error: boolean; message: any }).message
-          );
-        }
-        const { email } = result as UserService.UserProfile;
-        this.email = email;
-        this.requestUpdate();
-      },
-    });
+  isUserLogin(): boolean {
+    return !!localStorage.getItem("jwt");
   }
 
   displayHomePage(): TemplateResult {
-    if (this.email) {
+    if (this.isUserLogin()) {
       return html` <h1>Home</h1> `;
     } else {
       return html`
-        <card-element>
+        <div>
           <h1>Home</h1>
           <login-container>
             <register-form />
           </login-container>
-        </card-element>
+        </div>
       `;
     }
   }
 
   render(): TemplateResult {
-    return html` ${this.displayHomePage()} `;
+    return html` <card-element> ${this.displayHomePage()} </card-element> `;
   }
 }

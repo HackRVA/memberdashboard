@@ -5,35 +5,23 @@ import {
   customElement,
   TemplateResult,
   CSSResult,
+  property,
 } from "lit-element";
 import { UserService } from "../../service/user.service";
 import "@material/mwc-button";
 
 @customElement("user-login-profile")
 export class UserLoginProfile extends LitElement {
+  @property({ type: String })
+  email: string;
+
   userService: UserService = new UserService();
-  email: string = "";
   static get styles(): CSSResult {
-    return css``;
-  }
-
-  firstUpdated(): void {
-    this.handleGetUserProfile();
-  }
-
-  handleGetUserProfile(): void {
-    this.userService.getUser().subscribe({
-      next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          return console.error(
-            (result as { error: boolean; message: any }).message
-          );
-        }
-        const { email } = result as UserService.UserProfile;
-        this.email = email;
-        this.requestUpdate();
-      },
-    });
+    return css`
+      .logout {
+        float: right;
+      }
+    `;
   }
 
   handleLogout(): void {
@@ -47,13 +35,14 @@ export class UserLoginProfile extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <mwc-list-item>
-        <mwc-icon slot="graphic">person</mwc-icon>
-        ${this.email}</mwc-list-item
-      >
-      <mwc-list-item @click=${this.handleLogout}>
-        <mwc-button label="Logout"></mwc-button>
-      </mwc-list-item>
+      <div>
+        <mwc-list-item>
+          Signed in as <strong>${this.email} </strong></mwc-list-item
+        >
+        <mwc-list-item class="logout" @click=${this.handleLogout}>
+          <mwc-button label="Logout"></mwc-button>
+        </mwc-list-item>
+      </div>
     `;
   }
 }

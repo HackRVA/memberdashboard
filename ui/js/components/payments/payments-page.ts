@@ -1,3 +1,4 @@
+// lit element
 import {
   LitElement,
   html,
@@ -6,7 +7,10 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
+
+// membership
 import "./payment-chart";
+import "../shared/card-element";
 
 @customElement("payments-page")
 export class PaymentsPage extends LitElement {
@@ -14,6 +18,11 @@ export class PaymentsPage extends LitElement {
     return css``;
   }
   render(): TemplateResult {
-    return html` <payment-chart> </payment-chart> `;
+    return html`
+      <card-element>
+        <h1>Payments</h1>
+        <payment-chart> </payment-chart>
+      </card-element>
+    `;
   }
 }

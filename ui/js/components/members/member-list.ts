@@ -1,9 +1,4 @@
-import { defaultSnackbar } from "../shared/default-snackbar";
-import { showComponent } from "./../../function";
-import { RFIDModal } from "./modals/rfid-modal";
-import { AddMemberResourceModal } from "./modals/add-member-resource-modal";
-import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
-import { ResourceService } from "../../service/resource.service";
+// lit element
 import {
   LitElement,
   html,
@@ -13,13 +8,24 @@ import {
   CSSResult,
   property,
 } from "lit-element";
-import { MemberService } from "../../service/member.service";
-import "../shared/card-element";
+
+// material
 import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-snackbar";
+import "@material/mwc-textfield";
+
+// membership
+import { defaultSnackbar } from "../shared/default-snackbar";
+import { showComponent } from "./../../function";
+import { RFIDModal } from "./modals/rfid-modal";
+import { AddMemberResourceModal } from "./modals/add-member-resource-modal";
+import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
+import { ResourceService } from "../../service/resource.service";
+import { MemberService } from "../../service/member.service";
+import "../shared/card-element";
 
 @customElement("member-list")
 export class MemberList extends LitElement {
@@ -44,6 +50,8 @@ export class MemberList extends LitElement {
     return css`
       h1 {
         margin-top: 0px;
+        margin-bottom: 0px;
+        justify-self: start;
       }
       .member-container {
         display: grid;
@@ -51,6 +59,11 @@ export class MemberList extends LitElement {
         align-items: center;
         text-align: center;
         margin: 44px;
+      }
+      .member-header {
+        display: inherit;
+        grid-template-columns: 1fr 1fr 1fr;
+        align-items: center;
       }
       .name {
         text-transform: capitalize;
@@ -61,18 +74,16 @@ export class MemberList extends LitElement {
         padding: 8px;
         font-size: 20px;
         border: 1px solid #e1e1e1;
-        width: 320px;
+        max-width: 320px;
       }
       table {
         margin-top: 24px;
         border-spacing: 0px;
       }
       .member-count {
-        line-height: 21px;
-        margin-left: calc(1vw + 123px);
       }
       .rfid-button {
-        float: right;
+        justify-self: end;
       }
       .remove {
         --mdc-theme-primary: #e9437a;
@@ -112,7 +123,6 @@ export class MemberList extends LitElement {
     this.resourceService.getResources().subscribe({
       next: (result: any) => {
         if ((result as { error: boolean; message: any }).error) {
-          // this.onLoginComplete("Some error logging in");
           console.error("some error getting resources");
         } else {
           this.resources = result as ResourceService.ResourceResponse[];
@@ -321,17 +331,19 @@ export class MemberList extends LitElement {
     return html`
       <card-element>
         <div class="member-container">
-          <h1>Members</h1>
-          <div class="member-count-rfid">
+          <div class="member-header">
+            <h1>Members</h1>
             <span class="member-count">
               <b>Member count: </b> 
               ${this.memberCount} 
             </span>
             <mwc-button 
               class="rfid-button" 
-              label="Assign rfid" 
+              label="Assign rfid"
+              unelevated 
               dense 
-              @click=${this.openRFIDModal}> </mvc-button>
+              @click=${this.openRFIDModal}> 
+            </mvc-button>
           </div>
           <table>
             <tr>

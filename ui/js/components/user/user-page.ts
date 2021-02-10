@@ -9,7 +9,6 @@ import {
   CSSResult,
   property,
 } from "lit-element";
-import "./user-profile";
 import "../shared/card-element";
 import { showComponent } from "../../function";
 import { RFIDModal } from "../members/modals/rfid-modal";
@@ -31,6 +30,15 @@ export class UserPage extends LitElement {
     return css`
       .center {
         text-align: center;
+      }
+
+      .email {
+        font-size: 20px;
+        line-height: 32px;
+      }
+
+      div {
+        margin-bottom: 24px;
       }
     `;
   }
@@ -117,16 +125,22 @@ export class UserPage extends LitElement {
   render(): TemplateResult {
     return html`
     <div>
-      <card-element class="center">
-        <div> 
-          <h1> User <h1>
-          <mwc-button 
-          class="rfid-button" 
-          label="Assign rfid" 
-          dense 
-          @click=${this.openRFIDModal}> </mvc-button>
+      <card-element>
+        <h1> User <h1>
+        <div class="center">
+          <div> 
+            <span class="email">${this.email} </span>
+          </div>
+          <div> 
+            <mwc-button 
+            class="rfid-button" 
+            label="Assign rfid" 
+            dense
+            unelevated
+            @click=${this.openRFIDModal}> 
+            </mvc-button>
+          </div> 
         </div>
-        <user-profile .email=${this.email} />
         </card-element> 
         ${this.displayAddUpdateRFIDModal()}
         ${defaultSnackbar("error", "error")}

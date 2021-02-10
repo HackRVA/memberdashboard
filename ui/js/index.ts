@@ -67,7 +67,7 @@ export class MemberDashboard extends LitElement {
 
   displayUserProfile(): TemplateResult {
     if (this.showUserProfile) {
-      return html` <user-login-profile /> `;
+      return html` <user-login-profile .email=${this.email} /> `;
     }
     return html` <login-form /> `;
   }
