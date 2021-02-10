@@ -2,8 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"memberserver/config"
 	"memberserver/database"
 	"net/http"
@@ -11,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	log "github.com/sirupsen/logrus"
 )
 
 // JWTExpireInterval - how long the JWT will last
@@ -183,7 +182,7 @@ func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 
 	err = a.db.UserSignin(creds.Email, creds.Password)
 	if err != nil {
-		fmt.Printf("error signing in: %s", err)
+		log.Errorf("error signing in: %s", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}

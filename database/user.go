@@ -26,12 +26,14 @@ type UserResponse struct {
 	Email string `json:"email"`
 }
 
-const registerUserQuery = `INSERT INTO membership.users values ($1, $2)`
+const registerUserQuery = `INSERT INTO membership.users(
+	email, password)
+	VALUES ($1, $2);`
 const getUserPasswordQuery = `SELECT password from membership.users where email=$1`
 const getUserQuery = `SELECT email from membership.users where email=$1`
 
 // RegisterUser register a user in the db
-func (db *Database) RegisterUser(password string, email string) error {
+func (db *Database) RegisterUser(email string, password string) error {
 	if len(password) == 0 {
 		return fmt.Errorf("not a valid password")
 	}
