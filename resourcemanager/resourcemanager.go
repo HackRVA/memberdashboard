@@ -1,7 +1,6 @@
 package resourcemanager
 
 import (
-	"bytes"
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
@@ -25,6 +24,7 @@ const statusCheckInterval = 1
 // ResourceManager contains functions that
 type ResourceManager struct {
 	db *database.Database
+	mc MQTTClient
 }
 
 // ACLUpdateRequest is the json object we send to a resource when pushing an update
@@ -51,6 +51,9 @@ func Setup() (*ResourceManager, error) {
 		log.Errorf("error setting up db: %s", err)
 		return rm, err
 	}
+	rm.mc = MQTTSetup()
+
+	rm.mc.Subscribe("/result", check)
 
 	// quietly check the resource status on an interval
 	ticker := time.NewTicker(statusCheckInterval * time.Hour)
@@ -92,16 +95,8 @@ func (rm ResourceManager) UpdateResourceACL(r database.Resource) error {
 	}
 	log.Debugf("access list: %s", j)
 
-	// push the update to the resource
-	resp, err := http.Post(r.Address+"/update", "application/json", bytes.NewBuffer(j))
-	if err != nil {
-		log.Errorf("Unable to reach the resource.")
-		return err
-	}
-	body, _ := ioutil.ReadAll(resp.Body)
-
-	// TODO: check that the resource responds with a hash of the list
-	log.Debugf("body=", string(body))
+	// publish the update to mqtt broker
+	rm.mc.Publish(r.Name+"/update", j)
 
 	return nil
 }
@@ -109,11 +104,14 @@ func (rm ResourceManager) UpdateResourceACL(r database.Resource) error {
 // ACLResponse Response from a resource that is a hash of the ACL that the
 //   resource has stored
 type ACLResponse struct {
-	ACLHash string `json:"acl"`
+	Hash string `json:"acl"`
+	// Name of the resource - this should match what we have in the database
+	//  so we know which acl to compare it with
+	Name string `json:"name"`
 }
 
-// CheckStatus will make an http request to verify that the resource has the correct
-//   and up to date access list
+// CheckStatus will publish an mqtt command that requests for a specific device to verify that
+//   the resource has the correct and up to date access list
 //   It will do this by hashing the list retrieved from the DB and comparing it
 //   with the hash that the resource reports
 func (rm ResourceManager) CheckStatus(r database.Resource) (uint8, error) {
@@ -136,8 +134,8 @@ func (rm ResourceManager) CheckStatus(r database.Resource) (uint8, error) {
 
 	_ = json.Unmarshal(body, &acl)
 
-	log.Debugf("body= %s json=%s accessListHash=%s", string(body), acl.ACLHash, hash(accessList))
-	if acl.ACLHash != hash(accessList) {
+	log.Debugf("body= %s json=%s accessListHash=%s", string(body), acl.Hash, hash(accessList))
+	if acl.Hash != hash(accessList) {
 		log.Debugf("attempting to update resource [%s] with new data", r.Name)
 		err = rm.UpdateResourceACL(r)
 		status = StatusOutOfDate

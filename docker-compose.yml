@@ -22,13 +22,12 @@ services:
             - MAILGUN_FROM_ADDRESS=${MAILGUN_FROM_ADDRESS}
             - MAILGUN_USER=${MAILGUN_USER}
             - MAILGUN_PASSWORD=${MAILGUN_PASSWORD}
+            - MQTT_BROKER_ADDRESS=${MQTT_BROKER_ADDRESS}
         volumes:
             # This is go modules cache, without it you will have to
             # re-download all dependencies after restarting container
             - modules:/go/pkg/mod/cache
             - /etc/hackrva/:/etc/hackrva/
-        # wait for the db to come up
-        command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./server'
     postgres:
         image: postgres
         ports:
