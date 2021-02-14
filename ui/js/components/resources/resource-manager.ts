@@ -19,7 +19,7 @@ const NOT_A_RESOURCE_ID = "";
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
   resourceService: ResourceService = new ResourceService();
-  resources: Array<ResourceService.ResourceResponse> | null = null;
+  resources: Array<ResourceService.ResourceResponse> = [];
   newAddress: string = "";
   newName: string = "";
   newID: string = "";
@@ -83,7 +83,6 @@ export class ResourceManager extends LitElement {
     this.resourceService.getResources().subscribe({
       next: (result: any) => {
         if ((result as { error: boolean; message: any }).error) {
-          // this.onLoginComplete("Some error logging in");
           console.error("some error getting resources");
         } else {
           this.resources = result as ResourceService.ResourceResponse[];

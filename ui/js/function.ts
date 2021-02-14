@@ -4,7 +4,7 @@ export const isEmpty = (value: string | any[]): boolean => {
 
 export const showComponent = (
   elementId: string,
-  shadowRoot: ShadowRoot | null
+  shadowRoot: ShadowRoot
 ): void => {
   (shadowRoot?.querySelector(elementId) as HTMLElement & {
     show: Function;

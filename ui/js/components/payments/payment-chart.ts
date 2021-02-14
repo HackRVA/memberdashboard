@@ -7,7 +7,7 @@ import { GoogleChart } from "@google-web-components/google-chart";
 @customElement("payment-chart")
 export class NewElement extends LitElement {
   paymentService: PaymentService = new PaymentService();
-  paymentCharts: Array<PaymentService.PaymentChartResponse> | null = null;
+  paymentCharts: Array<PaymentService.PaymentChartResponse> = [];
   static get styles(): CSSResult {
     return css`
       #payment-chart-container {
@@ -46,7 +46,6 @@ export class NewElement extends LitElement {
     this.paymentService.getPaymentCharts().subscribe({
       next: (result: any) => {
         if ((result as { error: boolean; message: any }).error) {
-          // this.onLoginComplete("Some error logging in");
           console.error("some error getting resources");
         } else {
           this.paymentCharts = result as PaymentService.PaymentChartResponse[];

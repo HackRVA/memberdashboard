@@ -4,7 +4,7 @@ import { ENV } from "./../env";
 import { ResourceService } from "./resource.service";
 
 export class MemberService extends HTTPService {
-  private readonly api: string | undefined = ENV.api;
+  private readonly api: string = ENV.api;
 
   getMembers(): Observable<Response | { error: boolean; message: any }> {
     return this.get(this.api + "/member");
