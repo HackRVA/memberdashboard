@@ -17,9 +17,17 @@ WHERE member_id = membership.members.id
 ) as resources
 FROM membership.members;
 `
-const getMemberByEmailQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id
+const getMemberByEmailQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
+ARRAY(
+SELECT resource_id
+FROM membership.member_resource
+LEFT JOIN membership.resources 
+ON membership.resources.id = membership.member_resource.resource_id
+WHERE member_id = membership.members.id
+) as resources
 FROM membership.members
 WHERE email = $1;`
+
 const setMemberRFIDTag = `UPDATE membership.members
 SET rfid=$2
 WHERE email=$1
@@ -91,9 +99,22 @@ func (db *Database) GetMembers() []Member {
 // GetMemberByEmail - lookup a member by their email address
 func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 	var m Member
-	err := db.pool.QueryRow(context.Background(), getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level)
+	var rIDs []string
+
+	err := db.pool.QueryRow(context.Background(), getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	// having issues with unmarshalling a jsonb object array from pgx
+	// using a less efficient approach for now
+	// TODO: fix this on the query level
+	for _, rID := range rIDs {
+		resource, err := db.GetResourceByID(rID)
+		if err != nil {
+			log.Debugf("error getting resource by id in memberResource lookup: %s\n", err.Error())
+		}
+		m.Resources = append(m.Resources, MemberResource{ResourceID: rID, Name: resource.Name})
 	}
 
 	return m, err
