@@ -15,7 +15,7 @@ CREATE SCHEMA membership;
 CREATE TABLE membership.member_resource (
     id UUID DEFAULT gen_random_uuid(),
     member_id UUID NOT NULL,
-    resource_id UUID NOT NULL,
+    resource_id UUID NOT NULL
 );
 
 ALTER TABLE membership.member_resource
@@ -101,7 +101,7 @@ CREATE TABLE membership.payments
 CREATE TABLE membership.resources (
     id UUID DEFAULT gen_random_uuid(),
     description text NOT NULL,
-    device_identifier text NOT NULL,
+    device_identifier text NOT NULL
 );
 
 --
