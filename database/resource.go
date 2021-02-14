@@ -7,27 +7,26 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 )
 
-const getResourceQuery = `SELECT id, description, device_identifier, updated_at FROM membership.resources;`
+const getResourceQuery = `SELECT id, description, device_identifier FROM membership.resources;`
 const insertResourceQuery = `INSERT INTO membership.resources(
-	description, device_identifier, updated_at)
+	description, device_identifier)
 	VALUES ($1, $2, NOW())
 	RETURNING *;`
 const updateResourceQuery = `UPDATE membership.resources
-SET description=$2, device_identifier=$3, updated_at=NOW()
+SET description=$2, device_identifier=$3
 WHERE id=$1
 RETURNING *;
 `
 const deleteResourceQuery = `DELETE FROM membership.resources
 WHERE id = $1;`
-const getResourceByNameQuery = `SELECT id, description, device_identifier, updated_at
+const getResourceByNameQuery = `SELECT id, description, device_identifier
 FROM membership.resources
 WHERE description = $1;`
 
-const getResourceByIDQuery = `SELECT id, description, device_identifier, updated_at
+const getResourceByIDQuery = `SELECT id, description, device_identifier
 FROM membership.resources
 WHERE id = $1;`
 
@@ -35,13 +34,14 @@ const getResourceACLByResourceIDQuery = `SELECT rfid
 FROM membership.member_resource
 LEFT JOIN membership.members
 ON membership.member_resource.member_id = membership.members.id
-WHERE resource_id = $1;`
+WHERE resource_id = $1
+AND rfid != null;`
 
-const getMemberResourceQuery = `SELECT id, member_id, resource_id, updated_at
+const getMemberResourceQuery = `SELECT id, member_id, resource_id
 FROM membership.member_resource
 WHERE member_id = $1 AND resource_id = $2;`
 const insertMemberResourceQuery = `INSERT INTO membership.member_resource(
-	member_id, resource_id, updated_at)
+	member_id, resource_id)
 	VALUES ($1, $2, NOW())
 	RETURNING *;`
 const removeMemberResourceQuery = `DELETE FROM membership.member_resource
@@ -67,8 +67,7 @@ type Resource struct {
 	// Address of the Resource. i.e. where it can be found on the network
 	// required: true
 	// example: address
-	Address     string           `json:"address"`
-	LastUpdated pgtype.Timestamp `json:"lastUpdated"`
+	Address string `json:"address"`
 }
 
 // ResourceDeleteRequest - request for deleting a resource
@@ -109,10 +108,9 @@ type RegisterResourceRequest struct {
 
 // MemberResourceRelation  - a relationship between resources and members
 type MemberResourceRelation struct {
-	ID          string           `json:"id"`
-	MemberID    string           `json:"memberID"`
-	ResourceID  string           `json:"resourceID"`
-	LastUpdated pgtype.Timestamp `json:"lastUpdated"`
+	ID         string `json:"id"`
+	MemberID   string `json:"memberID"`
+	ResourceID string `json:"resourceID"`
 }
 
 // GetResources - gets the status from DB
@@ -128,7 +126,7 @@ func (db *Database) GetResources() []Resource {
 
 	for rows.Next() {
 		var r Resource
-		err = rows.Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
+		err = rows.Scan(&r.ID, &r.Name, &r.Address)
 		resources = append(resources, r)
 	}
 
@@ -138,7 +136,7 @@ func (db *Database) GetResources() []Resource {
 // GetResourceByID - lookup a resource by it's name
 func (db *Database) GetResourceByID(ID string) (Resource, error) {
 	var r Resource
-	err := db.pool.QueryRow(context.Background(), getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
+	err := db.pool.QueryRow(context.Background(), getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address)
 	if err != nil {
 		return r, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -149,16 +147,9 @@ func (db *Database) GetResourceByID(ID string) (Resource, error) {
 // GetResourceByName - lookup a resource by it's name
 func (db *Database) GetResourceByName(resourceName string) (Resource, error) {
 	var r Resource
-	rows, err := db.pool.Query(context.Background(), getResourceByNameQuery, resourceName)
+	err := db.pool.QueryRow(context.Background(), getResourceByNameQuery, resourceName).Scan(&r.ID, &r.Name, &r.Address)
 	if err != nil {
-		return r, fmt.Errorf("conn.Query failed: %v", err)
-	}
-
-	defer rows.Close()
-
-	err = rows.Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
-	if err != nil {
-		return r, fmt.Errorf("getResourceByName failed: %s", err)
+		return r, fmt.Errorf("getResourceByName failed: %v", err)
 	}
 
 	return r, err
@@ -189,7 +180,7 @@ func (db *Database) UpdateResource(id string, name string, address string) (*Res
 		return r, errors.New("invalid resourseID of 0")
 	}
 
-	row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address).Scan(&r.ID, &r.Name, &r.Address, &r.LastUpdated)
+	row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address).Scan(&r.ID, &r.Name, &r.Address)
 	if row == pgx.ErrNoRows {
 		log.Printf("no rows affected %s", row.Error())
 		return r, errors.New("no rows affected")
@@ -227,7 +218,7 @@ func (db *Database) AddUserToResource(email string, resourceID string) (MemberRe
 	memberResource.MemberID = m.ID
 	memberResource.ResourceID = r.ID
 
-	row := db.pool.QueryRow(context.Background(), insertMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID, &memberResource.LastUpdated)
+	row := db.pool.QueryRow(context.Background(), insertMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID)
 	if row == pgx.ErrNoRows {
 		return memberResource, errors.New("no rows affected")
 	}
@@ -239,7 +230,7 @@ func (db *Database) AddUserToResource(email string, resourceID string) (MemberRe
 func (db *Database) GetMemberResourceRelation(m Member, r Resource) (MemberResourceRelation, error) {
 	mr := MemberResourceRelation{}
 
-	row := db.pool.QueryRow(context.Background(), getMemberResourceQuery, m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID, &mr.LastUpdated)
+	row := db.pool.QueryRow(context.Background(), getMemberResourceQuery, m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
 	if row == pgx.ErrNoRows {
 		return mr, errors.New("no rows affected")
 	}

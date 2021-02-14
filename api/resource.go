@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"memberserver/database"
-	"memberserver/resourcemanager"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -211,23 +210,26 @@ func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
 
 func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 	resources := rs.db.GetResources()
-	statusMap := make(map[string]uint8)
+	// statusMap := make(map[string]uint8)
 
 	for _, r := range resources {
-		status, err := rs.rm.CheckStatus(r)
-		if err != nil {
-			log.Errorf("error getting resource status: %s", err.Error())
-			statusMap[r.Name] = resourcemanager.StatusOffline
+		if r == (database.Resource{}) {
 			continue
 		}
-		if status == resourcemanager.StatusOutOfDate {
-			statusMap[r.Name] = resourcemanager.StatusOutOfDate
-			continue
-		}
-		statusMap[r.Name] = resourcemanager.StatusGood
+		rs.rm.CheckStatus(r)
+		// if err != nil {
+		// 	log.Errorf("error getting resource status: %s", err.Error())
+		// 	statusMap[r.Name] = resourcemanager.StatusOffline
+		// 	continue
+		// }
+		// if status == resourcemanager.StatusOutOfDate {
+		// 	statusMap[r.Name] = resourcemanager.StatusOutOfDate
+		// 	continue
+		// }
+		// statusMap[r.Name] = resourcemanager.StatusGood
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(statusMap)
-	w.Write(j)
+	// j, _ := json.Marshal(statusMap)
+	// w.Write(j)
 }

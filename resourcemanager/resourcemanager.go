@@ -4,10 +4,8 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"time"
 
-	"net/http"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -53,7 +51,8 @@ func Setup() (*ResourceManager, error) {
 	}
 	rm.mc = MQTTSetup()
 
-	rm.mc.Subscribe("/result", check)
+	// TODO: loop through resources and subscribe to their status reporting
+	rm.mc.Subscribe("test/result", healthCheck)
 
 	// quietly check the resource status on an interval
 	ticker := time.NewTicker(statusCheckInterval * time.Hour)
@@ -114,42 +113,8 @@ type ACLResponse struct {
 //   the resource has the correct and up to date access list
 //   It will do this by hashing the list retrieved from the DB and comparing it
 //   with the hash that the resource reports
-func (rm ResourceManager) CheckStatus(r database.Resource) (uint8, error) {
-	var status uint8
-	accessList, err := rm.db.GetResourceACL(r)
-	status = StatusOffline
-
-	if err != nil {
-		return status, err
-	}
-
-	// push the update to the resource
-	resp, err := http.Get(r.Address)
-	if err != nil {
-		log.Errorf("Unable to reach the resource.")
-		return status, err
-	}
-	var acl ACLResponse
-	body, _ := ioutil.ReadAll(resp.Body)
-
-	_ = json.Unmarshal(body, &acl)
-
-	log.Debugf("body= %s json=%s accessListHash=%s", string(body), acl.Hash, hash(accessList))
-	if acl.Hash != hash(accessList) {
-		log.Debugf("attempting to update resource [%s] with new data", r.Name)
-		err = rm.UpdateResourceACL(r)
-		status = StatusOutOfDate
-		if err != nil {
-			log.Errorf("error updating resource with acl: %s", err)
-			return status, err
-		}
-		return status, err
-	}
-
-	// TODO: check that the resource responds with a hash of the list
-	status = StatusGood
-
-	return status, nil
+func (rm ResourceManager) CheckStatus(r database.Resource) {
+	rm.mc.Publish(r.Name+"/cmd", "aclhash")
 }
 
 func hash(accessList []string) string {

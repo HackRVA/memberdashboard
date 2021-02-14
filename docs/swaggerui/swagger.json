@@ -536,11 +536,6 @@
       },
       "x-go-package": "memberserver/database"
     },
-    "InfinityModifier": {
-      "type": "integer",
-      "format": "int8",
-      "x-go-package": "github.com/jackc/pgtype"
-    },
     "Member": {
       "description": "Member -- a member of the makerspace",
       "type": "object",
@@ -598,9 +593,6 @@
         "id": {
           "type": "string",
           "x-go-name": "ID"
-        },
-        "lastUpdated": {
-          "$ref": "#/definitions/Timestamp"
         },
         "memberID": {
           "type": "string",
@@ -688,9 +680,6 @@
           "x-go-name": "ID",
           "example": "0"
         },
-        "lastUpdated": {
-          "$ref": "#/definitions/Timestamp"
-        },
         "name": {
           "description": "Name of the Resource",
           "type": "string",
@@ -746,11 +735,6 @@
       },
       "x-go-package": "memberserver/database"
     },
-    "Status": {
-      "type": "integer",
-      "format": "uint8",
-      "x-go-package": "github.com/jackc/pgtype"
-    },
     "Tier": {
       "description": "Tier - level of membership",
       "type": "object",
@@ -766,23 +750,6 @@
         }
       },
       "x-go-package": "memberserver/database"
-    },
-    "Timestamp": {
-      "description": "Timestamp represents the PostgreSQL timestamp type. The PostgreSQL\ntimestamp does not have a time zone. This presents a problem when\ntranslating to and from time.Time which requires a time zone. It is highly\nrecommended to use timestamptz whenever possible. Timestamp methods either\nconvert to UTC or return an error on non-UTC times.",
-      "type": "object",
-      "properties": {
-        "InfinityModifier": {
-          "$ref": "#/definitions/InfinityModifier"
-        },
-        "Status": {
-          "$ref": "#/definitions/Status"
-        },
-        "Time": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "x-go-package": "github.com/jackc/pgtype"
     },
     "UserResponse": {
       "description": "UserResponse - a user object that we can send as json",
