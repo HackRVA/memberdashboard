@@ -39,6 +39,12 @@ type getPaymentRefreshResponse struct {
 	Body endpointSuccess
 }
 
+// swagger:parameters getMemberByIDRequest
+type getMemberRequest struct {
+	// in: query
+	ID string
+}
+
 func (a API) getTiers(w http.ResponseWriter, req *http.Request) {
 	tiers := a.db.GetMemberTiers()
 
@@ -49,6 +55,22 @@ func (a API) getTiers(w http.ResponseWriter, req *http.Request) {
 }
 
 func (a API) getMembers(w http.ResponseWriter, req *http.Request) {
+	memberEmail := req.URL.Query().Get("email")
+
+	if len(memberEmail) > 0 {
+		m, err := a.db.GetMemberByEmail(memberEmail)
+		if err != nil {
+			log.Errorf("error getting memeber by ID: %s", err)
+			http.Error(w, errors.New("error getting memeber by ID").Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		j, _ := json.Marshal(m)
+		w.Write(j)
+		return
+	}
 	members := a.db.GetMembers()
 
 	w.Header().Set("Content-Type", "application/json")
