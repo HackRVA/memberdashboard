@@ -35,7 +35,7 @@ FROM membership.member_resource
 LEFT JOIN membership.members
 ON membership.member_resource.member_id = membership.members.id
 WHERE resource_id = $1
-AND rfid != null;`
+AND rfid is not NULL;`
 
 const getMemberResourceQuery = `SELECT id, member_id, resource_id
 FROM membership.member_resource

@@ -5,6 +5,8 @@ import (
 	"memberserver/database"
 	"net/http"
 
+	"memberserver/resourcemanager"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -216,7 +218,7 @@ func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 		if r == (database.Resource{}) {
 			continue
 		}
-		rs.rm.CheckStatus(r)
+		resourcemanager.CheckStatus(r)
 		// if err != nil {
 		// 	log.Errorf("error getting resource status: %s", err.Error())
 		// 	statusMap[r.Name] = resourcemanager.StatusOffline
