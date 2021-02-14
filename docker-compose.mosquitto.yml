@@ -1,0 +1,18 @@
+version: '3.5'
+
+services:
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:1.6.10
+    volumes:
+      - ./resourcebridge/config:/mosquitto/config/
+    ports:
+      - '8883:8883'
+      - '1883:1883'
+    networks:
+      - membership
+    restart: unless-stopped
+
+networks:
+  membership:
+        external: false
