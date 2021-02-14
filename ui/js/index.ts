@@ -13,7 +13,6 @@ import "@material/mwc-top-app-bar-fixed";
 import "@material/mwc-icon-button";
 import "@material/mwc-menu";
 import "./components/shared/login-form";
-import "./components/user/user-login-profile";
 import "./router";
 import { Router, RouterLocation } from "@vaadin/router";
 import { UserService } from "./service/user.service";
