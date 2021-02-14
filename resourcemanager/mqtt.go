@@ -10,6 +10,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// healthCheck
+//  this is the mqtt messageHandler that runs when a resource checks in
+//  we expect the payload to be json that marshals to `ACLResponse` which includes the name
+//  and a hash of it's ACL
+//  if the ACL hash doesn't match what we have in the database, we will trigger an update to push
+//  to the resource
 var healthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("MSG: %s\n", msg.Payload())
 	// status := StatusOffline
