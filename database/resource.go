@@ -44,6 +44,9 @@ const insertMemberResourceQuery = `INSERT INTO membership.member_resource(
 	member_id, resource_id)
 	VALUES ($1, $2)
 	RETURNING *;`
+const insertMemberDefaultResourceQuery = `INSERT INTO membership.member_resource(member_id, resource_id)
+SELECT $1, resources.id FROM membership.resources AS resources WHERE resources.is_default IS TRUE
+RETURNING *;`
 const removeMemberResourceQuery = `DELETE FROM membership.member_resource
 WHERE member_id = $1 AND resource_id = $2;`
 
@@ -237,6 +240,32 @@ func (db *Database) AddUserToResource(email string, resourceID string) (MemberRe
 	}
 
 	return memberResource, nil
+}
+
+// AddUserToDefaultResources - grants a user access to default resources - untested
+func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRelation, error) {
+
+	m, err := db.GetMemberByEmail(email)
+	if err != nil {
+        //is this wrong?
+		return [], err
+	}
+
+	rows, err := db.pool.Query(context.Background(), insertMemberDefaultResourceQuery, memberResource.MemberID)
+	if err != nil {
+		log.Fatalf("conn.Query failed: %v", err)
+	}
+
+	defer rows.Close()
+
+	var memberResources := []MemberResourceRelation
+
+	for rows.Next() {
+		var r MemberResourceRelation
+		err = rows.Scan(&r.ID, &r.MemberID, &r.ResourceID)
+		memberResources = append(memberResources, r)
+	}
+	return memberResources, nil
 }
 
 // GetMemberResourceRelation retrieves a relation of a member and a resource
