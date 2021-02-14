@@ -13,7 +13,7 @@ import (
 const getResourceQuery = `SELECT id, description, device_identifier FROM membership.resources;`
 const insertResourceQuery = `INSERT INTO membership.resources(
 	description, device_identifier)
-	VALUES ($1, $2, NOW())
+	VALUES ($1, $2)
 	RETURNING *;`
 const updateResourceQuery = `UPDATE membership.resources
 SET description=$2, device_identifier=$3
@@ -35,14 +35,14 @@ FROM membership.member_resource
 LEFT JOIN membership.members
 ON membership.member_resource.member_id = membership.members.id
 WHERE resource_id = $1
-AND rfid != null;`
+AND rfid is not NULL;`
 
 const getMemberResourceQuery = `SELECT id, member_id, resource_id
 FROM membership.member_resource
 WHERE member_id = $1 AND resource_id = $2;`
 const insertMemberResourceQuery = `INSERT INTO membership.member_resource(
 	member_id, resource_id)
-	VALUES ($1, $2, NOW())
+	VALUES ($1, $2)
 	RETURNING *;`
 const removeMemberResourceQuery = `DELETE FROM membership.member_resource
 WHERE member_id = $1 AND resource_id = $2;`

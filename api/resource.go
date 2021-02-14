@@ -5,6 +5,8 @@ import (
 	"memberserver/database"
 	"net/http"
 
+	"memberserver/resourcemanager"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -164,6 +166,13 @@ func (rs resourceAPI) addMember(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(r)
 	w.Write(j)
+
+	resource, err := rs.db.GetResourceByID(update.ID)
+	if err != nil {
+		log.Errorf("error getting resource to update when adding a member: %s", err)
+	}
+
+	resourcemanager.UpdateResourceACL(resource)
 }
 
 func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
@@ -186,6 +195,13 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 		Ack: true,
 	})
 	w.Write(j)
+
+	resource, err := rs.db.GetResourceByID(update.ID)
+	if err != nil {
+		log.Errorf("error getting resource to update when removing a member: %s", err)
+	}
+
+	resourcemanager.UpdateResourceACL(resource)
 }
 
 func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
@@ -216,7 +232,7 @@ func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 		if r == (database.Resource{}) {
 			continue
 		}
-		rs.rm.CheckStatus(r)
+		resourcemanager.CheckStatus(r)
 		// if err != nil {
 		// 	log.Errorf("error getting resource status: %s", err.Error())
 		// 	statusMap[r.Name] = resourcemanager.StatusOffline
