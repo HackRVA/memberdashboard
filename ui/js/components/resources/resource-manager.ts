@@ -13,13 +13,19 @@ import "@material/mwc-checkbox";
 import "../shared/card-element";
 import { ResourceService } from "../../service/resource.service";
 import { isEmpty, showComponent } from "../../function";
+import {
+  ResourceResponse,
+  RegisterResourceRequest,
+  UpdateResourceRequest,
+  RemoveResourceRequest,
+} from "./types";
 
 const NOT_A_RESOURCE_ID = "";
 
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
   resourceService: ResourceService = new ResourceService();
-  resources: Array<ResourceService.ResourceResponse> = [];
+  resources: Array<ResourceResponse> = [];
   newAddress: string = "";
   newName: string = "";
   newID: string = "";
@@ -42,14 +48,14 @@ export class ResourceManager extends LitElement {
 
   handleSubmitResource(isCreate: boolean): void {
     if (isCreate) {
-      const request: ResourceService.RegisterResourceRequest = {
+      const request: RegisterResourceRequest = {
         name: this.newName,
         address: this.newAddress,
       };
       this.emptyFormValues();
       this.handleRegisterResource(request);
     } else {
-      const request: ResourceService.UpdateResourceRequest = {
+      const request: UpdateResourceRequest = {
         id: this.newID,
         name: this.newName,
         address: this.newAddress,
@@ -59,9 +65,7 @@ export class ResourceManager extends LitElement {
     }
   }
 
-  handleRegisterResource(
-    request: ResourceService.RegisterResourceRequest
-  ): void {
+  handleRegisterResource(request: RegisterResourceRequest): void {
     this.resourceService.register(request).subscribe({
       complete: () => {
         this.handleGetResources();
@@ -70,7 +74,7 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  handleUpdateResource(request: ResourceService.UpdateResourceRequest): void {
+  handleUpdateResource(request: UpdateResourceRequest): void {
     this.resourceService.updateResource(request).subscribe({
       complete: () => {
         this.handleGetResources();
@@ -82,18 +86,18 @@ export class ResourceManager extends LitElement {
   handleGetResources(): void {
     this.resourceService.getResources().subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
+        if ((result as { error: boolean; message: any })?.error) {
           console.error("some error getting resources");
         } else {
-          this.resources = result as ResourceService.ResourceResponse[];
+          this.resources = result as ResourceResponse[];
           this.requestUpdate();
         }
       },
     });
   }
 
-  handleDelete(resource: ResourceService.ResourceResponse): void {
-    const request: ResourceService.RemoveResourceRequest = {
+  handleDelete(resource: ResourceResponse): void {
+    const request: RemoveResourceRequest = {
       id: resource.id,
     };
     this.resourceService.deleteResource(request).subscribe({
@@ -104,7 +108,7 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  handleEdit(resource: ResourceService.UpdateResourceRequest): void {
+  handleEdit(resource: UpdateResourceRequest): void {
     this.newAddress = resource.address;
     this.newName = resource.name;
     this.newID = resource.id;
@@ -164,7 +168,7 @@ export class ResourceManager extends LitElement {
   resourceList(): TemplateResult | void {
     if (!this.resources) return;
     return html` <mwc-list>
-      ${this.resources.map((x: ResourceService.ResourceResponse) => {
+      ${this.resources.map((x: ResourceResponse) => {
         return html`<mwc-list-item>
           ${x.name} ${x.address}
           <mwc-button

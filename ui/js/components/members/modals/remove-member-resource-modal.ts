@@ -1,8 +1,8 @@
-import { MemberService } from "./../../../service/member.service";
+import { RemoveMemberResourceModalData, MemberResource } from "./../types";
 import { html, TemplateResult } from "lit-element";
 
 export const removeMemberResourceModal = (
-  modalData: MemberService.RemoveMemberResourceModalData
+  modalData: RemoveMemberResourceModalData
 ): TemplateResult => {
   return html`
     <mwc-dialog id="removeMemberResourceModal">
@@ -14,7 +14,7 @@ export const removeMemberResourceModal = (
         value=${modalData.email}
       ></mwc-textfield>
       <mwc-select label="Resources" @change=${modalData.handleResourceChange}>
-        ${modalData.memberResources.map((x: MemberService.MemberResource) => {
+        ${modalData.memberResources.map((x: MemberResource) => {
           return html`
             <mwc-list-item value=${x.resourceID}> ${x.name} </mwc-list-item>
           `;

@@ -1,9 +1,9 @@
-import { MemberService } from "./../../../service/member.service";
+import { AddMemberResourceModalData } from "../types";
 import { html, TemplateResult } from "lit-element";
-import { ResourceService } from "../../../service/resource.service";
+import { ResourceResponse } from "../../resources/types";
 
-export const AddMemberResourceModal = (
-  modalData: MemberService.AddMemberResourceModalData
+export const addMemberResourceModal = (
+  modalData: AddMemberResourceModalData
 ): TemplateResult => {
   return html`
     <mwc-dialog id="addMemberResourceModal">
@@ -15,7 +15,7 @@ export const AddMemberResourceModal = (
         value=${modalData.email}
       ></mwc-textfield>
       <mwc-select label="Resources" @change=${modalData.handleResourceChange}>
-        ${modalData.resources.map((x: ResourceService.ResourceResponse) => {
+        ${modalData.resources.map((x: ResourceResponse) => {
           return html`
             <mwc-list-item value=${x.id}> ${x.name} </mwc-list-item>
           `;

@@ -18,10 +18,24 @@ import "@material/mwc-snackbar";
 import "@material/mwc-textfield";
 
 // membership
+import {
+  MemberLevel,
+  MemberResource,
+  MemberResponse,
+  AssignRFIDRequest,
+  AddMemberResourceModalData,
+  RemoveMemberResourceModalData,
+  RFIDModalData,
+} from "./types";
+import {
+  AddMemberResourceRequest,
+  RemoveMemberResourceRequest,
+  ResourceResponse,
+} from "../resources/types";
 import { defaultSnackbar } from "../shared/default-snackbar";
 import { showComponent } from "./../../function";
-import { RFIDModal } from "./modals/rfid-modal";
-import { AddMemberResourceModal } from "./modals/add-member-resource-modal";
+import { rfidModal } from "./modals/rfid-modal";
+import { addMemberResourceModal } from "./modals/add-member-resource-modal";
 import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
 import { ResourceService } from "../../service/resource.service";
 import { MemberService } from "../../service/member.service";
@@ -30,19 +44,19 @@ import "../shared/card-element";
 @customElement("member-list")
 export class MemberList extends LitElement {
   @property({ type: Array })
-  members: MemberService.MemberResponse[] = [];
+  members: MemberResponse[] = [];
 
   @property({ type: Number })
   memberCount: number = 0;
 
-  resources: ResourceService.ResourceResponse[] = [];
+  resources: ResourceResponse[] = [];
 
   // form variables for adding/removing a resource to a member
   email: string = "";
   newRFID: string = "";
   newResourceId: string = "";
 
-  memberResources: Array<MemberService.MemberResource> = [];
+  memberResources: Array<MemberResource> = [];
   memberService: MemberService = new MemberService();
   resourceService: ResourceService = new ResourceService();
 
@@ -101,8 +115,6 @@ export class MemberList extends LitElement {
   }
 
   displayMemberStatus(memberLevel: number): string {
-    const { MemberLevel } = MemberService;
-
     switch (memberLevel) {
       case MemberLevel.inactive:
         return "Inactive";
@@ -122,10 +134,10 @@ export class MemberList extends LitElement {
   getResources(): void {
     this.resourceService.getResources().subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
+        if ((result as { error: boolean; message: any })?.error) {
           console.error("some error getting resources");
         } else {
-          this.resources = result as ResourceService.ResourceResponse[];
+          this.resources = result as ResourceResponse[];
           this.requestUpdate();
         }
       },
@@ -135,12 +147,12 @@ export class MemberList extends LitElement {
   getMembers(): void {
     this.memberService.getMembers().subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
+        if ((result as { error: boolean; message: any })?.error) {
           return console.error(
             (result as { error: boolean; message: any }).message
           );
         }
-        this.members = result as MemberService.MemberResponse[];
+        this.members = result as MemberResponse[];
         this.memberCount = this.members.length;
       },
     });
@@ -154,7 +166,7 @@ export class MemberList extends LitElement {
 
   openRemoveMemberResourceModal(
     email: string,
-    memberResources: Array<MemberService.MemberResource>
+    memberResources: Array<MemberResource>
   ): void {
     this.email = email;
     this.memberResources = memberResources;
@@ -175,7 +187,7 @@ export class MemberList extends LitElement {
   }
 
   handleSubmitAddMemberResource(): void {
-    const request: ResourceService.AddMemberResourceRequest = {
+    const request: AddMemberResourceRequest = {
       email: this.email,
       resourceID: this.newResourceId,
     };
@@ -184,7 +196,7 @@ export class MemberList extends LitElement {
   }
 
   handleSubmitRemoveMemberResource(): void {
-    const request: ResourceService.RemoveMemberResourceRequest = {
+    const request: RemoveMemberResourceRequest = {
       email: this.email,
       resourceID: this.newResourceId,
     };
@@ -193,7 +205,7 @@ export class MemberList extends LitElement {
   }
 
   handleSubmitForAssigningMemberToRFID(): void {
-    const request: MemberService.AssignRFIDRequest = {
+    const request: AssignRFIDRequest = {
       email: this.email.trim(),
       rfid: this.newRFID,
     };
@@ -201,9 +213,7 @@ export class MemberList extends LitElement {
     this.assignMemberToRFID(request);
   }
 
-  removeMemberResource(
-    request: ResourceService.RemoveMemberResourceRequest
-  ): void {
+  removeMemberResource(request: RemoveMemberResourceRequest): void {
     this.resourceService.removeMemberResource(request).subscribe({
       complete: () => {
         this.getMembers();
@@ -212,7 +222,7 @@ export class MemberList extends LitElement {
     });
   }
 
-  addMemberResource(request: ResourceService.AddMemberResourceRequest): void {
+  addMemberResource(request: AddMemberResourceRequest): void {
     this.resourceService.addMemberResource(request).subscribe({
       complete: () => {
         this.getMembers();
@@ -221,7 +231,7 @@ export class MemberList extends LitElement {
     });
   }
 
-  assignMemberToRFID(request: MemberService.AssignRFIDRequest): void {
+  assignMemberToRFID(request: AssignRFIDRequest): void {
     this.memberService.assignRFID(request).subscribe({
       complete: () => {
         this.getMembers();
@@ -233,7 +243,7 @@ export class MemberList extends LitElement {
 
   displayMembersTable(): TemplateResult {
     return html`
-      ${this.members.map((x: MemberService.MemberResponse) => {
+      ${this.members.map((x: MemberResponse) => {
         return html`
           <tr>
             <td class="name">${x.name}</td>
@@ -262,7 +272,7 @@ export class MemberList extends LitElement {
   }
 
   displayRemoveMemberResourceModal(): TemplateResult {
-    const modalData: MemberService.RemoveMemberResourceModalData = {
+    const modalData: RemoveMemberResourceModalData = {
       email: this.email,
       memberResources: this.memberResources ?? [],
       handleResourceChange: this.handleResourceChange,
@@ -274,7 +284,7 @@ export class MemberList extends LitElement {
   }
 
   displayAddMemberResourceModal(): TemplateResult {
-    const modalData: MemberService.AddMemberResourceModalData = {
+    const modalData: AddMemberResourceModalData = {
       email: this.email,
       resources: this.resources ?? [],
       handleResourceChange: this.handleResourceChange,
@@ -282,11 +292,11 @@ export class MemberList extends LitElement {
       emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
     };
 
-    return AddMemberResourceModal(modalData);
+    return addMemberResourceModal(modalData);
   }
 
   displayAddUpdateRFIDModal(): TemplateResult {
-    const modalData: MemberService.RFIDModalData = {
+    const modalData: RFIDModalData = {
       email: this.email,
       rfid: this.newRFID,
       handleEmailChange: this.handleEmailChange,
@@ -295,7 +305,7 @@ export class MemberList extends LitElement {
         .handleSubmitForAssigningMemberToRFID,
       emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
     };
-    return RFIDModal(modalData);
+    return rfidModal(modalData);
   }
 
   displaySuccessMessage(): void {
@@ -312,13 +322,9 @@ export class MemberList extends LitElement {
     this.newResourceId = "";
   }
 
-  displayMemberResources(
-    resources: Array<MemberService.MemberResource>
-  ): string {
+  displayMemberResources(resources: Array<MemberResource>): string {
     if (resources?.length > 0) {
-      return resources
-        .map((x: MemberService.MemberResource) => x.name)
-        .join(", ");
+      return resources.map((x: MemberResource) => x.name).join(", ");
     }
     return "No resources";
   }

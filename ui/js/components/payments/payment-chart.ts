@@ -1,8 +1,13 @@
+// lit element
 import { LitElement, html, customElement, css, CSSResult } from "lit-element";
+
+// google
 import "@google-web-components/google-chart";
+import { GoogleChart } from "@google-web-components/google-chart";
+
+// membership
 import { PaymentService } from "../../service/payment.service";
 import "../shared/card-element";
-import { GoogleChart } from "@google-web-components/google-chart";
 
 @customElement("payment-chart")
 export class NewElement extends LitElement {

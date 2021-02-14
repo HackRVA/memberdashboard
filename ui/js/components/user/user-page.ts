@@ -1,5 +1,4 @@
-import { defaultSnackbar } from "./../shared/default-snackbar";
-import { UserService } from "./../../service/user.service";
+// lit element
 import {
   LitElement,
   html,
@@ -9,12 +8,19 @@ import {
   CSSResult,
   property,
 } from "lit-element";
-import "../shared/card-element";
-import { showComponent } from "../../function";
-import { RFIDModal } from "../members/modals/rfid-modal";
-import { MemberService } from "../../service/member.service";
+
+// material
 import "@material/mwc-dialog";
 import "@material/mwc-button";
+
+// membership
+import { defaultSnackbar } from "./../shared/default-snackbar";
+import { UserService } from "./../../service/user.service";
+import { showComponent } from "../../function";
+import { RFIDModalData, AssignRFIDRequest } from "../members/types";
+import { rfidModal } from "../members/modals/rfid-modal";
+import { MemberService } from "../../service/member.service";
+import "../shared/card-element";
 
 @customElement("user-page")
 export class UserPage extends LitElement {
@@ -59,7 +65,7 @@ export class UserPage extends LitElement {
   }
 
   displayAddUpdateRFIDModal(): TemplateResult {
-    const modalData: MemberService.RFIDModalData = {
+    const modalData: RFIDModalData = {
       email: this.email,
       rfid: this.newRFID,
       handleEmailChange: this.handleEmailChange,
@@ -68,7 +74,7 @@ export class UserPage extends LitElement {
         .handleSubmitForAssigningUserToRFID,
       emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
     };
-    return RFIDModal(modalData);
+    return rfidModal(modalData);
   }
 
   openRFIDModal(): void {
@@ -93,7 +99,7 @@ export class UserPage extends LitElement {
   }
 
   handleSubmitForAssigningUserToRFID(): void {
-    const request: MemberService.AssignRFIDRequest = {
+    const request: AssignRFIDRequest = {
       email: this.email.trim(),
       rfid: this.newRFID,
     };
@@ -109,7 +115,7 @@ export class UserPage extends LitElement {
     showComponent("#error", this.shadowRoot);
   }
 
-  assignUserToRFID(request: MemberService.AssignRFIDRequest): void {
+  assignUserToRFID(request: AssignRFIDRequest): void {
     this.memberService.assignRFID(request).subscribe({
       complete: () => {
         this.displaySuccessMessage();

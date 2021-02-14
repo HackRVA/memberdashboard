@@ -1,4 +1,4 @@
-import { MemberService } from "../../service/member.service";
+// lit element
 import {
   LitElement,
   html,
@@ -8,12 +8,16 @@ import {
   CSSResult,
   property,
 } from "lit-element";
+
+// membership
+import { MemberService } from "../../service/member.service";
 import "./member-list";
+import { MemberResponse } from "./types";
 
 @customElement("members-page")
 export class MembersPage extends LitElement {
   @property({ type: Array })
-  members: MemberService.MemberResponse[];
+  members: MemberResponse[];
 
   @property({ type: Number })
   memberCount: number;
@@ -34,7 +38,7 @@ export class MembersPage extends LitElement {
             (result as { error: boolean; message: any }).message
           );
         }
-        this.members = result as MemberService.MemberResponse[];
+        this.members = result as MemberResponse[];
         this.memberCount = this.members.length;
       },
     });

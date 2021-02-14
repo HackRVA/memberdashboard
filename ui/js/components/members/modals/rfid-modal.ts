@@ -1,9 +1,7 @@
-import { MemberService } from "./../../../service/member.service";
+import { RFIDModalData } from "./../types/member.interface";
 import { html, TemplateResult } from "lit-element";
 
-export const RFIDModal = (
-  modalData: MemberService.RFIDModalData
-): TemplateResult => {
+export const rfidModal = (modalData: RFIDModalData): TemplateResult => {
   return html`
     <mwc-dialog id="assignRFIDModal">
       <div>Assign RFID</div>

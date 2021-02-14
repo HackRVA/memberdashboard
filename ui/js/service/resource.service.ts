@@ -1,6 +1,13 @@
 import { Observable } from "rxjs";
 import { ENV } from "../env";
 import { HTTPService } from "./http.service";
+import {
+  RegisterResourceRequest,
+  RemoveResourceRequest,
+  AddMemberResourceRequest,
+  RemoveMemberResourceRequest,
+  UpdateResourceRequest,
+} from "../components/resources/types";
 
 export class ResourceService extends HTTPService {
   private readonly api: string = ENV.api;
@@ -9,62 +16,28 @@ export class ResourceService extends HTTPService {
     return this.get(this.api + "/resource");
   }
   register(
-    request: ResourceService.RegisterResourceRequest
+    request: RegisterResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
     return this.post(this.api + "/resource/register", request);
   }
   deleteResource(
-    request: ResourceService.RemoveResourceRequest
+    request: RemoveResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
     return this.delete(this.api + "/resource", request);
   }
   addMemberResource(
-    request: ResourceService.AddMemberResourceRequest
+    request: AddMemberResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
     return this.post(this.api + "/resource/member", request);
   }
   removeMemberResource(
-    request: ResourceService.RemoveMemberResourceRequest
+    request: RemoveMemberResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
     return this.delete(this.api + "/resource/member", request);
   }
   updateResource(
-    request: ResourceService.UpdateResourceRequest
+    request: UpdateResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
     return this.put(this.api + "/resource", request);
-  }
-}
-
-export namespace ResourceService {
-  export interface RegisterResourceRequest {
-    address: string;
-    name: string;
-  }
-  export interface UpdateResourceRequest {
-    address: string;
-    id: string;
-    name: string;
-  }
-  export interface RemoveResourceRequest {
-    id: string;
-  }
-  export interface AddMemberResourceRequest {
-    email: string;
-    resourceID: string;
-  }
-
-  export interface RemoveMemberResourceRequest {
-    email: string;
-    resourceID: string;
-  }
-  export interface ResourceResponse {
-    address: string;
-    id: string;
-    name: string;
-  }
-  export enum ResourceStatus {
-    good = 0,
-    outOfDate = 1,
-    offline = 2,
   }
 }
