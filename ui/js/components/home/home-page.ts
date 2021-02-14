@@ -16,13 +16,14 @@ import "../shared/register-form";
 @customElement("home-page")
 export class HomePage extends LitElement {
   userService: UserService = new UserService();
+  isRegister: boolean = false;
 
   static get styles(): CSSResult {
     return css`
-      login-container {
+      .login-container {
         display: grid;
         justify-content: center;
-        padding: 24px;
+        padding: 36px;
       }
 
       .center {
@@ -35,6 +36,19 @@ export class HomePage extends LitElement {
     return !!localStorage.getItem("jwt");
   }
 
+  displayRegisterLoginForm(): TemplateResult {
+    if (this.isRegister) {
+      return html`<register-form @switch=${this.handleSwitch} />`;
+    } else {
+      return html`<login-form @switch=${this.handleSwitch} />`;
+    }
+  }
+
+  handleSwitch(): void {
+    this.isRegister = !this.isRegister;
+    this.requestUpdate();
+  }
+
   displayHomePage(): TemplateResult {
     if (this.isUserLogin()) {
       return html` <h1>Home</h1> `;
@@ -42,9 +56,7 @@ export class HomePage extends LitElement {
       return html`
         <div>
           <h1>Home</h1>
-          <login-container>
-            <register-form />
-          </login-container>
+          <div class="login-container">${this.displayRegisterLoginForm()}</div>
         </div>
       `;
     }
