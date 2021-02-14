@@ -248,17 +248,17 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 	m, err := db.GetMemberByEmail(email)
 	if err != nil {
         //is this wrong?
-		return [], err
+		return []MemberResourceRelation{}, err
 	}
 
-	rows, err := db.pool.Query(context.Background(), insertMemberDefaultResourceQuery, memberResource.MemberID)
+	rows, err := db.pool.Query(context.Background(), insertMemberDefaultResourceQuery, m.ID)
 	if err != nil {
 		log.Fatalf("conn.Query failed: %v", err)
 	}
 
 	defer rows.Close()
 
-	var memberResources := []MemberResourceRelation
+	var memberResources []MemberResourceRelation
 
 	for rows.Next() {
 		var r MemberResourceRelation
