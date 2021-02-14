@@ -193,7 +193,7 @@ func (db *Database) UpdateResource(id string, name string, address string, is_de
 		return r, errors.New("invalid resourseID of 0")
 	}
 
-    row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+    row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address, is_default).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if row == pgx.ErrNoRows {
 		log.Printf("no rows affected %s", row.Error())
 		return r, errors.New("no rows affected")

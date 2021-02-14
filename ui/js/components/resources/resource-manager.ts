@@ -188,7 +188,7 @@ export class ResourceManager extends LitElement {
     return html` <mwc-list>
       ${this.resources.map((x: ResourceResponse) => {
         return html`<mwc-list-item>
-          ${x.name} ${x.address} ${x.is_default ? 'default' : ''}
+          ${x.name} ${x.address} ${x.is_default ? '(assigned by default)' : ''}
           <mwc-button
             @click="${() => this.handleDelete(x)}"
             label="delete"
