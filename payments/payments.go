@@ -68,6 +68,7 @@ func mapMemberIDToPayments(payments []database.Payment) []database.Payment {
 		if err != nil {
 			// if member doesn't exist, add them
 			am, err := db.AddMember(p.Email, p.Name)
+            //TODO: add the member to all default resources.
 			if err != nil {
 				log.Errorf("error adding member to DB: %s", err.Error())
 			}

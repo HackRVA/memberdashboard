@@ -101,7 +101,8 @@ CREATE TABLE membership.payments
 CREATE TABLE membership.resources (
     id UUID DEFAULT gen_random_uuid(),
     description text NOT NULL,
-    device_identifier text NOT NULL
+    device_identifier text NOT NULL,
+    is_default boolean NOT NULL
 );
 
 --

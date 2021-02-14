@@ -10,23 +10,23 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const getResourceQuery = `SELECT id, description, device_identifier FROM membership.resources;`
+const getResourceQuery = `SELECT id, description, device_identifier, is_default FROM membership.resources;`
 const insertResourceQuery = `INSERT INTO membership.resources(
-	description, device_identifier)
-	VALUES ($1, $2)
+	description, device_identifier, is_default)
+	VALUES ($1, $2, $3)
 	RETURNING *;`
 const updateResourceQuery = `UPDATE membership.resources
-SET description=$2, device_identifier=$3
+SET description=$2, device_identifier=$3, is_default=$4
 WHERE id=$1
 RETURNING *;
 `
 const deleteResourceQuery = `DELETE FROM membership.resources
 WHERE id = $1;`
-const getResourceByNameQuery = `SELECT id, description, device_identifier
+const getResourceByNameQuery = `SELECT id, description, device_identifier, is_default
 FROM membership.resources
 WHERE description = $1;`
 
-const getResourceByIDQuery = `SELECT id, description, device_identifier
+const getResourceByIDQuery = `SELECT id, description, device_identifier, is_default
 FROM membership.resources
 WHERE id = $1;`
 
@@ -68,6 +68,10 @@ type Resource struct {
 	// required: true
 	// example: address
 	Address string `json:"address"`
+    // Default state of the Resource
+    // required: true
+    // example: true
+    IsDefault bool `json:"is_default"`
 }
 
 // ResourceDeleteRequest - request for deleting a resource
@@ -92,6 +96,10 @@ type ResourceRequest struct {
 	// required: true
 	// example: address
 	Address string `json:"address"`
+    // Default state of the Resource
+    // required: true
+    // example: true
+    IsDefault bool `json:"is_default"`
 }
 
 // Resource a resource that can accespt an access control list
@@ -104,6 +112,10 @@ type RegisterResourceRequest struct {
 	// required: true
 	// example: address
 	Address string `json:"address"`
+    // Default state of the Resource
+    // required: false
+    // example: true
+    IsDefault bool `json:"is_default"`
 }
 
 // MemberResourceRelation  - a relationship between resources and members
@@ -126,7 +138,7 @@ func (db *Database) GetResources() []Resource {
 
 	for rows.Next() {
 		var r Resource
-		err = rows.Scan(&r.ID, &r.Name, &r.Address)
+		err = rows.Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 		resources = append(resources, r)
 	}
 
@@ -136,7 +148,7 @@ func (db *Database) GetResources() []Resource {
 // GetResourceByID - lookup a resource by it's name
 func (db *Database) GetResourceByID(ID string) (Resource, error) {
 	var r Resource
-	err := db.pool.QueryRow(context.Background(), getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address)
+	err := db.pool.QueryRow(context.Background(), getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -147,7 +159,7 @@ func (db *Database) GetResourceByID(ID string) (Resource, error) {
 // GetResourceByName - lookup a resource by it's name
 func (db *Database) GetResourceByName(resourceName string) (Resource, error) {
 	var r Resource
-	err := db.pool.QueryRow(context.Background(), getResourceByNameQuery, resourceName).Scan(&r.ID, &r.Name, &r.Address)
+    err := db.pool.QueryRow(context.Background(), getResourceByNameQuery, resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("getResourceByName failed: %v", err)
 	}
@@ -156,13 +168,14 @@ func (db *Database) GetResourceByName(resourceName string) (Resource, error) {
 }
 
 // RegisterResource - stores a new resource in the db
-func (db *Database) RegisterResource(name string, address string) (*Resource, error) {
+func (db *Database) RegisterResource(name string, address string, is_default bool) (*Resource, error) {
 	r := &Resource{}
 
 	r.Name = name
 	r.Address = address
+    r.IsDefault = is_default
 
-	_, err := db.pool.Exec(context.Background(), insertResourceQuery, r.Name, r.Address)
+	_, err := db.pool.Exec(context.Background(), insertResourceQuery, r.Name, r.Address, r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("error inserting resource: %s", err.Error())
 	}
@@ -171,7 +184,7 @@ func (db *Database) RegisterResource(name string, address string) (*Resource, er
 }
 
 // UpdateResource - updates a resource in the db
-func (db *Database) UpdateResource(id string, name string, address string) (*Resource, error) {
+func (db *Database) UpdateResource(id string, name string, address string, is_default bool) (*Resource, error) {
 	r := &Resource{}
 
 	// if the resource doesn't already exist let's register it
@@ -180,7 +193,7 @@ func (db *Database) UpdateResource(id string, name string, address string) (*Res
 		return r, errors.New("invalid resourseID of 0")
 	}
 
-	row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address).Scan(&r.ID, &r.Name, &r.Address)
+    row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if row == pgx.ErrNoRows {
 		log.Printf("no rows affected %s", row.Error())
 		return r, errors.New("no rows affected")
