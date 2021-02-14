@@ -1,5 +1,12 @@
 import { TabIndex } from "./enums";
-import { LitElement, html, TemplateResult, customElement } from "lit-element";
+import {
+  LitElement,
+  html,
+  TemplateResult,
+  customElement,
+  CSSResult,
+  css,
+} from "lit-element";
 import "@material/mwc-tab-bar";
 import "@material/mwc-tab";
 import "@material/mwc-top-app-bar-fixed";
@@ -13,9 +20,17 @@ import { UserService } from "./service/user.service";
 
 @customElement("member-dashboard")
 export class MemberDashboard extends LitElement {
-  showUserProfile: boolean = false;
-  email: string = "";
+  email: string;
   userService: UserService = new UserService();
+
+  static get styles(): CSSResult {
+    return css`
+      .logout {
+        margin-left: 24px;
+        --mdc-theme-primary: white;
+      }
+    `;
+  }
 
   onBeforeEnter(location: RouterLocation): void {
     if (location.pathname === "/") {
@@ -47,9 +62,11 @@ export class MemberDashboard extends LitElement {
     Router.go("/status");
   }
 
-  updated(): void {
-    if (this.showUserProfile) return;
+  firstUpdated(): void {
+    this.getUser();
+  }
 
+  getUser(): void {
     this.userService.getUser().subscribe({
       next: (result: any) => {
         if ((result as { error: boolean; message: any }).error) {
@@ -59,17 +76,36 @@ export class MemberDashboard extends LitElement {
         }
         const { email } = result as UserService.UserProfile;
         this.email = email;
-        this.showUserProfile = true;
         this.requestUpdate();
       },
     });
   }
 
-  displayUserProfile(): TemplateResult {
-    if (this.showUserProfile) {
-      return html` <user-login-profile .email=${this.email} /> `;
+  handleLogout(): void {
+    this.userService.logout().subscribe({
+      next: (response: null) => {
+        localStorage.removeItem("jwt");
+        window.location.reload();
+      },
+    });
+  }
+
+  isUserLogin(): boolean {
+    return !!this.email;
+  }
+
+  displayLogout(): TemplateResult {
+    if (this.isUserLogin()) {
+      return html`
+        <mwc-button
+          class="logout"
+          slot="actionItems"
+          icon="logout"
+          @click=${this.handleLogout}
+        ></mwc-button>
+      `;
     }
-    return html` <login-form /> `;
+    return html``;
   }
 
   getTabIndex(pathName: string): number {
@@ -91,44 +127,25 @@ export class MemberDashboard extends LitElement {
     }
   }
 
-  handleProfileClick(): void {
-    const profileBtn: HTMLElement = this.shadowRoot?.querySelector(
-      "#profileBtn"
-    );
-    const menu: HTMLElement & {
-      anchor: HTMLElement;
-      show: Function;
-    } = this.shadowRoot?.querySelector("#menu");
-
-    menu.anchor = profileBtn;
-    menu.show();
-  }
-
   render(): TemplateResult {
-    return html` <div>
-      <mwc-top-app-bar-fixed centerTitle>
-        <div slot="title">Member Dashboard</div>
-        <div slot="actionItems">${this.email}</div>
-        <mwc-icon-button
-          @click=${this.handleProfileClick}
-          id="profileBtn"
-          icon="person"
-          slot="actionItems"
-        ></mwc-icon-button>
-        <mwc-menu id="menu" activatable>
-          ${this.displayUserProfile()}
-        </mwc-menu>
-      </mwc-top-app-bar-fixed>
-      <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
-        <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>
-        <mwc-tab label="User" @click=${this.goToUser}></mwc-tab>
-        <mwc-tab label="Payments" @click=${this.goToPayments}></mwc-tab>
-        <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>
-        <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
-        <mwc-tab label="Status" @click=${this.goToStatus}></mwc-tab>
-      </mwc-tab-bar>
+    return html`
+      <div>
+        <mwc-top-app-bar-fixed centerTitle>
+          <div slot="title">Member Dashboard</div>
+          <div slot="actionItems">${this.email}</div>
+          ${this.displayLogout()}
+        </mwc-top-app-bar-fixed>
+        <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
+          <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>
+          <mwc-tab label="User" @click=${this.goToUser}></mwc-tab>
+          <mwc-tab label="Payments" @click=${this.goToPayments}></mwc-tab>
+          <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>
+          <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
+          <mwc-tab label="Status" @click=${this.goToStatus}></mwc-tab>
+        </mwc-tab-bar>
 
-      <slot> </slot>
-    </div>`;
+        <slot> </slot>
+      </div>
+    `;
   }
 }

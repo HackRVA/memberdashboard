@@ -26,18 +26,31 @@ export class LoginForm extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      .login-container {
+        height: 270px;
+        max-width: 250px;
+        background-color: #e1e1e1;
+        padding: 24px;
+      }
       mwc-formfield {
         display: block;
         margin-bottom: 16px;
       }
-      mwc-button {
-        float: right;
+      .mwc-button {
         margin-bottom: 12px;
       }
-      .login-form {
-        padding: 20px;
+      .register {
+        float: left;
+      }
+      .login {
+        float: right;
       }
     `;
+  }
+
+  fireSwitchEvent(): void {
+    const switchToRegisterEvent = new CustomEvent("switch", {});
+    this.dispatchEvent(switchToRegisterEvent);
   }
 
   firstUpdated(): void {
@@ -79,9 +92,13 @@ export class LoginForm extends LitElement {
     });
   }
 
+  goToRegisterForm(): void {
+    this.fireSwitchEvent();
+  }
+
   render(): TemplateResult {
     return html`
-      <div class="login-form">
+      <div class="login-container">
         <mwc-formfield>
           <mwc-textfield
             id="email"
@@ -98,7 +115,16 @@ export class LoginForm extends LitElement {
             label="Password"
           ></mwc-textfield>
         </mwc-formfield>
-        <mwc-button label="login" @click=${this.handleSubmit}></mwc-button>
+        <mwc-button
+          label="Sign up"
+          class="register"
+          @click=${this.goToRegisterForm}
+        ></mwc-button>
+        <mwc-button
+          label="login"
+          @click=${this.handleSubmit}
+          class="login"
+        ></mwc-button>
       </div>
     `;
   }

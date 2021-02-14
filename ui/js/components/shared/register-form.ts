@@ -15,6 +15,7 @@ import "@material/mwc-textfield";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-formfield";
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
+
 // membership
 import { showComponent } from "./../../function";
 import { UserService } from "../../service/user.service";
@@ -27,12 +28,22 @@ export class RegisterForm extends LitElement {
   // form template
   emailFieldTemplate: TextField;
   passwordFieldTemplate: TextField;
+  confirmPasswordFieldTemplate: TextField;
 
   static get styles(): CSSResult {
     return css`
+      .register-container {
+        height: 270px;
+        max-width: 250px;
+        background-color: #e1e1e1;
+        padding: 24px;
+      }
       mwc-formfield {
         display: block;
         margin-bottom: 16px;
+      }
+      .sign-in {
+        float: left;
       }
       mwc-button {
         float: right;
@@ -44,6 +55,9 @@ export class RegisterForm extends LitElement {
   firstUpdated(): void {
     this.emailFieldTemplate = this.shadowRoot.querySelector("#email");
     this.passwordFieldTemplate = this.shadowRoot.querySelector("#password");
+    this.confirmPasswordFieldTemplate = this.shadowRoot.querySelector(
+      "#confirm-password"
+    );
   }
 
   handleUserRegister(): void {
@@ -70,7 +84,7 @@ export class RegisterForm extends LitElement {
   }
 
   handleSubmit(): void {
-    if (this.isValid()) {
+    if (this.isPasswordIdentical() && this.isValid()) {
       this.handleUserRegister();
     } else {
       this.displayInvalidMsg();
@@ -80,13 +94,30 @@ export class RegisterForm extends LitElement {
   isValid(): boolean {
     return (
       this.emailFieldTemplate.validity.valid &&
-      this.passwordFieldTemplate.validity.valid
+      this.passwordFieldTemplate.validity.valid &&
+      this.confirmPasswordFieldTemplate.validity.valid
     );
+  }
+
+  isPasswordIdentical(): boolean {
+    return (
+      this.passwordFieldTemplate.value ===
+      this.confirmPasswordFieldTemplate.value
+    );
+  }
+
+  fireSwitchEvent(): void {
+    const switchToRegisterEvent = new CustomEvent("switch", {});
+    this.dispatchEvent(switchToRegisterEvent);
+  }
+
+  goToLoginForm(): void {
+    this.fireSwitchEvent();
   }
 
   render(): TemplateResult {
     return html`
-      <div>
+      <div class="register-container">
         <mwc-formfield>
           <mwc-textfield
             id="email"
@@ -103,6 +134,17 @@ export class RegisterForm extends LitElement {
             label="Password"
           ></mwc-textfield>
         </mwc-formfield>
+        <mwc-formfield>
+          <mwc-textfield
+            id="confirm-password"
+            required
+            type="password"
+            label="Retype password"
+          ></mwc-textfield>
+        </mwc-formfield>
+        <mwc-button class="sign-in" @click=${this.goToLoginForm}>
+          Sign in
+        </mwc-button>
         <mwc-button label="register" @click=${this.handleSubmit}></mwc-button>
         ${defaultSnackbar("success", "success")}
         ${defaultSnackbar("invalid", "invalid")}
