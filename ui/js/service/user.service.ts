@@ -4,7 +4,7 @@ import { ENV } from "../env";
 import { HTTPService } from "./http.service";
 
 export class UserService extends HTTPService {
-  private readonly api: string | undefined = ENV.api;
+  private readonly api: string = ENV.api;
 
   login(
     request: UserService.LoginRequest

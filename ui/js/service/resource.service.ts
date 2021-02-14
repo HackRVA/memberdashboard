@@ -3,7 +3,7 @@ import { ENV } from "../env";
 import { HTTPService } from "./http.service";
 
 export class ResourceService extends HTTPService {
-  private readonly api: string | undefined = ENV.api;
+  private readonly api: string = ENV.api;
 
   getResources(): Observable<Response | { error: boolean; message: any }> {
     return this.get(this.api + "/resource");
