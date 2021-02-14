@@ -20,14 +20,13 @@ import { UserService } from "./service/user.service";
 
 @customElement("member-dashboard")
 export class MemberDashboard extends LitElement {
-  showUserProfile: boolean = false;
-  email: string = "";
+  email: string;
   userService: UserService = new UserService();
 
   static get styles(): CSSResult {
     return css`
       .logout {
-        margin-left: 8px;
+        margin-left: 24px;
         --mdc-theme-primary: white;
       }
     `;
@@ -63,9 +62,11 @@ export class MemberDashboard extends LitElement {
     Router.go("/status");
   }
 
-  updated(): void {
-    if (this.showUserProfile) return;
+  firstUpdated(): void {
+    this.getUser();
+  }
 
+  getUser(): void {
     this.userService.getUser().subscribe({
       next: (result: any) => {
         if ((result as { error: boolean; message: any }).error) {
@@ -75,7 +76,6 @@ export class MemberDashboard extends LitElement {
         }
         const { email } = result as UserService.UserProfile;
         this.email = email;
-        this.showUserProfile = true;
         this.requestUpdate();
       },
     });
@@ -91,7 +91,7 @@ export class MemberDashboard extends LitElement {
   }
 
   isUserLogin(): boolean {
-    return !!localStorage.getItem("jwt");
+    return !!this.email;
   }
 
   displayLogout(): TemplateResult {
@@ -100,7 +100,7 @@ export class MemberDashboard extends LitElement {
         <mwc-button
           class="logout"
           slot="actionItems"
-          label="Log out"
+          icon="logout"
           @click=${this.handleLogout}
         ></mwc-button>
       `;

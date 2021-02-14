@@ -15,6 +15,7 @@ import "@material/mwc-textfield";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-formfield";
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
+
 // membership
 import { showComponent } from "./../../function";
 import { UserService } from "../../service/user.service";
@@ -141,10 +142,10 @@ export class RegisterForm extends LitElement {
             label="Retype password"
           ></mwc-textfield>
         </mwc-formfield>
-        <mwc-button label="register" @click=${this.handleSubmit}></mwc-button>
         <mwc-button class="sign-in" @click=${this.goToLoginForm}>
           Sign in
         </mwc-button>
+        <mwc-button label="register" @click=${this.handleSubmit}></mwc-button>
         ${defaultSnackbar("success", "success")}
         ${defaultSnackbar("invalid", "invalid")}
         ${defaultSnackbar("error", "error")}

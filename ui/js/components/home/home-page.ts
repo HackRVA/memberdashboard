@@ -16,6 +16,7 @@ import "../shared/register-form";
 @customElement("home-page")
 export class HomePage extends LitElement {
   userService: UserService = new UserService();
+  isUserLogin: boolean = false;
   isRegister: boolean = false;
 
   static get styles(): CSSResult {
@@ -32,8 +33,23 @@ export class HomePage extends LitElement {
     `;
   }
 
-  isUserLogin(): boolean {
-    return !!localStorage.getItem("jwt");
+  firstUpdated(): void {
+    this.checkUserLogin();
+  }
+
+  checkUserLogin(): void {
+    this.userService.getUser().subscribe({
+      next: (result: any) => {
+        if ((result as { error: boolean; message: any }).error) {
+          return console.error(
+            (result as { error: boolean; message: any }).message
+          );
+        }
+        const { email } = result as UserService.UserProfile;
+        this.isUserLogin = !!email;
+        this.requestUpdate();
+      },
+    });
   }
 
   displayRegisterLoginForm(): TemplateResult {
@@ -50,7 +66,7 @@ export class HomePage extends LitElement {
   }
 
   displayHomePage(): TemplateResult {
-    if (this.isUserLogin()) {
+    if (this.isUserLogin) {
       return html` <h1>Home</h1> `;
     } else {
       return html`
