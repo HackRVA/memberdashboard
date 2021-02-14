@@ -1,4 +1,3 @@
-DROP SCHEMA IF EXISTS membership CASCADE;
 CREATE EXTENSION "pgcrypto";
 
 CREATE EXTENSION IF NOT EXISTS citext;
@@ -17,7 +16,6 @@ CREATE TABLE membership.member_resource (
     id UUID DEFAULT gen_random_uuid(),
     member_id UUID NOT NULL,
     resource_id UUID NOT NULL,
-    updated_at timestamp without time zone NOT NULL
 );
 
 ALTER TABLE membership.member_resource
@@ -104,7 +102,6 @@ CREATE TABLE membership.resources (
     id UUID DEFAULT gen_random_uuid(),
     description text NOT NULL,
     device_identifier text NOT NULL,
-    updated_at timestamp without time zone NOT NULL
 );
 
 --
