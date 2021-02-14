@@ -93,8 +93,10 @@ func checkResourceACLs() {
 
 	resources := db.GetResources()
 
+	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
 		resourcemanager.Subscribe(r.Name+"/result", resourcemanager.HealthCheck)
+		resourcemanager.CheckStatus(r)
 	}
 
 	// quietly check the resource status on an interval
