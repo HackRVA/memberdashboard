@@ -4,7 +4,6 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"strings"
 
@@ -15,9 +14,6 @@ import (
 
 // Resource manager keeps the resources up to date by
 //  pushing new updates and checking in on their health
-
-// statusCheckInterval - check the resources every hour
-const statusCheckInterval = 1
 
 // ACLUpdateRequest is the json object we send to a resource when pushing an update
 type ACLUpdateRequest struct {
@@ -41,41 +37,6 @@ const (
 	// StatusOffline - the resource is not reachable
 	StatusOffline
 )
-
-// Setup initializes the resource manager
-func Setup() error {
-	var err error
-	db, err := database.Setup()
-	if err != nil {
-		log.Errorf("error setting up db: %s", err)
-		return err
-	}
-
-	// TODO: loop through resources and subscribe to their status reporting
-	Subscribe("test/result", healthCheck)
-
-	// quietly check the resource status on an interval
-	ticker := time.NewTicker(statusCheckInterval * time.Hour)
-	quit := make(chan struct{})
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				resources := db.GetResources()
-
-				for _, r := range resources {
-					CheckStatus(r)
-				}
-			case <-quit:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
-	db.Release()
-
-	return err
-}
 
 // UpdateResourceACL pulls a resource's accesslist from the DB and pushes it to the resource
 func UpdateResourceACL(r database.Resource) error {
