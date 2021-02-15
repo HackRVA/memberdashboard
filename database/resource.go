@@ -74,7 +74,7 @@ type Resource struct {
     // Default state of the Resource
     // required: true
     // example: true
-    IsDefault bool `json:"is_default"`
+    IsDefault bool `json:"isDefault"`
 }
 
 // ResourceDeleteRequest - request for deleting a resource
@@ -102,7 +102,7 @@ type ResourceRequest struct {
     // Default state of the Resource
     // required: true
     // example: true
-    IsDefault bool `json:"is_default"`
+    IsDefault bool `json:"isDefault"`
 }
 
 // Resource a resource that can accespt an access control list
@@ -118,7 +118,7 @@ type RegisterResourceRequest struct {
     // Default state of the Resource
     // required: false
     // example: true
-    IsDefault bool `json:"is_default"`
+    IsDefault bool `json:"isDefault"`
 }
 
 // MemberResourceRelation  - a relationship between resources and members

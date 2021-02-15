@@ -654,7 +654,7 @@
           "x-go-name": "Address",
           "example": "address"
         },
-        "is_default": {
+        "isDefault": {
           "description": "Default state of the Resource",
           "type": "boolean",
           "x-go-name": "IsDefault",
@@ -676,7 +676,7 @@
         "id",
         "name",
         "address",
-        "is_default"
+        "isDefault"
       ],
       "properties": {
         "address": {
@@ -691,7 +691,7 @@
           "x-go-name": "ID",
           "example": "0"
         },
-        "is_default": {
+        "isDefault": {
           "description": "Default state of the Resource",
           "type": "boolean",
           "x-go-name": "IsDefault",
@@ -729,7 +729,7 @@
         "id",
         "name",
         "address",
-        "is_default"
+        "isDefault"
       ],
       "properties": {
         "address": {
@@ -744,7 +744,7 @@
           "x-go-name": "ID",
           "example": "0"
         },
-        "is_default": {
+        "isDefault": {
           "description": "Default state of the Resource",
           "type": "boolean",
           "x-go-name": "IsDefault",
