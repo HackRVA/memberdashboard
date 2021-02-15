@@ -17,15 +17,6 @@ export interface AddMemberResourceModalData {
   emptyFormValuesOnClosed: Function;
 }
 
-export interface RFIDModalData {
-  email: string;
-  rfid: string;
-  handleEmailChange: Function;
-  handleRFIDChange: Function;
-  handleSubmitForAssigningMemberToRFID: Function;
-  emptyFormValuesOnClosed: Function;
-}
-
 export interface AssignRFIDRequest {
   email: string;
   rfid: string;

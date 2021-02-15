@@ -22,7 +22,6 @@ import {
   MemberLevel,
   MemberResource,
   MemberResponse,
-  AssignRFIDRequest,
   AddMemberResourceModalData,
   RemoveMemberResourceModalData,
 } from "./types";
@@ -31,7 +30,6 @@ import {
   RemoveMemberResourceRequest,
   ResourceResponse,
 } from "../resources/types";
-import { defaultSnackbar } from "../shared/default-snackbar";
 import "../shared/rfid-modal";
 import { showComponent } from "./../../function";
 import { addMemberResourceModal } from "./modals/add-member-resource-modal";
@@ -216,16 +214,6 @@ export class MemberList extends LitElement {
     });
   }
 
-  assignMemberToRFID(request: AssignRFIDRequest): void {
-    this.memberService.assignRFID(request).subscribe({
-      complete: () => {
-        this.getMembers();
-        this.displaySuccessMessage();
-        this.requestUpdate();
-      },
-    });
-  }
-
   displayMembersTable(): TemplateResult {
     return html`
       ${this.members.map((x: MemberResponse) => {
@@ -280,10 +268,6 @@ export class MemberList extends LitElement {
     return addMemberResourceModal(modalData);
   }
 
-  displaySuccessMessage(): void {
-    showComponent("#success", this.shadowRoot);
-  }
-
   emptyFormValuesOnClosed(): void {
     this.emptyFormValues();
     this.requestUpdate();
@@ -335,7 +319,6 @@ export class MemberList extends LitElement {
 
         ${this.displayAddMemberResourceModal()}
         ${this.displayRemoveMemberResourceModal()}
-        ${defaultSnackbar("success", "success")}
         <rfid-modal
           id="rfid-modal"> 
         </rfid-modal>

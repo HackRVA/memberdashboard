@@ -12,22 +12,20 @@ import {
 // material
 import "@material/mwc-dialog";
 import "@material/mwc-button";
+import "@material/mwc-textfield";
 
 // membership
 import { defaultSnackbar } from "./../shared/default-snackbar";
 import { UserService } from "./../../service/user.service";
 import { showComponent } from "../../function";
-import { RFIDModalData, AssignRFIDRequest } from "../members/types";
-import { rfidModal } from "../members/modals/rfid-modal";
 import { MemberService } from "../../service/member.service";
 import "../shared/card-element";
+import "../shared/rfid-modal";
 
 @customElement("user-page")
 export class UserPage extends LitElement {
   @property({ type: String })
   email: string = "";
-
-  newRFID: string = "";
 
   userService: UserService = new UserService();
   memberService: MemberService = new MemberService();
@@ -64,68 +62,8 @@ export class UserPage extends LitElement {
     });
   }
 
-  displayAddUpdateRFIDModal(): TemplateResult {
-    const modalData: RFIDModalData = {
-      email: this.email,
-      rfid: this.newRFID,
-      handleEmailChange: this.handleEmailChange,
-      handleRFIDChange: this.handleRFIDChange,
-      handleSubmitForAssigningMemberToRFID: this
-        .handleSubmitForAssigningUserToRFID,
-      emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
-    };
-    return rfidModal(modalData);
-  }
-
   openRFIDModal(): void {
-    showComponent("#assignRFIDModal", this.shadowRoot);
-  }
-
-  emptyFormValues(): void {
-    this.newRFID = "";
-  }
-
-  emptyFormValuesOnClosed(): void {
-    this.emptyFormValues();
-    this.requestUpdate();
-  }
-
-  handleEmailChange(e: Event): void {
-    this.email = (e.target as EventTarget & { value: string }).value;
-  }
-
-  handleRFIDChange(e: Event): void {
-    this.newRFID = (e.target as EventTarget & { value: string }).value;
-  }
-
-  handleSubmitForAssigningUserToRFID(): void {
-    const request: AssignRFIDRequest = {
-      email: this.email.trim(),
-      rfid: this.newRFID,
-    };
-    this.emptyFormValues();
-    this.assignUserToRFID(request);
-  }
-
-  displaySuccessMessage(): void {
-    showComponent("#success", this.shadowRoot);
-  }
-
-  displayErrorMessage(): void {
-    showComponent("#error", this.shadowRoot);
-  }
-
-  assignUserToRFID(request: AssignRFIDRequest): void {
-    this.memberService.assignRFID(request).subscribe({
-      complete: () => {
-        this.displaySuccessMessage();
-        this.requestUpdate();
-      },
-      error: () => {
-        this.displayErrorMessage();
-        this.requestUpdate();
-      },
-    });
+    showComponent("#rfid-modal", this.shadowRoot);
   }
 
   render(): TemplateResult {
@@ -148,7 +86,11 @@ export class UserPage extends LitElement {
           </div> 
         </div>
         </card-element> 
-        ${this.displayAddUpdateRFIDModal()}
+        <rfid-modal 
+          id="rfid-modal"
+          .email=${this.email}
+          >
+        </rfid-modal>
         ${defaultSnackbar("error", "error")}
         ${defaultSnackbar("success", "success")}
     </div> 

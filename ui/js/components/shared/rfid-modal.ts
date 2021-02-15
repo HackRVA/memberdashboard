@@ -1,5 +1,11 @@
 // lit element
-import { customElement, html, LitElement, TemplateResult } from "lit-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 
 // material
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
@@ -16,6 +22,9 @@ import { showComponent } from "../../function";
 
 @customElement("rfid-modal")
 export class RFIDModal extends LitElement {
+  @property({ type: String })
+  email: string = "";
+
   memberService: MemberService = new MemberService();
 
   rfidModalTemplate: Dialog;
@@ -35,7 +44,7 @@ export class RFIDModal extends LitElement {
   tryToAssigningMemberToRFID(): void {
     const request: AssignRFIDRequest = {
       email: this.emailFieldTemplate.value.trim(),
-      rfid: this.rfidFieldTemplate.value,
+      rfid: this.rfidFieldTemplate.value.trim(),
     };
 
     this.assignMemberToRFID(request);
@@ -47,11 +56,19 @@ export class RFIDModal extends LitElement {
         this.displaySuccessMessage();
         this.requestUpdate();
       },
+      error: () => {
+        this.displayErrorMessage();
+        this.requestUpdate();
+      },
     });
   }
 
   displaySuccessMessage(): void {
     showComponent("#success", this.shadowRoot);
+  }
+
+  displayErrorMessage(): void {
+    showComponent("#error", this.shadowRoot);
   }
 
   handleSubmit(): void {
@@ -77,13 +94,19 @@ export class RFIDModal extends LitElement {
     );
   }
 
+  handleClosed(): void {
+    this.emptyFormField();
+  }
+
   render(): TemplateResult {
     return html`
-      <mwc-dialog heading="Assign RFID">
+      <mwc-dialog heading="Assign RFID" @closed=${this.handleClosed}>
         <mwc-textfield
           required
+          type="email"
           label="email"
           helper="email"
+          value=${this.email}
           id="email"
         ></mwc-textfield>
         <mwc-textfield
@@ -100,6 +123,7 @@ export class RFIDModal extends LitElement {
         </mwc-button>
       </mwc-dialog>
       ${defaultSnackbar("success", "success")}
+      ${defaultSnackbar("error", "Hrmmm, are you sure this is a member? :3")}
     `;
   }
 }
