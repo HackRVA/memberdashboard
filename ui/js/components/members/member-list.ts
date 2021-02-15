@@ -25,7 +25,6 @@ import {
   AssignRFIDRequest,
   AddMemberResourceModalData,
   RemoveMemberResourceModalData,
-  RFIDModalData,
 } from "./types";
 import {
   AddMemberResourceRequest,
@@ -33,8 +32,8 @@ import {
   ResourceResponse,
 } from "../resources/types";
 import { defaultSnackbar } from "../shared/default-snackbar";
+import "../shared/rfid-modal";
 import { showComponent } from "./../../function";
-import { rfidModal } from "./modals/rfid-modal";
 import { addMemberResourceModal } from "./modals/add-member-resource-modal";
 import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
 import { ResourceService } from "../../service/resource.service";
@@ -53,7 +52,6 @@ export class MemberList extends LitElement {
 
   // form variables for adding/removing a resource to a member
   email: string = "";
-  newRFID: string = "";
   newResourceId: string = "";
 
   memberResources: Array<MemberResource> = [];
@@ -182,10 +180,6 @@ export class MemberList extends LitElement {
     this.email = (e.target as EventTarget & { value: string }).value;
   }
 
-  handleRFIDChange(e: Event): void {
-    this.newRFID = (e.target as EventTarget & { value: string }).value;
-  }
-
   handleSubmitAddMemberResource(): void {
     const request: AddMemberResourceRequest = {
       email: this.email,
@@ -202,15 +196,6 @@ export class MemberList extends LitElement {
     };
     this.emptyFormValues();
     this.removeMemberResource(request);
-  }
-
-  handleSubmitForAssigningMemberToRFID(): void {
-    const request: AssignRFIDRequest = {
-      email: this.email.trim(),
-      rfid: this.newRFID,
-    };
-    this.emptyFormValues();
-    this.assignMemberToRFID(request);
   }
 
   removeMemberResource(request: RemoveMemberResourceRequest): void {
@@ -295,19 +280,6 @@ export class MemberList extends LitElement {
     return addMemberResourceModal(modalData);
   }
 
-  displayAddUpdateRFIDModal(): TemplateResult {
-    const modalData: RFIDModalData = {
-      email: this.email,
-      rfid: this.newRFID,
-      handleEmailChange: this.handleEmailChange,
-      handleRFIDChange: this.handleRFIDChange,
-      handleSubmitForAssigningMemberToRFID: this
-        .handleSubmitForAssigningMemberToRFID,
-      emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
-    };
-    return rfidModal(modalData);
-  }
-
   displaySuccessMessage(): void {
     showComponent("#success", this.shadowRoot);
   }
@@ -318,7 +290,6 @@ export class MemberList extends LitElement {
   }
   emptyFormValues(): void {
     this.email = "";
-    this.newRFID = "";
     this.newResourceId = "";
   }
 
@@ -330,7 +301,7 @@ export class MemberList extends LitElement {
   }
 
   openRFIDModal(): void {
-    showComponent("#assignRFIDModal", this.shadowRoot);
+    showComponent("#rfid-modal", this.shadowRoot);
   }
 
   render(): TemplateResult {
@@ -364,8 +335,10 @@ export class MemberList extends LitElement {
 
         ${this.displayAddMemberResourceModal()}
         ${this.displayRemoveMemberResourceModal()}
-        ${this.displayAddUpdateRFIDModal()}
         ${defaultSnackbar("success", "success")}
+        <rfid-modal
+          id="rfid-modal"> 
+        </rfid-modal>
       </card-element>
     `;
   }

@@ -2,6 +2,11 @@ export const isEmpty = (value: string | any[]): boolean => {
   return value.length === 0;
 };
 
+/**
+ * @param {string} elementId - the #id of the component
+ * @param {ShadowRoot} shadowRoot - the shadowRoot of the component
+ * @description opens a component if it has a show() function
+ */
 export const showComponent = (
   elementId: string,
   shadowRoot: ShadowRoot
