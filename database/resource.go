@@ -45,7 +45,7 @@ const insertMemberResourceQuery = `INSERT INTO membership.member_resource(
 	VALUES ($1, $2)
 	RETURNING *;`
 const insertMemberDefaultResourceQuery = `INSERT INTO membership.member_resource(member_id, resource_id)
-SELECT $1, resources.id FROM membership.resources AS resources WHERE resources.is_default IS TRUE
+VALUES($1, unnest( ARRAY(SELECT resources.id FROM membership.resources AS resources WHERE resources.is_default IS TRUE)))
 RETURNING *;`
 const removeMemberResourceQuery = `DELETE FROM membership.member_resource
 WHERE member_id = $1 AND resource_id = $2;`
