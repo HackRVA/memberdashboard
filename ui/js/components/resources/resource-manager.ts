@@ -56,7 +56,7 @@ export class ResourceManager extends LitElement {
       const request: RegisterResourceRequest = {
         name: this.newName,
         address: this.newAddress,
-        is_default: this.newIsDefault
+        isDefault: this.newIsDefault
       };
       this.emptyFormValues();
       this.handleRegisterResource(request);
@@ -65,7 +65,7 @@ export class ResourceManager extends LitElement {
         id: this.newID,
         name: this.newName,
         address: this.newAddress,
-        is_default: this.newIsDefault,
+        isDefault: this.newIsDefault,
       };
       this.emptyFormValues();
       this.handleUpdateResource(request);
@@ -119,7 +119,7 @@ export class ResourceManager extends LitElement {
     this.newAddress = resource.address;
     this.newName = resource.name;
     this.newID = resource.id;
-    this.newIsDefault = resource.is_default;
+    this.newIsDefault = resource.isDefault;
     this.requestUpdate();
     this.handleOpenRegisterResource();
   }
@@ -188,7 +188,7 @@ export class ResourceManager extends LitElement {
     return html` <mwc-list>
       ${this.resources.map((x: ResourceResponse) => {
         return html`<mwc-list-item>
-          ${x.name} ${x.address} ${x.is_default ? '(assigned by default)' : ''}
+          ${x.name} ${x.address} ${x.isDefault ? '(assigned by default)' : ''}
           <mwc-button
             @click="${() => this.handleDelete(x)}"
             label="delete"
