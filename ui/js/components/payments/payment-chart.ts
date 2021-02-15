@@ -8,11 +8,12 @@ import { GoogleChart } from "@google-web-components/google-chart";
 // membership
 import { PaymentService } from "../../service/payment.service";
 import "../shared/card-element";
+import { PaymentChartResponse, ChartAttributes } from "./types";
 
 @customElement("payment-chart")
 export class NewElement extends LitElement {
   paymentService: PaymentService = new PaymentService();
-  paymentCharts: Array<PaymentService.PaymentChartResponse> = [];
+  paymentCharts: Array<PaymentChartResponse> = [];
   static get styles(): CSSResult {
     return css`
       #payment-chart-container {
@@ -27,9 +28,9 @@ export class NewElement extends LitElement {
     this.handleGetResources();
   }
 
-  addChart(chartData: PaymentService.PaymentChartResponse) {
+  addChart(chartData: PaymentChartResponse) {
     const chartContainer = this.shadowRoot?.querySelector("#chart-container");
-    const newChartAttributes: PaymentService.ChartAttributes = {
+    const newChartAttributes: ChartAttributes = {
       id: chartData.id,
       type: chartData.type,
       options: JSON.stringify(chartData.options),
@@ -53,7 +54,7 @@ export class NewElement extends LitElement {
         if ((result as { error: boolean; message: any }).error) {
           console.error("some error getting resources");
         } else {
-          this.paymentCharts = result as PaymentService.PaymentChartResponse[];
+          this.paymentCharts = result as PaymentChartResponse[];
 
           this.paymentCharts.forEach((x: any) => {
             this.addChart(x);

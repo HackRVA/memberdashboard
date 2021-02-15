@@ -20,6 +20,7 @@ import { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { showComponent } from "./../../function";
 import { UserService } from "../../service/user.service";
 import { defaultSnackbar } from "./default-snackbar";
+import { RegisterRequest } from "../user/types";
 
 @customElement("register-form")
 export class RegisterForm extends LitElement {
@@ -61,7 +62,7 @@ export class RegisterForm extends LitElement {
   }
 
   handleUserRegister(): void {
-    const opts: UserService.RegisterRequest = {
+    const opts: RegisterRequest = {
       email: this.emailFieldTemplate?.value,
       password: this.passwordFieldTemplate?.value,
     };

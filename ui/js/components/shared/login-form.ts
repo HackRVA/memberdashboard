@@ -15,6 +15,7 @@ import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership
 import { UserService } from "../../service/user.service";
+import { LoginRequest, Jwt } from "../user/types";
 
 @customElement("login-form")
 export class LoginForm extends LitElement {
@@ -74,7 +75,7 @@ export class LoginForm extends LitElement {
   }
 
   handleUserLogin(): void {
-    const opts: UserService.LoginRequest = {
+    const opts: LoginRequest = {
       email: this.emailFieldTemplate?.value,
       password: this.passwordFieldTemplate?.value,
     };
@@ -85,7 +86,7 @@ export class LoginForm extends LitElement {
             (result as { error: boolean; message: any }).message
           );
         }
-        const { token } = result as UserService.Jwt;
+        const { token } = result as Jwt;
         localStorage.setItem("jwt", token);
         window.location.reload();
       },

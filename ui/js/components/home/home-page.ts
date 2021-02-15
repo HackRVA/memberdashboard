@@ -12,6 +12,7 @@ import {
 import { UserService } from "../../service/user.service";
 import "../shared/card-element";
 import "../shared/register-form";
+import { UserProfile } from "../user/types";
 
 @customElement("home-page")
 export class HomePage extends LitElement {
@@ -45,7 +46,7 @@ export class HomePage extends LitElement {
             (result as { error: boolean; message: any }).message
           );
         }
-        const { email } = result as UserService.UserProfile;
+        const { email } = result as UserProfile;
         this.isUserLogin = !!email;
         this.requestUpdate();
       },

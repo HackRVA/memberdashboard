@@ -1,13 +1,17 @@
+// rxjs
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
+
+// membership
 import { ENV } from "../env";
 import { HTTPService } from "./http.service";
+import { LoginRequest, RegisterRequest } from "./../components/user/types";
 
 export class UserService extends HTTPService {
   private readonly api: string = ENV.api;
 
   login(
-    request: UserService.LoginRequest
+    request: LoginRequest
   ): Observable<Response | { error: boolean; message: any }> {
     return this.post(this.api + "/login", request);
   }
@@ -21,29 +25,8 @@ export class UserService extends HTTPService {
   }
 
   registerUser(
-    request: UserService.RegisterRequest
+    request: RegisterRequest
   ): Observable<Response | { error: boolean; message: any }> {
     return this.post(this.api + "/register", request);
-  }
-}
-
-export namespace UserService {
-  export interface RegisterRequest {
-    password: string;
-    email: string;
-  }
-
-  export interface LoginRequest {
-    email: string;
-    password: string;
-    updateCallback?: Function;
-  }
-
-  export interface Jwt {
-    token: string;
-  }
-
-  export interface UserProfile {
-    email: string;
   }
 }

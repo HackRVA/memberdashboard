@@ -1,4 +1,4 @@
-import { TabIndex } from "./enums";
+// lit element
 import {
   LitElement,
   html,
@@ -7,15 +7,23 @@ import {
   CSSResult,
   css,
 } from "lit-element";
+
+// material
 import "@material/mwc-tab-bar";
 import "@material/mwc-tab";
 import "@material/mwc-top-app-bar-fixed";
 import "@material/mwc-icon-button";
 import "@material/mwc-menu";
-import "./components/shared/login-form";
-import "./router";
+
+// vaadin
 import { Router, RouterLocation } from "@vaadin/router";
+
+// membership
+import "./components/shared/login-form";
+import { TabIndex } from "./enums";
+import "./router";
 import { UserService } from "./service/user.service";
+import { UserProfile } from "./components/user/types";
 
 @customElement("member-dashboard")
 export class MemberDashboard extends LitElement {
@@ -73,7 +81,7 @@ export class MemberDashboard extends LitElement {
             (result as { error: boolean; message: any }).message
           );
         }
-        const { email } = result as UserService.UserProfile;
+        const { email } = result as UserProfile;
         this.email = email;
         this.requestUpdate();
       },

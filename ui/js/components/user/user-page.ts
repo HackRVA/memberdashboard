@@ -15,6 +15,7 @@ import "@material/mwc-button";
 import "@material/mwc-textfield";
 
 // membership
+import { UserProfile } from "./types";
 import { defaultSnackbar } from "./../shared/default-snackbar";
 import { UserService } from "./../../service/user.service";
 import { showComponent } from "../../function";
@@ -55,7 +56,7 @@ export class UserPage extends LitElement {
             (result as { error: boolean; message: any }).message
           );
         }
-        const { email } = result as UserService.UserProfile;
+        const { email } = result as UserProfile;
         this.email = email;
         this.requestUpdate();
       },
