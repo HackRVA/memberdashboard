@@ -247,7 +247,6 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 
 	m, err := db.GetMemberByEmail(email)
 	if err != nil {
-        //is this wrong?
 		return []MemberResourceRelation{}, err
 	}
 
