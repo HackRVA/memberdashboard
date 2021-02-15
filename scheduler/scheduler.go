@@ -24,7 +24,7 @@ const resourceStatusCheckInterval = 1
 func Setup() {
 	checkPayments()
 	updateMemberStatus()
-	checkResourceACLs()
+	// checkResourceACLs()
 }
 
 func checkPayments() {
