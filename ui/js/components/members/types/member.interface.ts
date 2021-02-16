@@ -1,19 +1,9 @@
 import { MemberLevel } from "./member.enum";
-import { ResourceResponse } from "../../resources/types";
-
 export interface RemoveMemberResourceModalData {
   email: string;
   memberResources: MemberResource[];
   handleResourceChange: Function;
   handleSubmitRemoveMemberResource: Function;
-  emptyFormValuesOnClosed: Function;
-}
-
-export interface AddMemberResourceModalData {
-  email: string;
-  resources: ResourceResponse[];
-  handleResourceChange: Function;
-  handleSubmitAddMemberResource: Function;
   emptyFormValuesOnClosed: Function;
 }
 

@@ -22,17 +22,12 @@ import {
   MemberLevel,
   MemberResource,
   MemberResponse,
-  AddMemberResourceModalData,
   RemoveMemberResourceModalData,
 } from "./types";
-import {
-  AddMemberResourceRequest,
-  RemoveMemberResourceRequest,
-  ResourceResponse,
-} from "../resources/types";
+import { RemoveMemberResourceRequest } from "../resources/types";
 import "../shared/rfid-modal";
+import "./modals/add-member-to-resource-modal";
 import { showComponent } from "./../../function";
-import { addMemberResourceModal } from "./modals/add-member-resource-modal";
 import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
 import { ResourceService } from "../../service/resource.service";
 import { MemberService } from "../../service/member.service";
@@ -45,8 +40,6 @@ export class MemberList extends LitElement {
 
   @property({ type: Number })
   memberCount: number = 0;
-
-  resources: ResourceResponse[] = [];
 
   // form variables for adding/removing a resource to a member
   email: string = "";
@@ -106,10 +99,6 @@ export class MemberList extends LitElement {
     `;
   }
 
-  firstUpdated(): void {
-    this.getResources();
-  }
-
   displayMemberStatus(memberLevel: number): string {
     switch (memberLevel) {
       case MemberLevel.inactive:
@@ -127,19 +116,6 @@ export class MemberList extends LitElement {
     }
   }
 
-  getResources(): void {
-    this.resourceService.getResources().subscribe({
-      next: (result: any) => {
-        if ((result as { error: boolean; message: any })?.error) {
-          console.error("some error getting resources");
-        } else {
-          this.resources = result as ResourceResponse[];
-          this.requestUpdate();
-        }
-      },
-    });
-  }
-
   getMembers(): void {
     this.memberService.getMembers().subscribe({
       next: (result: any) => {
@@ -154,10 +130,10 @@ export class MemberList extends LitElement {
     });
   }
 
-  openAddMemberResourceModal(email: string): void {
+  openAddMemberToResourceModal(email: string): void {
     this.email = email;
     this.requestUpdate();
-    showComponent("#addMemberResourceModal", this.shadowRoot);
+    showComponent("#add-member-to-resource-modal", this.shadowRoot);
   }
 
   openRemoveMemberResourceModal(
@@ -178,15 +154,6 @@ export class MemberList extends LitElement {
     this.email = (e.target as EventTarget & { value: string }).value;
   }
 
-  handleSubmitAddMemberResource(): void {
-    const request: AddMemberResourceRequest = {
-      email: this.email,
-      resourceID: this.newResourceId,
-    };
-    this.emptyFormValues();
-    this.addMemberResource(request);
-  }
-
   handleSubmitRemoveMemberResource(): void {
     const request: RemoveMemberResourceRequest = {
       email: this.email,
@@ -197,16 +164,7 @@ export class MemberList extends LitElement {
   }
 
   removeMemberResource(request: RemoveMemberResourceRequest): void {
-    this.resourceService.removeMemberResource(request).subscribe({
-      complete: () => {
-        this.getMembers();
-        this.requestUpdate();
-      },
-    });
-  }
-
-  addMemberResource(request: AddMemberResourceRequest): void {
-    this.resourceService.addMemberResource(request).subscribe({
+    this.resourceService.removeMemberFromResource(request).subscribe({
       complete: () => {
         this.getMembers();
         this.requestUpdate();
@@ -229,7 +187,7 @@ export class MemberList extends LitElement {
               <div>
                 <mwc-button
                   label="Add resource"
-                  @click=${() => this.openAddMemberResourceModal(x.email)}
+                  @click=${() => this.openAddMemberToResourceModal(x.email)}
                 ></mwc-button>
                 <mwc-button
                   class="remove"
@@ -256,18 +214,6 @@ export class MemberList extends LitElement {
     return removeMemberResourceModal(modalData);
   }
 
-  displayAddMemberResourceModal(): TemplateResult {
-    const modalData: AddMemberResourceModalData = {
-      email: this.email,
-      resources: this.resources ?? [],
-      handleResourceChange: this.handleResourceChange,
-      handleSubmitAddMemberResource: this.handleSubmitAddMemberResource,
-      emptyFormValuesOnClosed: this.emptyFormValuesOnClosed,
-    };
-
-    return addMemberResourceModal(modalData);
-  }
-
   emptyFormValuesOnClosed(): void {
     this.emptyFormValues();
     this.requestUpdate();
@@ -286,6 +232,11 @@ export class MemberList extends LitElement {
 
   openRFIDModal(): void {
     showComponent("#rfid-modal", this.shadowRoot);
+  }
+
+  refreshMemberList(): void {
+    this.getMembers();
+    this.requestUpdate();
   }
 
   render(): TemplateResult {
@@ -316,8 +267,11 @@ export class MemberList extends LitElement {
             ${this.displayMembersTable()}
           </table>
         </div>
-
-        ${this.displayAddMemberResourceModal()}
+        <add-member-to-resource-modal 
+          id="add-member-to-resource-modal"
+          .email=${this.email}
+          @updated=${this.refreshMemberList}> 
+        </add-member-to-resource-modal>
         ${this.displayRemoveMemberResourceModal()}
         <rfid-modal
           id="rfid-modal"> 
