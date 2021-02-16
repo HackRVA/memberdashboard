@@ -24,8 +24,8 @@ import {
 } from "../../resources/types";
 import { isEmpty } from "../../../function";
 
-@customElement("add-resource-to-member-modal")
-export class AddResourceToMemberModal extends LitElement {
+@customElement("add-member-to-resource-modal")
+export class AddMemberToResourceModal extends LitElement {
   @property({ type: String })
   email: string = "";
 

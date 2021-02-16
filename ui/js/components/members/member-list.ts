@@ -26,7 +26,7 @@ import {
 } from "./types";
 import { RemoveMemberResourceRequest } from "../resources/types";
 import "../shared/rfid-modal";
-import "./modals/add-resource-to-member-modal";
+import "./modals/add-member-to-resource-modal";
 import { showComponent } from "./../../function";
 import { removeMemberResourceModal } from "./modals/remove-member-resource-modal";
 import { ResourceService } from "../../service/resource.service";
@@ -133,7 +133,7 @@ export class MemberList extends LitElement {
   openAddMemberToResourceModal(email: string): void {
     this.email = email;
     this.requestUpdate();
-    showComponent("#add-resource-to-member-modal", this.shadowRoot);
+    showComponent("#add-member-to-resource-modal", this.shadowRoot);
   }
 
   openRemoveMemberResourceModal(
@@ -267,11 +267,11 @@ export class MemberList extends LitElement {
             ${this.displayMembersTable()}
           </table>
         </div>
-        <add-resource-to-member-modal 
-          id="add-resource-to-member-modal"
+        <add-member-to-resource-modal 
+          id="add-member-to-resource-modal"
           .email=${this.email}
           @updated=${this.refreshMemberList}> 
-        </add-resource-to-member-modal>
+        </add-member-to-resource-modal>
         ${this.displayRemoveMemberResourceModal()}
         <rfid-modal
           id="rfid-modal"> 
