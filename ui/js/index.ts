@@ -107,6 +107,7 @@ export class MemberDashboard extends LitElement {
         <mwc-button
           class="logout"
           slot="actionItems"
+          label="Log out"
           icon="logout"
           @click=${this.handleLogout}
         ></mwc-button>

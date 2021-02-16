@@ -12,7 +12,7 @@ import { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { Dialog } from "@material/mwc-dialog";
 import "@material/mwc-button";
 import "@material/mwc-dialog";
-import "@material/mwc-select";
+import "@material/mwc-textfield";
 
 // membership
 import { MemberService } from "../../service/member.service";
