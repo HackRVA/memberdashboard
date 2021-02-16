@@ -159,7 +159,7 @@ export class ResourceManager extends LitElement {
       <mwc-formfield label="Default">
         <mwc-checkbox
           @change=${this.handleIsDefaultChange}
-          checked=${this.newIsDefault}
+          ?checked=${this.newIsDefault}
           value="true"
           id="newResourceIsDefault"
           helper="Default Resource for New Users"
