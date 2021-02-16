@@ -29,6 +29,7 @@ export class ResourceManager extends LitElement {
   newAddress: string = "";
   newName: string = "";
   newID: string = "";
+  newIsDefault: boolean = false;
 
   firstUpdated(): void {
     this.handleGetResources();
@@ -42,6 +43,10 @@ export class ResourceManager extends LitElement {
     this.newName = (e.target as EventTarget & { value: string }).value;
   }
 
+  handleIsDefaultChange(e: Event): void {
+    this.newIsDefault = (e.target as EventTarget & { checked: boolean }).checked;
+  }
+
   handleOpenRegisterResource(): void {
     showComponent("#register", this.shadowRoot);
   }
@@ -51,6 +56,7 @@ export class ResourceManager extends LitElement {
       const request: RegisterResourceRequest = {
         name: this.newName,
         address: this.newAddress,
+        isDefault: this.newIsDefault
       };
       this.emptyFormValues();
       this.handleRegisterResource(request);
@@ -59,6 +65,7 @@ export class ResourceManager extends LitElement {
         id: this.newID,
         name: this.newName,
         address: this.newAddress,
+        isDefault: this.newIsDefault,
       };
       this.emptyFormValues();
       this.handleUpdateResource(request);
@@ -112,6 +119,7 @@ export class ResourceManager extends LitElement {
     this.newAddress = resource.address;
     this.newName = resource.name;
     this.newID = resource.id;
+    this.newIsDefault = resource.isDefault;
     this.requestUpdate();
     this.handleOpenRegisterResource();
   }
@@ -120,6 +128,7 @@ export class ResourceManager extends LitElement {
     this.newID = NOT_A_RESOURCE_ID;
     this.newName = "";
     this.newAddress = "";
+    this.newIsDefault = false;
   }
 
   emptyFormValuesOnClosed(): void {
@@ -147,6 +156,15 @@ export class ResourceManager extends LitElement {
         label="address"
         helper="Address on the network"
       ></mwc-textfield>
+      <mwc-formfield label="Default">
+        <mwc-checkbox
+          @change=${this.handleIsDefaultChange}
+          ?checked=${this.newIsDefault}
+          value="true"
+          id="newResourceIsDefault"
+          helper="Default Resource for New Users"
+        ></mwc-checkbox>
+      </mwc-formfield>
 
       <mwc-button
         @click=${() => this.handleSubmitResource(isCreate)}
@@ -170,7 +188,7 @@ export class ResourceManager extends LitElement {
     return html` <mwc-list>
       ${this.resources.map((x: ResourceResponse) => {
         return html`<mwc-list-item>
-          ${x.name} ${x.address}
+          ${x.name} ${x.address} ${x.isDefault ? '(assigned by default)' : ''}
           <mwc-button
             @click="${() => this.handleDelete(x)}"
             label="delete"

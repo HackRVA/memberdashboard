@@ -71,6 +71,7 @@ func mapMemberIDToPayments(payments []database.Payment) []database.Payment {
 			if err != nil {
 				log.Errorf("error adding member to DB: %s", err.Error())
 			}
+            db.AddUserToDefaultResources(p.Email)
 			p.MemberID = am.ID
 		} else {
 			p.MemberID = m.ID

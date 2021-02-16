@@ -120,7 +120,9 @@
         "summary": "Logout",
         "operationId": "logoutRequest",
         "responses": {
-          "200": {}
+          "200": {
+            "description": ""
+          }
         }
       }
     },
@@ -318,7 +320,9 @@
           }
         ],
         "responses": {
-          "200": {}
+          "200": {
+            "description": ""
+          }
         }
       }
     },
@@ -650,6 +654,12 @@
           "x-go-name": "Address",
           "example": "address"
         },
+        "isDefault": {
+          "description": "Default state of the Resource",
+          "type": "boolean",
+          "x-go-name": "IsDefault",
+          "example": true
+        },
         "name": {
           "description": "Name of the Resource",
           "type": "string",
@@ -665,7 +675,8 @@
       "required": [
         "id",
         "name",
-        "address"
+        "address",
+        "isDefault"
       ],
       "properties": {
         "address": {
@@ -679,6 +690,12 @@
           "type": "string",
           "x-go-name": "ID",
           "example": "0"
+        },
+        "isDefault": {
+          "description": "Default state of the Resource",
+          "type": "boolean",
+          "x-go-name": "IsDefault",
+          "example": true
         },
         "name": {
           "description": "Name of the Resource",
@@ -711,7 +728,8 @@
       "required": [
         "id",
         "name",
-        "address"
+        "address",
+        "isDefault"
       ],
       "properties": {
         "address": {
@@ -725,6 +743,12 @@
           "type": "string",
           "x-go-name": "ID",
           "example": "0"
+        },
+        "isDefault": {
+          "description": "Default state of the Resource",
+          "type": "boolean",
+          "x-go-name": "IsDefault",
+          "example": true
         },
         "name": {
           "description": "Name of the Resource",
@@ -850,11 +874,13 @@
   },
   "responses": {
     "addMemberToResourceResponse": {
+      "description": "",
       "schema": {
         "$ref": "#/definitions/MemberResourceRelation"
       }
     },
     "endpointSuccessResponse": {
+      "description": "",
       "headers": {
         "ack": {
           "type": "boolean"
@@ -862,6 +888,7 @@
       }
     },
     "getMemberResponse": {
+      "description": "",
       "schema": {
         "type": "array",
         "items": {
@@ -881,6 +908,7 @@
       }
     },
     "getPaymentRefreshResponse": {
+      "description": "",
       "schema": {
         "$ref": "#/definitions/endpointSuccess"
       },
@@ -889,11 +917,13 @@
       }
     },
     "getResourceResponse": {
+      "description": "",
       "schema": {
         "$ref": "#/definitions/Resource"
       }
     },
     "getResourceStatusResponse": {
+      "description": "",
       "schema": {
         "type": "object",
         "additionalProperties": {
@@ -903,6 +933,7 @@
       }
     },
     "getTierResponse": {
+      "description": "",
       "schema": {
         "type": "array",
         "items": {
@@ -911,6 +942,7 @@
       }
     },
     "getUserResponse": {
+      "description": "",
       "schema": {
         "$ref": "#/definitions/UserResponse"
       }
@@ -932,11 +964,13 @@
       }
     },
     "postResourceResponse": {
+      "description": "",
       "schema": {
         "$ref": "#/definitions/Resource"
       }
     },
     "removeMemberSuccessResponse": {
+      "description": "",
       "schema": {
         "$ref": "#/definitions/endpointSuccess"
       },
@@ -945,6 +979,7 @@
       }
     },
     "setRFIDResponse": {
+      "description": "",
       "schema": {
         "$ref": "#/definitions/AssignRFIDRequest"
       }

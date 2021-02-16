@@ -114,7 +114,7 @@ func (rs resourceAPI) update(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	r, err := rs.db.UpdateResource(updateResourceReq.ID, updateResourceReq.Name, updateResourceReq.Address)
+	r, err := rs.db.UpdateResource(updateResourceReq.ID, updateResourceReq.Name, updateResourceReq.Address, updateResourceReq.IsDefault)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -213,7 +213,7 @@ func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	r, err := rs.db.RegisterResource(register.Name, register.Address)
+	r, err := rs.db.RegisterResource(register.Name, register.Address, register.IsDefault)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

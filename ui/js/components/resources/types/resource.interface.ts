@@ -1,12 +1,14 @@
 export interface RegisterResourceRequest {
   address: string;
   name: string;
+  isDefault: boolean;
 }
 
 export interface UpdateResourceRequest {
   address: string;
   id: string;
   name: string;
+  isDefault: boolean;
 }
 
 export interface RemoveResourceRequest {
@@ -27,4 +29,5 @@ export interface ResourceResponse {
   address: string;
   id: string;
   name: string;
+  isDefault: boolean;
 }
