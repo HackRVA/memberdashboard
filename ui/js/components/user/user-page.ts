@@ -17,9 +17,8 @@ import "@material/mwc-textfield";
 // membership
 import { UserProfile } from "./types";
 import { defaultSnackbar } from "./../shared/default-snackbar";
-import { UserService } from "./../../service/user.service";
 import { showComponent } from "../../function";
-import { MemberService } from "../../service/member.service";
+import { MemberService, UserService } from "../../service";
 import "../shared/card-element";
 import "../shared/rfid-modal";
 

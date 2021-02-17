@@ -4,7 +4,6 @@ import {
   html,
   TemplateResult,
   customElement,
-  css,
   CSSResult,
   property,
 } from "lit-element";
@@ -19,12 +18,12 @@ import "@material/mwc-textfield";
 
 // membership
 import { MemberLevel, MemberResource, MemberResponse } from "./types";
+import { showComponent } from "./../../function";
+import { ResourceService, MemberService } from "../../service";
+import { memberListStyles } from "./styles/member-list-styles";
 import "../shared/rfid-modal";
 import "./modals/add-member-to-resource-modal";
 import "./modals/remove-member-from-resource-modal";
-import { showComponent } from "./../../function";
-import { ResourceService } from "../../service/resource.service";
-import { MemberService } from "../../service/member.service";
 import "../shared/card-element";
 
 @customElement("member-list")
@@ -41,54 +40,8 @@ export class MemberList extends LitElement {
   memberService: MemberService = new MemberService();
   resourceService: ResourceService = new ResourceService();
 
-  static get styles(): CSSResult {
-    return css`
-      h1 {
-        margin-top: 0px;
-        margin-bottom: 0px;
-        justify-self: start;
-      }
-      .member-container {
-        display: grid;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        margin: 44px;
-      }
-      .member-header {
-        display: inherit;
-        grid-template-columns: 1fr 1fr 1fr;
-        align-items: center;
-      }
-      .name {
-        text-transform: capitalize;
-      }
-      td,
-      th {
-        text-align: left;
-        padding: 8px;
-        font-size: 20px;
-        border: 1px solid #e1e1e1;
-        max-width: 320px;
-      }
-      table {
-        margin-top: 24px;
-        border-spacing: 0px;
-      }
-      .member-count {
-      }
-      .rfid-button {
-        justify-self: end;
-      }
-      .remove {
-        --mdc-theme-primary: #e9437a;
-      }
-      .horizontal-scrollbar {
-        overflow: auto;
-        max-width: 320px;
-        white-space: nowrap;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [memberListStyles];
   }
 
   displayMemberStatus(memberLevel: number): string {

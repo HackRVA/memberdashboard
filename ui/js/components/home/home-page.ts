@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 
 // membership
-import { UserService } from "../../service/user.service";
+import { UserService } from "../../service";
 import "../shared/card-element";
 import "../shared/register-form";
 import { UserProfile } from "../user/types";

@@ -11,7 +11,7 @@ import "@material/mwc-checkbox";
 
 // membership
 import "../shared/card-element";
-import { ResourceService } from "../../service/resource.service";
+import { ResourceService } from "../../service";
 import { isEmpty, showComponent } from "../../function";
 import {
   ResourceResponse,
@@ -44,7 +44,9 @@ export class ResourceManager extends LitElement {
   }
 
   handleIsDefaultChange(e: Event): void {
-    this.newIsDefault = (e.target as EventTarget & { checked: boolean }).checked;
+    this.newIsDefault = (e.target as EventTarget & {
+      checked: boolean;
+    }).checked;
   }
 
   handleOpenRegisterResource(): void {
@@ -56,7 +58,7 @@ export class ResourceManager extends LitElement {
       const request: RegisterResourceRequest = {
         name: this.newName,
         address: this.newAddress,
-        isDefault: this.newIsDefault
+        isDefault: this.newIsDefault,
       };
       this.emptyFormValues();
       this.handleRegisterResource(request);
@@ -188,7 +190,7 @@ export class ResourceManager extends LitElement {
     return html` <mwc-list>
       ${this.resources.map((x: ResourceResponse) => {
         return html`<mwc-list-item>
-          ${x.name} ${x.address} ${x.isDefault ? '(assigned by default)' : ''}
+          ${x.name} ${x.address} ${x.isDefault ? "(assigned by default)" : ""}
           <mwc-button
             @click="${() => this.handleDelete(x)}"
             label="delete"

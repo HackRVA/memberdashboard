@@ -17,7 +17,7 @@ import "@material/mwc-dialog";
 import "@material/select";
 
 // membership
-import { ResourceService } from "../../../service/resource.service";
+import { ResourceService } from "../../../service";
 import {
   AddMemberResourceRequest,
   ResourceResponse,

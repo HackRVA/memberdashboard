@@ -18,7 +18,7 @@ import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership
 import { showComponent } from "./../../function";
-import { UserService } from "../../service/user.service";
+import { UserService } from "../../service";
 import { defaultSnackbar } from "./default-snackbar";
 import { RegisterRequest } from "../user/types";
 

@@ -14,7 +14,7 @@ import "@material/mwc-formfield";
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership
-import { UserService } from "../../service/user.service";
+import { UserService } from "../../service";
 import { LoginRequest, Jwt } from "../user/types";
 
 @customElement("login-form")

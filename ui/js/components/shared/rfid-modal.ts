@@ -15,7 +15,7 @@ import "@material/mwc-dialog";
 import "@material/mwc-textfield";
 
 // membership
-import { MemberService } from "../../service/member.service";
+import { MemberService } from "../../service";
 import { AssignRFIDRequest } from "../members/types";
 import { defaultSnackbar } from "./default-snackbar";
 import { showComponent } from "../../function";

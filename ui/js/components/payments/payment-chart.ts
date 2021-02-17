@@ -1,5 +1,12 @@
 // lit element
-import { LitElement, html, customElement, css, CSSResult } from "lit-element";
+import {
+  LitElement,
+  html,
+  customElement,
+  css,
+  CSSResult,
+  TemplateResult,
+} from "lit-element";
 
 // google
 import "@google-web-components/google-chart";
@@ -64,7 +71,7 @@ export class NewElement extends LitElement {
       },
     });
   }
-  render() {
+  render(): TemplateResult {
     return html`
       <div id="payment-chart-container">
         <chart-container id="chart-container"> </chart-container>

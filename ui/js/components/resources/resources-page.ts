@@ -7,10 +7,10 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
-import "./resource-manager";
 
 // membership
 import "../shared/card-element";
+import "./resource-manager";
 
 @customElement("resources-page")
 export class ResourcesPage extends LitElement {

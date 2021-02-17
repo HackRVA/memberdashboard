@@ -10,7 +10,7 @@ import {
 } from "lit-element";
 
 // membership
-import { MemberService } from "../../service/member.service";
+import { MemberService } from "../../service";
 import "./member-list";
 import { MemberResponse } from "./types";
 
