@@ -141,48 +141,48 @@ export class ResourceManager extends LitElement {
   updateResourceDialog(): TemplateResult {
     const isCreate: boolean = isEmpty(this.newName) && isEmpty(this.newAddress);
 
-    return html`<mwc-dialog id="register">
-      <div>Update/Register a Resource?</div>
+    return html`
+      <mwc-dialog id="register" heading="Update/Register a Resource?">
+        <mwc-textfield
+          @change=${this.handleNameChange}
+          value=${this.newName}
+          id="newResourceName"
+          label="name"
+          helper="Name of device"
+        ></mwc-textfield>
+        <mwc-textfield
+          @change=${this.handleAddressChange}
+          value=${this.newAddress}
+          id="newResourceAddress"
+          label="address"
+          helper="Address on the network"
+        ></mwc-textfield>
+        <mwc-formfield label="Default">
+          <mwc-checkbox
+            @change=${this.handleIsDefaultChange}
+            ?checked=${this.newIsDefault}
+            value="true"
+            id="newResourceIsDefault"
+            helper="Default Resource for New Users"
+          ></mwc-checkbox>
+        </mwc-formfield>
 
-      <mwc-textfield
-        @change=${this.handleNameChange}
-        value=${this.newName}
-        id="newResourceName"
-        label="name"
-        helper="Name of device"
-      ></mwc-textfield>
-      <mwc-textfield
-        @change=${this.handleAddressChange}
-        value=${this.newAddress}
-        id="newResourceAddress"
-        label="address"
-        helper="Address on the network"
-      ></mwc-textfield>
-      <mwc-formfield label="Default">
-        <mwc-checkbox
-          @change=${this.handleIsDefaultChange}
-          ?checked=${this.newIsDefault}
-          value="true"
-          id="newResourceIsDefault"
-          helper="Default Resource for New Users"
-        ></mwc-checkbox>
-      </mwc-formfield>
-
-      <mwc-button
-        @click=${() => this.handleSubmitResource(isCreate)}
-        slot="primaryAction"
-        dialogAction="ok"
-      >
-        Submit
-      </mwc-button>
-      <mwc-button
-        slot="secondaryAction"
-        dialogAction="cancel"
-        @click=${this.emptyFormValuesOnClosed}
-      >
-        Cancel
-      </mwc-button>
-    </mwc-dialog>`;
+        <mwc-button
+          @click=${() => this.handleSubmitResource(isCreate)}
+          slot="primaryAction"
+          dialogAction="ok"
+        >
+          Submit
+        </mwc-button>
+        <mwc-button
+          slot="secondaryAction"
+          dialogAction="cancel"
+          @click=${this.emptyFormValuesOnClosed}
+        >
+          Cancel
+        </mwc-button>
+      </mwc-dialog>
+    `;
   }
 
   resourceList(): TemplateResult | void {
