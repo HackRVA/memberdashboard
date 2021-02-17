@@ -1,11 +1,4 @@
 import { MemberLevel } from "./member.enum";
-export interface RemoveMemberResourceModalData {
-  email: string;
-  memberResources: MemberResource[];
-  handleResourceChange: Function;
-  handleSubmitRemoveMemberResource: Function;
-  emptyFormValuesOnClosed: Function;
-}
 
 export interface AssignRFIDRequest {
   email: string;
