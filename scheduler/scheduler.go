@@ -22,42 +22,22 @@ const resourceStatusCheckInterval = 1
 //  We want certain tasks to happen on a regular basis
 //  The scheduler will make sure that happens
 func Setup() {
-	checkPayments()
-	updateMemberStatus()
-	checkResourceACLs()
+	scheduleTask(evaluateMemberStatusInterval*time.Hour, checkMemberStatus, checkMemberStatus)
+	scheduleTask(checkPaymentsInterval*time.Hour, payments.GetPayments, payments.GetPayments)
+	scheduleTask(resourceStatusCheckInterval*time.Hour, checkResourceInit, checkResourceTick)
 }
 
-func checkPayments() {
-	payments.GetPayments()
-
-	log.Debugf("checking payments")
+func scheduleTask(interval time.Duration, initFunc func(), tickFunc func()) {
+	initFunc()
 
 	// quietly check the resource status on an interval
-	ticker := time.NewTicker(checkPaymentsInterval * time.Hour)
+	ticker := time.NewTicker(interval)
 	quit := make(chan struct{})
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				payments.GetPayments()
-			case <-quit:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
-}
-
-func updateMemberStatus() {
-	checkMemberStatus()
-	// quietly check the resource status on an interval
-	ticker := time.NewTicker(evaluateMemberStatusInterval * time.Hour)
-	quit := make(chan struct{})
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				checkMemberStatus()
+				tickFunc()
 			case <-quit:
 				ticker.Stop()
 				return
@@ -73,6 +53,7 @@ func checkMemberStatus() {
 	}
 
 	members := db.GetMembers()
+	defer db.Release()
 
 	for _, m := range members {
 		err = db.EvaluateMemberStatus(m.ID)
@@ -80,11 +61,9 @@ func checkMemberStatus() {
 			log.Errorf("error evaluating member's status: %s", err.Error())
 		}
 	}
-
-	db.Release()
 }
 
-func checkResourceACLs() {
+func checkResourceInit() {
 	db, err := database.Setup()
 	if err != nil {
 		log.Errorf("error setting up db: %s", err)
@@ -92,28 +71,26 @@ func checkResourceACLs() {
 	}
 
 	resources := db.GetResources()
+	defer db.Release()
 
 	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
 		resourcemanager.Subscribe(r.Name+"/result", resourcemanager.HealthCheck)
 		resourcemanager.CheckStatus(r)
 	}
+}
 
-	// quietly check the resource status on an interval
-	ticker := time.NewTicker(resourceStatusCheckInterval * time.Hour)
-	quit := make(chan struct{})
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				for _, r := range resources {
-					resourcemanager.CheckStatus(r)
-				}
-			case <-quit:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
-	db.Release()
+func checkResourceTick() {
+	db, err := database.Setup()
+	if err != nil {
+		log.Errorf("error setting up db: %s", err)
+		return
+	}
+
+	resources := db.GetResources()
+	defer db.Release()
+
+	for _, r := range resources {
+		resourcemanager.CheckStatus(r)
+	}
 }
