@@ -5,7 +5,6 @@ import {
   TemplateResult,
   customElement,
   CSSResult,
-  css,
 } from "lit-element";
 
 // material
@@ -16,6 +15,10 @@ import { TextField } from "@material/mwc-textfield/mwc-textfield";
 // membership
 import { UserService } from "../../service";
 import { LoginRequest, Jwt } from "../user/types";
+import { ToastMessage } from "../shared/types";
+import { showComponent } from "../../function";
+import { loginFormStyles } from "./styles";
+import "../shared/toast-msg";
 
 @customElement("login-form")
 export class LoginForm extends LitElement {
@@ -25,28 +28,10 @@ export class LoginForm extends LitElement {
 
   userService: UserService = new UserService();
 
-  static get styles(): CSSResult {
-    return css`
-      .login-container {
-        height: 270px;
-        max-width: 250px;
-        background-color: #e1e1e1;
-        padding: 24px;
-      }
-      mwc-formfield {
-        display: block;
-        margin-bottom: 16px;
-      }
-      .mwc-button {
-        margin-bottom: 12px;
-      }
-      .register {
-        float: left;
-      }
-      .login {
-        float: right;
-      }
-    `;
+  toastMsg: ToastMessage;
+
+  static get styles(): CSSResult[] {
+    return [loginFormStyles];
   }
 
   fireSwitchEvent(): void {
@@ -63,7 +48,7 @@ export class LoginForm extends LitElement {
     if (this.isValid()) {
       this.handleUserLogin();
     } else {
-      console.error("invalid");
+      this.displayToastMsg("Email and/or password invalid");
     }
   }
 
@@ -91,6 +76,12 @@ export class LoginForm extends LitElement {
         window.location.reload();
       },
     });
+  }
+
+  displayToastMsg(message: string): void {
+    this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
+    this.requestUpdate();
+    showComponent("#toast-msg", this.shadowRoot);
   }
 
   goToRegisterForm(): void {
@@ -126,6 +117,7 @@ export class LoginForm extends LitElement {
           @click=${this.handleSubmit}
           class="login"
         ></mwc-button>
+        <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
       </div>
     `;
   }

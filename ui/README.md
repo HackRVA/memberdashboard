@@ -1,10 +1,12 @@
 # Member Dashboard
 
+Member dashboard is the web interface for the [membership server](../README.md)
+
 ## Prerequisites
 
 - [Node](https://nodejs.org/en/)
 
-## Run locally
+## Start the app locally
 
 ```bash
 # install node modules

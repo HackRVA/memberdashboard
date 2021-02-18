@@ -17,8 +17,9 @@ import "@material/mwc-textfield";
 // membership
 import { MemberService } from "../../service";
 import { AssignRFIDRequest } from "../members/types";
-import { defaultSnackbar } from "./default-snackbar";
 import { showComponent } from "../../function";
+import { ToastMessage } from "../shared/types";
+import "../shared/toast-msg";
 
 @customElement("rfid-modal")
 export class RFIDModal extends LitElement {
@@ -30,6 +31,8 @@ export class RFIDModal extends LitElement {
   rfidModalTemplate: Dialog;
   emailFieldTemplate: TextField;
   rfidFieldTemplate: TextField;
+
+  toastMsg: ToastMessage;
 
   firstUpdated(): void {
     this.rfidModalTemplate = this.shadowRoot?.querySelector("mwc-dialog");
@@ -53,31 +56,23 @@ export class RFIDModal extends LitElement {
   assignMemberToRFID(request: AssignRFIDRequest): void {
     this.memberService.assignRFID(request).subscribe({
       complete: () => {
-        this.displaySuccessMessage();
-        this.requestUpdate();
+        this.displayToastMsg("Success");
+        this.emptyFormField();
+        this.rfidModalTemplate.close();
       },
       error: () => {
-        this.displayErrorMessage();
-        this.requestUpdate();
+        this.displayToastMsg("Hrmmm, are you sure this is a member? :3");
       },
     });
-  }
-
-  displaySuccessMessage(): void {
-    showComponent("#success", this.shadowRoot);
-  }
-
-  displayErrorMessage(): void {
-    showComponent("#error", this.shadowRoot);
   }
 
   handleSubmit(): void {
     if (this.isValid()) {
       this.tryToAssigningMemberToRFID();
-      this.emptyFormField();
-      this.rfidModalTemplate.close();
     } else {
-      console.error("Hrmmmm");
+      this.displayToastMsg(
+        "Hrmmm, are you sure everything in the form is correct?"
+      );
     }
   }
 
@@ -96,6 +91,12 @@ export class RFIDModal extends LitElement {
 
   handleClosed(): void {
     this.emptyFormField();
+  }
+
+  displayToastMsg(message: string): void {
+    this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
+    this.requestUpdate();
+    showComponent("#toast-msg", this.shadowRoot);
   }
 
   render(): TemplateResult {
@@ -122,8 +123,7 @@ export class RFIDModal extends LitElement {
           Cancel
         </mwc-button>
       </mwc-dialog>
-      ${defaultSnackbar("success", "success")}
-      ${defaultSnackbar("error", "Hrmmm, are you sure this is a member? :3")}
+      <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
 }

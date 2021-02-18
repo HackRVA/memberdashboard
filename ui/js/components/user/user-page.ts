@@ -16,7 +16,6 @@ import "@material/mwc-textfield";
 
 // membership
 import { UserProfile } from "./types";
-import { defaultSnackbar } from "./../shared/default-snackbar";
 import { showComponent } from "../../function";
 import { MemberService, UserService } from "../../service";
 import "../shared/card-element";
@@ -91,8 +90,6 @@ export class UserPage extends LitElement {
           .email=${this.email}
           >
         </rfid-modal>
-        ${defaultSnackbar("error", "error")}
-        ${defaultSnackbar("success", "success")}
     </div> 
     `;
   }

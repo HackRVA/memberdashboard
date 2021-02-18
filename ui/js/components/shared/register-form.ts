@@ -13,14 +13,16 @@ import "@material/mwc-button";
 import "@material/mwc-list";
 import "@material/mwc-textfield";
 import "@material/mwc-list/mwc-list-item";
+import "@material/snackbar";
 import "@material/mwc-formfield";
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership
 import { showComponent } from "./../../function";
 import { UserService } from "../../service";
-import { defaultSnackbar } from "./default-snackbar";
 import { RegisterRequest } from "../user/types";
+import { ToastMessage } from "./types";
+import "../shared/toast-msg";
 
 @customElement("register-form")
 export class RegisterForm extends LitElement {
@@ -30,6 +32,8 @@ export class RegisterForm extends LitElement {
   emailFieldTemplate: TextField;
   passwordFieldTemplate: TextField;
   confirmPasswordFieldTemplate: TextField;
+
+  toastMsg: ToastMessage;
 
   static get styles(): CSSResult {
     return css`
@@ -67,28 +71,24 @@ export class RegisterForm extends LitElement {
       password: this.passwordFieldTemplate?.value,
     };
     this.userService.registerUser(opts).subscribe({
-      complete: () => this.displaySuccessMsg(),
-      error: () => this.displayErrorMsg(),
+      complete: () => this.displayToastMsg("Success"),
+      error: () => this.displayToastMsg("Oops, something went wrong"),
     });
   }
 
-  displaySuccessMsg(): void {
-    showComponent("#success", this.shadowRoot);
-  }
-
-  displayErrorMsg(): void {
-    showComponent("#error", this.shadowRoot);
-  }
-
-  displayInvalidMsg(): void {
-    showComponent("#invalid", this.shadowRoot);
+  displayToastMsg(message: string): void {
+    this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
+    this.requestUpdate();
+    showComponent("#toast-msg", this.shadowRoot);
   }
 
   handleSubmit(): void {
     if (this.isPasswordIdentical() && this.isValid()) {
       this.handleUserRegister();
     } else {
-      this.displayInvalidMsg();
+      this.displayToastMsg(
+        "Hrmmm, are you sure everything in the form is correct?"
+      );
     }
   }
 
@@ -147,9 +147,11 @@ export class RegisterForm extends LitElement {
           Sign in
         </mwc-button>
         <mwc-button label="register" @click=${this.handleSubmit}></mwc-button>
-        ${defaultSnackbar("success", "success")}
-        ${defaultSnackbar("invalid", "invalid")}
-        ${defaultSnackbar("error", "error")}
+        <toast-msg
+          id="toast-msg"
+          .toastMsg=${this.toastMsg}> 
+        </toast-msg>
+      </card-element>
       </div>
     `;
   }

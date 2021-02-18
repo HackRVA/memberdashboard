@@ -1,6 +1,6 @@
-import { css } from "lit-element";
+import { css, CSSResult } from "lit-element";
 
-export const memberListStyles = css`
+export const memberListStyles: CSSResult = css`
   h1 {
     margin-top: 0px;
     margin-bottom: 0px;
@@ -32,8 +32,6 @@ export const memberListStyles = css`
   table {
     margin-top: 24px;
     border-spacing: 0px;
-  }
-  .member-count {
   }
   .rfid-button {
     justify-self: end;
