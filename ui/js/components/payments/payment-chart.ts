@@ -63,7 +63,7 @@ export class NewElement extends LitElement {
         } else {
           this.paymentCharts = result as PaymentChartResponse[];
 
-          this.paymentCharts.forEach((x: any) => {
+          this.paymentCharts.forEach((x: PaymentChartResponse) => {
             this.addChart(x);
           });
           this.requestUpdate();

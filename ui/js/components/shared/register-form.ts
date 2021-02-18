@@ -5,7 +5,6 @@ import {
   TemplateResult,
   customElement,
   CSSResult,
-  css,
 } from "lit-element";
 
 // material
@@ -22,6 +21,7 @@ import { showComponent } from "./../../function";
 import { UserService } from "../../service";
 import { RegisterRequest } from "../user/types";
 import { ToastMessage } from "./types";
+import { registerFormStyles } from "./styles/register-form-styles";
 import "../shared/toast-msg";
 
 @customElement("register-form")
@@ -35,26 +35,8 @@ export class RegisterForm extends LitElement {
 
   toastMsg: ToastMessage;
 
-  static get styles(): CSSResult {
-    return css`
-      .register-container {
-        height: 270px;
-        max-width: 250px;
-        background-color: #e1e1e1;
-        padding: 24px;
-      }
-      mwc-formfield {
-        display: block;
-        margin-bottom: 16px;
-      }
-      .sign-in {
-        float: left;
-      }
-      mwc-button {
-        float: right;
-        margin-bottom: 12px;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [registerFormStyles];
   }
 
   firstUpdated(): void {

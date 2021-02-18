@@ -15,6 +15,7 @@ import "@material/mwc-textfield";
 import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/select";
+import "@material/snackbar";
 
 // membership
 import { ResourceService } from "../../../service";
@@ -22,12 +23,15 @@ import {
   AddMemberResourceRequest,
   ResourceResponse,
 } from "../../resources/types";
-import { isEmpty } from "../../../function";
+import { isEmpty, showComponent } from "../../../function";
+import { ToastMessage } from "../../shared/types";
 
 @customElement("add-member-to-resource-modal")
 export class AddMemberToResourceModal extends LitElement {
   @property({ type: String })
   email: string = "";
+
+  toastMsg: ToastMessage;
 
   resourceService: ResourceService = new ResourceService();
   resources: ResourceResponse[] = [];
@@ -79,7 +83,7 @@ export class AddMemberToResourceModal extends LitElement {
       this.emptyFormField();
       this.addResourceToMemberModalTemplate.close();
     } else {
-      console.error("hrrmmmm");
+      this.displayToastMsg("Hrmmmmm");
     }
   }
 
@@ -99,6 +103,12 @@ export class AddMemberToResourceModal extends LitElement {
         this.dispatchEvent(updatedEvent);
       },
     });
+  }
+
+  displayToastMsg(message: string): void {
+    this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
+    this.requestUpdate();
+    showComponent("#toast-msg", this.shadowRoot);
   }
 
   emptyFormField(): void {
@@ -135,6 +145,7 @@ export class AddMemberToResourceModal extends LitElement {
           Cancel
         </mwc-button>
       </mwc-dialog>
+      <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
 }

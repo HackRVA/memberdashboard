@@ -18,9 +18,10 @@ import "@material/select";
 
 // membership
 import { ResourceService } from "./../../../service";
-import { isEmpty } from "./../../../function";
+import { isEmpty, showComponent } from "./../../../function";
 import { MemberResource } from "../types";
 import { RemoveMemberResourceRequest } from "../../resources/types";
+import { ToastMessage } from "../../shared/types";
 
 @customElement("remove-member-from-resource-modal")
 export class RemoveMemberFromResourceModal extends LitElement {
@@ -29,6 +30,8 @@ export class RemoveMemberFromResourceModal extends LitElement {
 
   @property({ type: Array })
   memberResources: Array<MemberResource> = [];
+
+  toastMsg: ToastMessage;
 
   resourceService: ResourceService = new ResourceService();
 
@@ -56,7 +59,7 @@ export class RemoveMemberFromResourceModal extends LitElement {
       this.emptyFormField();
       this.removeResourceFromMemberModalTemplate.close();
     } else {
-      console.error("hrrrmm");
+      this.displayToastMsg("Hrmmmm");
     }
   }
 
@@ -100,6 +103,12 @@ export class RemoveMemberFromResourceModal extends LitElement {
     );
   }
 
+  displayToastMsg(message: string): void {
+    this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
+    this.requestUpdate();
+    showComponent("#toast-msg", this.shadowRoot);
+  }
+
   render(): TemplateResult {
     return html`
       <mwc-dialog heading="Remove Resource" @closed=${this.handleClosed}>
@@ -123,6 +132,7 @@ export class RemoveMemberFromResourceModal extends LitElement {
           Cancel
         </mwc-button>
       </mwc-dialog>
+      <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
 }
