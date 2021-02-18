@@ -44,7 +44,7 @@ export class MemberList extends LitElement {
     return [memberListStyles];
   }
 
-  displayMemberStatus(memberLevel: number): string {
+  displayMemberStatus(memberLevel: MemberLevel): string {
     switch (memberLevel) {
       case MemberLevel.inactive:
         return "Inactive";
