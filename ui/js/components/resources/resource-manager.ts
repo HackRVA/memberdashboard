@@ -1,5 +1,12 @@
 // lit element
-import { LitElement, html, customElement, TemplateResult } from "lit-element";
+import {
+  LitElement,
+  html,
+  customElement,
+  TemplateResult,
+  CSSResult,
+  css,
+} from "lit-element";
 
 // material
 import "@material/mwc-button";
@@ -18,7 +25,9 @@ import {
   RegisterResourceRequest,
   UpdateResourceRequest,
   RemoveResourceRequest,
+  ResourceModalData,
 } from "./types";
+import "./modals";
 
 const NOT_A_RESOURCE_ID = "";
 
@@ -30,6 +39,45 @@ export class ResourceManager extends LitElement {
   newName: string = "";
   newID: string = "";
   newIsDefault: boolean = false;
+
+  resourceModalData: ResourceModalData;
+
+  static get styles(): CSSResult {
+    return css`
+      .resource-container {
+        display: grid;
+        align-items: center;
+        margin: 44px;
+      }
+
+      .resource-header {
+        display: inherit;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+      }
+
+      .button-container {
+        justify-self: end;
+      }
+
+      td,
+      th {
+        text-align: left;
+        padding: 8px;
+        font-size: 20px;
+        border: 1px solid #e1e1e1;
+        max-width: 320px;
+      }
+      table {
+        margin-top: 24px;
+        border-spacing: 0px;
+      }
+
+      .remove {
+        --mdc-theme-primary: #e9437a;
+      }
+    `;
+  }
 
   firstUpdated(): void {
     this.handleGetResources();
@@ -49,8 +97,19 @@ export class ResourceManager extends LitElement {
     }).checked;
   }
 
-  handleOpenRegisterResource(): void {
-    showComponent("#register", this.shadowRoot);
+  openRegisterResource(): void {
+    this.resourceModalData = Object.assign(
+      {},
+      {
+        isEdit: false,
+        resourceAddress: null,
+        resourceName: null,
+        isDefault: false,
+      }
+    );
+
+    this.requestUpdate();
+    showComponent("#resource-modal", this.shadowRoot);
   }
 
   handleSubmitResource(isCreate: boolean): void {
@@ -123,7 +182,7 @@ export class ResourceManager extends LitElement {
     this.newID = resource.id;
     this.newIsDefault = resource.isDefault;
     this.requestUpdate();
-    this.handleOpenRegisterResource();
+    this.openRegisterResource();
   }
 
   emptyFormValues(): void {
@@ -185,39 +244,58 @@ export class ResourceManager extends LitElement {
     `;
   }
 
-  resourceList(): TemplateResult | void {
-    if (!this.resources) return;
-    return html` <mwc-list>
+  displayResources(): TemplateResult {
+    return html`
       ${this.resources.map((x: ResourceResponse) => {
-        return html`<mwc-list-item>
-          ${x.name} ${x.address} ${x.isDefault ? "(assigned by default)" : ""}
-          <mwc-button
-            @click="${() => this.handleDelete(x)}"
-            label="delete"
-          ></mwc-button>
-          <mwc-button
-            @click="${() => this.handleEdit(x)}"
-            label="edit"
-          ></mwc-button>
-        </mwc-list-item>`;
+        return html`
+          <tr>
+            <td>${x.name} ${x.isDefault ? "(default)" : ""}</td>
+            <td>${x.address}</td>
+            <td>
+              <mwc-button @click="${() => this.handleEdit(x)}" label="Edit">
+              </mwc-button>
+              <mwc-button
+                class="remove"
+                @click="${() => this.handleDelete(x)}"
+                label="Delete"
+              >
+              </mwc-button>
+            </td>
+          </tr>
+        `;
       })}
-    </mwc-list>`;
+    `;
   }
 
   render(): TemplateResult {
     return html`
-      <div>
-        <mwc-button
-          @click=${this.handleOpenRegisterResource}
-          dense
-          unelevated
-          label="create"
-        ></mwc-button>
-
-        <div>${this.resourceList()}</div>
-
-        ${this.updateResourceDialog()}
+      <div class="resource-container">
+        <div class="resource-header">
+          <h1>Resources</h1>
+          <div class="button-container">
+            <mwc-button
+              class="create-resource"
+              @click=${this.openRegisterResource}
+              dense
+              unelevated
+              label="create"
+            ></mwc-button>
+          </div>
+        </div>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Actions</th>
+          </tr>
+          ${this.displayResources()}
+        </table>
       </div>
+      <resource-modal
+        id="resource-modal"
+        .resourceModalData=${this.resourceModalData}
+      >
+      </resource-modal>
     `;
   }
 }

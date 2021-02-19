@@ -20,7 +20,6 @@ export class ResourcesPage extends LitElement {
   render(): TemplateResult {
     return html`
       <card-element>
-        <h1>Resources</h1>
         <resource-manager> </resource-manager>
       </card-element>
     `;

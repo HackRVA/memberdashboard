@@ -31,3 +31,10 @@ export interface ResourceResponse {
   name: string;
   isDefault: boolean;
 }
+
+export interface ResourceModalData {
+  isEdit: boolean;
+  resourceName: string;
+  resourceAddress: string;
+  isDefault: boolean;
+}
