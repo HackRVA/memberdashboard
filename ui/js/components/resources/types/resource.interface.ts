@@ -33,6 +33,7 @@ export interface ResourceResponse {
 }
 
 export interface ResourceModalData {
+  id: string;
   isEdit: boolean;
   resourceName: string;
   resourceAddress: string;

@@ -19,17 +19,13 @@ import "@material/mwc-checkbox";
 // membership
 import "../shared/card-element";
 import { ResourceService } from "../../service";
-import { isEmpty, showComponent } from "../../function";
+import { showComponent } from "../../function";
 import {
   ResourceResponse,
-  RegisterResourceRequest,
-  UpdateResourceRequest,
   RemoveResourceRequest,
   ResourceModalData,
 } from "./types";
 import "./modals";
-
-const NOT_A_RESOURCE_ID = "";
 
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
@@ -80,78 +76,10 @@ export class ResourceManager extends LitElement {
   }
 
   firstUpdated(): void {
-    this.handleGetResources();
+    this.getResources();
   }
 
-  handleAddressChange(e: Event): void {
-    this.newAddress = (e.target as EventTarget & { value: string }).value;
-  }
-
-  handleNameChange(e: Event): void {
-    this.newName = (e.target as EventTarget & { value: string }).value;
-  }
-
-  handleIsDefaultChange(e: Event): void {
-    this.newIsDefault = (e.target as EventTarget & {
-      checked: boolean;
-    }).checked;
-  }
-
-  openRegisterResource(): void {
-    this.resourceModalData = Object.assign(
-      {},
-      {
-        isEdit: false,
-        resourceAddress: null,
-        resourceName: null,
-        isDefault: false,
-      }
-    );
-
-    this.requestUpdate();
-    showComponent("#resource-modal", this.shadowRoot);
-  }
-
-  handleSubmitResource(isCreate: boolean): void {
-    if (isCreate) {
-      const request: RegisterResourceRequest = {
-        name: this.newName,
-        address: this.newAddress,
-        isDefault: this.newIsDefault,
-      };
-      this.emptyFormValues();
-      this.handleRegisterResource(request);
-    } else {
-      const request: UpdateResourceRequest = {
-        id: this.newID,
-        name: this.newName,
-        address: this.newAddress,
-        isDefault: this.newIsDefault,
-      };
-      this.emptyFormValues();
-      this.handleUpdateResource(request);
-    }
-  }
-
-  handleRegisterResource(request: RegisterResourceRequest): void {
-    this.resourceService.register(request).subscribe({
-      complete: () => {
-        this.handleGetResources();
-        this.requestUpdate();
-      },
-    });
-  }
-
-  handleUpdateResource(request: UpdateResourceRequest): void {
-    this.resourceService.updateResource(request).subscribe({
-      complete: () => {
-        this.handleGetResources();
-        this.requestUpdate();
-      },
-    });
-  }
-
-  handleGetResources(): void {
+  getResources(): void {
     this.resourceService.getResources().subscribe({
       next: (result: any) => {
         if ((result as { error: boolean; message: any })?.error) {
@@ -170,78 +98,46 @@ export class ResourceManager extends LitElement {
     };
     this.resourceService.deleteResource(request).subscribe({
       complete: () => {
-        this.handleGetResources();
+        this.getResources();
         this.requestUpdate();
       },
     });
   }
 
-  handleEdit(resource: UpdateResourceRequest): void {
-    this.newAddress = resource.address;
-    this.newName = resource.name;
-    this.newID = resource.id;
-    this.newIsDefault = resource.isDefault;
+  openRegisterResourceModal(): void {
+    this.resourceModalData = Object.assign(
+      {},
+      {
+        id: null,
+        isEdit: false,
+        resourceAddress: null,
+        resourceName: null,
+        isDefault: false,
+      }
+    );
+
     this.requestUpdate();
-    this.openRegisterResource();
+    showComponent("#resource-modal", this.shadowRoot);
   }
 
-  emptyFormValues(): void {
-    this.newID = NOT_A_RESOURCE_ID;
-    this.newName = "";
-    this.newAddress = "";
-    this.newIsDefault = false;
-  }
-
-  emptyFormValuesOnClosed(): void {
-    this.emptyFormValues();
+  openEditResourceModal(resource: ResourceResponse): void {
+    this.resourceModalData = Object.assign(
+      {},
+      {
+        id: resource.id,
+        isEdit: true,
+        resourceName: resource.name,
+        resourceAddress: resource.address,
+        isDefault: resource.isDefault,
+      }
+    );
     this.requestUpdate();
+    showComponent("#resource-modal", this.shadowRoot);
   }
 
-  updateResourceDialog(): TemplateResult {
-    const isCreate: boolean = isEmpty(this.newName) && isEmpty(this.newAddress);
-
-    return html`
-      <mwc-dialog id="register" heading="Update/Register a Resource?">
-        <mwc-textfield
-          @change=${this.handleNameChange}
-          value=${this.newName}
-          id="newResourceName"
-          label="name"
-          helper="Name of device"
-        ></mwc-textfield>
-        <mwc-textfield
-          @change=${this.handleAddressChange}
-          value=${this.newAddress}
-          id="newResourceAddress"
-          label="address"
-          helper="Address on the network"
-        ></mwc-textfield>
-        <mwc-formfield label="Default">
-          <mwc-checkbox
-            @change=${this.handleIsDefaultChange}
-            ?checked=${this.newIsDefault}
-            value="true"
-            id="newResourceIsDefault"
-            helper="Default Resource for New Users"
-          ></mwc-checkbox>
-        </mwc-formfield>
-
-        <mwc-button
-          @click=${() => this.handleSubmitResource(isCreate)}
-          slot="primaryAction"
-          dialogAction="ok"
-        >
-          Submit
-        </mwc-button>
-        <mwc-button
-          slot="secondaryAction"
-          dialogAction="cancel"
-          @click=${this.emptyFormValuesOnClosed}
-        >
-          Cancel
-        </mwc-button>
-      </mwc-dialog>
-    `;
+  refreshResources(): void {
+    this.getResources();
+    this.requestUpdate();
   }
 
   displayResources(): TemplateResult {
@@ -252,7 +148,10 @@ export class ResourceManager extends LitElement {
             <td>${x.name} ${x.isDefault ? "(default)" : ""}</td>
             <td>${x.address}</td>
             <td>
-              <mwc-button @click="${() => this.handleEdit(x)}" label="Edit">
+              <mwc-button
+                @click="${() => this.openEditResourceModal(x)}"
+                label="Edit"
+              >
               </mwc-button>
               <mwc-button
                 class="remove"
@@ -275,7 +174,7 @@ export class ResourceManager extends LitElement {
           <div class="button-container">
             <mwc-button
               class="create-resource"
-              @click=${this.openRegisterResource}
+              @click=${this.openRegisterResourceModal}
               dense
               unelevated
               label="create"
@@ -293,6 +192,7 @@ export class ResourceManager extends LitElement {
       </div>
       <resource-modal
         id="resource-modal"
+        @updated=${this.refreshResources}
         .resourceModalData=${this.resourceModalData}
       >
       </resource-modal>

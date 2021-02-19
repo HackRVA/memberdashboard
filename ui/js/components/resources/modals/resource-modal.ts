@@ -49,6 +49,14 @@ export class ResourceModal extends LitElement {
     );
   }
 
+  updated(): void {
+    if (this.resourceModalData?.isEdit) {
+      this.resourceNameFieldTemplate.value = this.resourceModalData.resourceName;
+      this.resourceAddressFieldTemplate.value = this.resourceModalData.resourceAddress;
+      this.defaultResourceTemplate.checked = this.resourceModalData.isDefault;
+    }
+  }
+
   show(): void {
     this.resourceModalTemplate.show();
   }
@@ -63,10 +71,24 @@ export class ResourceModal extends LitElement {
     this.handleRegisterResource(request);
   }
 
+  trytoUpdateResource(): void {
+    const request: UpdateResourceRequest = {
+      id: this.resourceModalData.id,
+      name: this.resourceNameFieldTemplate.value,
+      address: this.resourceAddressFieldTemplate.value,
+      isDefault: this.defaultResourceTemplate.checked,
+    };
+
+    this.handleUpdateResource(request);
+  }
+
   handleRegisterResource(request: RegisterResourceRequest): void {
     this.resourceService.register(request).subscribe({
       complete: () => {
+        this.displayToastMsg("Success");
         this.emptyFormField();
+        this.fireUpdatedEvent();
+        this.resourceModalTemplate.close();
       },
     });
   }
@@ -74,16 +96,30 @@ export class ResourceModal extends LitElement {
   handleUpdateResource(request: UpdateResourceRequest): void {
     this.resourceService.updateResource(request).subscribe({
       complete: () => {
-        console.log("hi");
+        this.displayToastMsg("Success");
+        this.emptyFormField();
+        this.fireUpdatedEvent();
+        this.resourceModalTemplate.close();
       },
     });
   }
 
+  fireUpdatedEvent(): void {
+    const updatedEvent = new CustomEvent("updated");
+    this.dispatchEvent(updatedEvent);
+  }
+
   handleSubmit(): void {
     if (this.isValid()) {
-      this.trytoRegisterResource();
+      if (this.resourceModalData.isEdit) {
+        this.trytoUpdateResource();
+      } else {
+        this.trytoRegisterResource();
+      }
     } else {
-      console.error("hrmmmm");
+      this.displayToastMsg(
+        "Hrmmm, are you sure everything in the form is correct?"
+      );
     }
   }
 
