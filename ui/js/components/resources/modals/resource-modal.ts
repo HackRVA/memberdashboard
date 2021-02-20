@@ -61,7 +61,7 @@ export class ResourceModal extends LitElement {
     this.resourceModalTemplate.show();
   }
 
-  trytoRegisterResource(): void {
+  private trytoRegisterResource(): void {
     const request: RegisterResourceRequest = {
       name: this.resourceNameFieldTemplate.value,
       address: this.resourceAddressFieldTemplate.value,
@@ -71,7 +71,7 @@ export class ResourceModal extends LitElement {
     this.handleRegisterResource(request);
   }
 
-  trytoUpdateResource(): void {
+  private trytoUpdateResource(): void {
     const request: UpdateResourceRequest = {
       id: this.resourceModalData.id,
       name: this.resourceNameFieldTemplate.value,
@@ -82,7 +82,7 @@ export class ResourceModal extends LitElement {
     this.handleUpdateResource(request);
   }
 
-  handleRegisterResource(request: RegisterResourceRequest): void {
+  private handleRegisterResource(request: RegisterResourceRequest): void {
     this.resourceService.register(request).subscribe({
       complete: () => {
         this.displayToastMsg("Success");
@@ -93,7 +93,7 @@ export class ResourceModal extends LitElement {
     });
   }
 
-  handleUpdateResource(request: UpdateResourceRequest): void {
+  private handleUpdateResource(request: UpdateResourceRequest): void {
     this.resourceService.updateResource(request).subscribe({
       complete: () => {
         this.displayToastMsg("Success");
@@ -104,12 +104,12 @@ export class ResourceModal extends LitElement {
     });
   }
 
-  fireUpdatedEvent(): void {
+  private fireUpdatedEvent(): void {
     const updatedEvent = new CustomEvent("updated");
     this.dispatchEvent(updatedEvent);
   }
 
-  handleSubmit(): void {
+  private handleSubmit(): void {
     if (this.isValid()) {
       if (this.resourceModalData.isEdit) {
         this.trytoUpdateResource();
@@ -123,23 +123,23 @@ export class ResourceModal extends LitElement {
     }
   }
 
-  displayToastMsg(message: string): void {
+  private displayToastMsg(message: string): void {
     this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
     this.requestUpdate();
     showComponent("#toast-msg", this.shadowRoot);
   }
 
-  emptyFormField(): void {
+  private emptyFormField(): void {
     this.resourceNameFieldTemplate.value = "";
     this.resourceAddressFieldTemplate.value = "";
     this.defaultResourceTemplate.checked = false;
   }
 
-  handleClosed(): void {
+  private handleClosed(): void {
     this.emptyFormField();
   }
 
-  isValid(): boolean {
+  private isValid(): boolean {
     return (
       this.resourceNameFieldTemplate.validity.valid &&
       this.resourceAddressFieldTemplate.validity.valid

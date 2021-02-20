@@ -20,23 +20,18 @@ import "@material/mwc-checkbox";
 import "../shared/card-element";
 import { ResourceService } from "../../service";
 import { showComponent } from "../../function";
-import {
-  ResourceResponse,
-  RemoveResourceRequest,
-  ResourceModalData,
-} from "./types";
+import { ResourceResponse, ResourceModalData } from "./types";
 import "./modals";
 
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
   resourceService: ResourceService = new ResourceService();
   resources: Array<ResourceResponse> = [];
-  newAddress: string = "";
-  newName: string = "";
-  newID: string = "";
-  newIsDefault: boolean = false;
 
   resourceModalData: ResourceModalData;
+
+  resourceName: string;
+  resourceId: string;
 
   static get styles(): CSSResult {
     return css`
@@ -92,16 +87,11 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  handleDelete(resource: ResourceResponse): void {
-    const request: RemoveResourceRequest = {
-      id: resource.id,
-    };
-    this.resourceService.deleteResource(request).subscribe({
-      complete: () => {
-        this.getResources();
-        this.requestUpdate();
-      },
-    });
+  openResourceWarningModal(resource: ResourceResponse): void {
+    this.resourceName = resource.name;
+    this.resourceId = resource.id;
+    this.requestUpdate();
+    showComponent("#resource-warning-modal", this.shadowRoot);
   }
 
   openRegisterResourceModal(): void {
@@ -155,7 +145,7 @@ export class ResourceManager extends LitElement {
               </mwc-button>
               <mwc-button
                 class="remove"
-                @click="${() => this.handleDelete(x)}"
+                @click="${() => this.openResourceWarningModal(x)}"
                 label="Delete"
               >
               </mwc-button>
@@ -196,6 +186,13 @@ export class ResourceManager extends LitElement {
         .resourceModalData=${this.resourceModalData}
       >
       </resource-modal>
+      <warning-modal
+        id="resource-warning-modal"
+        .resourceName=${this.resourceName}
+        .resourceId=${this.resourceId}
+        @updated=${this.refreshResources}
+      >
+      </warning-modal>
     `;
   }
 }
