@@ -1,4 +1,4 @@
-import { ResourceService } from "./../../../service";
+// lit element
 import {
   customElement,
   html,
@@ -7,14 +7,18 @@ import {
   TemplateResult,
 } from "lit-element";
 
+// material
+import { Dialog } from "@material/mwc-dialog";
 import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/mwc-textfield";
-import { Dialog } from "@material/mwc-dialog";
+
+// membership
+import { ResourceService } from "./../../../service";
 import { RemoveResourceRequest } from "./../types";
-import "../../shared/toast-msg";
 import { ToastMessage } from "../../shared/types";
 import { showComponent } from "../../../function";
+import "../../shared/toast-msg";
 
 @customElement("warning-modal")
 export class WarningModal extends LitElement {

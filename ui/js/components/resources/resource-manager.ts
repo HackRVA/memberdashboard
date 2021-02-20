@@ -5,7 +5,6 @@ import {
   customElement,
   TemplateResult,
   CSSResult,
-  css,
 } from "lit-element";
 
 // material
@@ -21,6 +20,7 @@ import "../shared/card-element";
 import { ResourceService } from "../../service";
 import { showComponent } from "../../function";
 import { ResourceResponse, ResourceModalData } from "./types";
+import { resourceManagerStyles } from "./styles/resource-manager.styles";
 import "./modals";
 
 @customElement("resource-manager")
@@ -33,41 +33,8 @@ export class ResourceManager extends LitElement {
   resourceName: string;
   resourceId: string;
 
-  static get styles(): CSSResult {
-    return css`
-      .resource-container {
-        display: grid;
-        align-items: center;
-        margin: 44px;
-      }
-
-      .resource-header {
-        display: inherit;
-        grid-template-columns: 1fr 1fr;
-        align-items: center;
-      }
-
-      .button-container {
-        justify-self: end;
-      }
-
-      td,
-      th {
-        text-align: left;
-        padding: 8px;
-        font-size: 20px;
-        border: 1px solid #e1e1e1;
-        max-width: 320px;
-      }
-      table {
-        margin-top: 24px;
-        border-spacing: 0px;
-      }
-
-      .remove {
-        --mdc-theme-primary: #e9437a;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [resourceManagerStyles];
   }
 
   firstUpdated(): void {

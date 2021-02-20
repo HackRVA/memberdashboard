@@ -1,5 +1,4 @@
-import { ResourceService } from "./../../../service";
-import { TextField } from "@material/mwc-textfield/mwc-textfield";
+// lit element
 import {
   customElement,
   html,
@@ -7,12 +6,18 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+
+// material
 import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/mwc-textfield";
 import "@material/mwc-checkbox";
+import { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { Dialog } from "@material/mwc-dialog";
 import { Checkbox } from "@material/mwc-checkbox";
+
+// membership
+import { ResourceService } from "./../../../service";
 import {
   RegisterResourceRequest,
   UpdateResourceRequest,
