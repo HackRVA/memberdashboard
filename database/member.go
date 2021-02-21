@@ -15,7 +15,8 @@ LEFT JOIN membership.resources
 ON membership.resources.id = membership.member_resource.resource_id
 WHERE member_id = membership.members.id
 ) as resources
-FROM membership.members;
+FROM membership.members
+ORDER BY name;
 `
 const getMemberByEmailQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
 ARRAY(

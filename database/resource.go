@@ -10,7 +10,10 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const getResourceQuery = `SELECT id, description, device_identifier, is_default FROM membership.resources;`
+const getResourceQuery = `SELECT id, description, device_identifier, is_default 
+FROM membership.resources
+ORDER BY description;`
+
 const insertResourceQuery = `INSERT INTO membership.resources(
 	description, device_identifier, is_default)
 	VALUES ($1, $2, $3)
