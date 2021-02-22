@@ -72,11 +72,6 @@ export class MemberDashboard extends LitElement {
   getUser(): void {
     this.userService.getUser().subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          return console.error(
-            (result as { error: boolean; message: any }).message
-          );
-        }
         const { email } = result as UserProfile;
         this.email = email;
         this.requestUpdate();
