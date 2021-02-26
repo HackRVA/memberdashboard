@@ -22,8 +22,8 @@ const resourceStatusCheckInterval = 1
 //  We want certain tasks to happen on a regular basis
 //  The scheduler will make sure that happens
 func Setup() {
-	scheduleTask(evaluateMemberStatusInterval*time.Hour, checkMemberStatus, checkMemberStatus)
 	scheduleTask(checkPaymentsInterval*time.Hour, payments.GetPayments, payments.GetPayments)
+	scheduleTask(evaluateMemberStatusInterval*time.Hour, checkMemberStatus, checkMemberStatus)
 	scheduleTask(resourceStatusCheckInterval*time.Hour, checkResourceInit, checkResourceTick)
 }
 
