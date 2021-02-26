@@ -32,6 +32,7 @@ export class HTTPService {
       })
     );
   }
+
   post(
     endpoint: string,
     options?: any
@@ -62,6 +63,7 @@ export class HTTPService {
       })
     );
   }
+
   delete(
     endpoint: string,
     options?: any
@@ -92,6 +94,7 @@ export class HTTPService {
       })
     );
   }
+
   put(
     endpoint: string,
     options?: any

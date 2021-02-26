@@ -99,10 +99,14 @@ export class AddMemberToResourceModal extends LitElement {
   addMemberToResource(request: AddMemberResourceRequest): void {
     this.resourceService.addMemberToResource(request).subscribe({
       complete: () => {
-        const updatedEvent = new CustomEvent("updated");
-        this.dispatchEvent(updatedEvent);
+        this.fireUpdatedEvent();
       },
     });
+  }
+
+  fireUpdatedEvent(): void {
+    const updatedEvent = new CustomEvent("updated");
+    this.dispatchEvent(updatedEvent);
   }
 
   displayToastMsg(message: string): void {

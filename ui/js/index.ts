@@ -65,10 +65,6 @@ export class MemberDashboard extends LitElement {
     Router.go("/resources");
   }
 
-  goToStatus(): void {
-    Router.go("/status");
-  }
-
   firstUpdated(): void {
     this.getUser();
   }
@@ -76,11 +72,6 @@ export class MemberDashboard extends LitElement {
   getUser(): void {
     this.userService.getUser().subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          return console.error(
-            (result as { error: boolean; message: any }).message
-          );
-        }
         const { email } = result as UserProfile;
         this.email = email;
         this.requestUpdate();
@@ -128,8 +119,6 @@ export class MemberDashboard extends LitElement {
         return TabIndex.members;
       case "/resources":
         return TabIndex.resources;
-      case "/status":
-        return TabIndex.status;
       default:
         return -1;
     }
@@ -149,7 +138,6 @@ export class MemberDashboard extends LitElement {
           <mwc-tab label="Payments" @click=${this.goToPayments}></mwc-tab>
           <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>
           <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
-          <mwc-tab label="Status" @click=${this.goToStatus}></mwc-tab>
         </mwc-tab-bar>
 
         <slot> </slot>

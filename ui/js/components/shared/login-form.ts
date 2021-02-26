@@ -64,16 +64,15 @@ export class LoginForm extends LitElement {
       email: this.emailFieldTemplate?.value,
       password: this.passwordFieldTemplate?.value,
     };
+
     this.userService.login(opts).subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          return console.error(
-            (result as { error: boolean; message: any }).message
-          );
-        }
         const { token } = result as Jwt;
         localStorage.setItem("jwt", token);
         window.location.reload();
+      },
+      error: () => {
+        this.displayToastMsg("Email and/or password invalid");
       },
     });
   }

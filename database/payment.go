@@ -15,7 +15,8 @@ const membershipMonth = 31
 
 const getPaymentsQuery = `
 SELECT id, date, amount
-FROM membership.payments;`
+FROM membership.payments
+ORDER BY date;`
 
 const insertPaymentQuery = `
 INSERT INTO membership.payments(

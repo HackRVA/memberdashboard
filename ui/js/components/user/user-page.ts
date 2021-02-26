@@ -2,7 +2,6 @@
 import {
   LitElement,
   html,
-  css,
   customElement,
   TemplateResult,
   CSSResult,
@@ -18,6 +17,7 @@ import "@material/mwc-textfield";
 import { UserProfile } from "./types";
 import { showComponent } from "../../function";
 import { MemberService, UserService } from "../../service";
+import { userPageStyles } from "./styles";
 import "../shared/card-element";
 import "../shared/rfid-modal";
 
@@ -29,31 +29,13 @@ export class UserPage extends LitElement {
   userService: UserService = new UserService();
   memberService: MemberService = new MemberService();
 
-  static get styles(): CSSResult {
-    return css`
-      .center {
-        text-align: center;
-      }
-
-      .email {
-        font-size: 20px;
-        line-height: 32px;
-      }
-
-      div {
-        margin-bottom: 24px;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [userPageStyles];
   }
 
   firstUpdated(): void {
     this.userService.getUser().subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          return console.error(
-            (result as { error: boolean; message: any }).message
-          );
-        }
         const { email } = result as UserProfile;
         this.email = email;
         this.requestUpdate();
@@ -67,30 +49,25 @@ export class UserPage extends LitElement {
 
   render(): TemplateResult {
     return html`
-    <div>
-      <card-element>
-        <h1> User <h1>
-        <div class="center">
-          <div> 
-            <span class="email">${this.email} </span>
-          </div>
-          <div> 
-            <mwc-button 
-            class="rfid-button" 
-            label="Assign rfid" 
-            dense
-            unelevated
-            @click=${this.openRFIDModal}> 
-            </mvc-button>
-          </div> 
+    <card-element>
+      <h1> User <h1>
+      <div class="center">
+        <div> 
+          <span class="email">${this.email} </span>
         </div>
-        </card-element> 
-        <rfid-modal 
-          id="rfid-modal"
-          .email=${this.email}
-          >
-        </rfid-modal>
-    </div> 
+        <div> 
+          <mwc-button 
+          class="rfid-button" 
+          label="Assign rfid" 
+          dense
+          unelevated
+          @click=${this.openRFIDModal}> 
+          </mvc-button>
+        </div> 
+      </div>
+    </card-element> 
+    <rfid-modal id="rfid-modal" .email=${this.email}>
+    </rfid-modal>
     `;
   }
 }

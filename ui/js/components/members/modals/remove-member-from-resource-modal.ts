@@ -75,10 +75,14 @@ export class RemoveMemberFromResourceModal extends LitElement {
   removeMemberFromResource(request: RemoveMemberResourceRequest): void {
     this.resourceService.removeMemberFromResource(request).subscribe({
       complete: () => {
-        const updatedEvent = new CustomEvent("updated");
-        this.dispatchEvent(updatedEvent);
+        this.fireUpdatedEvent();
       },
     });
+  }
+
+  fireUpdatedEvent(): void {
+    const updatedEvent = new CustomEvent("updated");
+    this.dispatchEvent(updatedEvent);
   }
 
   handleClosed(event: CustomEvent): void {

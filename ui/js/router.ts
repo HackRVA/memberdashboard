@@ -43,13 +43,6 @@ const routes: Route[] = [
           await import("./components/payments/payments-page");
         },
       },
-      {
-        path: "status",
-        component: "status-page",
-        action: async () => {
-          await import("./components/status/status-page");
-        },
-      },
     ],
   },
 ];

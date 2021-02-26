@@ -4,5 +4,4 @@ export enum TabIndex {
   payments = 2,
   members = 3,
   resources = 4,
-  status = 5,
 }
