@@ -99,18 +99,18 @@ func (db *Database) GetPayments() ([]Payment, error) {
 }
 
 // AddPayment adds a member to the database
-func (db *Database) AddPayment(payment Payment) (Payment, error) {
+func (db *Database) AddPayment(payment Payment) error {
 	var p Payment
 	var amount int64
 
 	err := db.pool.QueryRow(context.Background(), insertPaymentQuery, payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
 	if err != nil {
-		return p, fmt.Errorf("conn.Query failed: %v", err)
+		return fmt.Errorf("conn.Query failed: %v", err)
 	}
 
 	p.Amount = *money.New(amount*100, "USD")
 
-	return p, err
+	return err
 }
 
 // EvaluateMemberStatus look in the db and determine the members' last payment date
@@ -128,7 +128,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
 
-	log.Debugf("days since payment: %d payment amount: %d", daysSincePayment, amount)
+	// log.Debugf("days since payment: %d payment amount: %d", daysSincePayment, amount)
 
 	if daysSincePayment > memberGracePeriod { // revoke
 		// sendRevokedEmail(email)
