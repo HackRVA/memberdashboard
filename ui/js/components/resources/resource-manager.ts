@@ -99,7 +99,7 @@ export class ResourceManager extends LitElement {
 
   displayResources(): TemplateResult {
     return html`
-      ${this.resources.map((x: ResourceResponse) => {
+      ${this.resources?.map((x: ResourceResponse) => {
         return html`
           <tr>
             <td>${x.name} ${x.isDefault ? "(default)" : ""}</td>

@@ -136,7 +136,7 @@ export class AddMemberToResourceModal extends LitElement {
           readonly
         ></mwc-textfield>
         <mwc-select label="Resources">
-          ${this.resources.map((x: ResourceResponse) => {
+          ${this.resources?.map((x: ResourceResponse) => {
             return html`
               <mwc-list-item value=${x.id}> ${x.name} </mwc-list-item>
             `;
