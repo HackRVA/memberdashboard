@@ -14,13 +14,24 @@ import (
 type memberResourceRelation struct {
 	// ID of the Resource
 	// required: true
-	// example: 0
+	// example: string
 	ID string `json:"resourceID"`
 	// Email - this will be the member's email address
 	// Name of the Resource
 	// required: true
 	// example: email
 	Email string `json:"email"`
+}
+
+type membersResourceRelation struct {
+	// ID of the Resource
+	// required: true
+	// example: string
+	ID string `json:"resourceID"`
+	// Emails - list of member's email address
+	// required: true
+	// example: []
+	Emails []string `json:"emails"`	
 }
 
 // swagger:parameters updateResourceRequest
@@ -47,6 +58,12 @@ type resourceAddMemberRequest struct {
 	Body memberResourceRelation
 }
 
+// swagger:parameters resourceBulkMemberRequest
+type resourceBulkMemberRequest struct {
+	// in: body
+	Body membersResourceRelation
+}
+
 // swagger:response getResourceResponse
 type getResourceResponse struct {
 	// in: body
@@ -63,6 +80,12 @@ type postResourceResponse struct {
 type addMemberToResourceResponse struct {
 	// in: body
 	Body database.MemberResourceRelation
+}
+
+// swagger:response addMulitpleMembersToResourceResponse
+type addMulitpleMembersToResourceResponse struct {
+	// in: body
+	Body []database.MemberResourceRelation
 }
 
 // swagger:response getResourceStatusResponse
@@ -173,6 +196,28 @@ func (rs resourceAPI) addMember(w http.ResponseWriter, req *http.Request) {
 	}
 
 	resourcemanager.UpdateResourceACL(resource)
+}
+
+func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *http.Request) {
+	var membersResource membersResourceRelation
+
+	err := json.NewDecoder(req.Body).Decode(&membersResource)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return;
+	}
+
+	resource, err := rs.db.AddMultipleMembersToResource(membersResource.Emails, membersResource.ID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return;
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(resource)
+	w.Write(j)
 }
 
 func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {

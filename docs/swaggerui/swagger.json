@@ -389,6 +389,43 @@
         }
       }
     },
+    "/api/resource/member/bulk": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "summary": "Adds multple members to a resource.",
+        "operationId": "resourceBulkMemberRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/membersResourceRelation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/addMulitpleMembersToResourceResponse"
+          }
+        }
+      }
+    },
     "/api/resource/register": {
       "post": {
         "security": [
@@ -853,7 +890,32 @@
           "description": "ID of the Resource",
           "type": "string",
           "x-go-name": "ID",
-          "example": "0"
+          "example": "string"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
+    "membersResourceRelation": {
+      "type": "object",
+      "required": [
+        "resourceID",
+        "emails"
+      ],
+      "properties": {
+        "emails": {
+          "description": "Emails - list of member's email address",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "Emails",
+          "example": []
+        },
+        "resourceID": {
+          "description": "ID of the Resource",
+          "type": "string",
+          "x-go-name": "ID",
+          "example": "string"
         }
       },
       "x-go-package": "memberserver/api"
@@ -877,6 +939,15 @@
       "description": "",
       "schema": {
         "$ref": "#/definitions/MemberResourceRelation"
+      }
+    },
+    "addMulitpleMembersToResourceResponse": {
+      "description": "",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/MemberResourceRelation"
+        }
       }
     },
     "endpointSuccessResponse": {

@@ -245,6 +245,40 @@ func (db *Database) AddUserToResource(email string, resourceID string) (MemberRe
 	return memberResource, nil
 }
 
+func (db *Database) AddMultipleMembersToResource(emails []string, resourceID string) ([]MemberResourceRelation, error) {
+
+	var membersResource []MemberResourceRelation;
+
+	resource, err := db.GetResourceByID(resourceID);
+
+	if err != nil {
+		return membersResource, err
+	}
+
+	for i := 0; i < len(emails); i++ {
+		member, err := db.GetMemberByEmail(emails[i]);
+
+		if err != nil {
+			return membersResource, err
+		}
+		
+		var memberResource MemberResourceRelation
+		memberResource.MemberID = member.ID
+		memberResource.ResourceID = resource.ID
+
+		row := db.pool.QueryRow(context.Background(), insertMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID)
+		if row == pgx.ErrNoRows {
+			return membersResource, errors.New("no rows affected")
+		}
+
+		membersResource = append(membersResource, memberResource)
+
+	}
+
+	return membersResource, nil;
+
+}
+
 // AddUserToDefaultResources - grants a user access to default resources - untested
 func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRelation, error) {
 
