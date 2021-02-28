@@ -64,15 +64,15 @@ WHERE resource_id = $1 AND member_tier_id > 1;`
 type Resource struct {
 	// UniqueID of the Resource
 	// required: true
-	// example: 0
+	// example: string
 	ID string `json:"id"`
 	// Name of the Resource
 	// required: true
-	// example: name
+	// example: string
 	Name string `json:"name"`
 	// Address of the Resource. i.e. where it can be found on the network
 	// required: true
-	// example: address
+	// example: string
 	Address string `json:"address"`
     // Default state of the Resource
     // required: true
@@ -84,7 +84,7 @@ type Resource struct {
 type ResourceDeleteRequest struct {
 	// UniqueID of the Resource
 	// required: true
-	// example: ""
+	// example: string
 	ID string `json:"id"`
 }
 
@@ -92,15 +92,15 @@ type ResourceDeleteRequest struct {
 type ResourceRequest struct {
 	// UniqueID of the Resource
 	// required: true
-	// example: 0
+	// example: string
 	ID string `json:"id"`
 	// Name of the Resource
 	// required: true
-	// example: name
+	// example: string
 	Name string `json:"name"`
 	// Address of the Resource. i.e. where it can be found on the network
 	// required: true
-	// example: address
+	// example: string
 	Address string `json:"address"`
     // Default state of the Resource
     // required: true
@@ -112,11 +112,11 @@ type ResourceRequest struct {
 type RegisterResourceRequest struct {
 	// Name of the Resource
 	// required: true
-	// example: name
+	// example: string
 	Name string `json:"name"`
 	// Address of the Resource. i.e. where it can be found on the network
 	// required: true
-	// example: address
+	// example: string
 	Address string `json:"address"`
     // Default state of the Resource
     // required: false

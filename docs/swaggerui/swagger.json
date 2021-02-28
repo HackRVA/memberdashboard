@@ -560,19 +560,21 @@
       "description": "Credentials Create a struct that models the structure of a user, both in the request body, and in the DB",
       "type": "object",
       "required": [
-        "password"
+        "password",
+        "email"
       ],
       "properties": {
         "email": {
           "description": "Email - the users email",
           "type": "string",
-          "x-go-name": "Email"
+          "x-go-name": "Email",
+          "example": "string"
         },
         "password": {
           "description": "Password - the user's password",
           "type": "string",
           "x-go-name": "Password",
-          "example": "somepassword"
+          "example": "string"
         }
       },
       "x-go-package": "memberserver/database"
@@ -689,7 +691,7 @@
           "description": "Address of the Resource. i.e. where it can be found on the network",
           "type": "string",
           "x-go-name": "Address",
-          "example": "address"
+          "example": "string"
         },
         "isDefault": {
           "description": "Default state of the Resource",
@@ -701,7 +703,7 @@
           "description": "Name of the Resource",
           "type": "string",
           "x-go-name": "Name",
-          "example": "name"
+          "example": "string"
         }
       },
       "x-go-package": "memberserver/database"
@@ -720,13 +722,13 @@
           "description": "Address of the Resource. i.e. where it can be found on the network",
           "type": "string",
           "x-go-name": "Address",
-          "example": "address"
+          "example": "string"
         },
         "id": {
           "description": "UniqueID of the Resource",
           "type": "string",
           "x-go-name": "ID",
-          "example": "0"
+          "example": "string"
         },
         "isDefault": {
           "description": "Default state of the Resource",
@@ -738,7 +740,7 @@
           "description": "Name of the Resource",
           "type": "string",
           "x-go-name": "Name",
-          "example": "name"
+          "example": "string"
         }
       },
       "x-go-package": "memberserver/database"
@@ -754,7 +756,7 @@
           "description": "UniqueID of the Resource",
           "type": "string",
           "x-go-name": "ID",
-          "example": "\"\""
+          "example": "string"
         }
       },
       "x-go-package": "memberserver/database"
@@ -773,13 +775,13 @@
           "description": "Address of the Resource. i.e. where it can be found on the network",
           "type": "string",
           "x-go-name": "Address",
-          "example": "address"
+          "example": "string"
         },
         "id": {
           "description": "UniqueID of the Resource",
           "type": "string",
           "x-go-name": "ID",
-          "example": "0"
+          "example": "string"
         },
         "isDefault": {
           "description": "Default state of the Resource",
@@ -791,7 +793,7 @@
           "description": "Name of the Resource",
           "type": "string",
           "x-go-name": "Name",
-          "example": "name"
+          "example": "string"
         }
       },
       "x-go-package": "memberserver/database"
@@ -820,7 +822,7 @@
           "description": "Email - user's Email",
           "type": "string",
           "x-go-name": "Email",
-          "example": "john@example.com"
+          "example": "string"
         }
       },
       "x-go-package": "memberserver/database"
