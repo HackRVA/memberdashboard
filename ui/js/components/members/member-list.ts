@@ -204,7 +204,8 @@ export class MemberList extends LitElement {
       </card-element>
       <add-members-to-resource-modal
         id="add-members-to-resource-modal"
-        .emails=${this.memberEmails}>
+        .emails=${this.memberEmails}
+        @updated=${this.refreshMemberList}>
       </add-members-to-resource-modal>
       <add-member-to-resource-modal 
         id="add-member-to-resource-modal"

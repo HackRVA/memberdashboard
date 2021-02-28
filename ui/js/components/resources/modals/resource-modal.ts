@@ -66,7 +66,7 @@ export class ResourceModal extends LitElement {
     this.resourceModalTemplate.show();
   }
 
-  private trytoRegisterResource(): void {
+  private tryToRegisterResource(): void {
     const request: RegisterResourceRequest = {
       name: this.resourceNameFieldTemplate.value,
       address: this.resourceAddressFieldTemplate.value,
@@ -76,7 +76,7 @@ export class ResourceModal extends LitElement {
     this.handleRegisterResource(request);
   }
 
-  private trytoUpdateResource(): void {
+  private tryToUpdateResource(): void {
     const request: UpdateResourceRequest = {
       id: this.resourceModalData.id,
       name: this.resourceNameFieldTemplate.value,
@@ -117,9 +117,9 @@ export class ResourceModal extends LitElement {
   private handleSubmit(): void {
     if (this.isValid()) {
       if (this.resourceModalData.isEdit) {
-        this.trytoUpdateResource();
+        this.tryToUpdateResource();
       } else {
-        this.trytoRegisterResource();
+        this.tryToRegisterResource();
       }
     } else {
       this.displayToastMsg(
