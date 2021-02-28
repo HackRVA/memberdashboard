@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 
 // material
+import { Checkbox } from "@material/mwc-checkbox";
 import "@material/mwc-button";
 import "@material/mwc-dialog";
 import "@material/mwc-select";
@@ -16,6 +17,7 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-snackbar";
 import "@material/mwc-textfield";
 import "@material/mwc-checkbox";
+import "@material/mwc-formfield";
 
 // membership
 import { MemberLevel, MemberResource, MemberResponse } from "./types";
@@ -41,6 +43,9 @@ export class MemberList extends LitElement {
 
   memberEmails: string[] = [];
 
+  membersCheckBoxTemplate: NodeListOf<Checkbox>;
+  allMembersCheckBoxTemplate: Checkbox;
+
   memberService: MemberService = new MemberService();
   resourceService: ResourceService = new ResourceService();
 
@@ -63,6 +68,18 @@ export class MemberList extends LitElement {
       default:
         return "No member status found";
     }
+  }
+
+  firstUpdated(): void {
+    this.allMembersCheckBoxTemplate = this.shadowRoot.querySelector(
+      "#all-members"
+    );
+  }
+
+  updated(): void {
+    this.membersCheckBoxTemplate = this.shadowRoot.querySelectorAll(
+      "mwc-checkbox"
+    );
   }
 
   getMembers(): void {
@@ -103,7 +120,9 @@ export class MemberList extends LitElement {
     showComponent("#rfid-modal", this.shadowRoot);
   }
 
-  appendEmail(event: Event, email: string): void {
+  handleEmail(event: Event, email: string): void {
+    this.allMembersCheckBoxTemplate.checked = false;
+
     const checked: boolean = (event.target as EventTarget & {
       checked: boolean;
     }).checked;
@@ -115,6 +134,26 @@ export class MemberList extends LitElement {
     }
   }
 
+  handleAllEmails(event: Event): void {
+    const checked: boolean = (event.target as EventTarget & {
+      checked: boolean;
+    }).checked;
+
+    if (checked) {
+      this.memberEmails = this.members.map((x: MemberResponse) => x.email);
+      this.setAllCheckbox(true);
+    } else {
+      this.memberEmails = [];
+      this.setAllCheckbox(false);
+    }
+  }
+
+  setAllCheckbox(checked: boolean): void {
+    this.membersCheckBoxTemplate.forEach((x: Checkbox) => {
+      x.checked = checked;
+    });
+  }
+
   displayMembersTable(): TemplateResult {
     return html`
       ${this.members.map((x: MemberResponse) => {
@@ -122,7 +161,7 @@ export class MemberList extends LitElement {
           <tr>
             <td class="name">
             <mwc-checkbox @change=${(event: Event) =>
-              this.appendEmail(event, x.email)}></mwc-checkbox> 
+              this.handleEmail(event, x.email)}></mwc-checkbox> 
             <span>${x.name}</span>
             </td>
             <td>${x.email}</td>
@@ -182,13 +221,20 @@ export class MemberList extends LitElement {
               @click=${this.openRFIDModal}> 
             </mvc-button>
           </div>
-          <mwc-button
-            class="add-resource-to-members"
-            unelevated
-            dense
-            label="Add resource to members"
-            @click=${this.openAddMembersToResourceModal}>
-          </mwc-button>
+          <div class="all-members-action-container">
+            <mwc-button
+              class="add-resource-to-members"
+              unelevated
+              dense
+              label="Add resource to members"
+              @click=${this.openAddMembersToResourceModal}>
+            </mwc-button>
+            <mwc-formfield label="All members" class="all-members-checkbox">
+              <mwc-checkbox id="all-members" @change=${
+                this.handleAllEmails
+              }></mwc-checkbox>
+            </mwc-formfield>
+          </div>
           <table>
             <tr>
               <th>Name</th>

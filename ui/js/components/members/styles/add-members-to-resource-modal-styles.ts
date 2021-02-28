@@ -4,6 +4,8 @@ export const addMembersToResourceModalStyles: CSSResult = css`
   .emails {
     text-align: center;
     margin-bottom: 16px;
+    max-height: 300px;
+    overflow-y: scroll;
   }
 
   mwc-dialog {

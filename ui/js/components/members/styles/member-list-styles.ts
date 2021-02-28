@@ -45,6 +45,7 @@ export const memberListStyles: CSSResult = css`
     float: right;
     margin-top: 16px;
     width: 225px;
+    margin-right: 24px;
     --mdc-typography-button-font-size: 12px;
   }
 
@@ -55,5 +56,14 @@ export const memberListStyles: CSSResult = css`
     overflow: auto;
     max-width: 320px;
     white-space: nowrap;
+  }
+
+  .all-members-action-container {
+    display: flex;
+  }
+
+  .all-members-checkbox {
+    position: relative;
+    top: 5px;
   }
 `;
