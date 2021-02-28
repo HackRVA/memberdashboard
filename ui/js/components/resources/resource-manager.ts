@@ -44,12 +44,11 @@ export class ResourceManager extends LitElement {
   getResources(): void {
     this.resourceService.getResources().subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any })?.error) {
-          console.error("some error getting resources");
-        } else {
-          this.resources = result as ResourceResponse[];
-          this.requestUpdate();
-        }
+        this.resources = result as ResourceResponse[];
+        this.requestUpdate();
+      },
+      error: () => {
+        console.error("unable to get resources");
       },
     });
   }

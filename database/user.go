@@ -12,17 +12,18 @@ import (
 type Credentials struct {
 	// Password - the user's password
 	// required: true
-	// example: somepassword
+	// example: string
 	Password string `json:"password"`
 	// Email - the users email
-	// required: false
+	// required: true
+	// example: string
 	Email string `json:"email"`
 }
 
 // UserResponse - a user object that we can send as json
 type UserResponse struct {
 	// Email - user's Email
-	// example: john@example.com
+	// example: string
 	Email string `json:"email"`
 }
 
