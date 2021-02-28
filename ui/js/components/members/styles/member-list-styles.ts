@@ -21,6 +21,10 @@ export const memberListStyles: CSSResult = css`
   .name {
     text-transform: capitalize;
   }
+  .name span {
+    position: relative;
+    bottom: 13px;
+  }
   td,
   th {
     text-align: left;
@@ -36,6 +40,14 @@ export const memberListStyles: CSSResult = css`
   .rfid-button {
     justify-self: end;
   }
+
+  .add-resource-to-members {
+    float: right;
+    margin-top: 16px;
+    width: 225px;
+    --mdc-typography-button-font-size: 12px;
+  }
+
   .remove {
     --mdc-theme-primary: #e9437a;
   }

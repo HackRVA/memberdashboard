@@ -15,6 +15,7 @@ import "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-snackbar";
 import "@material/mwc-textfield";
+import "@material/mwc-checkbox";
 
 // membership
 import { MemberLevel, MemberResource, MemberResponse } from "./types";
@@ -24,6 +25,7 @@ import { memberListStyles } from "./styles/member-list-styles";
 import "../shared/rfid-modal";
 import "./modals/add-member-to-resource-modal";
 import "./modals/remove-member-from-resource-modal";
+import "./modals/add-members-to-resource-modal";
 import "../shared/card-element";
 
 @customElement("member-list")
@@ -36,6 +38,8 @@ export class MemberList extends LitElement {
 
   memberResources: Array<MemberResource> = [];
   email: string = "";
+
+  memberEmails: string[] = [];
 
   memberService: MemberService = new MemberService();
   resourceService: ResourceService = new ResourceService();
@@ -81,6 +85,12 @@ export class MemberList extends LitElement {
     showComponent("#add-member-to-resource-modal", this.shadowRoot);
   }
 
+  openAddMembersToResourceModal(): void {
+    this.memberEmails = this.memberEmails.map((x: string) => x);
+    this.requestUpdate();
+    showComponent("#add-members-to-resource-modal", this.shadowRoot);
+  }
+
   openRemoveMemberFromResourceModal(
     email: string,
     memberResources: Array<MemberResource>
@@ -95,12 +105,28 @@ export class MemberList extends LitElement {
     showComponent("#rfid-modal", this.shadowRoot);
   }
 
+  appendEmail(event: Event, email: string): void {
+    const checked: boolean = (event.target as EventTarget & {
+      checked: boolean;
+    }).checked;
+
+    if (checked) {
+      this.memberEmails.push(email);
+    } else {
+      this.memberEmails = this.memberEmails.filter((x: string) => x !== email);
+    }
+  }
+
   displayMembersTable(): TemplateResult {
     return html`
       ${this.members.map((x: MemberResponse) => {
         return html`
           <tr>
-            <td class="name">${x.name}</td>
+            <td class="name">
+            <mwc-checkbox @change=${(event: Event) =>
+              this.appendEmail(event, x.email)}></mwc-checkbox> 
+            <span>${x.name}</span>
+            </td>
             <td>${x.email}</td>
             <td>${this.displayMemberStatus(x.memberLevel)}</td>
             <td>
@@ -158,6 +184,13 @@ export class MemberList extends LitElement {
               @click=${this.openRFIDModal}> 
             </mvc-button>
           </div>
+          <mwc-button
+            class="add-resource-to-members"
+            unelevated
+            dense
+            label="Add resource to members"
+            @click=${this.openAddMembersToResourceModal}>
+          </mwc-button>
           <table>
             <tr>
               <th>Name</th>
@@ -168,21 +201,25 @@ export class MemberList extends LitElement {
             ${this.displayMembersTable()}
           </table>
         </div>
-        <add-member-to-resource-modal 
-          id="add-member-to-resource-modal"
-          .email=${this.email}
-          @updated=${this.refreshMemberList}> 
-        </add-member-to-resource-modal>
-        <remove-member-from-resource-modal
-          id="remove-member-from-resource-modal"
-          .email=${this.email}
-          .memberResources=${this.memberResources}
-          @updated=${this.refreshMemberList}> 
-        </remove-member-from-resource-modal>
-        <rfid-modal
-          id="rfid-modal"> 
-        </rfid-modal>
       </card-element>
+      <add-members-to-resource-modal
+        id="add-members-to-resource-modal"
+        .emails=${this.memberEmails}>
+      </add-members-to-resource-modal>
+      <add-member-to-resource-modal 
+        id="add-member-to-resource-modal"
+        .email=${this.email}
+        @updated=${this.refreshMemberList}> 
+      </add-member-to-resource-modal>
+      <remove-member-from-resource-modal
+        id="remove-member-from-resource-modal"
+        .email=${this.email}
+        .memberResources=${this.memberResources}
+        @updated=${this.refreshMemberList}> 
+      </remove-member-from-resource-modal>
+      <rfid-modal
+        id="rfid-modal"> 
+      </rfid-modal>
     `;
   }
 }

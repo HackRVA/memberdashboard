@@ -25,6 +25,11 @@ export interface RemoveMemberResourceRequest {
   resourceID: string;
 }
 
+export interface BulkAddMembersToResourceRequest {
+  emails: string[];
+  resourceID: string;
+}
+
 export interface ResourceResponse {
   address: string;
   id: string;
