@@ -1,6 +1,5 @@
 // lit element
 import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -21,7 +20,9 @@ import {
   BulkAddMembersToResourceRequest,
   ResourceResponse,
 } from "../../resources/types";
-import { isEmpty } from "../../../function";
+import { isEmpty, showComponent } from "../../../function";
+import { ToastMessage } from "../../shared/types";
+import { addMembersToResourceModalStyles } from "../styles/add-members-to-resource-modal-styles";
 
 @customElement("add-members-to-resource-modal")
 export class AddMembersToResourceModal extends LitElement {
@@ -33,22 +34,10 @@ export class AddMembersToResourceModal extends LitElement {
 
   resourceService: ResourceService = new ResourceService();
   resources: ResourceResponse[] = [];
+  toastMsg: ToastMessage;
 
-  static get styles(): CSSResult {
-    return css`
-      .emails {
-        text-align: center;
-        margin-bottom: 16px;
-      }
-
-      mwc-dialog {
-        --mdc-dialog-min-width: 400px;
-      }
-
-      mwc-select {
-        width: 400px;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [addMembersToResourceModalStyles];
   }
 
   firstUpdated(): void {
@@ -70,6 +59,12 @@ export class AddMembersToResourceModal extends LitElement {
         console.error("unable to get resources");
       },
     });
+  }
+
+  displayToastMsg(message: string): void {
+    this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
+    this.requestUpdate();
+    showComponent("#toast-msg", this.shadowRoot);
   }
 
   tryToAddMembersToResource(): void {
@@ -100,7 +95,7 @@ export class AddMembersToResourceModal extends LitElement {
       this.emptyFormField();
       this.addResourceToMembersModalTemplate.close();
     } else {
-      console.error("hi");
+      this.displayToastMsg("Hrmmmmm");
     }
   }
 
@@ -152,6 +147,7 @@ export class AddMembersToResourceModal extends LitElement {
           Cancel
         </mwc-button>
       </mwc-dialog>
+      <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
 }

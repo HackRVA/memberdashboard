@@ -68,13 +68,11 @@ export class MemberList extends LitElement {
   getMembers(): void {
     this.memberService.getMembers().subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any })?.error) {
-          return console.error(
-            (result as { error: boolean; message: any }).message
-          );
-        }
         this.members = result as MemberResponse[];
         this.memberCount = this.members.length;
+      },
+      error: () => {
+        console.error("unable to get members");
       },
     });
   }

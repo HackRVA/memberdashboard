@@ -40,6 +40,12 @@ export class RFIDModal extends LitElement {
     this.rfidFieldTemplate = this.shadowRoot?.querySelector("#rfid");
   }
 
+  updated(): void {
+    if (this.email) {
+      this.emailFieldTemplate.value = this.email;
+    }
+  }
+
   show(): void {
     this.rfidModalTemplate?.show();
   }
@@ -107,7 +113,6 @@ export class RFIDModal extends LitElement {
           type="email"
           label="email"
           helper="email"
-          value=${this.email}
           id="email"
         ></mwc-textfield>
         <mwc-textfield
