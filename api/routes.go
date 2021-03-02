@@ -199,24 +199,6 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: postResourceResponse
 	rr.HandleFunc("/resource/register", api.resource.register).Methods(http.MethodPost)
-	// swagger:route POST /api/resource/member resource resourceAddMemberRequest
-	//
-	// Adds a member to a resource.
-	//
-	//     Consumes:
-	//     - application/json
-	//
-	//     Produces:
-	//     - application/json
-	//
-	//     Schemes: http
-	//
-	//     Security:
-	//     - bearerAuth:
-	//
-	//     Responses:
-	//       200: addMemberToResourceResponse
-	rr.HandleFunc("/resource/member", api.resource.addMember).Methods(http.MethodPost)
 	// swagger:route POST /api/resource/member/bulk resource resourceBulkMemberRequest
 	//
 	// Adds multple members to a resource.

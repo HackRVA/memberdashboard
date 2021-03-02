@@ -20,7 +20,7 @@ import "@material/snackbar";
 // membership
 import { ResourceService } from "../../../service";
 import {
-  AddMemberResourceRequest,
+  BulkAddMembersToResourceRequest,
   ResourceResponse,
 } from "../../resources/types";
 import { isEmpty, showComponent } from "../../../function";
@@ -87,16 +87,16 @@ export class AddMemberToResourceModal extends LitElement {
   }
 
   tryToAddMemberToResource(): void {
-    const request: AddMemberResourceRequest = {
-      email: this.emailFieldTemplate.value,
+    const request: BulkAddMembersToResourceRequest = {
+      emails: [this.emailFieldTemplate.value],
       resourceID: this.resourceSelectTemplate.value,
     };
     this.emptyFormField();
     this.addMemberToResource(request);
   }
 
-  addMemberToResource(request: AddMemberResourceRequest): void {
-    this.resourceService.addMemberToResource(request).subscribe({
+  addMemberToResource(request: BulkAddMembersToResourceRequest): void {
+    this.resourceService.bulkAddMembersToResource(request).subscribe({
       complete: () => {
         this.fireUpdatedEvent();
       },

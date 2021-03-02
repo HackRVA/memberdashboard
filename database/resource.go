@@ -220,31 +220,7 @@ func (db *Database) DeleteResource(id string) error {
 	return nil
 }
 
-// AddUserToResource - grants a user access to a resource
-func (db *Database) AddUserToResource(email string, resourceID string) (MemberResourceRelation, error) {
-	memberResource := MemberResourceRelation{}
-
-	r, err := db.GetResourceByID(resourceID)
-	if err != nil {
-		return memberResource, err
-	}
-
-	m, err := db.GetMemberByEmail(email)
-	if err != nil {
-		return memberResource, err
-	}
-
-	memberResource.MemberID = m.ID
-	memberResource.ResourceID = r.ID
-
-	row := db.pool.QueryRow(context.Background(), insertMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID)
-	if row == pgx.ErrNoRows {
-		return memberResource, errors.New("no rows affected")
-	}
-
-	return memberResource, nil
-}
-
+// grant multiple members access to a resource
 func (db *Database) AddMultipleMembersToResource(emails []string, resourceID string) ([]MemberResourceRelation, error) {
 
 	var membersResource []MemberResourceRelation;

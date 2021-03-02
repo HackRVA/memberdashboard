@@ -171,33 +171,6 @@ func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
 	w.Write(j)
 }
 
-func (rs resourceAPI) addMember(w http.ResponseWriter, req *http.Request) {
-	var update memberResourceRelation
-
-	err := json.NewDecoder(req.Body).Decode(&update)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	r, err := rs.db.AddUserToResource(update.Email, update.ID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(r)
-	w.Write(j)
-
-	resource, err := rs.db.GetResourceByID(update.ID)
-	if err != nil {
-		log.Errorf("error getting resource to update when adding a member: %s", err)
-	}
-
-	resourcemanager.UpdateResourceACL(resource)
-}
-
 func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *http.Request) {
 	var membersResource membersResourceRelation
 

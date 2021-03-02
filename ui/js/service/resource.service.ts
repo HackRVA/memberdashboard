@@ -7,7 +7,6 @@ import { HTTPService } from "./http.service";
 import {
   RegisterResourceRequest,
   RemoveResourceRequest,
-  AddMemberResourceRequest,
   RemoveMemberResourceRequest,
   UpdateResourceRequest,
   BulkAddMembersToResourceRequest,
@@ -30,12 +29,6 @@ export class ResourceService extends HTTPService {
     request: RemoveResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {
     return this.delete(this.api + "/resource", request);
-  }
-
-  addMemberToResource(
-    request: AddMemberResourceRequest
-  ): Observable<Response | { error: boolean; message: any }> {
-    return this.post(this.api + "/resource/member", request);
   }
 
   bulkAddMembersToResource(

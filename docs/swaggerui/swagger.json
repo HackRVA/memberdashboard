@@ -327,41 +327,6 @@
       }
     },
     "/api/resource/member": {
-      "post": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http"
-        ],
-        "tags": [
-          "resource"
-        ],
-        "summary": "Adds a member to a resource.",
-        "operationId": "resourceAddMemberRequest",
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/memberResourceRelation"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/addMemberToResourceResponse"
-          }
-        }
-      },
       "delete": {
         "security": [
           {
