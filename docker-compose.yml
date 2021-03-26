@@ -27,7 +27,7 @@ services:
             # This is go modules cache, without it you will have to
             # re-download all dependencies after restarting container
             - modules:/go/pkg/mod/cache
-            - /etc/hackrva/:/etc/hackrva/
+            - $MEMBER_SERVER_CONFIG_FILE:$MEMBER_SERVER_CONFIG_FILE
     postgres:
         image: postgres
         ports:
