@@ -7,5 +7,6 @@
     "mailgunPassword": "this is a test value",
     "mailgunURL": "this is a test value",
     "mailgunKey": "this is a test value",
-    "mailgunFromAddress": "this is a test value"
+    "mailgunFromAddress": "this is a test value",
+    "slackhookAccessEvents": "this is a test value"
 }

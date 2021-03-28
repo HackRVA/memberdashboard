@@ -78,6 +78,7 @@ func checkResourceInit() {
 
 	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
+		resourcemanager.Subscribe(r.Name+"/send", resourcemanager.OnAccessEvent)
 		resourcemanager.Subscribe(r.Name+"/result", resourcemanager.HealthCheck)
 		resourcemanager.CheckStatus(r)
 	}

@@ -21,6 +21,7 @@ type Config struct {
 	MailgunFromAddress string `json:"mailgunFromAddress"`
 	MailgunUser        string `json:"mailgunUser"`
 	MailgunPassword    string `json:"mailgunPassword"`
+	SlackAccessEvents  string `json:"slackhookAccessEvents"`
 }
 
 // Load in the config file to memory
@@ -48,6 +49,7 @@ func Load() (Config, error) {
 	c.MailgunFromAddress = os.Getenv("MAILGUN_FROM_ADDRESS")
 	c.MailgunUser = os.Getenv("MAILGUN_USER")
 	c.MailgunPassword = os.Getenv("MAILGUN_PASSWORD")
+	c.SlackAccessEvents = os.Getenv("SLACK_ACCESS_EVENTS_HOOK")
 
 	_ = json.Unmarshal([]byte(file), &c)
 
