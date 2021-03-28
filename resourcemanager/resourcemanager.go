@@ -29,6 +29,20 @@ type ACLResponse struct {
 	Name string `json:"name"`
 }
 
+type AddMemberRequest struct {
+	ResourceAddress string `json:"doorip"`
+	Command         string `json:"cmd"`
+	UserName        string `json:"user"`
+	RFID            string `json:"uid"`
+	AccessType      int    `json:"acctype"`
+	ValidUntil      int    `json:"validuntil"`
+}
+
+type DeleteMemberRequest struct {
+	ResourceAddress string `json:"doorip"`
+	Command         string `json:"cmd"`
+}
+
 const (
 	// StatusGood - the resource is online and up to date
 	StatusGood = iota
@@ -67,6 +81,50 @@ func UpdateResourceACL(r database.Resource) error {
 	db.Release()
 
 	return nil
+}
+
+// UpdateResources - publish an MQTT message to add a member to the actual device
+func UpdateResources() {
+	db, err := database.Setup()
+	if err != nil {
+		log.Errorf("error setting up db: %s", err)
+	}
+
+	resources := db.GetResources()
+
+	for _, r := range resources {
+		members, _ := db.GetResourceACLWithMemberInfo(r)
+		for _, m := range members {
+			b, _ := json.Marshal(&AddMemberRequest{
+				ResourceAddress: r.Address,
+				Command:         "adduser",
+				UserName:        m.Name,
+				RFID:            m.RFID,
+				AccessType:      1,
+				ValidUntil:      -86400,
+			})
+			Publish(r.Name, string(b))
+		}
+	}
+
+	db.Release()
+}
+
+func DeleteResourceACL() {
+	db, err := database.Setup()
+	if err != nil {
+		log.Errorf("error setting up db: %s", err)
+	}
+	resources := db.GetResources()
+
+	for _, r := range resources {
+		b, _ := json.Marshal(&DeleteMemberRequest{
+			ResourceAddress: r.Address,
+			Command:         "deletusers", // not a type-o this is how the command is defined in the rfid reader
+		})
+		Publish(r.Name, string(b))
+	}
+	db.Release()
 }
 
 // CheckStatus will publish an mqtt command that requests for a specific device to verify that

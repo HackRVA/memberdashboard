@@ -129,7 +129,7 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 		return m, err
 	}
 
-	err = db.pool.QueryRow(context.Background(), setMemberRFIDTag, email, RFIDTag).Scan(&m.RFID)
+	err = db.pool.QueryRow(context.Background(), setMemberRFIDTag, email, encodeRFID(RFIDTag)).Scan(&m.RFID)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}

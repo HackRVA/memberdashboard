@@ -326,6 +326,34 @@
         }
       }
     },
+    "/api/resource/deleteacls": {
+      "delete": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Clears out all Resource ACLs on those devices",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "operationId": "resourceDeleteACLS",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/endpointSuccessResponse"
+          }
+        }
+      }
+    },
     "/api/resource/member": {
       "delete": {
         "security": [
@@ -450,6 +478,34 @@
         "responses": {
           "200": {
             "$ref": "#/responses/getResourceStatusResponse"
+          }
+        }
+      }
+    },
+    "/api/resource/updateacls": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Attempts to send all members to a Resource",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "operationId": "resourceUpdateACLS",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/endpointSuccessResponse"
           }
         }
       }

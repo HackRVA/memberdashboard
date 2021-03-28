@@ -40,6 +40,13 @@ ON membership.member_resource.member_id = membership.members.id
 WHERE resource_id = $1
 AND rfid is not NULL;`
 
+const getResourceACLByResourceIDQueryWithMemberInfo = `SELECT member_id, name, rfid
+FROM membership.member_resource
+LEFT JOIN membership.members
+ON membership.member_resource.member_id = membership.members.id
+WHERE resource_id = $1
+AND rfid is not NULL;`
+
 const getMemberResourceQuery = `SELECT id, member_id, resource_id
 FROM membership.member_resource
 WHERE member_id = $1 AND resource_id = $2;`
@@ -74,10 +81,10 @@ type Resource struct {
 	// required: true
 	// example: string
 	Address string `json:"address"`
-    // Default state of the Resource
-    // required: true
-    // example: true
-    IsDefault bool `json:"isDefault"`
+	// Default state of the Resource
+	// required: true
+	// example: true
+	IsDefault bool `json:"isDefault"`
 }
 
 // ResourceDeleteRequest - request for deleting a resource
@@ -102,10 +109,10 @@ type ResourceRequest struct {
 	// required: true
 	// example: string
 	Address string `json:"address"`
-    // Default state of the Resource
-    // required: true
-    // example: true
-    IsDefault bool `json:"isDefault"`
+	// Default state of the Resource
+	// required: true
+	// example: true
+	IsDefault bool `json:"isDefault"`
 }
 
 // Resource a resource that can accespt an access control list
@@ -118,10 +125,10 @@ type RegisterResourceRequest struct {
 	// required: true
 	// example: string
 	Address string `json:"address"`
-    // Default state of the Resource
-    // required: false
-    // example: true
-    IsDefault bool `json:"isDefault"`
+	// Default state of the Resource
+	// required: false
+	// example: true
+	IsDefault bool `json:"isDefault"`
 }
 
 // MemberResourceRelation  - a relationship between resources and members
@@ -165,7 +172,7 @@ func (db *Database) GetResourceByID(ID string) (Resource, error) {
 // GetResourceByName - lookup a resource by it's name
 func (db *Database) GetResourceByName(resourceName string) (Resource, error) {
 	var r Resource
-    err := db.pool.QueryRow(context.Background(), getResourceByNameQuery, resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	err := db.pool.QueryRow(context.Background(), getResourceByNameQuery, resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("getResourceByName failed: %v", err)
 	}
@@ -179,7 +186,7 @@ func (db *Database) RegisterResource(name string, address string, is_default boo
 
 	r.Name = name
 	r.Address = address
-    r.IsDefault = is_default
+	r.IsDefault = is_default
 
 	_, err := db.pool.Exec(context.Background(), insertResourceQuery, r.Name, r.Address, r.IsDefault)
 	if err != nil {
@@ -199,7 +206,7 @@ func (db *Database) UpdateResource(id string, name string, address string, is_de
 		return r, errors.New("invalid resourseID of 0")
 	}
 
-    row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address, is_default).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address, is_default).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if row == pgx.ErrNoRows {
 		log.Printf("no rows affected %s", row.Error())
 		return r, errors.New("no rows affected")
@@ -223,21 +230,21 @@ func (db *Database) DeleteResource(id string) error {
 // grant multiple members access to a resource
 func (db *Database) AddMultipleMembersToResource(emails []string, resourceID string) ([]MemberResourceRelation, error) {
 
-	var membersResource []MemberResourceRelation;
+	var membersResource []MemberResourceRelation
 
-	resource, err := db.GetResourceByID(resourceID);
+	resource, err := db.GetResourceByID(resourceID)
 
 	if err != nil {
 		return membersResource, err
 	}
 
 	for i := 0; i < len(emails); i++ {
-		member, err := db.GetMemberByEmail(emails[i]);
+		member, err := db.GetMemberByEmail(emails[i])
 
 		if err != nil {
 			return membersResource, err
 		}
-		
+
 		var memberResource MemberResourceRelation
 		memberResource.MemberID = member.ID
 		memberResource.ResourceID = resource.ID
@@ -251,7 +258,7 @@ func (db *Database) AddMultipleMembersToResource(emails []string, resourceID str
 
 	}
 
-	return membersResource, nil;
+	return membersResource, nil
 
 }
 
@@ -336,8 +343,30 @@ func (db *Database) GetResourceACL(r Resource) ([]string, error) {
 
 	for rows.Next() {
 		var rfid string
-		err = rows.Scan(&rfid)
+		rows.Scan(&rfid)
 		accessList = append(accessList, rfid)
+	}
+
+	return accessList, nil
+}
+
+// GetResourceACLWithMemberInfo returns a list of members that have access to that Resource
+func (db *Database) GetResourceACLWithMemberInfo(r Resource) ([]Member, error) {
+	var accessList []Member
+
+	rows, err := db.pool.Query(context.Background(), getResourceACLByResourceIDQueryWithMemberInfo, r.ID)
+	if err != nil {
+		return accessList, fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var member Member
+
+		rows.Scan(&member.ID, &member.Name, &member.RFID)
+
+		accessList = append(accessList, member)
 	}
 
 	return accessList, nil

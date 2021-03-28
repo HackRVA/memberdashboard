@@ -31,7 +31,7 @@ type membersResourceRelation struct {
 	// Emails - list of member's email address
 	// required: true
 	// example: []
-	Emails []string `json:"emails"`	
+	Emails []string `json:"emails"`
 }
 
 // swagger:parameters updateResourceRequest
@@ -178,14 +178,14 @@ func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *h
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return;
+		return
 	}
 
 	resource, err := rs.db.AddMultipleMembersToResource(membersResource.Emails, membersResource.ID)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return;
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -220,6 +220,7 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 	}
 
 	resourcemanager.UpdateResourceACL(resource)
+	resourcemanager.UpdateResources()
 }
 
 func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
@@ -266,4 +267,24 @@ func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	// j, _ := json.Marshal(statusMap)
 	// w.Write(j)
+}
+
+func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request) {
+	resourcemanager.UpdateResources()
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(endpointSuccess{
+		Ack: true,
+	})
+	w.Write(j)
+}
+
+func (rs resourceAPI) deleteResourceACL(w http.ResponseWriter, req *http.Request) {
+	resourcemanager.DeleteResourceACL()
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(endpointSuccess{
+		Ack: true,
+	})
+	w.Write(j)
 }
