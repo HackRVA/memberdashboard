@@ -1,3 +1,7 @@
+
+> :warning: **We are no longer using this code for the rfid reader**: We are now using [esp-rfid](https://github.com/esprfid/esp-rfid)!
+
+
 # HackRVA RFID Reader
 
 HackRVA RFID reader for access control on doors and tools.

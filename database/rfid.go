@@ -52,10 +52,14 @@ func reverse(arr []string) []string {
 	return newArr
 }
 
+// trimZeros we must trim all leading zeros to match how the rfid reader has the IDs encoded
 func trimZeros(arr []string) []string {
 	var newArr []string
 	for _, v := range arr {
-		elem := strings.Replace(v, "0", "", -1)
+		elem := v
+		if elem[0] == 48 { // if the first char is zero
+			elem = elem[1:] // drop the first char
+		}
 		newArr = append(newArr, elem)
 	}
 
