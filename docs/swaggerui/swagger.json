@@ -483,7 +483,7 @@
       }
     },
     "/api/resource/updateacls": {
-      "get": {
+      "post": {
         "security": [
           {
             "bearerAuth": []

@@ -235,7 +235,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: endpointSuccessResponse
 	rr.HandleFunc("/resource/deleteacls", api.resource.deleteResourceACL).Methods(http.MethodDelete)
-	// swagger:route GET /api/resource/updateacls resource resourceUpdateACLS
+	// swagger:route POST /api/resource/updateacls resource resourceUpdateACLS
 	//
 	// Attempts to send all members to a Resource
 	//
@@ -252,7 +252,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	rr.HandleFunc("/resource/updateacls", api.resource.updateResourceACL).Methods(http.MethodGet)
+	rr.HandleFunc("/resource/updateacls", api.resource.updateResourceACL).Methods(http.MethodPost)
 	// swagger:route DELETE /api/resource/member resource resourceRemoveMemberRequest
 	//
 	// Removes a member from a resource.
