@@ -22,6 +22,9 @@ type Config struct {
 	MailgunUser        string `json:"mailgunUser"`
 	MailgunPassword    string `json:"mailgunPassword"`
 	SlackAccessEvents  string `json:"slackhookAccessEvents"`
+	MQTTUsername       string `json:"mqttUsername"`
+	MQTTPassword       string `json:"mqttPassword"`
+	DBConnectionString string `json:"dbConnectionString"`
 }
 
 // Load in the config file to memory
@@ -50,6 +53,9 @@ func Load() (Config, error) {
 	c.MailgunUser = os.Getenv("MAILGUN_USER")
 	c.MailgunPassword = os.Getenv("MAILGUN_PASSWORD")
 	c.SlackAccessEvents = os.Getenv("SLACK_ACCESS_EVENTS_HOOK")
+	c.MQTTUsername = os.Getenv("MQTT_USERNAME")
+	c.MQTTPassword = os.Getenv("MQTT_PASSWORD")
+	c.DBConnectionString = os.Getenv("DB_CONNECTION_STRING")
 
 	_ = json.Unmarshal([]byte(file), &c)
 

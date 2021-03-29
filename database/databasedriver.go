@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"memberserver/config"
 	"os"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -15,7 +16,8 @@ type Database struct {
 }
 
 func postgreSQLDatabase() (*pgxpool.Pool, error) {
-	conn, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	conf, _ := config.Load()
+	conn, err := pgxpool.Connect(context.Background(), conf.DBConnectionString)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)

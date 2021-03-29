@@ -11,7 +11,7 @@ services:
         networks:
             - membership
         environment:
-            - DATABASE_URL=postgresql://test:test@postgres:5432/membership
+            - DATABASE_CONNECTION_STRING=${DATABASE_CONNECTION_STRING}
             - MEMBER_SERVER_CONFIG_FILE=${MEMBER_SERVER_CONFIG_FILE}
         volumes:
             # This is go modules cache, without it you will have to
