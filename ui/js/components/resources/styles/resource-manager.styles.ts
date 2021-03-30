@@ -41,4 +41,22 @@ export const resourceManagerStyles: CSSResult = css`
   .mr-32 {
     margin-right: 32px;
   }
+
+  .update-acls .note {
+    visibility: hidden;
+  }
+
+  .update-acls:hover .note {
+    visibility: visible;
+  }
+
+  .note {
+    margin-top: 8px;
+    padding: 8px;
+    font-size: 14px;
+    background: #fdefbb;
+    max-width: 200px;
+    position: absolute;
+    z-index: 1;
+  }
 `;

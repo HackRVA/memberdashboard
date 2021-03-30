@@ -149,13 +149,18 @@ export class ResourceManager extends LitElement {
         <div class="resource-header">
           <h1>Resources</h1>
           <div class="button-container">
-            <mwc-button
-              class="mr-8"
-              @click=${this.updateACLs}
-              label="Update ACLs"
-              dense
-              unelevated
-            ></mwc-button>
+            <span class="update-acls">
+              <mwc-button
+                class="mr-8"
+                @click=${this.updateACLs}
+                label="Update ACLs"
+                dense
+                unelevated
+              ></mwc-button>
+              <div class="note">
+                Update ACLs adds members and does not remove members
+              </div>
+            </span>
             <mwc-button
               class="mr-32 remove"
               @click=${this.removeACLs}
