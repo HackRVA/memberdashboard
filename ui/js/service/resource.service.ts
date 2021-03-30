@@ -31,6 +31,14 @@ export class ResourceService extends HTTPService {
     return this.delete(this.api + "/resource", request);
   }
 
+  updateACLs(): Observable<Response | { error: boolean; message: any }> {
+    return this.post(this.api + "/resource/updateacls", {});
+  }
+
+  removeACLs(): Observable<Response | { error: boolean; message: any }> {
+    return this.delete(this.api + "/resource/deleteacls", {});
+  }
+
   bulkAddMembersToResource(
     request: BulkAddMembersToResourceRequest
   ): Observable<Response | { error: boolean; message: any }> {

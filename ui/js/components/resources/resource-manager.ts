@@ -22,6 +22,7 @@ import { showComponent } from "../../function";
 import { ResourceResponse, ResourceModalData } from "./types";
 import { resourceManagerStyles } from "./styles/resource-manager.styles";
 import "./modals";
+import { ToastMessage } from "../shared/types";
 
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
@@ -32,6 +33,8 @@ export class ResourceManager extends LitElement {
 
   resourceName: string;
   resourceId: string;
+
+  toastMsg: ToastMessage;
 
   static get styles(): CSSResult[] {
     return [resourceManagerStyles];
@@ -51,6 +54,24 @@ export class ResourceManager extends LitElement {
         console.error("unable to get resources");
       },
     });
+  }
+
+  updateACLs(): void {
+    this.resourceService.updateACLs().subscribe(() => {
+      this.displayToastMsg("Successfully update ACL for all resource");
+    });
+  }
+
+  removeACLs(): void {
+    this.resourceService.removeACLs().subscribe(() => {
+      this.displayToastMsg("Successfully remove ACL for all resource");
+    });
+  }
+
+  private displayToastMsg(message: string): void {
+    this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
+    this.requestUpdate();
+    showComponent("#toast-msg", this.shadowRoot);
   }
 
   openResourceWarningModal(resource: ResourceResponse): void {
@@ -129,6 +150,20 @@ export class ResourceManager extends LitElement {
           <h1>Resources</h1>
           <div class="button-container">
             <mwc-button
+              class="mr-8"
+              @click=${this.updateACLs}
+              label="Update ACLs"
+              dense
+              unelevated
+            ></mwc-button>
+            <mwc-button
+              class="mr-32 remove"
+              @click=${this.removeACLs}
+              label="Delete ACLs"
+              dense
+              unelevated
+            ></mwc-button>
+            <mwc-button
               class="create-resource"
               @click=${this.openRegisterResourceModal}
               dense
@@ -159,6 +194,7 @@ export class ResourceManager extends LitElement {
         @updated=${this.refreshResources}
       >
       </warning-modal>
+      <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
 }

@@ -33,4 +33,12 @@ export const resourceManagerStyles: CSSResult = css`
   .remove {
     --mdc-theme-primary: #e9437a;
   }
+
+  .mr-8 {
+    margin-right: 8px;
+  }
+
+  .mr-32 {
+    margin-right: 32px;
+  }
 `;
