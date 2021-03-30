@@ -57,6 +57,10 @@ func Load() (Config, error) {
 	c.MQTTPassword = os.Getenv("MQTT_PASSWORD")
 	c.DBConnectionString = os.Getenv("DB_CONNECTION_STRING")
 
+	if os.Getenv("DATABASE_URL") != "" {
+		c.DBConnectionString = os.Getenv("DATABASE_URL")
+	}
+
 	_ = json.Unmarshal([]byte(file), &c)
 
 	// if we still don't have an access secret let's generate a random one
