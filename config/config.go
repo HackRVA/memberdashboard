@@ -24,6 +24,7 @@ type Config struct {
 	SlackAccessEvents  string `json:"slackhookAccessEvents"`
 	MQTTUsername       string `json:"mqttUsername"`
 	MQTTPassword       string `json:"mqttPassword"`
+	MQTTBrokerAddress  string `json:"mqttBrokerAddress"`
 	DBConnectionString string `json:"dbConnectionString"`
 }
 
@@ -55,6 +56,7 @@ func Load() (Config, error) {
 	c.SlackAccessEvents = os.Getenv("SLACK_ACCESS_EVENTS_HOOK")
 	c.MQTTUsername = os.Getenv("MQTT_USERNAME")
 	c.MQTTPassword = os.Getenv("MQTT_PASSWORD")
+	c.MQTTBrokerAddress = os.Getenv("MQTT_BROKER_ADDRESS")
 	c.DBConnectionString = os.Getenv("DB_CONNECTION_STRING")
 
 	if os.Getenv("DATABASE_URL") != "" {

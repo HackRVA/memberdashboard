@@ -2,7 +2,8 @@ package database
 
 import (
 	"context"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const getMemberTiersQuery = `SELECT id, description FROM membership.member_tiers;`
@@ -51,7 +52,7 @@ type Tier struct {
 func (db *Database) GetMemberTiers() []Tier {
 	rows, err := db.pool.Query(context.Background(), getMemberTiersQuery)
 	if err != nil {
-		log.Fatalf("conn.Query failed: %v", err)
+		log.Errorf("conn.Query failed: %v", err)
 	}
 
 	defer rows.Close()

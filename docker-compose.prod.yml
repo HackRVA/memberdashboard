@@ -2,52 +2,20 @@ version: "3"
 services:
     memberserver:
         build: .
-        ports: 
+        ports:
             - 3000:3000
-        # volumes: 
+        # volumes:
         #     - .src/:/membership
-        depends_on:
-            - postgres
-        networks:
-            - membership
         environment:
             - DATABASE_CONNECTION_STRING=${DATABASE_CONNECTION_STRING}
+            - DATABASE_URL=${DATABASE_URL}
             - MEMBER_SERVER_CONFIG_FILE=${MEMBER_SERVER_CONFIG_FILE}
+            - MQTT_BROKER_ADDRESS=${MQTT_BROKER_ADDRESS}
         volumes:
             # This is go modules cache, without it you will have to
             # re-download all dependencies after restarting container
             - modules:/go/pkg/mod/cache
             - /etc/hackrva/:/etc/hackrva/
-    postgres:
-        image: postgres
-        ports:
-            - 5432:5432
-        environment:
-          - POSTGRES_DB=${POSTGRES_DB}
-          - POSTGRES_USER=${POSTGRES_USER}
-          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-        volumes:
-            - ./test/postgres/postgres.sql:/docker-entrypoint-initdb.d/postgres.sql
-        networks:
-            - membership
-    backup:
-        build:
-          context: ./dr
-        environment:
-          - BACKUP_DIR=${BACKUP_DIR}
-          - POSTGRES_HOST=${POSTGRES_HOST}
-          - POSTGRES_DB=${POSTGRES_DB}
-          - POSTGRES_USER=${POSTGRES_USER}
-          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-        volumes:
-          - ./postgres-data:/var/lib/postgresql
-          - /mnt/NAS/HRVAbackups/:/backup/NAS
-        networks:
-            - membership
-networks:
-    membership:
-        external: false
-
 volumes:
     modules:
         driver: local

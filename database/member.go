@@ -65,7 +65,7 @@ type AssignRFIDRequest struct {
 func (db *Database) GetMembers() []Member {
 	rows, err := db.pool.Query(context.Background(), getMemberQuery)
 	if err != nil {
-		log.Fatalf("conn.Query failed: %v", err)
+		log.Errorf("conn.Query failed: %v", err)
 	}
 
 	defer rows.Close()

@@ -142,7 +142,7 @@ type MemberResourceRelation struct {
 func (db *Database) GetResources() []Resource {
 	rows, err := db.pool.Query(context.Background(), getResourceQuery)
 	if err != nil {
-		log.Fatalf("conn.Query failed: %v", err)
+		log.Errorf("conn.Query failed: %v", err)
 	}
 
 	defer rows.Close()
@@ -272,7 +272,7 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 
 	rows, err := db.pool.Query(context.Background(), insertMemberDefaultResourceQuery, m.ID)
 	if err != nil {
-		log.Fatalf("conn.Query failed: %v", err)
+		log.Errorf("conn.Query failed: %v", err)
 	}
 
 	defer rows.Close()

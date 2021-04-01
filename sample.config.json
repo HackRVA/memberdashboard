@@ -11,5 +11,6 @@
     "slackhookAccessEvents": "this is a test value",
     "mqttUsername": "",
     "mqttPassword": "",
+    "mqttBrokerAddress": "",
     "dbConnectionString": "this is a test value"
 }

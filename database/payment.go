@@ -76,7 +76,7 @@ type Payment struct {
 func (db *Database) GetPayments() ([]Payment, error) {
 	rows, err := db.pool.Query(context.Background(), getPaymentsQuery)
 	if err != nil {
-		log.Fatalf("conn.Query failed: %v", err)
+		log.Errorf("conn.Query failed: %v", err)
 	}
 
 	defer rows.Close()

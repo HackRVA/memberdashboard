@@ -2,7 +2,7 @@ package resourcemanager
 
 import (
 	"math/rand"
-	"os"
+	"memberserver/config"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -24,7 +24,8 @@ func randStringRunes(n int) string {
 
 // Subscribe - subscribe to an MQTT topic and pass in a messageHandler
 func Subscribe(topic string, handler mqtt.MessageHandler) {
-	opts := mqtt.NewClientOptions().AddBroker(os.Getenv("MQTT_BROKER_ADDRESS"))
+	conf, _ := config.Load()
+	opts := mqtt.NewClientOptions().AddBroker(conf.MQTTBrokerAddress)
 	opts.SetClientID("member-server-subscriber-" + randStringRunes(12))
 
 	opts.OnConnect = func(c mqtt.Client) {
@@ -43,7 +44,8 @@ func Subscribe(topic string, handler mqtt.MessageHandler) {
 
 // Publish - publish to an MQTT topic
 func Publish(topic string, payload interface{}) {
-	opts := mqtt.NewClientOptions().AddBroker(os.Getenv("MQTT_BROKER_ADDRESS"))
+	conf, _ := config.Load()
+	opts := mqtt.NewClientOptions().AddBroker(conf.MQTTBrokerAddress)
 	opts.SetClientID("member-server-publisher-" + randStringRunes(12))
 
 	client := mqtt.NewClient(opts)
