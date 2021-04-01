@@ -9,6 +9,7 @@ export interface MemberResponse {
   id: string;
   name: string;
   email: string;
+  rfid: string;
   memberLevel: MemberLevel;
   resources: Array<MemberResource>;
 }

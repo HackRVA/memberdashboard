@@ -185,6 +185,9 @@ export class MemberList extends LitElement {
                     )}
                 ></mwc-button>
             </td>
+            <td>
+              ${x.rfid}
+            </td>
           </tr>
         `;
       })}
@@ -241,6 +244,7 @@ export class MemberList extends LitElement {
               <th>Email</th>
               <th>Member Status</th>
               <th>Resources</th>
+              <th>RFID</th>
             </tr>
             ${this.displayMembersTable()}
           </table>
