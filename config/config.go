@@ -34,16 +34,6 @@ type Config struct {
 func Load() (Config, error) {
 	c := Config{}
 
-	if len(os.Getenv("MEMBER_SERVER_CONFIG_FILE")) == 0 {
-		err := errors.New("must set the MEMBER_SERVER_CONFIG_FILE environment variable to point to config file")
-		log.Debugf("error loading config: %s  Attempting to use environment variables", err)
-	}
-
-	file, err := ioutil.ReadFile(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
-	if err != nil {
-		log.Debugf("error reading in the config file: %s", err)
-	}
-
 	c.AccessSecret = os.Getenv("ACCESS_SECRET")
 	c.PaypalClientID = os.Getenv("PAYPAL_CLIENT_ID")
 	c.PaypalClientSecret = os.Getenv("PAYPAL_CLIENT_SECRET")
@@ -61,6 +51,19 @@ func Load() (Config, error) {
 
 	if os.Getenv("DATABASE_URL") != "" {
 		c.DBConnectionString = os.Getenv("DATABASE_URL")
+	}
+
+	// if config file isn't passed in, don't try to look at it
+	if len(os.Getenv("MEMBER_SERVER_CONFIG_FILE")) == 0 {
+		err := errors.New("must set the MEMBER_SERVER_CONFIG_FILE environment variable to point to config file")
+		log.Debugf("error loading config: %s  Attempting to use environment variables", err)
+
+		return c, nil
+	}
+
+	file, err := ioutil.ReadFile(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
+	if err != nil {
+		log.Debugf("error reading in the config file: %s", err)
 	}
 
 	_ = json.Unmarshal([]byte(file), &c)
