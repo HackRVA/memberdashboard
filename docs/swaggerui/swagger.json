@@ -559,6 +559,29 @@
           }
         }
       }
+    },
+    "/api/version": {
+      "get": {
+        "description": "Version\nShows the current build's version information",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "version"
+        ],
+        "operationId": "Version",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/VersionResponse"
+          }
+        }
+      }
     }
   },
   "definitions": {

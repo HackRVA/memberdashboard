@@ -3,8 +3,9 @@ FROM golang:1.15 as backend-build
 WORKDIR /membership
 COPY . .
 
+ARG GIT_COMMIT="test"
 RUN go mod vendor
-RUN go build -o server
+RUN go build -o server -ldflags "-X memberserver/api.GitCommit=$GIT_COMMIT"
 
 # create a file named Dockerfile
 FROM node:latest as frontend-build

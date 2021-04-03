@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"os"
 
@@ -55,14 +54,12 @@ func Load() (Config, error) {
 
 	// if config file isn't passed in, don't try to look at it
 	if len(os.Getenv("MEMBER_SERVER_CONFIG_FILE")) == 0 {
-		err := errors.New("must set the MEMBER_SERVER_CONFIG_FILE environment variable to point to config file")
-		log.Debugf("error loading config: %s  Attempting to use environment variables", err)
-
 		return c, nil
 	}
 
 	file, err := ioutil.ReadFile(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
 	if err != nil {
+
 		log.Debugf("error reading in the config file: %s", err)
 	}
 

@@ -1,7 +1,11 @@
 version: "3"
 services:
     memberserver:
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                GIT_COMMIT: ${GIT_COMMIT}
         ports: 
             - 3000:3000
         # volumes: 
@@ -10,6 +14,8 @@ services:
             - postgres
         networks:
             - membership
+        env_file:
+            - memberserver.env
         environment:
             - DATABASE_CONNECTION_STRING=postgresql://test:test@postgres:5432/membership
             - MEMBER_SERVER_CONFIG_FILE=${MEMBER_SERVER_CONFIG_FILE}
@@ -28,7 +34,6 @@ services:
             # This is go modules cache, without it you will have to
             # re-download all dependencies after restarting container
             - modules:/go/pkg/mod/cache
-            - $MEMBER_SERVER_CONFIG_FILE:$MEMBER_SERVER_CONFIG_FILE
     postgres:
         image: postgres
         ports:
