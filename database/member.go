@@ -63,7 +63,11 @@ type AssignRFIDRequest struct {
 
 // GetMembers - gets the status from DB
 func (db *Database) GetMembers() []Member {
-	rows, err := db.pool.Query(context.Background(), getMemberQuery)
+
+	ctx := context.Background()
+	pool := getDBConnection(ctx)
+
+	rows, err := pool.Query(ctx, getMemberQuery)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -71,6 +75,8 @@ func (db *Database) GetMembers() []Member {
 	defer rows.Close()
 
 	var members []Member
+
+	resourceMemo := make(map[string]MemberResource)
 
 	for rows.Next() {
 		var rIDs []string
@@ -84,10 +90,22 @@ func (db *Database) GetMembers() []Member {
 		// using a less efficient approach for now
 		// TODO: fix this on the query level
 		for _, rID := range rIDs {
+			if _, exist := resourceMemo[rID]; exist {
+				m.Resources = append(m.Resources, MemberResource{ResourceID: rID, Name: resourceMemo[rID].Name})
+				continue
+			}
+
 			resource, err := db.GetResourceByID(rID)
 			if err != nil {
 				log.Debugf("error getting resource by id in memberResource lookup: %s\n", err.Error())
+				continue
 			}
+
+			resourceMemo[rID] = MemberResource{
+				ResourceID: resource.ID,
+				Name:       resource.Name,
+			}
+
 			m.Resources = append(m.Resources, MemberResource{ResourceID: rID, Name: resource.Name})
 		}
 
@@ -102,18 +120,32 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 	var m Member
 	var rIDs []string
 
-	err := db.pool.QueryRow(context.Background(), getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
+	ctx := context.Background()
+	pool := getDBConnection(ctx)
+
+	err := pool.QueryRow(ctx, getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
+
+	resourceMemo := make(map[string]MemberResource)
 
 	// having issues with unmarshalling a jsonb object array from pgx
 	// using a less efficient approach for now
 	// TODO: fix this on the query level
 	for _, rID := range rIDs {
+		if _, exist := resourceMemo[rID]; exist {
+			m.Resources = append(m.Resources, MemberResource{ResourceID: rID, Name: resourceMemo[rID].Name})
+			continue
+		}
 		resource, err := db.GetResourceByID(rID)
 		if err != nil {
 			log.Debugf("error getting resource by id in memberResource lookup: %s\n", err.Error())
+		}
+
+		resourceMemo[rID] = MemberResource{
+			ResourceID: resource.ID,
+			Name:       resource.Name,
 		}
 		m.Resources = append(m.Resources, MemberResource{ResourceID: rID, Name: resource.Name})
 	}
@@ -123,13 +155,17 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 
 // SetRFIDTag sets the rfid tag as
 func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
+
+	ctx := context.Background()
+	pool := getDBConnection(ctx)
+
 	m, err := db.GetMemberByEmail(email)
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())
 		return m, err
 	}
 
-	err = db.pool.QueryRow(context.Background(), setMemberRFIDTag, email, encodeRFID(RFIDTag)).Scan(&m.RFID)
+	err = pool.QueryRow(ctx, setMemberRFIDTag, email, encodeRFID(RFIDTag)).Scan(&m.RFID)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -141,7 +177,10 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 func (db *Database) AddMember(email string, name string) (Member, error) {
 	var m Member
 
-	err := db.pool.QueryRow(context.Background(), insertMemberQuery, name, email).Scan(&m.ID, &m.Name, &m.Email)
+	ctx := context.Background()
+	pool := getDBConnection(ctx)
+
+	err := pool.QueryRow(ctx, insertMemberQuery, name, email).Scan(&m.ID, &m.Name, &m.Email)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}

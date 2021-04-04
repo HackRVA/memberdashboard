@@ -2,9 +2,11 @@ package database
 
 import (
 	"context"
-	"fmt"
+
+	log "github.com/sirupsen/logrus"
+
 	"memberserver/config"
-	"os"
+	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -15,30 +17,12 @@ type Database struct {
 	pool *pgxpool.Pool
 }
 
-func postgreSQLDatabase() (*pgxpool.Pool, error) {
-	conf, _ := config.Load()
-	conn, err := pgxpool.Connect(context.Background(), conf.DBConnectionString)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-
-	fmt.Println("Successfully connected to DB!")
-	return conn, err
-}
-
 // Setup - sets up connection pool so that we can connect to the db in a
 //   concurrently safe manner
 func Setup() (*Database, error) {
-	var err error
-
 	db := &Database{}
 
-	connection, err := postgreSQLDatabase()
-	if err != nil {
-		return db, err
-	}
-
+	connection := getDBConnection(context.Background())
 	db.pool = connection
 
 	return db, nil
@@ -53,4 +37,47 @@ func (db *Database) Release() error {
 	}
 	defer conn.Release()
 	return nil
+}
+
+func getDBConnection(ctx context.Context) *pgxpool.Pool {
+	// Retrieve the database host address
+	conf, _ := config.Load()
+
+	dbPool, err := pgxpool.Connect(ctx, conf.DBConnectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+
+	// Try connecting to the database a few times before giving up
+	// Retry to connect for a while
+	for i := 1; i < 8 && err != nil; i++ {
+		// Sleep a bit before trying again
+		time.Sleep(time.Duration(i*i) * time.Second)
+
+		log.Printf("trying to connect to the db server (attempt %d)...\n", i)
+
+		dbPool, err = pgxpool.Connect(ctx, conf.DBConnectionString)
+		if err != nil {
+			log.Printf("got error: %v\n", err)
+		}
+	}
+
+	// Stop execution if the database was not initialized
+	if dbPool == nil {
+		log.Fatalln("could not connect to the database")
+	}
+
+	// Get a connection from the pool and check if the database connection is active and working
+	db, err := dbPool.Acquire(ctx)
+	if err != nil {
+		log.Fatalf("failed to get connection on startup: %v\n", err)
+	}
+	if err := db.Conn().Ping(ctx); err != nil {
+		log.Fatalln(err)
+	}
+
+	// Add the connection back to the pool
+	db.Release()
+
+	return dbPool
 }

@@ -74,7 +74,11 @@ type Payment struct {
 
 // GetPayments - get list of payments that we have in the db
 func (db *Database) GetPayments() ([]Payment, error) {
-	rows, err := db.pool.Query(context.Background(), getPaymentsQuery)
+
+	ctx := context.Background()
+	pool := getDBConnection(ctx)
+
+	rows, err := pool.Query(ctx, getPaymentsQuery)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -104,7 +108,10 @@ func (db *Database) AddPayment(payment Payment) error {
 	var p Payment
 	var amount int64
 
-	err := db.pool.QueryRow(context.Background(), insertPaymentQuery, payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
+	ctx := context.Background()
+	pool := getDBConnection(ctx)
+
+	err := pool.QueryRow(ctx, insertPaymentQuery, payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -121,10 +128,13 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	var amount int64
 	var email string
 
+	ctx := context.Background()
+	pool := getDBConnection(ctx)
+
 	// TODO: see if they have multiple memberships
 	numMemberships := 1
 
-	err := db.pool.QueryRow(context.Background(), checkLastPaymentQuery, memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
+	err := pool.QueryRow(ctx, checkLastPaymentQuery, memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -133,7 +143,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 
 	if daysSincePayment > memberGracePeriod { // revoke
 		// sendRevokedEmail(email)
-		rows, err := db.pool.Query(context.Background(), updateMembershipLevelQuery, memberID, Inactive)
+		rows, err := pool.Query(context.Background(), updateMembershipLevelQuery, memberID, Inactive)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
 		}
@@ -148,7 +158,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 		// determine their membership level
 		mLevel := MemberLevelFromAmount[amount]
 
-		rows, err := db.pool.Query(context.Background(), updateMembershipLevelQuery, memberID, mLevel)
+		rows, err := pool.Query(context.Background(), updateMembershipLevelQuery, memberID, mLevel)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
 		}
