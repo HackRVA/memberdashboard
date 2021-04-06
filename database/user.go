@@ -57,7 +57,7 @@ func (db *Database) RegisterUser(email string, password string) error {
 	}
 
 	// Next, insert the email, along with the hashed password into the database
-	rows, err := db.pool.Query(context.Background(), registerUserQuery, email, string(hashedPassword))
+	rows, err := db.getConn().Query(context.Background(), registerUserQuery, email, string(hashedPassword))
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %s", err)
 	}
@@ -73,7 +73,7 @@ func (db *Database) UserSignin(email string, password string) error {
 	storedCreds := &Credentials{}
 
 	// Get the existing entry present in the database for the given user
-	row := db.pool.QueryRow(context.Background(), getUserPasswordQuery, email).Scan(&storedCreds.Password)
+	row := db.getConn().QueryRow(context.Background(), getUserPasswordQuery, email).Scan(&storedCreds.Password)
 	if row == pgx.ErrNoRows {
 		return fmt.Errorf("Unauthorized")
 	}
@@ -91,7 +91,7 @@ func (db *Database) UserSignin(email string, password string) error {
 func (db *Database) GetUser(email string) (UserResponse, error) {
 	var userResponse UserResponse
 
-	row := db.pool.QueryRow(context.Background(), getUserQuery, email).Scan(&userResponse.Email)
+	row := db.getConn().QueryRow(context.Background(), getUserQuery, email).Scan(&userResponse.Email)
 	if row == pgx.ErrNoRows {
 		return userResponse, fmt.Errorf("error getting user")
 	}

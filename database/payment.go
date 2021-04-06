@@ -3,6 +3,8 @@ package database
 import (
 	"context"
 	"fmt"
+	"memberserver/config"
+	"memberserver/mail"
 	"strings"
 	"time"
 
@@ -75,7 +77,7 @@ type Payment struct {
 
 // GetPayments - get list of payments that we have in the db
 func (db *Database) GetPayments() ([]Payment, error) {
-	rows, err := db.pool.Query(context.Background(), getPaymentsQuery)
+	rows, err := db.getConn().Query(context.Background(), getPaymentsQuery)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -105,7 +107,7 @@ func (db *Database) AddPayment(payment Payment) error {
 	var p Payment
 	var amount int64
 
-	err := db.pool.QueryRow(context.Background(), insertPaymentQuery, payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
+	err := db.getConn().QueryRow(context.Background(), insertPaymentQuery, payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -132,7 +134,7 @@ VALUES `
 
 	str := strings.Join(valStr, ",")
 
-	_, err := db.pool.Query(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	_, err := db.getConn().Query(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -150,7 +152,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	// TODO: see if they have multiple memberships
 	numMemberships := 1
 
-	err := db.pool.QueryRow(context.Background(), checkLastPaymentQuery, memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
+	err := db.getConn().QueryRow(context.Background(), checkLastPaymentQuery, memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -159,7 +161,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 
 	if daysSincePayment > memberGracePeriod { // revoke
 		// sendRevokedEmail(email)
-		rows, err := db.pool.Query(context.Background(), updateMembershipLevelQuery, memberID, Inactive)
+		rows, err := db.getConn().Query(context.Background(), updateMembershipLevelQuery, memberID, Inactive)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
 		}
@@ -168,13 +170,15 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 		if daysSincePayment > membershipMonth {
 			// send notification because they are in a grace period
 			// sendGracePeriodMessage(email)
+
+			sendGracePeriodMessageToLeadership(email)
 		}
 
 		// a valid member
 		// determine their membership level
 		mLevel := MemberLevelFromAmount[amount]
 
-		rows, err := db.pool.Query(context.Background(), updateMembershipLevelQuery, memberID, mLevel)
+		rows, err := db.getConn().Query(context.Background(), updateMembershipLevelQuery, memberID, mLevel)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
 		}
@@ -182,6 +186,20 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	}
 
 	return nil
+}
+
+func sendGracePeriodMessageToLeadership(address string) {
+	conf, _ := config.Load()
+	if !conf.EnableInfoEmails {
+		return
+	}
+
+	mp, err := mail.Setup()
+	if err != nil {
+		log.Errorf("error setting up mailprovider when attempting to send email notification")
+	}
+
+	mp.SendSMTP("info@hackrva.org", address+": hackrva grace period", address+" membership is entering a grace period.")
 }
 
 func sendGracePeriodMessage(address string) {

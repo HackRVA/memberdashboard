@@ -64,7 +64,7 @@ type AssignRFIDRequest struct {
 
 // GetMembers - gets the status from DB
 func (db *Database) GetMembers() []Member {
-	rows, err := db.pool.Query(context.Background(), getMemberQuery)
+	rows, err := db.getConn().Query(db.ctx, getMemberQuery)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -94,7 +94,7 @@ func (db *Database) GetMembers() []Member {
 
 			resource, err := db.GetResourceByID(rID)
 			if err != nil {
-				log.Debugf("error getting resource by id in memberResource lookup: %s\n", err.Error())
+				log.Debugf("error getting resource by id in memberResource lookup: %s %s_\n", err.Error(), rID)
 				continue
 			}
 
@@ -117,7 +117,7 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 	var m Member
 	var rIDs []string
 
-	err := db.pool.QueryRow(context.Background(), getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
+	err := db.getConn().QueryRow(context.Background(), getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -134,7 +134,7 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 		}
 		resource, err := db.GetResourceByID(rID)
 		if err != nil {
-			log.Debugf("error getting resource by id in memberResource lookup: %s\n", err.Error())
+			log.Debugf("error getting resource by id in memberResource lookup: %s %s\n", err.Error(), rID)
 		}
 
 		resourceMemo[rID] = MemberResource{
@@ -155,7 +155,7 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 		return m, err
 	}
 
-	err = db.pool.QueryRow(context.Background(), setMemberRFIDTag, email, encodeRFID(RFIDTag)).Scan(&m.RFID)
+	err = db.getConn().QueryRow(context.Background(), setMemberRFIDTag, email, encodeRFID(RFIDTag)).Scan(&m.RFID)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -167,7 +167,7 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 func (db *Database) AddMember(email string, name string) (Member, error) {
 	var m Member
 
-	err := db.pool.QueryRow(context.Background(), insertMemberQuery, name, email).Scan(&m.ID, &m.Name, &m.Email)
+	err := db.getConn().QueryRow(context.Background(), insertMemberQuery, name, email).Scan(&m.ID, &m.Name, &m.Email)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -188,7 +188,7 @@ VALUES `
 
 	str := strings.Join(valStr, ",")
 
-	_, err := db.pool.Query(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	_, err := db.getConn().Query(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}

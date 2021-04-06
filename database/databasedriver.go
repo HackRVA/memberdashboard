@@ -15,15 +15,16 @@ import (
 //  in a concurrently safe manner
 type Database struct {
 	pool *pgxpool.Pool
+	ctx  context.Context
 }
 
 // Setup - sets up connection pool so that we can connect to the db in a
 //   concurrently safe manner
 func Setup() (*Database, error) {
-	db := &Database{}
-
-	connection := getDBConnection(context.Background())
-	db.pool = connection
+	db := &Database{
+		ctx:  context.Background(),
+		pool: getDBConnection(context.Background()),
+	}
 
 	return db, nil
 }
@@ -37,6 +38,16 @@ func (db *Database) Release() error {
 	}
 	defer conn.Release()
 	return nil
+}
+
+func (db *Database) getConn() *pgxpool.Pool {
+	conn, _ := db.pool.Acquire(context.Background())
+	if conn.Conn().IsClosed() {
+		db.pool = getDBConnection(context.Background())
+	}
+
+	defer conn.Release()
+	return db.pool
 }
 
 func getDBConnection(ctx context.Context) *pgxpool.Pool {
@@ -66,6 +77,8 @@ func getDBConnection(ctx context.Context) *pgxpool.Pool {
 	if dbPool == nil {
 		log.Fatalln("could not connect to the database")
 	}
+
+	dbPool.Config().ConnConfig.PreferSimpleProtocol = true
 
 	// Get a connection from the pool and check if the database connection is active and working
 	db, err := dbPool.Acquire(ctx)

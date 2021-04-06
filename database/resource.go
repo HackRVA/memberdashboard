@@ -1,7 +1,6 @@
 package database
 
 import (
-	"context"
 	"errors"
 	"fmt"
 
@@ -140,7 +139,7 @@ type MemberResourceRelation struct {
 
 // GetResources - gets the status from DB
 func (db *Database) GetResources() []Resource {
-	rows, err := db.pool.Query(context.Background(), getResourceQuery)
+	rows, err := db.getConn().Query(db.ctx, getResourceQuery)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -162,7 +161,7 @@ func (db *Database) GetResources() []Resource {
 func (db *Database) GetResourceByID(ID string) (Resource, error) {
 	var r Resource
 
-	err := db.pool.QueryRow(context.Background(), getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	err := db.getConn().QueryRow(db.ctx, getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -174,7 +173,7 @@ func (db *Database) GetResourceByID(ID string) (Resource, error) {
 func (db *Database) GetResourceByName(resourceName string) (Resource, error) {
 	var r Resource
 
-	err := db.pool.QueryRow(context.Background(), getResourceByNameQuery, resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	err := db.getConn().QueryRow(db.ctx, getResourceByNameQuery, resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("getResourceByName failed: %v", err)
 	}
@@ -190,7 +189,7 @@ func (db *Database) RegisterResource(name string, address string, is_default boo
 	r.Address = address
 	r.IsDefault = is_default
 
-	_, err := db.pool.Exec(context.Background(), insertResourceQuery, r.Name, r.Address, r.IsDefault)
+	_, err := db.getConn().Exec(db.ctx, insertResourceQuery, r.Name, r.Address, r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("error inserting resource: %s", err.Error())
 	}
@@ -208,7 +207,7 @@ func (db *Database) UpdateResource(id string, name string, address string, is_de
 		return r, errors.New("invalid resourseID of 0")
 	}
 
-	row := db.pool.QueryRow(context.Background(), updateResourceQuery, id, name, address, is_default).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	row := db.getConn().QueryRow(db.ctx, updateResourceQuery, id, name, address, is_default).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if row == pgx.ErrNoRows {
 		log.Printf("no rows affected %s", row.Error())
 		return r, errors.New("no rows affected")
@@ -219,7 +218,7 @@ func (db *Database) UpdateResource(id string, name string, address string, is_de
 
 // DeleteResource - delete a resource from the db
 func (db *Database) DeleteResource(id string) error {
-	rows, err := db.pool.Query(context.Background(), deleteResourceQuery, id)
+	rows, err := db.getConn().Query(db.ctx, deleteResourceQuery, id)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -251,7 +250,7 @@ func (db *Database) AddMultipleMembersToResource(emails []string, resourceID str
 		memberResource.MemberID = member.ID
 		memberResource.ResourceID = resource.ID
 
-		row := db.pool.QueryRow(context.Background(), insertMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID)
+		row := db.getConn().QueryRow(db.ctx, insertMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID)
 		if row == pgx.ErrNoRows {
 			return membersResource, errors.New("no rows affected")
 		}
@@ -271,7 +270,7 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 		return []MemberResourceRelation{}, err
 	}
 
-	rows, err := db.pool.Query(context.Background(), insertMemberDefaultResourceQuery, m.ID)
+	rows, err := db.getConn().Query(db.ctx, insertMemberDefaultResourceQuery, m.ID)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -292,7 +291,7 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 func (db *Database) GetMemberResourceRelation(m Member, r Resource) (MemberResourceRelation, error) {
 	mr := MemberResourceRelation{}
 
-	row := db.pool.QueryRow(context.Background(), getMemberResourceQuery, m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
+	row := db.getConn().QueryRow(db.ctx, getMemberResourceQuery, m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
 	if row == pgx.ErrNoRows {
 		return mr, errors.New("no rows affected")
 	}
@@ -319,7 +318,7 @@ func (db *Database) RemoveUserFromResource(email string, resourceID string) erro
 		return err
 	}
 
-	commandTag, err := db.pool.Exec(context.Background(), removeMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID)
+	commandTag, err := db.getConn().Exec(db.ctx, removeMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID)
 	if err != nil {
 		return err
 	}
@@ -335,7 +334,7 @@ func (db *Database) RemoveUserFromResource(email string, resourceID string) erro
 func (db *Database) GetResourceACL(r Resource) ([]string, error) {
 	var accessList []string
 
-	rows, err := db.pool.Query(context.Background(), getResourceACLByResourceIDQuery, r.ID)
+	rows, err := db.getConn().Query(db.ctx, getResourceACLByResourceIDQuery, r.ID)
 	if err != nil {
 		return accessList, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -355,7 +354,7 @@ func (db *Database) GetResourceACL(r Resource) ([]string, error) {
 func (db *Database) GetResourceACLWithMemberInfo(r Resource) ([]Member, error) {
 	var accessList []Member
 
-	rows, err := db.pool.Query(context.Background(), getResourceACLByResourceIDQueryWithMemberInfo, r.ID)
+	rows, err := db.getConn().Query(db.ctx, getResourceACLByResourceIDQueryWithMemberInfo, r.ID)
 	if err != nil {
 		return accessList, fmt.Errorf("conn.Query failed: %v", err)
 	}
