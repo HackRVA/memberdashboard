@@ -1,9 +1,7 @@
 package payments
 
 import (
-	"fmt"
 	"memberserver/database"
-	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -53,66 +51,40 @@ func processPayments(payments []database.Payment) {
 	}
 	defer db.Release()
 
-	var wg sync.WaitGroup
-	var awg sync.WaitGroup
-	paymentChan := make(chan database.Payment, len(payments)+1)
+	var membersToAdd []database.Member
 
 	for _, p := range payments {
-		wg.Add(1)
-		go processPayment(p, paymentChan, db, &wg)
-	}
-	wg.Wait()
-	log.Debug("done processing payments")
-
-	for range payments {
-		select {
-		case pay := <-paymentChan:
-			awg.Add(1)
-			go addPaymentToDB(pay, db, &awg)
-		default:
-			fmt.Println("payment wasn't received in channel")
+		if p.Name == "" && p.Email == "" {
+			continue
 		}
-	}
-	awg.Wait()
-	close(paymentChan)
-}
 
-// processPayment will attribute a payment to a member.
-func processPayment(p database.Payment, paymentChan chan database.Payment, db *database.Database, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	// if there's no email address, this is not a member payment
-	// this could possibly be outgoing transactions
-	if p.Email == "" {
-		log.Debugf("transaction without email: %s %s %s %s\n", p.Amount.Display(), p.Name, p.Email, p.Date.String())
-		return
-	}
-
-	// check that member exists in db
-	m, err := db.GetMemberByEmail(p.Email)
-	if err != nil {
-		// if member doesn't exist, add them
-		am, err := db.AddMember(p.Email, p.Name)
-		if err != nil {
-			log.Errorf("error adding member to DB: %s", err.Error())
+		newMember := database.Member{
+			Name:  p.Name,
+			Email: p.Email,
 		}
-		db.AddUserToDefaultResources(p.Email)
-		p.MemberID = am.ID
-		paymentChan <- p
-		return
+
+		membersToAdd = append(membersToAdd, newMember)
 	}
 
-	p.MemberID = m.ID
-	paymentChan <- p
-}
-
-func addPaymentToDB(p database.Payment, db *database.Database, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	log.Debugf("adding payment to db: %s %s %s %s\n", p.Amount.Display(), p.Name, p.Email, p.Date.String())
-
-	err := db.AddPayment(p)
+	err = db.AddMembers(membersToAdd)
 	if err != nil {
-		log.Errorf("error adding payment to db: %s, %s, %s, %s: %s", p.Email, p.Amount.Display(), p.Date.String(), p.MemberID, err.Error())
+		log.Error(err)
 	}
+
+	members := db.GetMembers()
+
+	memberLookup := make(map[string]database.Member)
+
+	for _, m := range members {
+		memberLookup[m.Email] = m
+	}
+
+	var paymentsWithMemberID []database.Payment
+	for _, p := range payments {
+		payment := p
+		payment.MemberID = memberLookup[p.Email].ID
+		paymentsWithMemberID = append(paymentsWithMemberID, payment)
+	}
+
+	db.AddPayments(paymentsWithMemberID)
 }

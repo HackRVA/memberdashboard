@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -63,11 +64,7 @@ type AssignRFIDRequest struct {
 
 // GetMembers - gets the status from DB
 func (db *Database) GetMembers() []Member {
-
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
-	rows, err := pool.Query(ctx, getMemberQuery)
+	rows, err := db.pool.Query(context.Background(), getMemberQuery)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -120,10 +117,7 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 	var m Member
 	var rIDs []string
 
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
-	err := pool.QueryRow(ctx, getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
+	err := db.pool.QueryRow(context.Background(), getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -155,17 +149,13 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 
 // SetRFIDTag sets the rfid tag as
 func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
-
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
 	m, err := db.GetMemberByEmail(email)
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())
 		return m, err
 	}
 
-	err = pool.QueryRow(ctx, setMemberRFIDTag, email, encodeRFID(RFIDTag)).Scan(&m.RFID)
+	err = db.pool.QueryRow(context.Background(), setMemberRFIDTag, email, encodeRFID(RFIDTag)).Scan(&m.RFID)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -177,13 +167,31 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 func (db *Database) AddMember(email string, name string) (Member, error) {
 	var m Member
 
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
-	err := pool.QueryRow(ctx, insertMemberQuery, name, email).Scan(&m.ID, &m.Name, &m.Email)
+	err := db.pool.QueryRow(context.Background(), insertMemberQuery, name, email).Scan(&m.ID, &m.Name, &m.Email)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
 
 	return m, err
+}
+
+// AddMember adds multiple members to the database
+func (db *Database) AddMembers(members []Member) error {
+	sqlStr := `INSERT INTO membership.members(
+name, email, member_tier_id)
+VALUES `
+
+	var valStr []string
+	for _, m := range members {
+		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d)", m.Name, m.Email, 1))
+	}
+
+	str := strings.Join(valStr, ",")
+
+	_, err := db.pool.Query(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	if err != nil {
+		return fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	return err
 }

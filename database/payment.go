@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Rhymond/go-money"
@@ -74,11 +75,7 @@ type Payment struct {
 
 // GetPayments - get list of payments that we have in the db
 func (db *Database) GetPayments() ([]Payment, error) {
-
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
-	rows, err := pool.Query(ctx, getPaymentsQuery)
+	rows, err := db.pool.Query(context.Background(), getPaymentsQuery)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -108,15 +105,37 @@ func (db *Database) AddPayment(payment Payment) error {
 	var p Payment
 	var amount int64
 
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
-	err := pool.QueryRow(ctx, insertPaymentQuery, payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
+	err := db.pool.QueryRow(context.Background(), insertPaymentQuery, payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
 
 	p.Amount = *money.New(amount*100, "USD")
+
+	return err
+}
+
+// AddPayment adds multiple payments to the database
+func (db *Database) AddPayments(payments []Payment) error {
+	var valStr []string
+
+	sqlStr := `INSERT INTO membership.payments(
+date, amount, member_id)
+VALUES `
+
+	for _, p := range payments {
+		if p.MemberID == "" {
+			continue
+		}
+		valStr = append(valStr, fmt.Sprintf("('%s', %d, '%s')", p.Date.Format("2006-01-02"), p.Amount.Amount()/100, p.MemberID))
+	}
+
+	str := strings.Join(valStr, ",")
+
+	_, err := db.pool.Query(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	if err != nil {
+		return fmt.Errorf("conn.Query failed: %v", err)
+	}
 
 	return err
 }
@@ -128,13 +147,10 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	var amount int64
 	var email string
 
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
 	// TODO: see if they have multiple memberships
 	numMemberships := 1
 
-	err := pool.QueryRow(ctx, checkLastPaymentQuery, memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
+	err := db.pool.QueryRow(context.Background(), checkLastPaymentQuery, memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -143,7 +159,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 
 	if daysSincePayment > memberGracePeriod { // revoke
 		// sendRevokedEmail(email)
-		rows, err := pool.Query(context.Background(), updateMembershipLevelQuery, memberID, Inactive)
+		rows, err := db.pool.Query(context.Background(), updateMembershipLevelQuery, memberID, Inactive)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
 		}
@@ -158,7 +174,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 		// determine their membership level
 		mLevel := MemberLevelFromAmount[amount]
 
-		rows, err := pool.Query(context.Background(), updateMembershipLevelQuery, memberID, mLevel)
+		rows, err := db.pool.Query(context.Background(), updateMembershipLevelQuery, memberID, mLevel)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
 		}

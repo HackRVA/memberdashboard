@@ -15,21 +15,7 @@ services:
         networks:
             - membership
         env_file:
-            - memberserver.env
-        environment:
-            - DATABASE_CONNECTION_STRING=postgresql://test:test@postgres:5432/membership
-            - MEMBER_SERVER_CONFIG_FILE=${MEMBER_SERVER_CONFIG_FILE}
-            - ACCESS_SECRET=${ACCESS_SECRET}
-            - PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID}
-            - PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET}
-            - PAYPAL_API_URL=${PAYPAL_API_URL}
-            - MAILGUN_API_URL=${MAILGUN_API_URL}
-            - MAILGUN_KEY=${MAILGUN_KEY}
-            - MAILGUN_FROM_ADDRESS=${MAILGUN_FROM_ADDRESS}
-            - MAILGUN_USER=${MAILGUN_USER}
-            - MAILGUN_PASSWORD=${MAILGUN_PASSWORD}
-            - SLACK_ACCESS_EVENTS_HOOK=${SLACK_ACCESS_EVENTS_HOOK}
-            - MQTT_BROKER_ADDRESS=${MQTT_BROKER_ADDRESS}
+            - memberserver.example.env
         volumes:
             # This is go modules cache, without it you will have to
             # re-download all dependencies after restarting container

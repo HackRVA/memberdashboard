@@ -35,10 +35,6 @@ const getUserQuery = `SELECT email from membership.users where email=$1`
 
 // RegisterUser register a user in the db
 func (db *Database) RegisterUser(email string, password string) error {
-
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
 	if len(password) == 0 {
 		return fmt.Errorf("not a valid password")
 	}
@@ -52,7 +48,7 @@ func (db *Database) RegisterUser(email string, password string) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
 
 	// Next, insert the email, along with the hashed password into the database
-	rows, err := pool.Query(ctx, registerUserQuery, email, string(hashedPassword))
+	rows, err := db.pool.Query(context.Background(), registerUserQuery, email, string(hashedPassword))
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %s", err)
 	}
@@ -67,11 +63,8 @@ func (db *Database) UserSignin(email string, password string) error {
 	// We create another instance of `Credentials` to store the credentials we get from the database
 	storedCreds := &Credentials{}
 
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
 	// Get the existing entry present in the database for the given user
-	row := pool.QueryRow(ctx, getUserPasswordQuery, email).Scan(&storedCreds.Password)
+	row := db.pool.QueryRow(context.Background(), getUserPasswordQuery, email).Scan(&storedCreds.Password)
 	if row == pgx.ErrNoRows {
 		return fmt.Errorf("Unauthorized")
 	}
@@ -89,10 +82,7 @@ func (db *Database) UserSignin(email string, password string) error {
 func (db *Database) GetUser(email string) (UserResponse, error) {
 	var userResponse UserResponse
 
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
-	row := pool.QueryRow(ctx, getUserQuery, email).Scan(&userResponse.Email)
+	row := db.pool.QueryRow(context.Background(), getUserQuery, email).Scan(&userResponse.Email)
 	if row == pgx.ErrNoRows {
 		return userResponse, fmt.Errorf("error getting user")
 	}

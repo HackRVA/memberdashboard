@@ -21,6 +21,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// swagger:response VersionResponse
 type versionResponse struct {
 	// Commit Hash
 	//

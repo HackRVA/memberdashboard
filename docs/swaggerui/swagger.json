@@ -981,6 +981,16 @@
     }
   },
   "responses": {
+    "VersionResponse": {
+      "description": "",
+      "headers": {
+        "commit": {
+          "type": "string",
+          "example": "\"ffff\"",
+          "description": "Commit Hash"
+        }
+      }
+    },
     "addMemberToResourceResponse": {
       "description": "",
       "schema": {

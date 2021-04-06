@@ -50,11 +50,7 @@ type Tier struct {
 
 // GetMemberTiers - gets the member tiers from DB
 func (db *Database) GetMemberTiers() []Tier {
-
-	ctx := context.Background()
-	pool := getDBConnection(ctx)
-
-	rows, err := pool.Query(ctx, getMemberTiersQuery)
+	rows, err := db.pool.Query(context.Background(), getMemberTiersQuery)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
