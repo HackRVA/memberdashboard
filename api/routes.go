@@ -301,7 +301,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: infoResponse
 	rr.HandleFunc("/info", api.Info)
-	// swagger:route GET /api/resetdbconnection debug debug
+	// swagger:route GET /debug/resetdbconnection debug debug
 	//
 	// A debug endpoint to try to reconnect the app to the DB
 	//
@@ -315,7 +315,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	rr.HandleFunc("/resetdbconnection", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/debug/resetdbconnection", func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		api.db.Release()
 		api.db, err = database.Setup()
