@@ -16,6 +16,7 @@ package api
 
 import (
 	"encoding/json"
+	"memberserver/database"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -300,6 +301,36 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: infoResponse
 	rr.HandleFunc("/info", api.Info)
+	// swagger:route GET /api/resetdbconnection debug debug
+	//
+	// A debug endpoint to try to reconnect the app to the DB
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Schemes: http
+	//
+	//     Responses:
+	//       200: endpointSuccessResponse
+	rr.HandleFunc("/resetdbconnection", func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		api.db.Release()
+		api.db, err = database.Setup()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		j, _ := json.Marshal(endpointSuccess{
+			Ack: true,
+		})
+		w.Write(j)
+	})
 	// swagger:route POST /api/assignRFID member setRFIDRequest
 	//
 	// Assigns an RFID tag to a member

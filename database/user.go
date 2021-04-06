@@ -43,9 +43,18 @@ func (db *Database) RegisterUser(email string, password string) error {
 		return fmt.Errorf("not a valid email")
 	}
 
+	// require the user to be a member
+	_, err := db.GetMemberByEmail(email)
+	if err != nil {
+		return err
+	}
+
 	// Salt and hash the password using the bcrypt algorithm
 	// The second argument is the cost of hashing, which we arbitrarily set as 8 (this value can be more or less, depending on the computing power you wish to utilize)
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
+	if err != nil {
+		return err
+	}
 
 	// Next, insert the email, along with the hashed password into the database
 	rows, err := db.pool.Query(context.Background(), registerUserQuery, email, string(hashedPassword))

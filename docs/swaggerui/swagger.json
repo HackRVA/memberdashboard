@@ -231,6 +231,31 @@
         }
       }
     },
+    "/api/resetdbconnection": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "A debug endpoint to try to reconnect the app to the DB",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "debug"
+        ],
+        "operationId": "debug",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/endpointSuccessResponse"
+          }
+        }
+      }
+    },
     "/api/resource": {
       "get": {
         "security": [
