@@ -49,6 +49,14 @@ export const memberListStyles: CSSResult = css`
     --mdc-typography-button-font-size: 12px;
   }
 
+  .refresh-members-list {
+    float: right;
+    margin-top: 16px;
+    width: 192px;
+    margin-right: 24px;
+    --mdc-typography-button-font-size: 12px;
+  }
+
   .remove {
     --mdc-theme-primary: #e9437a;
   }

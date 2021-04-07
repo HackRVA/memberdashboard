@@ -177,7 +177,7 @@
       }
     },
     "/api/payments/refresh": {
-      "get": {
+      "post": {
         "security": [
           {
             "bearerAuth": []
@@ -224,31 +224,6 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/endpointSuccessResponse"
-          }
-        }
-      }
-    },
-    "/api/resetdbconnection": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "description": "A debug endpoint to try to reconnect the app to the DB",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http"
-        ],
-        "tags": [
-          "debug"
-        ],
-        "operationId": "debug",
         "responses": {
           "200": {
             "$ref": "#/responses/endpointSuccessResponse"
@@ -604,6 +579,31 @@
         "responses": {
           "200": {
             "$ref": "#/responses/VersionResponse"
+          }
+        }
+      }
+    },
+    "/debug/resetdbconnection": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "A debug endpoint to try to reconnect the app to the DB",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "debug"
+        ],
+        "operationId": "debug",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/endpointSuccessResponse"
           }
         }
       }

@@ -81,7 +81,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getTierResponse
 	rr.HandleFunc("/tier", api.getTiers)
-	// swagger:route GET /api/payments/refresh payments getRefreshPayments
+	// swagger:route POST /api/payments/refresh payments getRefreshPayments
 	//
 	// Refresh payment information
 	//

@@ -63,6 +63,7 @@ export class RFIDModal extends LitElement {
     this.memberService.assignRFID(request).subscribe({
       complete: () => {
         this.displayToastMsg("Success");
+        this.fireUpdatedEvent();
         this.emptyFormField();
         this.rfidModalTemplate.close();
       },
@@ -80,6 +81,11 @@ export class RFIDModal extends LitElement {
         "Hrmmm, are you sure everything in the form is correct?"
       );
     }
+  }
+
+  fireUpdatedEvent(): void {
+    const updatedEvent = new CustomEvent("updated");
+    this.dispatchEvent(updatedEvent);
   }
 
   emptyFormField(): void {
@@ -120,6 +126,7 @@ export class RFIDModal extends LitElement {
           label="RFID"
           helper="RFID"
           id="rfid"
+          type="number"
         ></mwc-textfield>
         <mwc-button slot="primaryAction" @click=${this.handleSubmit}>
           Submit
