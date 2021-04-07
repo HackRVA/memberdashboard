@@ -12,7 +12,7 @@ import {
 // membership
 import { MemberService } from "../../service";
 import "./member-list";
-import { MemberResponse } from "./types";
+import { MemberLevel, MemberResponse } from "./types";
 
 @customElement("members-page")
 export class MembersPage extends LitElement {
@@ -34,7 +34,7 @@ export class MembersPage extends LitElement {
     this.memberService.getMembers().subscribe({
       next: (result: any) => {
         this.members = result as MemberResponse[];
-        this.memberCount = this.members.length;
+        this.memberCount = this.getActiveMembers().length;
       },
       error: () => {
         console.error("unable to get members");
@@ -43,6 +43,12 @@ export class MembersPage extends LitElement {
   }
   static get styles(): CSSResult {
     return css``;
+  }
+
+  getActiveMembers(): MemberResponse[] {
+    return this.members.filter(
+      (x: MemberResponse) => x.memberLevel !== MemberLevel.inactive
+    );
   }
 
   render(): TemplateResult {
