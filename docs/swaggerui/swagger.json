@@ -628,31 +628,6 @@
           }
         }
       }
-    },
-    "/debug/resetdbconnection": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "description": "A debug endpoint to try to reconnect the app to the DB",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http"
-        ],
-        "tags": [
-          "debug"
-        ],
-        "operationId": "debug",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/endpointSuccessResponse"
-          }
-        }
-      }
     }
   },
   "definitions": {
@@ -989,21 +964,6 @@
       },
       "x-go-package": "memberserver/api"
     },
-    "heartBeat": {
-      "type": "object",
-      "properties": {
-        "lastHeartBeat": {
-          "type": "string",
-          "format": "date-time",
-          "x-go-name": "LastHeartBeat"
-        },
-        "resource": {
-          "type": "string",
-          "x-go-name": "ResourceName"
-        }
-      },
-      "x-go-package": "memberserver/api"
-    },
     "memberResourceRelation": {
       "description": "resource to update or delete a resource",
       "type": "object",
@@ -1134,7 +1094,8 @@
       "schema": {
         "type": "object",
         "additionalProperties": {
-          "$ref": "#/definitions/heartBeat"
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -1149,8 +1110,8 @@
       "schema": {
         "type": "object",
         "additionalProperties": {
-          "type": "integer",
-          "format": "uint8"
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
