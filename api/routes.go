@@ -16,7 +16,6 @@ package api
 
 import (
 	"encoding/json"
-	"memberserver/database"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -43,7 +42,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -58,7 +57,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -73,7 +72,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -96,7 +95,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -112,7 +111,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -127,7 +126,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -145,7 +144,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -164,7 +163,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -172,6 +171,21 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200:
 	rr.HandleFunc("/resource", api.resource.Resource).Methods(http.MethodPut, http.MethodDelete, http.MethodGet)
+	// swagger:route GET /api/resource/heartbeat resource getResourceHeartbeat
+	//
+	// Returns the last heartbeats from all resources
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: getResourceHeartBeatResponse
+	rr.HandleFunc("/resource/heartbeat", api.resource.heartbeats).Methods(http.MethodGet)
 	// swagger:route GET /api/resource/status resource getResourceStatus
 	//
 	// Returns status of the resources.
@@ -186,7 +200,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -204,7 +218,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -222,7 +236,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -240,7 +254,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -258,7 +272,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -276,7 +290,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Security:
 	//     - bearerAuth:
@@ -296,41 +310,11 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Security:
 	//     - bearerAuth:
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Responses:
 	//       200: infoResponse
 	rr.HandleFunc("/info", api.Info)
-	// swagger:route GET /debug/resetdbconnection debug debug
-	//
-	// A debug endpoint to try to reconnect the app to the DB
-	//
-	//     Produces:
-	//     - application/json
-	//
-	//     Security:
-	//     - bearerAuth:
-	//
-	//     Schemes: http
-	//
-	//     Responses:
-	//       200: endpointSuccessResponse
-	r.HandleFunc("/debug/resetdbconnection", func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		api.db.Release()
-		api.db, err = database.Setup()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-
-		j, _ := json.Marshal(endpointSuccess{
-			Ack: true,
-		})
-		w.Write(j)
-	})
 	// swagger:route POST /api/assignRFID member setRFIDRequest
 	//
 	// Assigns an RFID tag to a member
@@ -344,7 +328,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Responses:
 	//       200: setRFIDResponse
@@ -360,7 +344,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Responses:
 	//       200: VersionResponse
@@ -387,7 +371,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Responses:
 	//       200: loginResponse
@@ -402,7 +386,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Responses:
 	//       200:
@@ -415,7 +399,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Produces:
 	//     - application/json
 	//
-	//     Schemes: http
+	//     Schemes: http, https
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse

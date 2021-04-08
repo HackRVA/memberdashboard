@@ -23,7 +23,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "member"
@@ -58,7 +59,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "info"
@@ -82,7 +84,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "auth"
@@ -112,7 +115,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "auth"
@@ -137,7 +141,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "member"
@@ -163,7 +168,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "payments"
@@ -188,7 +194,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "payments"
@@ -209,7 +216,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "auth"
@@ -242,7 +250,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -268,7 +277,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -303,7 +313,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -341,7 +352,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -350,6 +362,32 @@
         "responses": {
           "200": {
             "$ref": "#/responses/endpointSuccessResponse"
+          }
+        }
+      }
+    },
+    "/api/resource/heartbeat": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Returns the last heartbeats from all resources",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "operationId": "getResourceHeartbeat",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getResourceHeartBeatResponse"
           }
         }
       }
@@ -368,7 +406,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -396,7 +435,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -433,7 +473,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -468,7 +509,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -497,7 +539,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -521,7 +564,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "member"
@@ -546,7 +590,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "user"
@@ -570,7 +615,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "version"
@@ -579,31 +625,6 @@
         "responses": {
           "200": {
             "$ref": "#/responses/VersionResponse"
-          }
-        }
-      }
-    },
-    "/debug/resetdbconnection": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "description": "A debug endpoint to try to reconnect the app to the DB",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http"
-        ],
-        "tags": [
-          "debug"
-        ],
-        "operationId": "debug",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/endpointSuccessResponse"
           }
         }
       }
@@ -1068,6 +1089,16 @@
         "Body": {}
       }
     },
+    "getResourceHeartBeatResponse": {
+      "description": "",
+      "schema": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "getResourceResponse": {
       "description": "",
       "schema": {
@@ -1079,8 +1110,8 @@
       "schema": {
         "type": "object",
         "additionalProperties": {
-          "type": "integer",
-          "format": "uint8"
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

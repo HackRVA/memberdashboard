@@ -2,8 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"memberserver/cache"
 	"memberserver/database"
 	"net/http"
+	"time"
 
 	"memberserver/resourcemanager"
 
@@ -88,10 +90,16 @@ type addMulitpleMembersToResourceResponse struct {
 	Body []database.MemberResourceRelation
 }
 
+// swagger:response getResourceHeartBeatResponse
+type getResourceHeartBeatResponse struct {
+	// in: body
+	Body map[string]time.Time
+}
+
 // swagger:response getResourceStatusResponse
 type getResourceStatusResponse struct {
 	// in: body
-	Body map[string]uint8
+	Body map[string]time.Time
 }
 
 // swagger:response removeMemberSuccessResponse
@@ -240,6 +248,23 @@ func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(r)
+	w.Write(j)
+}
+
+// heartbeats returns the last known heartbeat from all resources.
+func (rs resourceAPI) heartbeats(w http.ResponseWriter, req *http.Request) {
+	resources := rs.db.GetResources()
+	heartBeats := make(map[string]time.Time)
+
+	for _, r := range resources {
+		if r == (database.Resource{}) {
+			continue
+		}
+		heartBeats[r.Name] = cache.GetLastHeartbeat(r)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(heartBeats)
 	w.Write(j)
 }
 
