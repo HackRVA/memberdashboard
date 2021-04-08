@@ -80,6 +80,7 @@ func checkResourceInit() {
 	for _, r := range resources {
 		resourcemanager.Subscribe(r.Name+"/send", resourcemanager.OnAccessEvent)
 		resourcemanager.Subscribe(r.Name+"/result", resourcemanager.HealthCheck)
+		resourcemanager.Subscribe(r.Name+"/sync", resourcemanager.OnHeartBeat)
 		resourcemanager.CheckStatus(r)
 	}
 }

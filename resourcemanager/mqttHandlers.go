@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"memberserver/cache"
 	"memberserver/config"
 	"memberserver/database"
 	"net/http"
@@ -86,4 +87,22 @@ var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Messag
 	}
 
 	defer res.Body.Close()
+}
+
+type HeartBeat struct {
+	ResourceName string `json:"door"`
+}
+
+// OnHeartBeat handles heartbeats from
+var OnHeartBeat mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
+	var hb HeartBeat
+	err := json.Unmarshal(msg.Payload(), &hb)
+	if err != nil {
+		log.Errorf("error unmarshalling mqtt payload: %s", err)
+		return
+	}
+
+	cache.ResourceHeartbeat(database.Resource{
+		Name: hb.ResourceName,
+	})
 }

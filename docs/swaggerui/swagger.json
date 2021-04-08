@@ -23,7 +23,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "member"
@@ -58,7 +59,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "info"
@@ -82,7 +84,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "auth"
@@ -112,7 +115,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "auth"
@@ -137,7 +141,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "member"
@@ -163,7 +168,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "payments"
@@ -188,7 +194,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "payments"
@@ -209,7 +216,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "auth"
@@ -231,31 +239,6 @@
         }
       }
     },
-    "/api/resetdbconnection": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "description": "A debug endpoint to try to reconnect the app to the DB",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http"
-        ],
-        "tags": [
-          "debug"
-        ],
-        "operationId": "debug",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/endpointSuccessResponse"
-          }
-        }
-      }
-    },
     "/api/resource": {
       "get": {
         "security": [
@@ -267,7 +250,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -293,7 +277,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -328,7 +313,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -366,7 +352,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -375,6 +362,32 @@
         "responses": {
           "200": {
             "$ref": "#/responses/endpointSuccessResponse"
+          }
+        }
+      }
+    },
+    "/api/resource/heartbeat": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Returns the last heartbeats from all resources",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "operationId": "getResourceHeartbeat",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getResourceHeartBeatResponse"
           }
         }
       }
@@ -393,7 +406,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -421,7 +435,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -458,7 +473,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -493,7 +509,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -522,7 +539,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "resource"
@@ -546,7 +564,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "member"
@@ -571,7 +590,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "user"
@@ -595,7 +615,8 @@
           "application/json"
         ],
         "schemes": [
-          "http"
+          "http",
+          "https"
         ],
         "tags": [
           "version"
@@ -943,6 +964,21 @@
       },
       "x-go-package": "memberserver/api"
     },
+    "heartBeat": {
+      "type": "object",
+      "properties": {
+        "lastHeartBeat": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "LastHeartBeat"
+        },
+        "resource": {
+          "type": "string",
+          "x-go-name": "ResourceName"
+        }
+      },
+      "x-go-package": "memberserver/api"
+    },
     "memberResourceRelation": {
       "description": "resource to update or delete a resource",
       "type": "object",
@@ -1066,6 +1102,15 @@
       },
       "headers": {
         "Body": {}
+      }
+    },
+    "getResourceHeartBeatResponse": {
+      "description": "",
+      "schema": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/definitions/heartBeat"
+        }
       }
     },
     "getResourceResponse": {

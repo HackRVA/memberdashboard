@@ -10,6 +10,8 @@ go run resourcedummy.go
 ## MQTT CLI
 For MQTT cli, I'm using [hivemq](https://hivemq.github.io/mqtt-cli/docs/quick_start.html)
 
+[hivemq cli installation](https://www.hivemq.com/blog/mqtt-cli/)
+
 After installing hivemq, you should be able to run the shell scripts in this dir to simulate pub/sub to and from a resource.
 
 ## Authenticating
