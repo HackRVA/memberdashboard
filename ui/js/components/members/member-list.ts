@@ -22,13 +22,14 @@ import "@material/mwc-formfield";
 // membership
 import { MemberLevel, MemberResource, MemberResponse } from "./types";
 import { showComponent } from "./../../function";
-import { ResourceService, MemberService } from "../../service";
+import { ResourceService, MemberService, PaymentService } from "../../service";
 import { memberListStyles } from "./styles/member-list-styles";
 import "../shared/rfid-modal";
 import "./modals/add-member-to-resource-modal";
 import "./modals/remove-member-from-resource-modal";
 import "./modals/add-members-to-resource-modal";
 import "../shared/card-element";
+import { ToastMessage } from "../shared/types";
 
 @customElement("member-list")
 export class MemberList extends LitElement {
@@ -42,12 +43,14 @@ export class MemberList extends LitElement {
   email: string = "";
 
   memberEmails: string[] = [];
+  toastMsg: ToastMessage;
 
   membersCheckBoxTemplate: NodeListOf<Checkbox>;
   allMembersCheckBoxTemplate: Checkbox;
 
   memberService: MemberService = new MemberService();
   resourceService: ResourceService = new ResourceService();
+  paymentsService: PaymentService = new PaymentService();
 
   static get styles(): CSSResult[] {
     return [memberListStyles];
@@ -206,6 +209,21 @@ export class MemberList extends LitElement {
     this.requestUpdate();
   }
 
+  refreshMembersPayments(): void {
+    this.paymentsService.refreshPayments().subscribe({
+      complete: () => {
+        this.refreshMemberList();
+        this.displayToastMsg("Success");
+      },
+    });
+  }
+
+  displayToastMsg(message: string): void {
+    this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
+    this.requestUpdate();
+    showComponent("#toast-msg", this.shadowRoot);
+  }
+
   render(): TemplateResult {
     return html`
       <card-element>
@@ -213,7 +231,7 @@ export class MemberList extends LitElement {
           <div class="member-header">
             <h1>Members</h1>
             <span class="member-count">
-              <b>Member count: </b> 
+              <b>Number of active members: </b> 
               ${this.memberCount} 
             </span>
             <mwc-button 
@@ -225,6 +243,13 @@ export class MemberList extends LitElement {
             </mvc-button>
           </div>
           <div class="all-members-action-container">
+            <mwc-button 
+              class="refresh-members-list" 
+              unelevated 
+              dense 
+              label="Refresh member list"
+              @click=${this.refreshMembersPayments}> 
+            </mwc-button>
             <mwc-button
               class="add-resource-to-members"
               unelevated
@@ -267,8 +292,10 @@ export class MemberList extends LitElement {
         @updated=${this.refreshMemberList}> 
       </remove-member-from-resource-modal>
       <rfid-modal
-        id="rfid-modal"> 
+        id="rfid-modal"
+        @updated=${this.refreshMemberList}> 
       </rfid-modal>
+      <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
 }

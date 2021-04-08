@@ -11,4 +11,8 @@ export class PaymentService extends HTTPService {
   getPaymentCharts(): Observable<Response | { error: boolean; message: any }> {
     return this.get(this.api + "/payments/charts");
   }
+
+  refreshPayments(): Observable<Response | { error: boolean; message: any }> {
+    return this.post(this.api + "/payments/refresh");
+  }
 }
