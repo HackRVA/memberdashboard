@@ -3,6 +3,7 @@ package database
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -83,7 +84,8 @@ type Resource struct {
 	// Default state of the Resource
 	// required: true
 	// example: true
-	IsDefault bool `json:"isDefault"`
+	IsDefault     bool      `json:"isDefault"`
+	LastHeartBeat time.Time `json:"lastHeartBeat"`
 }
 
 // ResourceDeleteRequest - request for deleting a resource
@@ -137,6 +139,21 @@ type MemberResourceRelation struct {
 	ResourceID string `json:"resourceID"`
 }
 
+var resourceHeartBeatCache map[string]time.Time
+
+// ResourceHeartBeat stores the most recent timestamp that a resource checked in
+func ResourceHeartbeat(r Resource) {
+	if resourceHeartBeatCache == nil {
+		resourceHeartBeatCache = make(map[string]time.Time)
+	}
+	resourceHeartBeatCache[r.Name] = time.Now()
+}
+
+// GetLastHeartbeat
+func GetLastHeartbeat(r Resource) time.Time {
+	return resourceHeartBeatCache[r.Name]
+}
+
 // GetResources - gets the status from DB
 func (db *Database) GetResources() []Resource {
 	rows, err := db.getConn().Query(db.ctx, getResourceQuery)
@@ -151,6 +168,8 @@ func (db *Database) GetResources() []Resource {
 	for rows.Next() {
 		var r Resource
 		_ = rows.Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+
+		r.LastHeartBeat = GetLastHeartbeat(r)
 		resources = append(resources, r)
 	}
 

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"memberserver/cache"
 	"memberserver/config"
 	"memberserver/database"
 	"net/http"
@@ -102,7 +101,7 @@ var OnHeartBeat mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 		return
 	}
 
-	cache.ResourceHeartbeat(database.Resource{
+	database.ResourceHeartbeat(database.Resource{
 		Name: hb.ResourceName,
 	})
 }
