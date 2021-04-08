@@ -1,5 +1,3 @@
-import { css } from "lit-element";
-import "@material/mwc-button";
 // lit element
 import {
   LitElement,
@@ -8,30 +6,21 @@ import {
   TemplateResult,
   CSSResult,
 } from "lit-element";
-import "../shared/card-element";
+
+// material
+import "@material/mwc-button";
+
+// vaadin
 import { Router } from "@vaadin/router";
 
 // membership
+import "../shared/card-element";
+import { notFoundStyles } from "./styles";
 
 @customElement("not-found")
 export class NotFound extends LitElement {
-  static get styles(): CSSResult {
-    return css`
-      .not-found-container {
-        font-size: 36px;
-      }
-      .text-center {
-        text-align: center;
-      }
-      .sad-freshmon {
-        margin-top: 32px;
-        margin-bottom: 32px;
-        font-size: 70px;
-      }
-      .page-not-found {
-        margin-bottom: 32px;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [notFoundStyles];
   }
 
   goBackToHomePage(): void {
