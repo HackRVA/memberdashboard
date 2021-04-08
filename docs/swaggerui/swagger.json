@@ -366,32 +366,6 @@
         }
       }
     },
-    "/api/resource/heartbeat": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "description": "Returns the last heartbeats from all resources",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "resource"
-        ],
-        "operationId": "getResourceHeartbeat",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/getResourceHeartBeatResponse"
-          }
-        }
-      }
-    },
     "/api/resource/member": {
       "delete": {
         "security": [
@@ -826,6 +800,11 @@
           "x-go-name": "IsDefault",
           "example": true
         },
+        "lastHeartBeat": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "LastHeartBeat"
+        },
         "name": {
           "description": "Name of the Resource",
           "type": "string",
@@ -1087,16 +1066,6 @@
       },
       "headers": {
         "Body": {}
-      }
-    },
-    "getResourceHeartBeatResponse": {
-      "description": "",
-      "schema": {
-        "type": "object",
-        "additionalProperties": {
-          "type": "string",
-          "format": "date-time"
-        }
       }
     },
     "getResourceResponse": {

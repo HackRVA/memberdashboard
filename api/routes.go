@@ -171,21 +171,6 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200:
 	rr.HandleFunc("/resource", api.resource.Resource).Methods(http.MethodPut, http.MethodDelete, http.MethodGet)
-	// swagger:route GET /api/resource/heartbeat resource getResourceHeartbeat
-	//
-	// Returns the last heartbeats from all resources
-	//
-	//     Produces:
-	//     - application/json
-	//
-	//     Schemes: http, https
-	//
-	//     Security:
-	//     - bearerAuth:
-	//
-	//     Responses:
-	//       200: getResourceHeartBeatResponse
-	rr.HandleFunc("/resource/heartbeat", api.resource.heartbeats).Methods(http.MethodGet)
 	// swagger:route GET /api/resource/status resource getResourceStatus
 	//
 	// Returns status of the resources.
