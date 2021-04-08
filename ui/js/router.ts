@@ -43,6 +43,13 @@ const routes: Route[] = [
           await import("./components/payments/payments-page");
         },
       },
+      {
+        path: "(.*)",
+        component: "not-found",
+        action: async () => {
+          await import("./components/shared/not-found");
+        },
+      },
     ],
   },
 ];
