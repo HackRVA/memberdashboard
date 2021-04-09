@@ -13,7 +13,7 @@ import "@material/mwc-formfield";
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership
-import { UserService } from "../../service";
+import { AuthService } from "../../service";
 import { LoginRequest, Jwt } from "../user/types";
 import { ToastMessage } from "../shared/types";
 import { showComponent } from "../../function";
@@ -26,7 +26,7 @@ export class LoginForm extends LitElement {
   emailFieldTemplate: TextField;
   passwordFieldTemplate: TextField;
 
-  userService: UserService = new UserService();
+  authService: AuthService = new AuthService();
 
   toastMsg: ToastMessage;
 
@@ -65,7 +65,7 @@ export class LoginForm extends LitElement {
       password: this.passwordFieldTemplate?.value,
     };
 
-    this.userService.login(opts).subscribe({
+    this.authService.login(opts).subscribe({
       next: (result: any) => {
         const { token } = result as Jwt;
         localStorage.setItem("jwt", token);

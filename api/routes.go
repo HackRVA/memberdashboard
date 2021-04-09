@@ -317,7 +317,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: setRFIDResponse
-	r.HandleFunc("/member/assignRFID", api.assignRFID).Methods(http.MethodPost)
+	rr.HandleFunc("/member/assignRFID", api.assignRFID).Methods(http.MethodPost)
 	// swagger:route GET /api/version version Version
 	//
 	// Version
@@ -360,7 +360,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: loginResponse
-	r.HandleFunc("/auth/login", api.authenticate).Methods(http.MethodPost)
+	r.HandleFunc("/api/auth/login", api.authenticate).Methods(http.MethodPost)
 	// swagger:route POST /api/auth/logout auth logoutRequest
 	//
 	// Logout
@@ -375,7 +375,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200:
-	r.HandleFunc("/auth/logout", api.logout)
+	r.HandleFunc("/api/auth/logout", api.logout)
 	// swagger:route POST /api/auth/register auth registerUserRequest
 	//
 	// Register a new user
@@ -390,6 +390,6 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	r.HandleFunc("/auth/register", api.signup)
+	r.HandleFunc("/api/auth/register", api.signup)
 	return rr
 }

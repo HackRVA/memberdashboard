@@ -19,6 +19,7 @@ import "@material/mwc-menu";
 import { Router, RouterLocation } from "@vaadin/router";
 
 // membership
+import { AuthService } from "./service/auth.service";
 import "./components/shared/login-form";
 import { TabIndex } from "./enums";
 import "./router";
@@ -29,6 +30,7 @@ import { UserProfile } from "./components/user/types";
 export class MemberDashboard extends LitElement {
   email: string;
   userService: UserService = new UserService();
+  authService: AuthService = new AuthService();
 
   static get styles(): CSSResult {
     return css`
@@ -80,7 +82,7 @@ export class MemberDashboard extends LitElement {
   }
 
   handleLogout(): void {
-    this.userService.logout().subscribe({
+    this.authService.logout().subscribe({
       next: (response: null) => {
         localStorage.removeItem("jwt");
         window.location.reload();
