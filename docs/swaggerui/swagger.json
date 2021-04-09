@@ -13,68 +13,7 @@
     "version": "0.0.1"
   },
   "paths": {
-    "/api/assignRFID": {
-      "post": {
-        "description": "this is an unauthenticated request, for now.\nit assigns an RFID tag to a member",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "member"
-        ],
-        "summary": "Assigns an RFID tag to a member",
-        "operationId": "setRFIDRequest",
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/AssignRFIDRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/setRFIDResponse"
-          }
-        }
-      }
-    },
-    "/api/info": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "description": "This will simply respond with some sample info",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "info"
-        ],
-        "summary": "A simple hello world.",
-        "operationId": "info",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/infoResponse"
-          }
-        }
-      }
-    },
-    "/api/login": {
+    "/api/auth/login": {
       "post": {
         "description": "Login accepts some json with the `email` and `password`\nand returns some json that has the token string",
         "consumes": [
@@ -108,7 +47,7 @@
         }
       }
     },
-    "/api/logout": {
+    "/api/auth/logout": {
       "post": {
         "description": "Logout does not require a request body",
         "produces": [
@@ -126,6 +65,64 @@
         "responses": {
           "200": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "description": "Register a new user of the app",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register a new user",
+        "operationId": "registerUserRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Credentials"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/endpointSuccessResponse"
+          }
+        }
+      }
+    },
+    "/api/info": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "This will simply respond with some sample info",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "info"
+        ],
+        "summary": "A simple hello world.",
+        "operationId": "info",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/infoResponse"
           }
         }
       }
@@ -152,6 +149,66 @@
         "responses": {
           "200": {
             "$ref": "#/responses/getMemberResponse"
+          }
+        }
+      }
+    },
+    "/api/member/assignRFID": {
+      "post": {
+        "description": "this is an unauthenticated request, for now.\nit assigns an RFID tag to a member",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Assigns an RFID tag to a member",
+        "operationId": "setRFIDRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/AssignRFIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/setRFIDResponse"
+          }
+        }
+      }
+    },
+    "/api/member/tier": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Returns a list the member tiers.",
+        "operationId": "getTiers",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getTierResponse"
           }
         }
       }
@@ -205,36 +262,6 @@
         "responses": {
           "200": {
             "$ref": "#/responses/getPaymentRefreshResponse"
-          }
-        }
-      }
-    },
-    "/api/register": {
-      "post": {
-        "description": "Register a new user of the app",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "auth"
-        ],
-        "operationId": "registerUserRequest",
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Credentials"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/endpointSuccessResponse"
           }
         }
       }
@@ -523,32 +550,6 @@
         "responses": {
           "200": {
             "$ref": "#/responses/endpointSuccessResponse"
-          }
-        }
-      }
-    },
-    "/api/tier": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "member"
-        ],
-        "summary": "Returns a list the member tiers.",
-        "operationId": "getTiers",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/getTierResponse"
           }
         }
       }

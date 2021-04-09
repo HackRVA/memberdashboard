@@ -65,7 +65,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getMemberResponse
 	rr.HandleFunc("/member", api.getMembers)
-	// swagger:route GET /api/tier member getTiers
+	// swagger:route GET /api/member/tier member getTiers
 	//
 	// Returns a list the member tiers.
 	//
@@ -79,7 +79,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getTierResponse
-	rr.HandleFunc("/tier", api.getTiers)
+	rr.HandleFunc("/member/tier", api.getTiers)
 	// swagger:route POST /api/payments/refresh payments getRefreshPayments
 	//
 	// Refresh payment information
@@ -300,7 +300,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: infoResponse
 	rr.HandleFunc("/info", api.Info)
-	// swagger:route POST /api/assignRFID member setRFIDRequest
+	// swagger:route POST /api/member/assignRFID member setRFIDRequest
 	//
 	// Assigns an RFID tag to a member
 	//
@@ -317,7 +317,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: setRFIDResponse
-	r.HandleFunc("/api/assignRFID", api.assignRFID).Methods(http.MethodPost)
+	r.HandleFunc("/member/assignRFID", api.assignRFID).Methods(http.MethodPost)
 	// swagger:route GET /api/version version Version
 	//
 	// Version
@@ -343,7 +343,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 		j, _ := json.Marshal(version)
 		w.Write(j)
 	}).Methods(http.MethodGet)
-	// swagger:route POST /api/login auth loginRequest
+	// swagger:route POST /api/auth/login auth loginRequest
 	//
 	// Login
 	//
@@ -360,8 +360,8 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: loginResponse
-	r.HandleFunc("/api/login", api.authenticate).Methods(http.MethodPost)
-	// swagger:route POST /api/logout auth logoutRequest
+	r.HandleFunc("/auth/login", api.authenticate).Methods(http.MethodPost)
+	// swagger:route POST /api/auth/logout auth logoutRequest
 	//
 	// Logout
 	//
@@ -375,8 +375,10 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200:
-	r.HandleFunc("/api/logout", api.logout)
-	// swagger:route POST /api/register auth registerUserRequest
+	r.HandleFunc("/auth/logout", api.logout)
+	// swagger:route POST /api/auth/register auth registerUserRequest
+	//
+	// Register a new user
 	//
 	// Register a new user of the app
 	//
@@ -388,6 +390,6 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	r.HandleFunc("/api/register", api.signup)
+	r.HandleFunc("/auth/register", api.signup)
 	return rr
 }
