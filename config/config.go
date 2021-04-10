@@ -25,9 +25,14 @@ type Config struct {
 	MQTTPassword       string `json:"mqttPassword"`
 	MQTTBrokerAddress  string `json:"mqttBrokerAddress"`
 	DBConnectionString string `json:"dbConnectionString"`
-	// EnableInfoEmails sens notification by email to info@hackrva.org
-	EnableInfoEmails bool   `json:"enableInfoEmails"`
-	SlackToken       string `json:"slackToken"`
+	// EnableInfoEmails sends notification by email to info@hackrva.org
+	EnableInfoEmails bool `json:"enableInfoEmails"`
+	// EnableNotificationEmailsToMembers sends notification to membership
+	EnableNotificationEmailsToMembers bool `json:"enableNotificationEmailsToMembers"`
+	// EmailOverrideAddress config can provide an email address to send to instead of
+	//   the predefined addresses
+	EmailOverrideAddress string `json:"emailOverrideAddress"`
+	SlackToken           string `json:"slackToken"`
 }
 
 // Load in the config file to memory
@@ -49,10 +54,15 @@ func Load() (Config, error) {
 	c.MQTTUsername = os.Getenv("MQTT_USERNAME")
 	c.MQTTPassword = os.Getenv("MQTT_PASSWORD")
 	c.MQTTBrokerAddress = os.Getenv("MQTT_BROKER_ADDRESS")
+	c.EmailOverrideAddress = os.Getenv("EMAIL_OVERRIDE_ADDRESS")
 	c.EnableInfoEmails = false
+	c.EnableNotificationEmailsToMembers = false
 	c.SlackToken = os.Getenv("SLACK_TOKEN")
 	if len(os.Getenv("ENABLE_INFO_EMAILS")) > 0 {
 		c.EnableInfoEmails = true
+	}
+	if len(os.Getenv("ENABLE_MEMBER_EMAILS")) > 0 {
+		c.EnableNotificationEmailsToMembers = true
 	}
 
 	c.DBConnectionString = os.Getenv("DB_CONNECTION_STRING")

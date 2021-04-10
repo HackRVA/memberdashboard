@@ -2,8 +2,8 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"memberserver/config"
 	"memberserver/mail"
 	"strings"
 	"time"
@@ -157,10 +157,20 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
 
-	// log.Debugf("days since payment: %d payment amount: %d", daysSincePayment, amount)
-
 	if daysSincePayment > memberGracePeriod { // revoke
-		// sendRevokedEmail(email)
+		m, err := db.GetMemberByID(memberID)
+		if err != nil {
+			return errors.New(fmt.Sprintf("could not find member to revoke: %s", err))
+		}
+
+		// if this is an active member, then they are just now being revoked.
+		// if they are not active, they have already been revoked.
+		if MemberLevel(m.Level) == Inactive {
+			log.Debugf("Member is already inactive: %s", m.Name)
+			return nil
+		}
+		mail.SendRevokedEmail(email)
+
 		rows, err := db.getConn().Query(context.Background(), updateMembershipLevelQuery, memberID, Inactive)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
@@ -168,10 +178,13 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 		defer rows.Close()
 	} else if daysSincePayment <= memberGracePeriod {
 		if daysSincePayment > membershipMonth {
-			// send notification because they are in a grace period
-			// sendGracePeriodMessage(email)
 
-			sendGracePeriodMessageToLeadership(email)
+			// currently these would send everyday and everytime the app starts.
+			//   it would be better if we could send these only once.
+
+			// send notification because they are in a grace period
+			// mail.SendGracePeriodMessage(email)
+			// mail.SendGracePeriodMessageToLeadership(email)
 		}
 
 		// a valid member
@@ -186,36 +199,4 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	}
 
 	return nil
-}
-
-func sendGracePeriodMessageToLeadership(address string) {
-	conf, _ := config.Load()
-	if !conf.EnableInfoEmails {
-		return
-	}
-
-	mp, err := mail.Setup()
-	if err != nil {
-		log.Errorf("error setting up mailprovider when attempting to send email notification")
-	}
-
-	mp.SendSMTP("info@hackrva.org", address+": hackrva grace period", address+" membership is entering a grace period.")
-}
-
-func sendGracePeriodMessage(address string) {
-	// mp, err := mail.Setup()
-	// if err != nil {
-	// 	log.Errorf("error setting up mailprovider when attempting to send email notification")
-	// }
-
-	// mp.SendSMTP(address, "hackrva grace period", "you're membership is entering a grace period.  Please try to pay your hackrva membership dues soon.")
-}
-
-func sendRevokedEmail(address string) {
-	// mp, err := mail.Setup()
-	// if err != nil {
-	// 	log.Errorf("error setting up mailprovider when attempting to send email notification")
-	// }
-
-	// mp.SendSMTP(address, "hackrva membership revoked", "Unfortunately, hackrva hasn't received your membership dues.  Your membership has been revoked until a payment is received.  Please reach out to us if you have any concerns.")
 }
