@@ -9,6 +9,7 @@ require (
 	github.com/go-openapi/loads v0.20.0 // indirect
 	github.com/go-swagger/go-swagger v0.25.0 // indirect
 	github.com/gorilla/mux v1.8.0
+	github.com/hashicorp/mdns v1.0.3
 	github.com/jackc/pgtype v1.6.2
 	github.com/jackc/pgx/v4 v4.10.0
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
