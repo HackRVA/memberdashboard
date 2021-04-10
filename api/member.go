@@ -1,11 +1,14 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"memberserver/database"
 	"memberserver/payments"
+	"memberserver/slack"
 	"net/http"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -116,4 +119,12 @@ func (a API) refreshPayments(w http.ResponseWriter, req *http.Request) {
 		Ack: true,
 	})
 	w.Write(j)
+}
+
+func (a API) getNonMembersOnSlack(w http.ResponseWriter, req *http.Request) {
+	nonMembers := slack.FindNonMembers()
+	buf := bytes.NewBufferString(strings.Join(nonMembers[:], "\n"))
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", "attachment; filename=nonmembersOnSlack.csv")
+	w.Write(buf.Bytes())
 }

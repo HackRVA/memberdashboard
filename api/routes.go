@@ -65,6 +65,23 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getMemberResponse
 	rr.HandleFunc("/member", api.getMembers)
+	// swagger:route GET /api/slack/nonmembers member getSlackNonMemberList
+	//
+	// Returns a list slack users that are possibly not members.
+	//   It's entirely possible that these people are just using a different email than
+	//   what they signed up with.  So, these accounts should be verified manually.
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: text/csv
+	rr.HandleFunc("/slack/nonmembers", api.getNonMembersOnSlack)
 	// swagger:route GET /api/tier member getTiers
 	//
 	// Returns a list the member tiers.

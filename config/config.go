@@ -26,7 +26,8 @@ type Config struct {
 	MQTTBrokerAddress  string `json:"mqttBrokerAddress"`
 	DBConnectionString string `json:"dbConnectionString"`
 	// EnableInfoEmails sens notification by email to info@hackrva.org
-	EnableInfoEmails bool `json:"enableInfoEmails"`
+	EnableInfoEmails bool   `json:"enableInfoEmails"`
+	SlackToken       string `json:"slackToken"`
 }
 
 // Load in the config file to memory
@@ -49,6 +50,7 @@ func Load() (Config, error) {
 	c.MQTTPassword = os.Getenv("MQTT_PASSWORD")
 	c.MQTTBrokerAddress = os.Getenv("MQTT_BROKER_ADDRESS")
 	c.EnableInfoEmails = false
+	c.SlackToken = os.Getenv("SLACK_TOKEN")
 	if len(os.Getenv("ENABLE_INFO_EMAILS")) > 0 {
 		c.EnableInfoEmails = true
 	}
