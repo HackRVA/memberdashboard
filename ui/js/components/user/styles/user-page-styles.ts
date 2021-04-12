@@ -11,6 +11,7 @@ export const userPageStyles: CSSResult = css`
   }
 
   div {
+    margin-top: 40px;
     margin-bottom: 24px;
   }
 `;

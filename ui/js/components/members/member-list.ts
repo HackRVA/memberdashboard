@@ -229,7 +229,6 @@ export class MemberList extends LitElement {
       <card-element>
         <div class="member-container">
           <div class="member-header">
-            <h1>Members</h1>
             <span class="member-count">
               <b>Number of active members: </b> 
               ${this.memberCount} 

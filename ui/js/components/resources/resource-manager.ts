@@ -172,7 +172,6 @@ export class ResourceManager extends LitElement {
     return html`
       <div class="resource-container">
         <div class="resource-header">
-          <h1>Resources</h1>
           <div class="button-container">
             <span class="update-acls">
               <mwc-button

@@ -68,11 +68,10 @@ export class HomePage extends LitElement {
 
   displayHomePage(): TemplateResult {
     if (this.isUserLogin) {
-      return html` <h1>Home</h1> `;
+      return html``;
     } else {
       return html`
         <div>
-          <h1>Home</h1>
           <div class="login-container">${this.displayRegisterLoginForm()}</div>
         </div>
       `;

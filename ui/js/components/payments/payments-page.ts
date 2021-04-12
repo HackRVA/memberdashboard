@@ -20,7 +20,6 @@ export class PaymentsPage extends LitElement {
   render(): TemplateResult {
     return html`
       <card-element>
-        <h1>Payments</h1>
         <payment-chart> </payment-chart>
       </card-element>
     `;

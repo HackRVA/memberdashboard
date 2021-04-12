@@ -9,7 +9,7 @@ export const resourceManagerStyles: CSSResult = css`
 
   .resource-header {
     display: inherit;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     align-items: center;
   }
 
