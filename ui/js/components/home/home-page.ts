@@ -2,13 +2,13 @@
 import {
   LitElement,
   html,
-  css,
   customElement,
   TemplateResult,
   CSSResult,
 } from "lit-element";
 
 // membership
+import { homePageStyles } from "./styles/home-page-styles";
 import { UserService } from "../../service";
 import "../shared/card-element";
 import "../shared/register-form";
@@ -20,18 +20,8 @@ export class HomePage extends LitElement {
   isUserLogin: boolean = false;
   isRegister: boolean = false;
 
-  static get styles(): CSSResult {
-    return css`
-      .login-container {
-        display: grid;
-        justify-content: center;
-        padding: 36px;
-      }
-
-      .center {
-        text-align: center;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [homePageStyles];
   }
 
   firstUpdated(): void {
