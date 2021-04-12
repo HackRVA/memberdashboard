@@ -50,7 +50,6 @@ export class UserPage extends LitElement {
   render(): TemplateResult {
     return html`
     <card-element>
-      <h1> User <h1>
       <div class="center">
         <div> 
           <span class="email">${this.email} </span>

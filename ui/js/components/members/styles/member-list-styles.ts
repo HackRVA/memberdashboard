@@ -15,8 +15,11 @@ export const memberListStyles: CSSResult = css`
   }
   .member-header {
     display: inherit;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
+  }
+  .member-count {
+    justify-self: end;
   }
   .name {
     text-transform: capitalize;

@@ -117,6 +117,30 @@ export class ResourceManager extends LitElement {
     this.requestUpdate();
   }
 
+  displayOnlineState(lastHeartBeat: string): TemplateResult {
+    const lastActiveTime: number = new Date(lastHeartBeat).getTime();
+    const currentTime: number = new Date().getTime();
+
+    if (this.isTimeWitihinActiveRange(lastActiveTime, currentTime)) {
+      return html` <span class="online"> Online </span> `;
+    } else {
+      return html`<span class="offline"> Offline </span>`;
+    }
+  }
+
+  isTimeWitihinActiveRange(
+    lastActiveTime: number,
+    currentTime: number
+  ): boolean {
+    const thirtyMinsInMS: number = 30 * 60 * 1000;
+    const remainingTime: number = currentTime - lastActiveTime;
+    if (remainingTime > 0 && remainingTime <= thirtyMinsInMS) {
+      return true;
+    }
+
+    return false;
+  }
+
   displayResources(): TemplateResult {
     return html`
       ${this.resources?.map((x: ResourceResponse) => {
@@ -137,6 +161,7 @@ export class ResourceManager extends LitElement {
               >
               </mwc-button>
             </td>
+            <td>${this.displayOnlineState(x.lastHeartBeat)}</td>
           </tr>
         `;
       })}
@@ -147,7 +172,6 @@ export class ResourceManager extends LitElement {
     return html`
       <div class="resource-container">
         <div class="resource-header">
-          <h1>Resources</h1>
           <div class="button-container">
             <span class="update-acls">
               <mwc-button
@@ -182,6 +206,7 @@ export class ResourceManager extends LitElement {
             <th>Name</th>
             <th>Address</th>
             <th>Actions</th>
+            <th>Status</th>
           </tr>
           ${this.displayResources()}
         </table>
