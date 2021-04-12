@@ -30,6 +30,7 @@ export interface ResourceResponse {
   id: string;
   name: string;
   isDefault: boolean;
+  lastHeartBeat: string;
 }
 
 export interface ResourceModalData {

@@ -59,4 +59,12 @@ export const resourceManagerStyles: CSSResult = css`
     position: absolute;
     z-index: 1;
   }
+
+  .online {
+    color: #32de84;
+  }
+
+  .offline {
+    color: #e9437a;
+  }
 `;
