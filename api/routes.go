@@ -65,7 +65,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getMemberResponse
 	rr.HandleFunc("/member", api.getMembers)
-	// swagger:route GET /api/slack/nonmembers member getSlackNonMemberList
+	// swagger:route GET /api/member/slack/nonmembers member getSlackNonMemberList
 	//
 	// Returns a list slack users that are possibly not members.
 	//   It's entirely possible that these people are just using a different email than
@@ -81,8 +81,8 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: text/csv
-	rr.HandleFunc("/slack/nonmembers", api.getNonMembersOnSlack)
-	// swagger:route GET /api/tier member getTiers
+	rr.HandleFunc("/member/slack/nonmembers", api.getNonMembersOnSlack)
+	// swagger:route GET /api/member/tier member getTiers
 	//
 	// Returns a list the member tiers.
 	//
