@@ -37,7 +37,7 @@ const routes: Route[] = [
         },
       },
       {
-        path: "payments",
+        path: "reports",
         component: "payments-page",
         action: async () => {
           await import("./components/payments/payments-page");
