@@ -55,8 +55,8 @@ export class MemberDashboard extends LitElement {
     Router.go("/user");
   }
 
-  goToPayments(): void {
-    Router.go("/payments");
+  goToReports(): void {
+    Router.go("/reports");
   }
 
   goToMembers(): void {
@@ -115,8 +115,8 @@ export class MemberDashboard extends LitElement {
         return TabIndex.home;
       case "/user":
         return TabIndex.user;
-      case "/payments":
-        return TabIndex.payments;
+      case "/reports":
+        return TabIndex.reports;
       case "/members":
         return TabIndex.members;
       case "/resources":
@@ -137,7 +137,7 @@ export class MemberDashboard extends LitElement {
         <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
           <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>
           <mwc-tab label="User" @click=${this.goToUser}></mwc-tab>
-          <mwc-tab label="Payments" @click=${this.goToPayments}></mwc-tab>
+          <mwc-tab label="Reports" @click=${this.goToReports}></mwc-tab>
           <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>
           <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
         </mwc-tab-bar>
