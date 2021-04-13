@@ -229,14 +229,16 @@ VALUES `
 
 	var valStr []string
 	for _, m := range members {
-		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d)", m.Name, m.Email, 1))
+		// postgres doesn't like apostrophes
+		memberName := strings.Replace(m.Name, "'", "''", -1)
+		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d)", memberName, m.Email, 1))
 	}
 
 	str := strings.Join(valStr, ",")
 
 	_, err := db.getConn().Query(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
 	if err != nil {
-		return fmt.Errorf("conn.Query failed: %v", err)
+		return fmt.Errorf("add members query failed: %v", err)
 	}
 
 	return err
