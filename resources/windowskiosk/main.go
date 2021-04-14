@@ -17,7 +17,6 @@ func main() {
 
 	for _, m := range members {
 		if contains(m.Resources, resource{Name: c.ResourceName}) {
-			println(m.Name)
 			file += decodeID(m.RFID) + credStr
 		}
 	}
