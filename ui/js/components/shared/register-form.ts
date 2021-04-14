@@ -19,7 +19,7 @@ import { TextField } from "@material/mwc-textfield/mwc-textfield";
 // membership
 import { showComponent } from "./../../function";
 import { AuthService } from "../../service";
-import { RegisterRequest } from "../user/types";
+import { RegisterRequest } from "../shared/types";
 import { ToastMessage } from "./types";
 import { registerFormStyles } from "./styles/register-form-styles";
 import "../shared/toast-msg";

@@ -16,7 +16,7 @@ import "@material/mwc-textfield";
 // membership
 import { UserProfile } from "./types";
 import { showComponent } from "../../function";
-import { MemberService, UserService } from "../../service";
+import { UserService } from "../../service";
 import { userPageStyles } from "./styles";
 import "../shared/card-element";
 import "../shared/rfid-modal";
@@ -27,7 +27,6 @@ export class UserPage extends LitElement {
   email: string = "";
 
   userService: UserService = new UserService();
-  memberService: MemberService = new MemberService();
 
   static get styles(): CSSResult[] {
     return [userPageStyles];

@@ -3,7 +3,7 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
 // membership
-import { LoginRequest, RegisterRequest } from "../components/user/types";
+import { LoginRequest, RegisterRequest } from "../components/shared/types";
 import { ENV } from "../env";
 import { HTTPService } from "./http.service";
 

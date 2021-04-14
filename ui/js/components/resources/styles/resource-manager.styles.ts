@@ -1,4 +1,13 @@
+// lit element
 import { css, CSSResult } from "lit-element";
+
+// membership
+import {
+  primaryGray,
+  primaryGreen,
+  primaryRed,
+  primaryYellow,
+} from "./../../shared/styles/colors";
 
 export const resourceManagerStyles: CSSResult = css`
   .resource-container {
@@ -22,7 +31,7 @@ export const resourceManagerStyles: CSSResult = css`
     text-align: left;
     padding: 8px;
     font-size: 20px;
-    border: 1px solid #e1e1e1;
+    border: 1px solid ${primaryGray};
     max-width: 320px;
   }
   table {
@@ -31,7 +40,7 @@ export const resourceManagerStyles: CSSResult = css`
   }
 
   .remove {
-    --mdc-theme-primary: #e9437a;
+    --mdc-theme-primary: ${primaryRed};
   }
 
   .mr-8 {
@@ -54,17 +63,17 @@ export const resourceManagerStyles: CSSResult = css`
     margin-top: 8px;
     padding: 8px;
     font-size: 14px;
-    background: #fdefbb;
+    background: ${primaryYellow};
     max-width: 200px;
     position: absolute;
     z-index: 1;
   }
 
   .online {
-    color: #32de84;
+    color: ${primaryGreen};
   }
 
   .offline {
-    color: #e9437a;
+    color: ${primaryRed};
   }
 `;
