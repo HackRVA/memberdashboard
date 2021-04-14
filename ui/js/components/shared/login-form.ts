@@ -14,7 +14,7 @@ import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership
 import { AuthService } from "../../service";
-import { LoginRequest, Jwt } from "../user/types";
+import { LoginRequest, Jwt } from "../shared/types";
 import { ToastMessage } from "../shared/types";
 import { showComponent } from "../../function";
 import { loginFormStyles } from "./styles";

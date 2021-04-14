@@ -1,4 +1,8 @@
+// lit element
 import { css, CSSResult } from "lit-element";
+
+// membership
+import { primaryGray, primaryRed } from "./../../shared/styles/colors";
 
 export const memberListStyles: CSSResult = css`
   h1 {
@@ -33,7 +37,7 @@ export const memberListStyles: CSSResult = css`
     text-align: left;
     padding: 8px;
     font-size: 20px;
-    border: 1px solid #e1e1e1;
+    border: 1px solid ${primaryGray};
     max-width: 320px;
   }
   table {
@@ -61,7 +65,7 @@ export const memberListStyles: CSSResult = css`
   }
 
   .remove {
-    --mdc-theme-primary: #e9437a;
+    --mdc-theme-primary: ${primaryRed};
   }
   .horizontal-scrollbar {
     overflow: auto;

@@ -1,4 +1,8 @@
+// lit element
 import { css, CSSResult } from "lit-element";
+
+// membership
+import { primaryWhite } from "./colors";
 
 export const cardElementStyles: CSSResult = css`
   /* On mouse-over, add a deeper shadow */
@@ -17,7 +21,7 @@ export const cardElementStyles: CSSResult = css`
     border-radius: 5px; /* 5px rounded corners */
     min-height: 20vh;
     min-width: 60vw;
-    background-color: whitesmoke;
+    background-color: ${primaryWhite};
   }
   card-container {
     width: 100vw;

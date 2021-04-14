@@ -1,10 +1,14 @@
+// lit element
 import { css, CSSResult } from "lit-element";
+
+// membership
+import { primaryGray } from "./colors";
 
 export const loginFormStyles: CSSResult = css`
   .login-container {
     height: 270px;
     max-width: 250px;
-    background-color: #e1e1e1;
+    background-color: ${primaryGray};
     padding: 24px;
   }
   mwc-formfield {
