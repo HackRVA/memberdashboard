@@ -1,6 +1,5 @@
 // lit element
 import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -12,26 +11,14 @@ import {
 import "./card-element";
 import "./login-form";
 import "./register-form";
+import { loginPageStyles } from "./styles/";
 
 @customElement("login-page")
 export class LoginPage extends LitElement {
   isRegister: boolean = false;
 
-  static get styles(): CSSResult {
-    return css`
-      .login-container {
-        display: grid;
-        justify-content: center;
-      }
-
-      .text-center {
-        text-align: center;
-      }
-
-      h1 {
-        margin-top: 0px;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [loginPageStyles];
   }
 
   handleSwitch(): void {
