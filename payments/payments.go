@@ -32,7 +32,7 @@ func GetPayments() {
 //  to see if members have paid their dues
 func getLastMonthsPayments() error {
 	startDate := time.Now().AddDate(0, 0, -15).Format(time.RFC3339) // subtract one month
-	endDate := time.Now().Format(time.RFC3339)
+	endDate := time.Now().AddDate(0, 0, 1).Format(time.RFC3339)     // add a day
 
 	p, err := getPaypalPayments(startDate, endDate)
 	if err != nil {
