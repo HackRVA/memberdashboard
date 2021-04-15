@@ -1,12 +1,5 @@
 // lit element
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  customElement,
-  CSSResult,
-  css,
-} from "lit-element";
+import { LitElement, html, TemplateResult, customElement } from "lit-element";
 
 // material
 import "@material/mwc-tab-bar";
@@ -19,52 +12,25 @@ import "@material/mwc-menu";
 import { Router, RouterLocation } from "@vaadin/router";
 
 // membership
-import { AuthService } from "./service/auth.service";
-import "./components/shared/login-form";
-import { TabIndex } from "./enums";
 import "./router";
 import { UserService } from "./service/user.service";
 import { UserProfile } from "./components/user/types";
+import "./components/shared/login-page";
+import "./components/shared/member-dashboard-content";
 
 @customElement("member-dashboard")
 export class MemberDashboard extends LitElement {
   email: string;
   userService: UserService = new UserService();
-  authService: AuthService = new AuthService();
-
-  static get styles(): CSSResult {
-    return css`
-      .logout {
-        margin-left: 24px;
-        --mdc-theme-primary: white;
-      }
-    `;
-  }
 
   onBeforeEnter(location: RouterLocation): void {
     if (location.pathname === "/") {
-      Router.go("/home");
+      this.goToHome();
     }
   }
 
   goToHome(): void {
     Router.go("/home");
-  }
-
-  goToUser(): void {
-    Router.go("/user");
-  }
-
-  goToReports(): void {
-    Router.go("/reports");
-  }
-
-  goToMembers(): void {
-    Router.go("/members");
-  }
-
-  goToResources(): void {
-    Router.go("/resources");
   }
 
   firstUpdated(): void {
@@ -81,69 +47,22 @@ export class MemberDashboard extends LitElement {
     });
   }
 
-  handleLogout(): void {
-    this.authService.logout().subscribe({
-      next: (response: null) => {
-        localStorage.removeItem("jwt");
-        window.location.reload();
-      },
-    });
-  }
-
   isUserLogin(): boolean {
     return !!this.email;
   }
 
-  displayLogout(): TemplateResult {
+  displayAppContent(): TemplateResult {
     if (this.isUserLogin()) {
       return html`
-        <mwc-button
-          class="logout"
-          slot="actionItems"
-          label="Log out"
-          icon="logout"
-          @click=${this.handleLogout}
-        ></mwc-button>
-      `;
-    }
-    return html``;
-  }
-
-  getTabIndex(pathName: string): number {
-    switch (pathName) {
-      case "/home":
-        return TabIndex.home;
-      case "/user":
-        return TabIndex.user;
-      case "/reports":
-        return TabIndex.reports;
-      case "/members":
-        return TabIndex.members;
-      case "/resources":
-        return TabIndex.resources;
-      default:
-        return -1;
+      <member-dashboard-content .email=${this.email}>
+        <slot></slot>
+      </member-dashboard-content`;
+    } else {
+      return html`<login-page></login-page>`;
     }
   }
 
   render(): TemplateResult {
-    return html`
-      <div>
-        <mwc-top-app-bar-fixed centerTitle>
-          <div slot="title">Member Dashboard</div>
-          <div slot="actionItems">${this.email}</div>
-          ${this.displayLogout()}
-        </mwc-top-app-bar-fixed>
-        <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
-          <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>
-          <mwc-tab label="User" @click=${this.goToUser}></mwc-tab>
-          <mwc-tab label="Reports" @click=${this.goToReports}></mwc-tab>
-          <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>
-          <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
-        </mwc-tab-bar>
-
-        <slot> </slot>
-      </div>
-    `;
+    return html`${this.displayAppContent()}`;
   }
 }
