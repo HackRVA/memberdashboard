@@ -1,6 +1,5 @@
 // lit element
 import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -15,6 +14,7 @@ import { Router } from "@vaadin/router";
 // membership
 import { TabIndex } from "../../enums";
 import { AuthService } from "../../service";
+import { memberDashboardContentStyles } from "./styles";
 
 @customElement("member-dashboard-content")
 export class MemberDashboardContent extends LitElement {
@@ -23,13 +23,8 @@ export class MemberDashboardContent extends LitElement {
 
   authService: AuthService = new AuthService();
 
-  static get styles(): CSSResult {
-    return css`
-      .logout {
-        margin-left: 24px;
-        --mdc-theme-primary: white;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [memberDashboardContentStyles];
   }
   goToHome(): void {
     Router.go("/home");
