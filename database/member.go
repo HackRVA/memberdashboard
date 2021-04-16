@@ -19,10 +19,10 @@ WHERE member_id = membership.members.id
 FROM membership.members
 ORDER BY name;
 `
-const getMembersWithCreditQuery = `SELECT id
-FROM membership.member_credit
-LEFT JOIN membership.members
-ON member_id = membership.members.id
+const getMembersWithCreditQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id
+FROM membership.members
+RIGHT JOIN membership.member_credit
+ON membership.member_credit.member_id = id
 ORDER BY name;
 `
 
@@ -145,7 +145,7 @@ func (db *Database) GetMembersWithCredit() []Member {
 
 	for rows.Next() {
 		var m Member
-		err = rows.Scan(&m.ID)
+		err = rows.Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level)
 		if err != nil {
 			log.Errorf("error scanning row: %s", err)
 		}
