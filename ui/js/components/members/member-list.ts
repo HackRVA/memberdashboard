@@ -60,8 +60,8 @@ export class MemberList extends LitElement {
     switch (memberLevel) {
       case MemberLevel.inactive:
         return "Inactive";
-      case MemberLevel.student:
-        return "Student";
+      case MemberLevel.credited:
+        return "Credited";
       case MemberLevel.classic:
         return "Classic";
       case MemberLevel.standard:

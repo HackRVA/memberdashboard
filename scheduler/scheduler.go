@@ -7,6 +7,7 @@ import (
 	"memberserver/payments"
 	"memberserver/resourcemanager"
 	"net/http"
+	"os"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -61,16 +62,9 @@ func checkMemberStatus() {
 	if err != nil {
 		log.Errorf("error setting up db: %s", err)
 	}
-
-	members := db.GetMembers()
 	defer db.Release()
 
-	for _, m := range members {
-		err = db.EvaluateMemberStatus(m.ID)
-		if err != nil {
-			log.Errorf("error evaluating member's status: %s", err.Error())
-		}
-	}
+	db.EvaluateMembers()
 }
 
 func checkResourceInit() {
@@ -125,13 +119,35 @@ func checkIPAddressTick() {
 
 	log.Debugf("ip addr: %s", string(body))
 
-	// if this is the first run, don't send an email,
-	//   but set the ip address
-	if IPAddressCache == "" {
-		IPAddressCache = string(body)
+	// detect if file exists
+	_, err = os.Stat(".public_ip_address")
+
+	// create file if not exists
+	if os.IsNotExist(err) {
+		var file, err = os.Create(".public_ip_address")
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		defer file.Close()
+	}
+
+	b, err := ioutil.ReadFile(".public_ip_address")
+	if err != nil {
+		log.Error(err)
 		return
 	}
 
-	IPAddressCache = string(body)
+	err = ioutil.WriteFile(".public_ip_address", body, 0644)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	// if this is the first run, don't send an email,
+	//   but set the ip address
+	if string(b) == "" {
+		return
+	}
 	mail.SendIPHasChanged()
 }

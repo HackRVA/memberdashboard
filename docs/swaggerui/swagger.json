@@ -196,7 +196,7 @@
         ],
         "description": "It's entirely possible that these people are just using a different email than\nwhat they signed up with.  So, these accounts should be verified manually.",
         "produces": [
-          "application/json"
+          "test/csv"
         ],
         "schemes": [
           "http",

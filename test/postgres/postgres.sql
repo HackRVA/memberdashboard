@@ -22,6 +22,16 @@ ALTER TABLE membership.member_resource
     ADD CONSTRAINT unique_relationship UNIQUE (member_id, resource_id)
     INCLUDE (member_id, resource_id);
 
+CREATE TABLE membership.member_credit
+(
+    member_id uuid NOT NULL,
+    CONSTRAINT member_credit FOREIGN KEY (member_id)
+        REFERENCES membership.members (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
 CREATE TABLE membership.users
 (
     email    text NOT NULL,

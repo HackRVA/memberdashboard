@@ -105,14 +105,8 @@ func (a API) assignRFID(w http.ResponseWriter, req *http.Request) {
 
 func (a API) refreshPayments(w http.ResponseWriter, req *http.Request) {
 	payments.GetPayments()
-	members := a.db.GetMembers()
 
-	for _, m := range members {
-		err := a.db.EvaluateMemberStatus(m.ID)
-		if err != nil {
-			log.Errorf("error evaluating member's status: %s", err.Error())
-		}
-	}
+	a.db.EvaluateMembers()
 
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(endpointSuccess{

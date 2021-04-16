@@ -72,7 +72,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//   what they signed up with.  So, these accounts should be verified manually.
 	//
 	//     Produces:
-	//     - application/json
+	//     - test/csv
 	//
 	//     Schemes: http, https
 	//

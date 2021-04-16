@@ -14,8 +14,8 @@ type MemberLevel int
 const (
 	// Inactive $0
 	Inactive MemberLevel = iota + 1
-	// Student $15
-	Student
+	// Credited $1
+	Credited
 	// Classic $30
 	Classic
 	// Standard $35
@@ -27,7 +27,7 @@ const (
 // MemberLevelFromAmount convert amount to MemberLevel
 var MemberLevelFromAmount = map[int64]MemberLevel{
 	0:  Inactive,
-	15: Student,
+	15: Credited,
 	30: Classic,
 	35: Standard,
 	50: Premium,
@@ -36,7 +36,7 @@ var MemberLevelFromAmount = map[int64]MemberLevel{
 // MemberLevelToStr convert MemberLevel to string
 var MemberLevelToStr = map[MemberLevel]string{
 	Inactive: "Inactive",
-	Student:  "Student",
+	Credited: "Credited",
 	Classic:  "Classic",
 	Standard: "Standard",
 	Premium:  "Premium",

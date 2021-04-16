@@ -19,6 +19,13 @@ WHERE member_id = membership.members.id
 FROM membership.members
 ORDER BY name;
 `
+const getMembersWithCreditQuery = `SELECT id
+FROM membership.member_credit
+LEFT JOIN membership.members
+ON member_id = membership.members.id
+ORDER BY name;
+`
+
 const getMemberByEmailQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
 ARRAY(
 SELECT resource_id
@@ -115,6 +122,32 @@ func (db *Database) GetMembers() []Member {
 			}
 
 			m.Resources = append(m.Resources, MemberResource{ResourceID: rID, Name: resource.Name})
+		}
+
+		members = append(members, m)
+	}
+
+	return members
+}
+
+// GetMembersWithCredit - gets members that have been credited a membership
+//  if a member exists in the member_credits table
+//  they are credited a membership
+func (db *Database) GetMembersWithCredit() []Member {
+	rows, err := db.getConn().Query(db.ctx, getMembersWithCreditQuery)
+	if err != nil {
+		log.Errorf("error getting credited members: %v", err)
+	}
+
+	defer rows.Close()
+
+	var members []Member
+
+	for rows.Next() {
+		var m Member
+		err = rows.Scan(&m.ID)
+		if err != nil {
+			log.Errorf("error scanning row: %s", err)
 		}
 
 		members = append(members, m)

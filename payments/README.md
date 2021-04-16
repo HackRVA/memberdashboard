@@ -25,14 +25,12 @@ We will send the member an email stating that their membership has been revoked 
 | Level    | price |
 |----------|-------|
 | Inactive | $0    |
-| *Student | $15   | 
+| Credited | $1    | 
 | *Classic | $30   |
 | Standard | $35   |
 | Permiere | $50   |
 | Donation | >$50  |
 
-
-> Student memberships might not be a thing
 
 > Classic Memberships - some members are grandfathered in at the previous rate
 

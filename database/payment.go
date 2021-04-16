@@ -142,6 +142,40 @@ VALUES `
 	return err
 }
 
+// membersContains checks that a member exists within a list of members
+func membersContains(members []Member, m Member) bool {
+	for _, v := range members {
+		if v.ID == m.ID {
+			log.Debugf("%s gets a credit", m.ID)
+			return true
+		}
+	}
+
+	return false
+}
+
+// EvaluateMembers loops through all members and evaluates their status
+func (db *Database) EvaluateMembers() {
+	members := db.GetMembers()
+
+	memberCredits := db.GetMembersWithCredit()
+
+	for _, m := range members {
+		if membersContains(memberCredits, m) {
+			rows, err := db.getConn().Query(context.Background(), updateMembershipLevelQuery, m.ID, Credited)
+			if err != nil {
+				log.Errorf("member credit failed: %v", err)
+			}
+			defer rows.Close()
+			continue
+		}
+		err := db.EvaluateMemberStatus(m.ID)
+		if err != nil {
+			log.Errorf("error evaluating member's status: %s", err.Error())
+		}
+	}
+}
+
 // EvaluateMemberStatus look in the db and determine the members' last payment date
 //  if it's greater than a certain date revoke their membership
 func (db *Database) EvaluateMemberStatus(memberID string) error {
