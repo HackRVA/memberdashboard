@@ -2,10 +2,8 @@
 import {
   LitElement,
   html,
-  css,
   customElement,
   TemplateResult,
-  CSSResult,
   property,
 } from "lit-element";
 
@@ -31,6 +29,10 @@ export class MembersPage extends LitElement {
   }
 
   firstUpdated(): void {
+    this.getMembers();
+  }
+
+  getMembers(): void {
     this.memberService.getMembers().subscribe({
       next: (result: any) => {
         this.members = result as MemberResponse[];
@@ -40,9 +42,6 @@ export class MembersPage extends LitElement {
         console.error("unable to get members");
       },
     });
-  }
-  static get styles(): CSSResult {
-    return css``;
   }
 
   getActiveMembers(): MemberResponse[] {

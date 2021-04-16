@@ -7,6 +7,9 @@ import {
   TemplateResult,
 } from "lit-element";
 
+// material
+import "@material/mwc-top-app-bar-fixed";
+
 // membership
 import "./card-element";
 import "./login-form";
@@ -39,6 +42,9 @@ export class LoginPage extends LitElement {
   }
   render(): TemplateResult {
     return html`
+      <mwc-top-app-bar-fixed centerTitle>
+        <div slot="title">Member Dashboard</div>
+      </mwc-top-app-bar-fixed>
       <card-element class="text-center">
         <h1>${this.displayLoginHeaderText()}</h1>
         <div class="login-container">${this.displayRegisterLoginForm()}</div>

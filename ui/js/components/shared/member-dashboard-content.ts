@@ -8,6 +8,13 @@ import {
   TemplateResult,
 } from "lit-element";
 
+// material
+import "@material/mwc-top-app-bar-fixed";
+import "@material/mwc-tab-bar";
+import "@material/mwc-tab";
+import "@material/mwc-icon-button";
+import "@material/mwc-menu";
+
 // vaadin
 import { Router } from "@vaadin/router";
 
@@ -86,22 +93,20 @@ export class MemberDashboardContent extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <div>
-        <mwc-top-app-bar-fixed centerTitle>
-          <div slot="title">Member Dashboard</div>
-          <div slot="actionItems">${this.email}</div>
-          ${this.displayLogout()}
-        </mwc-top-app-bar-fixed>
-        <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
-          <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>
-          <mwc-tab label="User" @click=${this.goToUser}></mwc-tab>
-          <mwc-tab label="Reports" @click=${this.goToReports}></mwc-tab>
-          <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>
-          <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
-        </mwc-tab-bar>
+      <mwc-top-app-bar-fixed centerTitle>
+        <div slot="title">Member Dashboard</div>
+        <div slot="actionItems">${this.email}</div>
+        ${this.displayLogout()}
+      </mwc-top-app-bar-fixed>
+      <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
+        <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>
+        <mwc-tab label="User" @click=${this.goToUser}></mwc-tab>
+        <mwc-tab label="Reports" @click=${this.goToReports}></mwc-tab>
+        <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>
+        <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
+      </mwc-tab-bar>
 
-        <slot> </slot>
-      </div>
+      <slot> </slot>
     `;
   }
 }

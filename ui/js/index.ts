@@ -1,13 +1,6 @@
 // lit element
 import { LitElement, html, TemplateResult, customElement } from "lit-element";
 
-// material
-import "@material/mwc-tab-bar";
-import "@material/mwc-tab";
-import "@material/mwc-top-app-bar-fixed";
-import "@material/mwc-icon-button";
-import "@material/mwc-menu";
-
 // vaadin
 import { Router, RouterLocation } from "@vaadin/router";
 
