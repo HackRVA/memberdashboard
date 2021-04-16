@@ -159,14 +159,16 @@ func (db *Database) EvaluateMembers() {
 	members := db.GetMembers()
 
 	memberCredits := db.GetMembersWithCredit()
+	for _, m := range memberCredits {
+		rows, err := db.getConn().Query(context.Background(), updateMembershipLevelQuery, m.ID, Credited)
+		if err != nil {
+			log.Errorf("member credit failed: %v", err)
+		}
+		defer rows.Close()
+	}
 
 	for _, m := range members {
 		if membersContains(memberCredits, m) {
-			rows, err := db.getConn().Query(context.Background(), updateMembershipLevelQuery, m.ID, Credited)
-			if err != nil {
-				log.Errorf("member credit failed: %v", err)
-			}
-			defer rows.Close()
 			continue
 		}
 		err := db.EvaluateMemberStatus(m.ID)
