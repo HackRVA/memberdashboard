@@ -27,7 +27,7 @@ const (
 // MemberLevelFromAmount convert amount to MemberLevel
 var MemberLevelFromAmount = map[int64]MemberLevel{
 	0:  Inactive,
-	15: Credited,
+	1:  Credited,
 	30: Classic,
 	35: Standard,
 	50: Premium,
