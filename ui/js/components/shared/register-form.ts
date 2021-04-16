@@ -129,11 +129,7 @@ export class RegisterForm extends LitElement {
           Sign in
         </mwc-button>
         <mwc-button label="register" @click=${this.handleSubmit}></mwc-button>
-        <toast-msg
-          id="toast-msg"
-          .toastMsg=${this.toastMsg}> 
-        </toast-msg>
-      </card-element>
+        <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
       </div>
     `;
   }
