@@ -79,6 +79,8 @@ func getDBConnection(ctx context.Context) *pgxpool.Pool {
 	}
 
 	dbPool.Config().ConnConfig.PreferSimpleProtocol = true
+	dbPool.Config().ConnConfig.ConnectTimeout = time.Minute * 2
+	dbPool.Config().MaxConnIdleTime = time.Minute * 2
 
 	// Get a connection from the pool and check if the database connection is active and working
 	db, err := dbPool.Acquire(ctx)
@@ -93,4 +95,13 @@ func getDBConnection(ctx context.Context) *pgxpool.Pool {
 	db.Release()
 
 	return dbPool
+}
+
+func (db *Database) clearIdleConnections() {
+	db.getConn().Query(db.ctx, `SELECT
+pg_terminate_backend(pid)
+FROM
+pg_stat_activity
+WHERE
+state = 'idle';`)
 }

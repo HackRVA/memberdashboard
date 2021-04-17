@@ -176,6 +176,8 @@ func (db *Database) EvaluateMembers() {
 			log.Errorf("error evaluating member's status: %s", err.Error())
 		}
 	}
+
+	db.clearIdleConnections()
 }
 
 // EvaluateMemberStatus look in the db and determine the members' last payment date
