@@ -3,7 +3,6 @@ import {
   LitElement,
   html,
   customElement,
-  css,
   CSSResult,
   TemplateResult,
 } from "lit-element";
@@ -16,27 +15,23 @@ import { GoogleChart } from "@google-web-components/google-chart";
 import { PaymentService } from "../../service/payment.service";
 import "../shared/card-element";
 import { PaymentChartResponse, ChartAttributes } from "./types";
-
+import { paymentChartStyles } from "./styles/payment-chart-styles";
 @customElement("payment-chart")
-export class NewElement extends LitElement {
+export class PaymentChart extends LitElement {
   paymentService: PaymentService = new PaymentService();
   paymentCharts: Array<PaymentChartResponse> = [];
-  static get styles(): CSSResult {
-    return css`
-      #payment-chart-container {
-        display: flex;
-        justify-content: center;
-        padding: 36px;
-      }
-    `;
+  chartContainer: Element;
+
+  static get styles(): CSSResult[] {
+    return [paymentChartStyles];
   }
 
-  firstUpdated() {
-    this.handleGetResources();
+  firstUpdated(): void {
+    this.chartContainer = this.shadowRoot?.querySelector("#chart-container");
+    this.createPaymentReportChart();
   }
 
-  addChart(chartData: PaymentChartResponse) {
-    const chartContainer = this.shadowRoot?.querySelector("#chart-container");
+  addChart(chartData: PaymentChartResponse): void {
     const newChartAttributes: ChartAttributes = {
       id: chartData.id,
       type: chartData.type,
@@ -52,25 +47,24 @@ export class NewElement extends LitElement {
       newChart.setAttribute(key, newChartAttributes[key]);
     }
 
-    chartContainer?.appendChild(newChart);
+    this.chartContainer?.appendChild(newChart);
   }
 
-  handleGetResources(): void {
+  createPaymentReportChart(): void {
     this.paymentService.getPaymentCharts().subscribe({
       next: (result: any) => {
-        if ((result as { error: boolean; message: any }).error) {
-          console.error("some error getting resources");
-        } else {
-          this.paymentCharts = result as PaymentChartResponse[];
-
-          this.paymentCharts.forEach((x: PaymentChartResponse) => {
-            this.addChart(x);
-          });
-          this.requestUpdate();
-        }
+        this.paymentCharts = result as PaymentChartResponse[];
+        this.paymentCharts.forEach((x: PaymentChartResponse) => {
+          this.addChart(x);
+        });
+        this.requestUpdate();
+      },
+      error: () => {
+        console.error("unable to create payment report chart");
       },
     });
   }
+
   render(): TemplateResult {
     return html`
       <div id="payment-chart-container">
