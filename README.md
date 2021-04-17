@@ -1,6 +1,6 @@
-# Membership Server
+# Member Dashboard
 
-The membership server is the source of truth for who has access to what at the makerspace.
+Member Dashboard is the source of truth for who has access to what at the makerspace.
 Membership statuses will be pulled down from Payment Providers on a daily basis.
 If a member has made a payment in the past 30 days, they will be considered an active member.
 
