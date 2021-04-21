@@ -671,6 +671,19 @@
       },
       "x-go-package": "memberserver/database"
     },
+    "InfoResponse": {
+      "description": "InfoResponse -- response of info request",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "Info Message",
+          "type": "string",
+          "x-go-name": "Message",
+          "example": "hello, world!"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
+    },
     "Member": {
       "description": "Member -- a member of the makerspace",
       "type": "object",
@@ -1128,13 +1141,12 @@
       }
     },
     "infoResponse": {
-      "description": "InfoResponse response of info request",
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/InfoResponse"
+      },
       "headers": {
-        "message": {
-          "type": "string",
-          "example": "\"{ \"message\": \"hello, world!\"}\"",
-          "description": "Info Message"
-        }
+        "Body": {}
       }
     },
     "loginResponse": {
