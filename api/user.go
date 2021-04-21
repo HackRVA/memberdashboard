@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"memberserver/api/models"
 	"memberserver/config"
 	"memberserver/database"
 	"net/http"
@@ -20,44 +21,6 @@ const CookieName = "memberserver-token"
 
 // Create the JWT key used to create the signature
 var jwtKey = []byte("my_secret_key")
-
-type Claims struct {
-	Email string `json:"email"`
-	jwt.StandardClaims
-}
-
-// tokenReponse for json response of signin
-type tokenResponse struct {
-	// login response to send token string
-	//
-	// Example: "<TOKEN_STRING>"
-	Token string `json:"token"`
-}
-
-// tokenReponseBody for json response of signin
-// swagger:response loginResponse
-type tokenReponseBody struct {
-	// in: body
-	Body tokenResponse
-}
-
-// swagger:parameters loginRequest
-type loginRequest struct {
-	// in: body
-	Body database.Credentials
-}
-
-// swagger:response getUserResponse
-type userResponseBody struct {
-	// in: body
-	Body database.UserResponse
-}
-
-// swagger:parameters registerUserRequest
-type userRegisterRequest struct {
-	// in: body
-	Body database.Credentials
-}
 
 func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -150,7 +113,7 @@ func (a API) logout(w http.ResponseWriter, r *http.Request) {
 func (a API) getToken(email string) (string, error) {
 
 	//Creating Access Token
-	atClaims := Claims{}
+	atClaims := models.Claims{}
 	atClaims.Email = email
 	atClaims.ExpiresAt = time.Now().Add(time.Hour * JWTExpireInterval).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
@@ -196,7 +159,7 @@ func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenJSON := &tokenResponse{}
+	tokenJSON := &models.TokenResponse{}
 	tokenJSON.Token = token
 
 	http.SetCookie(w, &http.Cookie{

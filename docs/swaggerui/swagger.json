@@ -924,6 +924,19 @@
       },
       "x-go-package": "memberserver/database"
     },
+    "TokenResponse": {
+      "description": "TokenResponse -- for json response of signin",
+      "type": "object",
+      "properties": {
+        "token": {
+          "description": "login response to send token string",
+          "type": "string",
+          "x-go-name": "Token",
+          "example": "\u003cTOKEN_STRING\u003e"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
+    },
     "UserResponse": {
       "description": "UserResponse - a user object that we can send as json",
       "type": "object",
@@ -1028,19 +1041,6 @@
           "type": "string",
           "x-go-name": "ID",
           "example": "string"
-        }
-      },
-      "x-go-package": "memberserver/api"
-    },
-    "tokenResponse": {
-      "description": "tokenReponse for json response of signin",
-      "type": "object",
-      "properties": {
-        "token": {
-          "description": "login response to send token string",
-          "type": "string",
-          "x-go-name": "Token",
-          "example": "\"\u003cTOKEN_STRING\u003e\""
         }
       },
       "x-go-package": "memberserver/api"
@@ -1150,9 +1150,9 @@
       }
     },
     "loginResponse": {
-      "description": "tokenReponseBody for json response of signin",
+      "description": "tokenResponseBody for json response of signin",
       "schema": {
-        "$ref": "#/definitions/tokenResponse"
+        "$ref": "#/definitions/TokenResponse"
       }
     },
     "postResourceResponse": {
