@@ -671,6 +671,17 @@
       },
       "x-go-package": "memberserver/database"
     },
+    "EndpointSuccess": {
+      "description": "EndpointSuccess -- success response",
+      "type": "object",
+      "properties": {
+        "ack": {
+          "type": "boolean",
+          "x-go-name": "Ack"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
+    },
     "InfoResponse": {
       "description": "InfoResponse -- response of info request",
       "type": "object",
@@ -987,16 +998,6 @@
       },
       "x-go-package": "memberserver/api"
     },
-    "endpointSuccess": {
-      "type": "object",
-      "properties": {
-        "ack": {
-          "type": "boolean",
-          "x-go-name": "Ack"
-        }
-      },
-      "x-go-package": "memberserver/api"
-    },
     "memberResourceRelation": {
       "description": "resource to update or delete a resource",
       "type": "object",
@@ -1074,10 +1075,11 @@
     },
     "endpointSuccessResponse": {
       "description": "",
+      "schema": {
+        "$ref": "#/definitions/EndpointSuccess"
+      },
       "headers": {
-        "ack": {
-          "type": "boolean"
-        }
+        "Body": {}
       }
     },
     "getMemberResponse": {
@@ -1103,7 +1105,7 @@
     "getPaymentRefreshResponse": {
       "description": "",
       "schema": {
-        "$ref": "#/definitions/endpointSuccess"
+        "$ref": "#/definitions/EndpointSuccess"
       },
       "headers": {
         "Body": {}
@@ -1164,7 +1166,7 @@
     "removeMemberSuccessResponse": {
       "description": "",
       "schema": {
-        "$ref": "#/definitions/endpointSuccess"
+        "$ref": "#/definitions/EndpointSuccess"
       },
       "headers": {
         "Body": {}

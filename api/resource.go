@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"memberserver/api/models"
 	"memberserver/database"
 	"net/http"
 	"time"
@@ -97,12 +98,7 @@ type getResourceStatusResponse struct {
 
 // swagger:response removeMemberSuccessResponse
 type removeMemberSuccessResponse struct {
-	Body endpointSuccess
-}
-
-// swagger:response endpointSuccessResponse
-type endpointSuccess struct {
-	Ack bool `json:"ack"`
+	Body models.EndpointSuccess
 }
 
 // Resource http handlers for resources
@@ -166,7 +162,7 @@ func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(endpointSuccess{
+	j, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,
 	})
 	w.Write(j)
@@ -210,7 +206,7 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(endpointSuccess{
+	j, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,
 	})
 	w.Write(j)
@@ -274,7 +270,7 @@ func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request
 	resourcemanager.UpdateResources()
 
 	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(endpointSuccess{
+	j, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,
 	})
 	w.Write(j)
@@ -284,7 +280,7 @@ func (rs resourceAPI) deleteResourceACL(w http.ResponseWriter, req *http.Request
 	resourcemanager.DeleteResourceACL()
 
 	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(endpointSuccess{
+	j, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,
 	})
 	w.Write(j)

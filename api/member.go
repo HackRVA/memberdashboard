@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"memberserver/api/models"
 	"memberserver/database"
 	"memberserver/payments"
 	"memberserver/slack"
@@ -12,41 +13,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 )
-
-// swagger:response getMemberResponse
-type memberResponseBody struct {
-	// in: body
-	Body []database.Member
-}
-
-// swagger:response getTierResponse
-type getTierResponse struct {
-	// in: body
-	Body []database.Tier
-}
-
-// swagger:response setRFIDResponse
-type setRFIDResponse struct {
-	// in: body
-	Body database.AssignRFIDRequest
-}
-
-// swagger:parameters setRFIDRequest
-type setRFIDRequest struct {
-	// in: body
-	Body database.AssignRFIDRequest
-}
-
-// swagger:response getPaymentRefreshResponse
-type getPaymentRefreshResponse struct {
-	Body endpointSuccess
-}
-
-// swagger:parameters getMemberByIDRequest
-type getMemberRequest struct {
-	// in: query
-	ID string
-}
 
 func (a API) getTiers(w http.ResponseWriter, req *http.Request) {
 	tiers := a.db.GetMemberTiers()
@@ -109,7 +75,7 @@ func (a API) refreshPayments(w http.ResponseWriter, req *http.Request) {
 	a.db.EvaluateMembers()
 
 	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(endpointSuccess{
+	j, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,
 	})
 	w.Write(j)
