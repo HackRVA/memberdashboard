@@ -476,7 +476,7 @@
             "name": "Body",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/membersResourceRelation"
+              "$ref": "#/definitions/MembersResourceRelation"
             }
           }
         ],
@@ -648,6 +648,45 @@
       },
       "x-go-package": "memberserver/database"
     },
+    "ChartCol": {
+      "description": "ChartCol -- chart col info",
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "x-go-name": "Label"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
+    },
+    "ChartOptions": {
+      "description": "ChartOptions -- config option for the chart",
+      "type": "object",
+      "properties": {
+        "curveType": {
+          "type": "string",
+          "x-go-name": "CurveType"
+        },
+        "legend": {
+          "type": "string",
+          "x-go-name": "Legend"
+        },
+        "pieHole": {
+          "type": "number",
+          "format": "double",
+          "x-go-name": "PieHole"
+        },
+        "title": {
+          "type": "string",
+          "x-go-name": "Title"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
+    },
     "Credentials": {
       "description": "Credentials Create a struct that models the structure of a user, both in the request body, and in the DB",
       "type": "object",
@@ -748,6 +787,10 @@
     "MemberResourceRelation": {
       "description": "MemberResourceRelation  - a relationship between resources and members",
       "type": "object",
+      "required": [
+        "resourceID",
+        "email"
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -758,11 +801,39 @@
           "x-go-name": "MemberID"
         },
         "resourceID": {
+          "description": "ID of the Resource",
           "type": "string",
-          "x-go-name": "ResourceID"
+          "x-go-name": "ResourceID",
+          "example": "string"
         }
       },
       "x-go-package": "memberserver/database"
+    },
+    "MembersResourceRelation": {
+      "description": "MembersResourceRelation -- update or delete a resource for multiple members",
+      "type": "object",
+      "required": [
+        "resourceID",
+        "emails"
+      ],
+      "properties": {
+        "emails": {
+          "description": "Emails - list of member's email address",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "Emails",
+          "example": []
+        },
+        "resourceID": {
+          "description": "ID of the Resource",
+          "type": "string",
+          "x-go-name": "ID",
+          "example": "string"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
     },
     "PaymentChart": {
       "description": "PaymentChart - deliver information to the frontend so that\nwe can display a monthly payment chart",
@@ -771,12 +842,12 @@
         "cols": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/chartCol"
+            "$ref": "#/definitions/ChartCol"
           },
           "x-go-name": "Cols"
         },
         "options": {
-          "$ref": "#/definitions/chartOptions"
+          "$ref": "#/definitions/ChartOptions"
         },
         "rows": {
           "type": "array",
@@ -793,7 +864,7 @@
           "x-go-name": "Type"
         }
       },
-      "x-go-package": "memberserver/api"
+      "x-go-package": "memberserver/api/models"
     },
     "RegisterResourceRequest": {
       "description": "Resource a resource that can accespt an access control list",
@@ -960,91 +1031,6 @@
         }
       },
       "x-go-package": "memberserver/database"
-    },
-    "chartCol": {
-      "type": "object",
-      "properties": {
-        "label": {
-          "type": "string",
-          "x-go-name": "Label"
-        },
-        "type": {
-          "type": "string",
-          "x-go-name": "Type"
-        }
-      },
-      "x-go-package": "memberserver/api"
-    },
-    "chartOptions": {
-      "type": "object",
-      "properties": {
-        "curveType": {
-          "type": "string",
-          "x-go-name": "CurveType"
-        },
-        "legend": {
-          "type": "string",
-          "x-go-name": "Legend"
-        },
-        "pieHole": {
-          "type": "number",
-          "format": "double",
-          "x-go-name": "PieHole"
-        },
-        "title": {
-          "type": "string",
-          "x-go-name": "Title"
-        }
-      },
-      "x-go-package": "memberserver/api"
-    },
-    "memberResourceRelation": {
-      "description": "resource to update or delete a resource",
-      "type": "object",
-      "required": [
-        "resourceID",
-        "email"
-      ],
-      "properties": {
-        "email": {
-          "description": "Email - this will be the member's email address\nName of the Resource",
-          "type": "string",
-          "x-go-name": "Email",
-          "example": "email"
-        },
-        "resourceID": {
-          "description": "ID of the Resource",
-          "type": "string",
-          "x-go-name": "ID",
-          "example": "string"
-        }
-      },
-      "x-go-package": "memberserver/api"
-    },
-    "membersResourceRelation": {
-      "type": "object",
-      "required": [
-        "resourceID",
-        "emails"
-      ],
-      "properties": {
-        "emails": {
-          "description": "Emails - list of member's email address",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-go-name": "Emails",
-          "example": []
-        },
-        "resourceID": {
-          "description": "ID of the Resource",
-          "type": "string",
-          "x-go-name": "ID",
-          "example": "string"
-        }
-      },
-      "x-go-package": "memberserver/api"
     }
   },
   "responses": {
@@ -1093,12 +1079,10 @@
     },
     "getPaymentChartResponse": {
       "description": "PaymentResponse response of payment chart information",
-      "headers": {
-        "paymentCharts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PaymentChart"
-          }
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/PaymentChart"
         }
       }
     },

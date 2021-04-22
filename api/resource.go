@@ -5,101 +5,11 @@ import (
 	"memberserver/api/models"
 	"memberserver/database"
 	"net/http"
-	"time"
 
 	"memberserver/resourcemanager"
 
 	log "github.com/sirupsen/logrus"
 )
-
-// resource to update or delete a resource
-type memberResourceRelation struct {
-	// ID of the Resource
-	// required: true
-	// example: string
-	ID string `json:"resourceID"`
-	// Email - this will be the member's email address
-	// Name of the Resource
-	// required: true
-	// example: email
-	Email string `json:"email"`
-}
-
-type membersResourceRelation struct {
-	// ID of the Resource
-	// required: true
-	// example: string
-	ID string `json:"resourceID"`
-	// Emails - list of member's email address
-	// required: true
-	// example: []
-	Emails []string `json:"emails"`
-}
-
-// swagger:parameters updateResourceRequest
-type updateResourceRequest struct {
-	// in: body
-	Body database.ResourceRequest
-}
-
-// swagger:parameters registerResourceRequest
-type registerResourceRequest struct {
-	// in: body
-	Body database.RegisterResourceRequest
-}
-
-// swagger:parameters deleteResourceRequest
-type deleteResourceRequest struct {
-	// in: body
-	Body database.ResourceDeleteRequest
-}
-
-// swagger:parameters resourceAddMemberRequest
-type resourceAddMemberRequest struct {
-	// in: body
-	Body memberResourceRelation
-}
-
-// swagger:parameters resourceBulkMemberRequest
-type resourceBulkMemberRequest struct {
-	// in: body
-	Body membersResourceRelation
-}
-
-// swagger:response getResourceResponse
-type getResourceResponse struct {
-	// in: body
-	Body database.Resource
-}
-
-// swagger:response postResourceResponse
-type postResourceResponse struct {
-	// in: body
-	Body database.Resource
-}
-
-// swagger:response addMemberToResourceResponse
-type addMemberToResourceResponse struct {
-	// in: body
-	Body database.MemberResourceRelation
-}
-
-// swagger:response addMulitpleMembersToResourceResponse
-type addMulitpleMembersToResourceResponse struct {
-	// in: body
-	Body []database.MemberResourceRelation
-}
-
-// swagger:response getResourceStatusResponse
-type getResourceStatusResponse struct {
-	// in: body
-	Body map[string]time.Time
-}
-
-// swagger:response removeMemberSuccessResponse
-type removeMemberSuccessResponse struct {
-	Body models.EndpointSuccess
-}
 
 // Resource http handlers for resources
 func (rs resourceAPI) Resource(w http.ResponseWriter, req *http.Request) {
@@ -169,7 +79,7 @@ func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
 }
 
 func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *http.Request) {
-	var membersResource membersResourceRelation
+	var membersResource models.MembersResourceRelation
 
 	err := json.NewDecoder(req.Body).Decode(&membersResource)
 
@@ -191,7 +101,7 @@ func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *h
 }
 
 func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
-	var update memberResourceRelation
+	var update models.MemberResourceRelation
 
 	err := json.NewDecoder(req.Body).Decode(&update)
 	if err != nil {

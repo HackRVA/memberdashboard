@@ -2,40 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"memberserver/api/models"
 	"memberserver/database"
 	"net/http"
 )
-
-type chartOptions struct {
-	Title     string  `json:"title"`
-	CurveType string  `json:"curveType"`
-	PieHole   float64 `json:"pieHole"`
-	Legend    string  `json:"legend"`
-}
-
-type chartRow struct {
-	MemberLevel, MemberCount interface{}
-}
-
-type chartCol struct {
-	Label string `json:"label"`
-	Type  string `json:"type"`
-}
-
-// PaymentChart - deliver information to the frontend so that
-//   we can display a monthly payment chart
-type PaymentChart struct {
-	Options chartOptions    `json:"options"`
-	Type    string          `json:"type"`
-	Rows    [][]interface{} `json:"rows"`
-	Cols    []chartCol      `json:"cols"`
-}
-
-// PaymentResponse response of payment chart information
-// swagger:response getPaymentChartResponse
-type getPaymentChartResponse struct {
-	PaymentCharts []PaymentChart `json:"paymentCharts"`
-}
 
 // countMemberLevels take in a list of payments and return
 //   formatted data to be used in payment charts
@@ -58,13 +28,13 @@ func countMemberLevels(payments []int64) map[database.MemberLevel]uint8 {
 	return counts
 }
 
-func makeMemberCountTrendChart(payments map[string][]int64) PaymentChart {
-	var pc PaymentChart
+func makeMemberCountTrendChart(payments map[string][]int64) models.PaymentChart {
+	var pc models.PaymentChart
 	pc.Options.Title = "Membership Trends"
 	pc.Type = "line"
 	pc.Options.CurveType = "function"
 	pc.Options.Legend = "bottom"
-	pc.Cols = []chartCol{{Label: "Month", Type: "string"}, {Label: "MemberCount", Type: "number"}}
+	pc.Cols = []models.ChartCol{{Label: "Month", Type: "string"}, {Label: "MemberCount", Type: "number"}}
 
 	for k, p := range payments {
 		var row []interface{}
@@ -92,17 +62,17 @@ func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
 	// now the rows are together, but they are in the form of a map
 	// let's massage it out to match our chart contract
 
-	var paymentCharts []PaymentChart
+	var paymentCharts []models.PaymentChart
 
 	paymentCharts = append(paymentCharts, makeMemberCountTrendChart(paymentMapByDate))
 
 	for k, paymentsByMonth := range paymentMapByDate {
-		var pc PaymentChart
+		var pc models.PaymentChart
 		pc.Options.Title = k + " - Membership Distribution"
 		pc.Options.PieHole = 0.4
 		pc.Type = "pie"
 
-		pc.Cols = []chartCol{{Label: "Month", Type: "string"}, {Label: "MemberLevelCount", Type: "number"}}
+		pc.Cols = []models.ChartCol{{Label: "Month", Type: "string"}, {Label: "MemberLevelCount", Type: "number"}}
 		levels := countMemberLevels(paymentsByMonth)
 
 		for level, count := range levels {
