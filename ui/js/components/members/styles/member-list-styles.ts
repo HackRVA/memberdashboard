@@ -15,7 +15,7 @@ export const memberListStyles: CSSResult = css`
     justify-content: center;
     align-items: center;
     text-align: center;
-    margin: 44px;
+    margin: 20px;
   }
   .member-header {
     display: inherit;

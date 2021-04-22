@@ -13,7 +13,7 @@ export const resourceManagerStyles: CSSResult = css`
   .resource-container {
     display: grid;
     align-items: center;
-    margin: 44px;
+    margin: 20px;
   }
 
   .resource-header {
@@ -39,16 +39,10 @@ export const resourceManagerStyles: CSSResult = css`
     border-spacing: 0px;
   }
 
-  .remove {
-    --mdc-theme-primary: ${primaryRed};
-  }
-
-  .mr-8 {
-    margin-right: 8px;
-  }
-
-  .mr-32 {
+  .remove-acls {
+    margin-left: 8px;
     margin-right: 32px;
+    --mdc-theme-primary: ${primaryRed};
   }
 
   .update-acls .note {

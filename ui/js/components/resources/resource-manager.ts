@@ -175,7 +175,6 @@ export class ResourceManager extends LitElement {
           <div class="button-container">
             <span class="update-acls">
               <mwc-button
-                class="mr-8"
                 @click=${this.updateACLs}
                 label="Update ACLs"
                 dense
@@ -186,7 +185,7 @@ export class ResourceManager extends LitElement {
               </div>
             </span>
             <mwc-button
-              class="mr-32 remove"
+              class="remove-acls"
               @click=${this.removeACLs}
               label="Delete ACLs"
               dense
