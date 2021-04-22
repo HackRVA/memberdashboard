@@ -13,7 +13,7 @@ import (
 
 type Profile struct {
 	DisplayName string `json:"display_name"`
-	RealName    string `json"real_name"`
+	RealName    string `json:"real_name"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
 	Email       string `json:"email"`
