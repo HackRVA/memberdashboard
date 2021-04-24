@@ -230,8 +230,7 @@ export class MemberList extends LitElement {
         <div class="member-container">
           <div class="member-header">
             <h3 class="member-count">
-              <b>Number of active members: </b> 
-              ${this.memberCount} 
+              Number of active members: ${this.memberCount} 
             </h3>
             <div class="buttons-container">
               <mwc-button 
