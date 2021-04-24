@@ -20,7 +20,7 @@ export const cardElementStyles: CSSResult = css`
     transition: 0.3s;
     border-radius: 5px; /* 5px rounded corners */
     min-height: 20vh;
-    min-width: 60vw;
+    min-width: 50vw;
     background-color: ${primaryWhite};
   }
   card-container {
