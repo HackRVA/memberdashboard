@@ -2,26 +2,22 @@
 import { css, CSSResult } from "lit-element";
 
 // membership
-import { primaryGray } from "./colors";
+import { primaryBlue, primaryGreen } from "./colors";
 
 export const loginFormStyles: CSSResult = css`
-  .login-container {
-    height: 270px;
-    max-width: 250px;
-    background-color: ${primaryGray};
-    padding: 24px;
-  }
   mwc-formfield {
     display: block;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
   }
-  .mwc-button {
-    margin-bottom: 12px;
+
+  mwc-button {
+    margin-top: 32px;
+    width: 100%;
+    --mdc-theme-primary: ${primaryGreen};
   }
-  .register {
-    float: left;
-  }
-  .login {
+
+  a {
     float: right;
+    color: ${primaryBlue};
   }
 `;

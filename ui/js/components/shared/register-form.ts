@@ -89,48 +89,41 @@ export class RegisterForm extends LitElement {
     );
   }
 
-  fireSwitchEvent(): void {
-    const switchToRegisterEvent = new CustomEvent("switch", {});
-    this.dispatchEvent(switchToRegisterEvent);
-  }
-
-  goToLoginForm(): void {
-    this.fireSwitchEvent();
-  }
-
   render(): TemplateResult {
     return html`
-      <div class="register-container">
-        <mwc-formfield>
-          <mwc-textfield
-            id="email"
-            required
-            type="email"
-            label="Email"
-          ></mwc-textfield>
-        </mwc-formfield>
-        <mwc-formfield>
-          <mwc-textfield
-            id="password"
-            required
-            type="password"
-            label="Password"
-          ></mwc-textfield>
-        </mwc-formfield>
-        <mwc-formfield>
-          <mwc-textfield
-            id="confirm-password"
-            required
-            type="password"
-            label="Retype password"
-          ></mwc-textfield>
-        </mwc-formfield>
-        <mwc-button class="sign-in" @click=${this.goToLoginForm}>
-          Sign in
-        </mwc-button>
-        <mwc-button label="register" @click=${this.handleSubmit}></mwc-button>
-        <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
-      </div>
+      <mwc-formfield>
+        <mwc-textfield
+          size="30"
+          id="email"
+          required
+          type="email"
+          label="Email"
+        ></mwc-textfield>
+      </mwc-formfield>
+      <mwc-formfield>
+        <mwc-textfield
+          size="30"
+          id="password"
+          required
+          type="password"
+          label="Password"
+        ></mwc-textfield>
+      </mwc-formfield>
+      <mwc-formfield>
+        <mwc-textfield
+          size="30"
+          id="confirm-password"
+          required
+          type="password"
+          label="Retype password"
+        ></mwc-textfield>
+      </mwc-formfield>
+      <mwc-button
+        label="register"
+        unelevated
+        @click=${this.handleSubmit}
+      ></mwc-button>
+      <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
 }

@@ -34,11 +34,6 @@ export class LoginForm extends LitElement {
     return [loginFormStyles];
   }
 
-  fireSwitchEvent(): void {
-    const switchToRegisterEvent = new CustomEvent("switch", {});
-    this.dispatchEvent(switchToRegisterEvent);
-  }
-
   firstUpdated(): void {
     this.emailFieldTemplate = this.shadowRoot?.querySelector("#email");
     this.passwordFieldTemplate = this.shadowRoot?.querySelector("#password");
@@ -83,41 +78,34 @@ export class LoginForm extends LitElement {
     showComponent("#toast-msg", this.shadowRoot);
   }
 
-  goToRegisterForm(): void {
-    this.fireSwitchEvent();
-  }
-
   render(): TemplateResult {
     return html`
-      <div class="login-container">
-        <mwc-formfield>
-          <mwc-textfield
-            id="email"
-            required
-            type="email"
-            label="Email"
-          ></mwc-textfield>
-        </mwc-formfield>
-        <mwc-formfield>
-          <mwc-textfield
-            id="password"
-            required
-            type="password"
-            label="Password"
-          ></mwc-textfield>
-        </mwc-formfield>
-        <mwc-button
-          label="Sign up"
-          class="register"
-          @click=${this.goToRegisterForm}
-        ></mwc-button>
-        <mwc-button
-          label="login"
-          @click=${this.handleSubmit}
-          class="login"
-        ></mwc-button>
-        <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
-      </div>
+      <mwc-formfield>
+        <mwc-textfield
+          size="30"
+          id="email"
+          required
+          type="email"
+          label="Email"
+        ></mwc-textfield>
+      </mwc-formfield>
+      <mwc-formfield>
+        <mwc-textfield
+          size="30"
+          id="password"
+          required
+          type="password"
+          label="Password"
+        ></mwc-textfield>
+      </mwc-formfield>
+      <a href=""> Forgot Password? </a>
+      <mwc-button
+        unelevated
+        label="login"
+        @click=${this.handleSubmit}
+        class="login"
+      ></mwc-button>
+      <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
 }

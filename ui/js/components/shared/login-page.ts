@@ -31,9 +31,27 @@ export class LoginPage extends LitElement {
 
   displayRegisterLoginForm(): TemplateResult {
     if (this.isRegister) {
-      return html`<register-form @switch=${this.handleSwitch} />`;
+      return html`<register-form></register-form>`;
     } else {
-      return html`<login-form @switch=${this.handleSwitch} />`;
+      return html`<login-form></login-form>`;
+    }
+  }
+
+  toggleInfoText(): TemplateResult {
+    if (!this.isRegister) {
+      return html`
+        <span>
+          Are you new? Register
+          <a href="" @click=${this.handleSwitch}> here </a>
+        </span>
+      `;
+    } else {
+      return html`
+        <span>
+          Already a member? Rock on! Login
+          <a href="" @click=${this.handleSwitch}> here </a>
+        </span>
+      `;
     }
   }
 
@@ -45,10 +63,11 @@ export class LoginPage extends LitElement {
       <mwc-top-app-bar-fixed centerTitle>
         <div slot="title">Member Dashboard</div>
       </mwc-top-app-bar-fixed>
-      <card-element class="text-center">
-        <h1>${this.displayLoginHeaderText()}</h1>
-        <div class="login-container">${this.displayRegisterLoginForm()}</div>
-      </card-element>
+      <h1 class="text-center">${this.displayLoginHeaderText()}</h1>
+      <div class="login-container">
+        ${this.displayRegisterLoginForm()}
+        <div class="toggle-form-text text-center">${this.toggleInfoText()}</div>
+      </div>
     `;
   }
 }

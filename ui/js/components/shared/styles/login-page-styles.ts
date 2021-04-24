@@ -13,13 +13,34 @@ export const loginPageStyles: CSSResult = css`
   .login-container {
     display: grid;
     justify-content: center;
+    align-content: center;
+    height: 40vh;
+  }
+
+  login-form,
+  register-form {
+    height: 250px;
+    padding: 24px;
+    background-color: #888888;
+    border-radius: 8px;
+    border: 1px solid silver;
   }
 
   .text-center {
     text-align: center;
   }
 
-  h1 {
-    margin-top: 0px;
+  .toggle-form-text {
+    margin-top: 16px;
+    padding: 12px;
+    border: 1px solid ${primaryWhite};
+    border-radius: 8px;
+    background-color: #888888;
+    opacity: 0.7;
+    color: white;
+  }
+
+  a {
+    color: ${primaryBlue};
   }
 `;
