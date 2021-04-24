@@ -55,6 +55,8 @@ export class PaymentChart extends LitElement {
       next: (result: any) => {
         this.paymentCharts = result as PaymentChartResponse[];
         this.paymentCharts.forEach((x: PaymentChartResponse) => {
+          // primary blue, primary dark green, primary red, and primary dark gray
+          x.options.colors = ["#6200ee", "#50c878", "#e9437a", "#888888"];
           this.addChart(x);
         });
         this.requestUpdate();

@@ -3,6 +3,7 @@ export interface ChartOptions {
   pieHole: number;
   legend: string;
   curveType: string;
+  colors: string[];
 }
 
 export interface ChartCols {
