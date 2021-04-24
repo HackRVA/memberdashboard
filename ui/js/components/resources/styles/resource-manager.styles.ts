@@ -3,8 +3,8 @@ import { css, CSSResult } from "lit-element";
 
 // membership
 import {
-  primaryGray,
-  primaryGreen,
+  primaryLightGray,
+  primaryLightGreen,
   primaryRed,
   primaryYellow,
 } from "./../../shared/styles/colors";
@@ -31,7 +31,7 @@ export const resourceManagerStyles: CSSResult = css`
     text-align: left;
     padding: 8px;
     font-size: 20px;
-    border: 1px solid ${primaryGray};
+    border: 1px solid ${primaryLightGray};
     max-width: 320px;
   }
   table {
@@ -68,7 +68,7 @@ export const resourceManagerStyles: CSSResult = css`
   }
 
   .online {
-    color: ${primaryGreen};
+    color: ${primaryLightGreen};
   }
 
   .offline {

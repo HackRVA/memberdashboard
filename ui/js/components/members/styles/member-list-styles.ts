@@ -2,7 +2,7 @@
 import { css, CSSResult } from "lit-element";
 
 // membership
-import { primaryGray, primaryRed } from "./../../shared/styles/colors";
+import { primaryLightGray, primaryRed } from "./../../shared/styles/colors";
 
 export const memberListStyles: CSSResult = css`
   .member-container {
@@ -32,7 +32,7 @@ export const memberListStyles: CSSResult = css`
     text-align: left;
     padding: 8px;
     font-size: 20px;
-    border: 1px solid ${primaryGray};
+    border: 1px solid ${primaryLightGray};
     max-width: 320px;
   }
   table {

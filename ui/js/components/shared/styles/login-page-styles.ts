@@ -2,7 +2,12 @@
 import { css, CSSResult } from "lit-element";
 
 // membership
-import { primaryBlue, primaryWhite } from "./colors";
+import {
+  primaryBlue,
+  primaryWhite,
+  plainWhite,
+  primaryDarkGray,
+} from "./colors";
 
 export const loginPageStyles: CSSResult = css`
   mwc-top-app-bar-fixed {
@@ -14,14 +19,14 @@ export const loginPageStyles: CSSResult = css`
     display: grid;
     justify-content: center;
     align-content: center;
-    height: 40vh;
+    height: 400px;
   }
 
   login-form,
   register-form {
     height: 250px;
-    padding: 24px;
-    background-color: #888888;
+    padding: 24px 16px;
+    background-color: ${primaryDarkGray};
     border-radius: 8px;
     border: 1px solid silver;
   }
@@ -35,9 +40,9 @@ export const loginPageStyles: CSSResult = css`
     padding: 12px;
     border: 1px solid ${primaryWhite};
     border-radius: 8px;
-    background-color: #888888;
+    background-color: ${primaryDarkGray};
     opacity: 0.7;
-    color: white;
+    color: ${plainWhite};
   }
 
   a {

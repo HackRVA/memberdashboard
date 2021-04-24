@@ -2,7 +2,7 @@
 import { css, CSSResult } from "lit-element";
 
 // membership
-import { primaryGreen } from "./colors";
+import { primaryDarkGreen } from "./colors";
 
 export const registerFormStyles: CSSResult = css`
   mwc-formfield {
@@ -12,6 +12,6 @@ export const registerFormStyles: CSSResult = css`
 
   mwc-button {
     width: 100%;
-    --mdc-theme-primary: ${primaryGreen};
+    --mdc-theme-primary: ${primaryDarkGreen};
   }
 `;
