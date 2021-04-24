@@ -5,11 +5,6 @@ import { css, CSSResult } from "lit-element";
 import { primaryGray, primaryRed } from "./../../shared/styles/colors";
 
 export const memberListStyles: CSSResult = css`
-  h1 {
-    margin-top: 0px;
-    margin-bottom: 0px;
-    justify-self: start;
-  }
   .member-container {
     display: grid;
     justify-content: center;
@@ -23,7 +18,7 @@ export const memberListStyles: CSSResult = css`
     align-items: center;
   }
   .member-count {
-    justify-self: end;
+    justify-self: start;
   }
   .name {
     text-transform: capitalize;
@@ -44,7 +39,7 @@ export const memberListStyles: CSSResult = css`
     margin-top: 24px;
     border-spacing: 0px;
   }
-  .rfid-button {
+  .buttons-container {
     justify-self: end;
   }
 
@@ -57,8 +52,6 @@ export const memberListStyles: CSSResult = css`
   }
 
   .refresh-members-list {
-    float: right;
-    margin-top: 16px;
     width: 192px;
     margin-right: 24px;
     --mdc-typography-button-font-size: 12px;

@@ -229,26 +229,28 @@ export class MemberList extends LitElement {
       <card-element>
         <div class="member-container">
           <div class="member-header">
-            <span class="member-count">
+            <h3 class="member-count">
               <b>Number of active members: </b> 
               ${this.memberCount} 
-            </span>
-            <mwc-button 
-              class="rfid-button" 
-              label="Assign rfid"
-              unelevated 
-              dense 
-              @click=${this.openRFIDModal}> 
-            </mvc-button>
+            </h3>
+            <div class="buttons-container">
+              <mwc-button 
+                class="refresh-members-list" 
+                unelevated 
+                dense 
+                label="Refresh member list"
+                @click=${this.refreshMembersPayments}> 
+              </mwc-button>
+              <mwc-button 
+                class="rfid-button" 
+                label="Assign rfid"
+                unelevated 
+                dense 
+                @click=${this.openRFIDModal}> 
+              </mvc-button>
+            </div>
           </div>
           <div class="all-members-action-container">
-            <mwc-button 
-              class="refresh-members-list" 
-              unelevated 
-              dense 
-              label="Refresh member list"
-              @click=${this.refreshMembersPayments}> 
-            </mwc-button>
             <mwc-button
               class="add-resource-to-members"
               unelevated
