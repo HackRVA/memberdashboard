@@ -5,6 +5,8 @@ import (
 	"memberserver/api/models"
 	"memberserver/database"
 	"net/http"
+
+	"github.com/emirpasic/gods/maps/linkedhashmap"
 )
 
 // countMemberLevels take in a list of payments and return
@@ -28,18 +30,21 @@ func countMemberLevels(payments []int64) map[database.MemberLevel]uint8 {
 	return counts
 }
 
-func makeMemberCountTrendChart(payments map[string][]int64) models.PaymentChart {
+func makeMemberCountTrendChart(payments linkedhashmap.Map) models.PaymentChart {
 	var pc models.PaymentChart
 	pc.Options.Title = "Membership Trends"
 	pc.Type = "line"
 	pc.Options.CurveType = "function"
 	pc.Options.Legend = "bottom"
-	pc.Cols = []models.ChartCol{{Label: "Month", Type: "string"}, {Label: "MemberCount", Type: "number"}}
+	pc.Cols = []models.ChartCol{{Label: "Month", Type: "string"}, {Label: "Member Count", Type: "number"}}
 
-	for k, p := range payments {
+	it := payments.Iterator()
+
+	for it.Next() {
 		var row []interface{}
-		row = append(row, k)
-		row = append(row, len(p))
+		row = append(row, it.Key())
+		var paymentAmounts []int64 = it.Value().([]int64)
+		row = append(row, len(paymentAmounts))
 		pc.Rows = append(pc.Rows, row)
 	}
 	return pc
@@ -52,11 +57,21 @@ func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	paymentMapByDate := make(map[string][]int64)
+	paymentMapByDate := linkedhashmap.New()
 
 	// get the rows together
 	for _, p := range paymentList {
-		paymentMapByDate[p.Date.Format("Jan-06")] = append(paymentMapByDate[p.Date.Format("Jan-06")], int64(p.Amount.AsMajorUnits()))
+		_, found := paymentMapByDate.Get(p.Date.Format("Jan-06"))
+		if !found {
+			var paymentAmounts []int64
+			paymentAmounts = append(paymentAmounts, int64(p.Amount.AsMajorUnits()))
+			paymentMapByDate.Put(p.Date.Format(("Jan-06")), paymentAmounts)
+		} else {
+			monthPaymentAmounts, _ := paymentMapByDate.Get(p.Date.Format("Jan-06"))
+			var paymentAmounts []int64 = monthPaymentAmounts.([]int64)
+			paymentAmounts = append(paymentAmounts, int64(p.Amount.AsMajorUnits()))
+			paymentMapByDate.Put(p.Date.Format(("Jan-06")), paymentAmounts)
+		}
 	}
 
 	// now the rows are together, but they are in the form of a map
@@ -64,16 +79,18 @@ func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
 
 	var paymentCharts []models.PaymentChart
 
-	paymentCharts = append(paymentCharts, makeMemberCountTrendChart(paymentMapByDate))
+	paymentCharts = append(paymentCharts, makeMemberCountTrendChart(*paymentMapByDate))
 
-	for k, paymentsByMonth := range paymentMapByDate {
+	it := paymentMapByDate.Iterator()
+
+	for it.Next() {
 		var pc models.PaymentChart
-		pc.Options.Title = k + " - Membership Distribution"
+		pc.Options.Title = it.Key().(string) + " - Membership Distribution"
 		pc.Options.PieHole = 0.4
 		pc.Type = "pie"
 
 		pc.Cols = []models.ChartCol{{Label: "Month", Type: "string"}, {Label: "MemberLevelCount", Type: "number"}}
-		levels := countMemberLevels(paymentsByMonth)
+		levels := countMemberLevels(it.Value().([]int64))
 
 		for level, count := range levels {
 			var row []interface{}

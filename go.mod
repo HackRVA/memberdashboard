@@ -6,6 +6,7 @@ require (
 	github.com/Rhymond/go-money v1.0.2
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/eclipse/paho.mqtt.golang v1.3.2
+	github.com/emirpasic/gods v1.12.0
 	github.com/go-openapi/loads v0.20.0 // indirect
 	github.com/go-swagger/go-swagger v0.25.0 // indirect
 	github.com/gorilla/mux v1.8.0
