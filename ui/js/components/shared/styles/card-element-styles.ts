@@ -24,7 +24,6 @@ export const cardElementStyles: CSSResult = css`
     background-color: ${primaryWhite};
   }
   card-container {
-    width: 100vw;
     display: grid;
     justify-content: center;
     margin-top: 5vh;

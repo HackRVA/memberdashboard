@@ -99,11 +99,27 @@ export class MemberDashboardContent extends LitElement {
         ${this.displayLogout()}
       </mwc-top-app-bar-fixed>
       <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
-        <mwc-tab label="Home" @click=${this.goToHome}></mwc-tab>
-        <mwc-tab label="User" @click=${this.goToUser}></mwc-tab>
-        <mwc-tab label="Reports" @click=${this.goToReports}></mwc-tab>
-        <mwc-tab label="Members" @click=${this.goToMembers}></mwc-tab>
-        <mwc-tab label="Resources" @click=${this.goToResources}></mwc-tab>
+        <mwc-tab label="Home" icon="home" @click=${this.goToHome}></mwc-tab>
+        <mwc-tab
+          label="User"
+          icon="account_circle"
+          @click=${this.goToUser}
+        ></mwc-tab>
+        <mwc-tab
+          label="Reports"
+          icon="show_chart"
+          @click=${this.goToReports}
+        ></mwc-tab>
+        <mwc-tab
+          label="Members"
+          icon="people"
+          @click=${this.goToMembers}
+        ></mwc-tab>
+        <mwc-tab
+          label="Resources"
+          icon="devices"
+          @click=${this.goToResources}
+        ></mwc-tab>
       </mwc-tab-bar>
 
       <slot> </slot>
