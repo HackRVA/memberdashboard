@@ -63,6 +63,10 @@ export const resourceManagerStyles: CSSResult = css`
     z-index: 1;
   }
 
+  .remove {
+    --mdc-theme-primary: ${primaryRed};
+  }
+
   .online {
     color: ${primaryGreen};
   }
