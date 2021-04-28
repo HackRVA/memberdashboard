@@ -10,40 +10,54 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+    "github.com/shaj13/go-guardian/v2/auth"
+	"github.com/shaj13/go-guardian/v2/auth/strategies/basic"
+	"github.com/shaj13/go-guardian/v2/auth/strategies/jwt"
+	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 	log "github.com/sirupsen/logrus"
 )
 
-// JWTExpireInterval - how long the JWT will last
+// JWTExpireInterval - how long the JWT will last in hours
 const JWTExpireInterval = 8
 
 // CookieName - name of the cookie :3
 const CookieName = "memberserver-token"
 
-// Create the JWT key used to create the signature
-var jwtKey = []byte("my_secret_key")
+var strategy union.Union
+var keeper jwt.SecretsKeeper
+
+func setupGoGuardian(config) {
+
+    keeper = jwt.StaticSecret{
+        ID:        "secret-id",
+        Secret:    []byte(config.AccessSecret),
+        Algorithm: jwt.HS256,
+    }
+    cache := libcache.FIFO.New(0)
+    cache.SetTTL(time.Minute * 5)
+    cache.RegisterOnExpired(func(key, _ interface{}) {
+        cache.Peek(key)
+    })
+    basicStrategy := basic.NewCached(validateUser, cache)
+    jwtStrategy := jwt.New(cache, keeper)
+    strategy = union.New(jwtStrategy, basicStrategy)
+}
+
 
 func authMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenString := r.Header.Get("Authorization")
-		if len(tokenString) == 0 {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Missing Authorization Header"))
-			return
-		}
-		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
-		claims, err := verifyToken(tokenString)
-		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Error verifying JWT token: " + err.Error()))
-			return
-		}
-		name := claims.(jwt.MapClaims)["email"].(string)
-
-		r.Header.Set("email", name)
-		r.Header.Set("Authorization", "bearer "+tokenString)
-
-		next.ServeHTTP(w, r)
-	})
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        log.Println("Executing Auth Middleware")
+        _, user, err := strategy.AuthenticateRequest(r)
+        if err != nil {
+            fmt.Println(err)
+            code := http.StatusUnauthorized
+            http.Error(w, http.StatusText(code), code)
+            return
+        }
+        log.Printf("User %s Authenticated\n", user.GetUserName())
+        r = auth.RequestWithUser(user, r)
+        next.ServeHTTP(w, r)
+    })
 }
 
 // getUser responds with the current logged in user
@@ -110,8 +124,8 @@ func (a API) logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
+//No longer needed
 func (a API) getToken(email string) (string, error) {
-
 	//Creating Access Token
 	atClaims := models.Claims{}
 	atClaims.Email = email
@@ -122,6 +136,8 @@ func (a API) getToken(email string) (string, error) {
 	return tokenString, err
 }
 
+
+//no longer needed
 func verifyToken(tokenString string) (jwt.Claims, error) {
 	c, _ := config.Load()
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -133,27 +149,23 @@ func verifyToken(tokenString string) (jwt.Claims, error) {
 	return token.Claims, err
 }
 
-func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
-	// Parse and decode the request body into a new `Credentials` instance
-	creds := &database.Credentials{}
-	err := json.NewDecoder(r.Body).Decode(creds)
-	if err != nil {
-		// If there is something wrong with the request body, return a 400 status
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	err = a.db.UserSignin(creds.Email, creds.Password)
+func (a API) validateUser(ctx context.Context, r *http.Request, userName, password string) (auth.Info, error) {
+	err = a.db.UserSignin(userName, password)
 	if err != nil {
 		log.Errorf("error signing in: %s", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
+        return nil, fmt.Errorf("Invalid credentials")
 	}
-
 	// If we reach this point, that means the users password was correct, and that they are authorized
-	// The default 200 status is sent
+    // we could attach some of their privledges to this return val I think
+    return auth.NewDefaultUser(userName, userName, nil, nil), nil
+}
 
-	token, err := a.getToken(creds.Email)
+func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
+
+    exp := jwt.SetExpDuration(time.Hour * JWTExpireInterval)
+	u := auth.User(r)
+	token, err := jwt.IssueAccessToken(u, keeper, exp)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return

@@ -37,6 +37,8 @@ func Setup(db *database.Database) *mux.Router {
 	r := mux.NewRouter()
 	restRouter := registerRoutes(r, api)
 	serveSwaggerUI(r)
+    //set up go guardian here
+    setupGoGuardian(c)
 
 	spa := spaHandler{staticPath: "./ui/dist/", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)
