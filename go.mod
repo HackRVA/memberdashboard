@@ -22,6 +22,8 @@ require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/shaj13/go-guardian v1.5.11 // indirect
+	github.com/shaj13/go-guardian/v2 v2.11.3
+	github.com/shaj13/libcache v1.0.0
 	github.com/shopspring/decimal v0.0.0-20200419222939-1884f454f8ea // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.6.1 // indirect

@@ -6,10 +6,11 @@ import (
 	"memberserver/config"
 	"memberserver/database"
 	"net/http"
-	"strings"
 	"time"
+    "context"
+    "fmt"
 
-	"github.com/dgrijalva/jwt-go"
+    "github.com/shaj13/libcache"
     "github.com/shaj13/go-guardian/v2/auth"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/basic"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/jwt"
@@ -26,7 +27,7 @@ const CookieName = "memberserver-token"
 var strategy union.Union
 var keeper jwt.SecretsKeeper
 
-func setupGoGuardian(config) {
+func setupGoGuardian(config config.Config, db *database.Database) {
 
     keeper = jwt.StaticSecret{
         ID:        "secret-id",
@@ -38,7 +39,7 @@ func setupGoGuardian(config) {
     cache.RegisterOnExpired(func(key, _ interface{}) {
         cache.Peek(key)
     })
-    basicStrategy := basic.NewCached(validateUser, cache)
+    basicStrategy := basic.NewCached(getValidator(db), cache)
     jwtStrategy := jwt.New(cache, keeper)
     strategy = union.New(jwtStrategy, basicStrategy)
 }
@@ -49,7 +50,7 @@ func authMiddleware(next http.Handler) http.Handler {
         log.Println("Executing Auth Middleware")
         _, user, err := strategy.AuthenticateRequest(r)
         if err != nil {
-            fmt.Println(err)
+            log.Println(err)
             code := http.StatusUnauthorized
             http.Error(w, http.StatusText(code), code)
             return
@@ -124,40 +125,18 @@ func (a API) logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-//No longer needed
-func (a API) getToken(email string) (string, error) {
-	//Creating Access Token
-	atClaims := models.Claims{}
-	atClaims.Email = email
-	atClaims.ExpiresAt = time.Now().Add(time.Hour * JWTExpireInterval).Unix()
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-
-	tokenString, err := token.SignedString([]byte(a.config.AccessSecret))
-	return tokenString, err
-}
-
-
-//no longer needed
-func verifyToken(tokenString string) (jwt.Claims, error) {
-	c, _ := config.Load()
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(c.AccessSecret), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return token.Claims, err
-}
-
-func (a API) validateUser(ctx context.Context, r *http.Request, userName, password string) (auth.Info, error) {
-	err = a.db.UserSignin(userName, password)
-	if err != nil {
-		log.Errorf("error signing in: %s", err)
-        return nil, fmt.Errorf("Invalid credentials")
-	}
-	// If we reach this point, that means the users password was correct, and that they are authorized
-    // we could attach some of their privledges to this return val I think
-    return auth.NewDefaultUser(userName, userName, nil, nil), nil
+func getValidator(db *database.Database) (basic.AuthenticateFunc) {
+    validator :=  func (ctx context.Context, r *http.Request, userName, password string) (auth.Info, error) {
+        err := db.UserSignin(userName, password)
+        if err != nil {
+            log.Errorf("error signing in: %s", err)
+            return nil, fmt.Errorf("Invalid credentials")
+        }
+        // If we reach this point, that means the users password was correct, and that they are authorized
+        // we could attach some of their privledges to this return val I think
+        return auth.NewDefaultUser(userName, userName, nil, nil), nil
+    }
+    return validator
 }
 
 func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +151,7 @@ func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokenJSON := &models.TokenResponse{}
-	tokenJSON.Token = token
+    tokenJSON.Token = token
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     CookieName,
