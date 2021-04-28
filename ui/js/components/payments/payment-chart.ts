@@ -16,6 +16,12 @@ import { PaymentService } from "../../service/payment.service";
 import "../shared/card-element";
 import { PaymentChartResponse, ChartAttributes } from "./types";
 import { paymentChartStyles } from "./styles/payment-chart-styles";
+import {
+  primaryBlue,
+  primaryDarkGreen,
+  primaryRed,
+  primaryDarkGray,
+} from "../shared/styles";
 @customElement("payment-chart")
 export class PaymentChart extends LitElement {
   paymentService: PaymentService = new PaymentService();
@@ -55,8 +61,12 @@ export class PaymentChart extends LitElement {
       next: (result: any) => {
         this.paymentCharts = result as PaymentChartResponse[];
         this.paymentCharts.forEach((x: PaymentChartResponse) => {
-          // primary blue, primary dark green, primary red, and primary dark gray
-          x.options.colors = ["#6200ee", "#50c878", "#e9437a", "#888888"];
+          x.options.colors = [
+            primaryBlue.cssText,
+            primaryDarkGreen.cssText,
+            primaryRed.cssText,
+            primaryDarkGray.cssText,
+          ];
           this.addChart(x);
         });
         this.requestUpdate();
