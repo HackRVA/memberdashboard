@@ -40,7 +40,7 @@ export class HTTPService {
     return fromFetch(endpoint, {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
+        Authorization: this.authHeader(options)
       },
       body: JSON.stringify(options),
     }).pipe(
@@ -62,6 +62,15 @@ export class HTTPService {
         return throwError({ error: true, message: err.message });
       })
     );
+  }
+
+  authHeader(options?: any): string {
+    if (localStorage.getItem("jwt")) {
+        return "Bearer " + localStorage.getItem("jwt");
+    } else if (options.email && options.password) {
+        return 'Basic ' + btoa(options.email + ':' + options.password);
+    }
+    return '';
   }
 
   delete(

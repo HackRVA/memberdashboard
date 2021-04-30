@@ -12,7 +12,7 @@ const getMemberQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_
 ARRAY(
 SELECT resource_id
 FROM membership.member_resource
-LEFT JOIN membership.resources 
+LEFT JOIN membership.resources
 ON membership.resources.id = membership.member_resource.resource_id
 WHERE member_id = membership.members.id
 ) as resources
@@ -30,7 +30,7 @@ const getMemberByEmailQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), 
 ARRAY(
 SELECT resource_id
 FROM membership.member_resource
-LEFT JOIN membership.resources 
+LEFT JOIN membership.resources
 ON membership.resources.id = membership.member_resource.resource_id
 WHERE member_id = membership.members.id
 ) as resources
@@ -41,7 +41,7 @@ const getMemberByIDQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), mem
 ARRAY(
 SELECT resource_id
 FROM membership.member_resource
-LEFT JOIN membership.resources 
+LEFT JOIN membership.resources
 ON membership.resources.id = membership.member_resource.resource_id
 WHERE member_id = membership.members.id
 ) as resources
@@ -163,6 +163,7 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 
 	err := db.getConn().QueryRow(context.Background(), getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
 	if err != nil {
+		log.Errorf("error getting member by email: %v", memberEmail)
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
 
