@@ -8,55 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const getMemberQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
-ARRAY(
-SELECT resource_id
-FROM membership.member_resource
-LEFT JOIN membership.resources
-ON membership.resources.id = membership.member_resource.resource_id
-WHERE member_id = membership.members.id
-) as resources
-FROM membership.members
-ORDER BY name;
-`
-const getMembersWithCreditQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id
-FROM membership.members
-RIGHT JOIN membership.member_credit
-ON membership.member_credit.member_id = id
-ORDER BY name;
-`
-
-const getMemberByEmailQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
-ARRAY(
-SELECT resource_id
-FROM membership.member_resource
-LEFT JOIN membership.resources
-ON membership.resources.id = membership.member_resource.resource_id
-WHERE member_id = membership.members.id
-) as resources
-FROM membership.members
-WHERE email = $1;`
-
-const getMemberByIDQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
-ARRAY(
-SELECT resource_id
-FROM membership.member_resource
-LEFT JOIN membership.resources
-ON membership.resources.id = membership.member_resource.resource_id
-WHERE member_id = membership.members.id
-) as resources
-FROM membership.members
-WHERE id = $1;`
-
-const setMemberRFIDTag = `UPDATE membership.members
-SET rfid=$2
-WHERE email=$1
-RETURNING rfid;`
-
-const insertMemberQuery = `INSERT INTO membership.members(
-	name, email, rfid, member_tier_id)
-	VALUES ($1, $2, null, 1)
-RETURNING id, name, email;`
+var memberDbMethod MemberDatabaseMethod
 
 // MemberResource a resource that a member belongs to
 type MemberResource struct {
@@ -82,7 +34,7 @@ type AssignRFIDRequest struct {
 
 // GetMembers - gets the status from DB
 func (db *Database) GetMembers() []Member {
-	rows, err := db.getConn().Query(db.ctx, getMemberQuery)
+	rows, err := db.getConn().Query(db.ctx, memberDbMethod.getMember())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -134,7 +86,7 @@ func (db *Database) GetMembers() []Member {
 //  if a member exists in the member_credits table
 //  they are credited a membership
 func (db *Database) GetMembersWithCredit() []Member {
-	rows, err := db.getConn().Query(db.ctx, getMembersWithCreditQuery)
+	rows, err := db.getConn().Query(db.ctx, memberDbMethod.getMembersWithCredit())
 	if err != nil {
 		log.Errorf("error getting credited members: %v", err)
 	}
@@ -161,7 +113,7 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 	var m Member
 	var rIDs []string
 
-	err := db.getConn().QueryRow(context.Background(), getMemberByEmailQuery, memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
+	err := db.getConn().QueryRow(context.Background(), memberDbMethod.getMemberByEmail(), memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
 	if err != nil {
 		log.Errorf("error getting member by email: %v", memberEmail)
 		return m, fmt.Errorf("conn.Query failed: %v", err)
@@ -197,7 +149,7 @@ func (db *Database) GetMemberByID(memberID string) (Member, error) {
 	var m Member
 	var rIDs []string
 
-	err := db.getConn().QueryRow(context.Background(), getMemberByIDQuery, memberID).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
+	err := db.getConn().QueryRow(context.Background(), memberDbMethod.getMemberByID(), memberID).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -235,7 +187,7 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 		return m, err
 	}
 
-	err = db.getConn().QueryRow(context.Background(), setMemberRFIDTag, email, encodeRFID(RFIDTag)).Scan(&m.RFID)
+	err = db.getConn().QueryRow(context.Background(), memberDbMethod.setMemberRFIDTag(), email, encodeRFID(RFIDTag)).Scan(&m.RFID)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -247,7 +199,7 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 func (db *Database) AddMember(email string, name string) (Member, error) {
 	var m Member
 
-	err := db.getConn().QueryRow(context.Background(), insertMemberQuery, name, email).Scan(&m.ID, &m.Name, &m.Email)
+	err := db.getConn().QueryRow(context.Background(), memberDbMethod.insertMember(), name, email).Scan(&m.ID, &m.Name, &m.Email)
 	if err != nil {
 		return m, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -255,7 +207,7 @@ func (db *Database) AddMember(email string, name string) (Member, error) {
 	return m, err
 }
 
-// AddMember adds multiple members to the database
+// AddMembers adds multiple members to the database
 func (db *Database) AddMembers(members []Member) error {
 	sqlStr := `INSERT INTO membership.members(
 name, email, member_tier_id)

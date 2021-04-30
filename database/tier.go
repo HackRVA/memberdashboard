@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const getMemberTiersQuery = `SELECT id, description FROM membership.member_tiers;`
+var tierDbMethod TierDatabaseMethod
 
 // MemberLevel enum
 type MemberLevel int
@@ -50,7 +50,7 @@ type Tier struct {
 
 // GetMemberTiers - gets the member tiers from DB
 func (db *Database) GetMemberTiers() []Tier {
-	rows, err := db.getConn().Query(context.Background(), getMemberTiersQuery)
+	rows, err := db.getConn().Query(context.Background(), tierDbMethod.getMemberTiers())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}

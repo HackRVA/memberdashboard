@@ -16,41 +16,7 @@ import (
 const memberGracePeriod = 46
 const membershipMonth = 31
 
-const getPaymentsQuery = `
-SELECT id, date, amount
-FROM membership.payments
-ORDER BY date;`
-
-const insertPaymentQuery = `
-INSERT INTO membership.payments(
-date, amount, member_id)
-VALUES ($1, $2, $3)
-RETURNING *;`
-
-// checkRecentPayment - if the member doesn't have a recent payment,
-//    we will revoke their membership
-const checkLastPaymentQuery = `
-SELECT current_date - date as last_payment, amount, email
-FROM membership.payments
-LEFT JOIN membership.members
-ON membership.payments.member_id = membership.members.id
-WHERE member_id = $1
-ORDER BY date DESC
-limit $2;`
-
-const countPaymentsOfMemberSinceQuery = `
-SELECT COUNT(*) as num_payments
-FROM membership.payments
-LEFT JOIN membership.members
-ON membership.payments.member_id = membership.members.id
-WHERE member_id = $1
-AND date >= current_date - $2;`
-
-const updateMembershipLevelQuery = `
-UPDATE membership.members
-SET member_tier_id=$2
-WHERE id=$1
-RETURNING *;`
+var paymentDbMethod PaymentDatabaseMethod
 
 // PaymentProvider enum
 type PaymentProvider int
@@ -77,7 +43,7 @@ type Payment struct {
 
 // GetPayments - get list of payments that we have in the db
 func (db *Database) GetPayments() ([]Payment, error) {
-	rows, err := db.getConn().Query(context.Background(), getPaymentsQuery)
+	rows, err := db.getConn().Query(context.Background(), paymentDbMethod.getPayments())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -107,7 +73,7 @@ func (db *Database) AddPayment(payment Payment) error {
 	var p Payment
 	var amount int64
 
-	err := db.getConn().QueryRow(context.Background(), insertPaymentQuery, payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
+	err := db.getConn().QueryRow(context.Background(), paymentDbMethod.insertPayment(), payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -117,7 +83,7 @@ func (db *Database) AddPayment(payment Payment) error {
 	return err
 }
 
-// AddPayment adds multiple payments to the database
+// AddPayments adds multiple payments to the database
 func (db *Database) AddPayments(payments []Payment) error {
 	var valStr []string
 
@@ -160,7 +126,7 @@ func (db *Database) EvaluateMembers() {
 
 	memberCredits := db.GetMembersWithCredit()
 	for _, m := range memberCredits {
-		rows, err := db.getConn().Query(context.Background(), updateMembershipLevelQuery, m.ID, Credited)
+		rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), m.ID, Credited)
 		if err != nil {
 			log.Errorf("member credit failed: %v", err)
 		}
@@ -190,7 +156,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	// TODO: see if they have multiple memberships
 	numMemberships := 1
 
-	err := db.getConn().QueryRow(context.Background(), checkLastPaymentQuery, memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
+	err := db.getConn().QueryRow(context.Background(), paymentDbMethod.checkLastPayment(), memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -209,7 +175,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 		}
 		mail.SendRevokedEmail(email)
 
-		rows, err := db.getConn().Query(context.Background(), updateMembershipLevelQuery, memberID, Inactive)
+		rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberID, Inactive)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
 		}
@@ -229,7 +195,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 		// determine their membership level
 		mLevel := MemberLevelFromAmount[amount]
 
-		rows, err := db.getConn().Query(context.Background(), updateMembershipLevelQuery, memberID, mLevel)
+		rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberID, mLevel)
 		if err != nil {
 			return fmt.Errorf("conn.Query failed: %v", err)
 		}

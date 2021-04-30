@@ -10,62 +10,7 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const getResourceQuery = `SELECT id, description, device_identifier, is_default 
-FROM membership.resources
-ORDER BY description;`
-
-const insertResourceQuery = `INSERT INTO membership.resources(
-	description, device_identifier, is_default)
-	VALUES ($1, $2, $3)
-	RETURNING *;`
-const updateResourceQuery = `UPDATE membership.resources
-SET description=$2, device_identifier=$3, is_default=$4
-WHERE id=$1
-RETURNING *;
-`
-const deleteResourceQuery = `DELETE FROM membership.resources
-WHERE id = $1;`
-const getResourceByNameQuery = `SELECT id, description, device_identifier, is_default
-FROM membership.resources
-WHERE description = $1;`
-
-const getResourceByIDQuery = `SELECT id, description, device_identifier, is_default
-FROM membership.resources
-WHERE id = $1;`
-
-const getResourceACLByResourceIDQuery = `SELECT rfid
-FROM membership.member_resource
-LEFT JOIN membership.members
-ON membership.member_resource.member_id = membership.members.id
-WHERE resource_id = $1
-AND rfid is not NULL;`
-
-const getResourceACLByResourceIDQueryWithMemberInfo = `SELECT member_id, name, rfid
-FROM membership.member_resource
-LEFT JOIN membership.members
-ON membership.member_resource.member_id = membership.members.id
-WHERE resource_id = $1
-AND rfid is not NULL;`
-
-const getMemberResourceQuery = `SELECT id, member_id, resource_id
-FROM membership.member_resource
-WHERE member_id = $1 AND resource_id = $2;`
-const insertMemberResourceQuery = `INSERT INTO membership.member_resource(
-	member_id, resource_id)
-	VALUES ($1, $2)
-	RETURNING *;`
-const insertMemberDefaultResourceQuery = `INSERT INTO membership.member_resource(member_id, resource_id)
-VALUES($1, unnest( ARRAY(SELECT resources.id FROM membership.resources AS resources WHERE resources.is_default IS TRUE)))
-RETURNING *;`
-const removeMemberResourceQuery = `DELETE FROM membership.member_resource
-WHERE member_id = $1 AND resource_id = $2;`
-
-// getAccessListQuery - get a list of rfid tags that belong to an active member
-// that have access to a specified resource
-const getAccessListQuery = `SELECT rfid
-FROM membership.member_resource
-INNER JOIN membership.members on (member_resource.member_id = members.id)
-WHERE resource_id = $1 AND member_tier_id > 1;`
+var resourceDbMethod ResourceDatabaseMethod
 
 // Resource a resource that can accespt an access control list
 type Resource struct {
@@ -96,7 +41,7 @@ type ResourceDeleteRequest struct {
 	ID string `json:"id"`
 }
 
-// Resource a resource that can accespt an access control list
+// ResourceRequest a resource that can accespt an access control list
 type ResourceRequest struct {
 	// UniqueID of the Resource
 	// required: true
@@ -116,7 +61,7 @@ type ResourceRequest struct {
 	IsDefault bool `json:"isDefault"`
 }
 
-// Resource a resource that can accespt an access control list
+// RegisterResourceRequest a resource that can accespt an access control list
 type RegisterResourceRequest struct {
 	// Name of the Resource
 	// required: true
@@ -141,7 +86,7 @@ type MemberResourceRelation struct {
 
 var resourceHeartBeatCache map[string]time.Time
 
-// ResourceHeartBeat stores the most recent timestamp that a resource checked in
+// ResourceHeartbeat stores the most recent timestamp that a resource checked in
 func ResourceHeartbeat(r Resource) {
 	if resourceHeartBeatCache == nil {
 		resourceHeartBeatCache = make(map[string]time.Time)
@@ -149,14 +94,14 @@ func ResourceHeartbeat(r Resource) {
 	resourceHeartBeatCache[r.Name] = time.Now()
 }
 
-// GetLastHeartbeat
+// GetLastHeartbeat get the last heart beat
 func GetLastHeartbeat(r Resource) time.Time {
 	return resourceHeartBeatCache[r.Name]
 }
 
 // GetResources - gets the status from DB
 func (db *Database) GetResources() []Resource {
-	rows, err := db.getConn().Query(db.ctx, getResourceQuery)
+	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResource())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -180,7 +125,7 @@ func (db *Database) GetResources() []Resource {
 func (db *Database) GetResourceByID(ID string) (Resource, error) {
 	var r Resource
 
-	err := db.getConn().QueryRow(db.ctx, getResourceByIDQuery, ID).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	err := db.getConn().QueryRow(db.ctx, resourceDbMethod.getResourceByID(), ID).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -192,7 +137,7 @@ func (db *Database) GetResourceByID(ID string) (Resource, error) {
 func (db *Database) GetResourceByName(resourceName string) (Resource, error) {
 	var r Resource
 
-	err := db.getConn().QueryRow(db.ctx, getResourceByNameQuery, resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	err := db.getConn().QueryRow(db.ctx, resourceDbMethod.getResourceByName(), resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("getResourceByName failed: %v", err)
 	}
@@ -201,14 +146,14 @@ func (db *Database) GetResourceByName(resourceName string) (Resource, error) {
 }
 
 // RegisterResource - stores a new resource in the db
-func (db *Database) RegisterResource(name string, address string, is_default bool) (*Resource, error) {
+func (db *Database) RegisterResource(name string, address string, isDefault bool) (*Resource, error) {
 	r := &Resource{}
 
 	r.Name = name
 	r.Address = address
-	r.IsDefault = is_default
+	r.IsDefault = isDefault
 
-	_, err := db.getConn().Exec(db.ctx, insertResourceQuery, r.Name, r.Address, r.IsDefault)
+	_, err := db.getConn().Exec(db.ctx, resourceDbMethod.insertResource(), r.Name, r.Address, r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("error inserting resource: %s", err.Error())
 	}
@@ -217,7 +162,7 @@ func (db *Database) RegisterResource(name string, address string, is_default boo
 }
 
 // UpdateResource - updates a resource in the db
-func (db *Database) UpdateResource(id string, name string, address string, is_default bool) (*Resource, error) {
+func (db *Database) UpdateResource(id string, name string, address string, isDefault bool) (*Resource, error) {
 	r := &Resource{}
 
 	// if the resource doesn't already exist let's register it
@@ -226,7 +171,7 @@ func (db *Database) UpdateResource(id string, name string, address string, is_de
 		return r, errors.New("invalid resourseID of 0")
 	}
 
-	row := db.getConn().QueryRow(db.ctx, updateResourceQuery, id, name, address, is_default).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	row := db.getConn().QueryRow(db.ctx, resourceDbMethod.updateResource(), id, name, address, isDefault).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if row == pgx.ErrNoRows {
 		log.Printf("no rows affected %s", row.Error())
 		return r, errors.New("no rows affected")
@@ -237,7 +182,7 @@ func (db *Database) UpdateResource(id string, name string, address string, is_de
 
 // DeleteResource - delete a resource from the db
 func (db *Database) DeleteResource(id string) error {
-	rows, err := db.getConn().Query(db.ctx, deleteResourceQuery, id)
+	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.deleteResource(), id)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -247,7 +192,7 @@ func (db *Database) DeleteResource(id string) error {
 	return nil
 }
 
-// grant multiple members access to a resource
+// AddMultipleMembersToResource grant multiple members access to a resource
 func (db *Database) AddMultipleMembersToResource(emails []string, resourceID string) ([]MemberResourceRelation, error) {
 
 	var membersResource []MemberResourceRelation
@@ -269,7 +214,7 @@ func (db *Database) AddMultipleMembersToResource(emails []string, resourceID str
 		memberResource.MemberID = member.ID
 		memberResource.ResourceID = resource.ID
 
-		row := db.getConn().QueryRow(db.ctx, insertMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID)
+		row := db.getConn().QueryRow(db.ctx, resourceDbMethod.insertMemberResource(), memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID)
 		if row == pgx.ErrNoRows {
 			return membersResource, errors.New("no rows affected")
 		}
@@ -289,7 +234,7 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 		return []MemberResourceRelation{}, err
 	}
 
-	rows, err := db.getConn().Query(db.ctx, insertMemberDefaultResourceQuery, m.ID)
+	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.insertMemberDefaultResource(), m.ID)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -310,7 +255,7 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 func (db *Database) GetMemberResourceRelation(m Member, r Resource) (MemberResourceRelation, error) {
 	mr := MemberResourceRelation{}
 
-	row := db.getConn().QueryRow(db.ctx, getMemberResourceQuery, m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
+	row := db.getConn().QueryRow(db.ctx, resourceDbMethod.getMemberResource(), m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
 	if row == pgx.ErrNoRows {
 		return mr, errors.New("no rows affected")
 	}
@@ -337,7 +282,7 @@ func (db *Database) RemoveUserFromResource(email string, resourceID string) erro
 		return err
 	}
 
-	commandTag, err := db.getConn().Exec(db.ctx, removeMemberResourceQuery, memberResource.MemberID, memberResource.ResourceID)
+	commandTag, err := db.getConn().Exec(db.ctx, resourceDbMethod.removeMemberResource(), memberResource.MemberID, memberResource.ResourceID)
 	if err != nil {
 		return err
 	}
@@ -353,7 +298,7 @@ func (db *Database) RemoveUserFromResource(email string, resourceID string) erro
 func (db *Database) GetResourceACL(r Resource) ([]string, error) {
 	var accessList []string
 
-	rows, err := db.getConn().Query(db.ctx, getResourceACLByResourceIDQuery, r.ID)
+	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByResourceID(), r.ID)
 	if err != nil {
 		return accessList, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -373,7 +318,7 @@ func (db *Database) GetResourceACL(r Resource) ([]string, error) {
 func (db *Database) GetResourceACLWithMemberInfo(r Resource) ([]Member, error) {
 	var accessList []Member
 
-	rows, err := db.getConn().Query(db.ctx, getResourceACLByResourceIDQueryWithMemberInfo, r.ID)
+	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByResourceIDQueryWithMemberInfo(), r.ID)
 	if err != nil {
 		return accessList, fmt.Errorf("conn.Query failed: %v", err)
 	}
