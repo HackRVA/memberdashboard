@@ -19,7 +19,7 @@ You need to install at least:
 - [go](https://golang.org/doc/install)
 - [node](https://nodejs.org/en/)
 
-Follow the README in the [ui](/ui/README.md) directory to install the npm modules
+Follow the [README](/ui/README.md) in the ui directory to install the npm modules
 
 maybe do this one separately
 
