@@ -14,13 +14,12 @@ If a member has made a payment in the past 30 days, they will be considered an a
 
 You need to install at least:
 
-- docker-compose
-- go
-- go-swagger
-- typescript
-- npm
+- [docker](https://docs.docker.com/get-docker/)
+- [docker-compose](https://docs.docker.com/compose/install/)
+- [go](https://golang.org/doc/install)
+- [node](https://nodejs.org/en/)
 
-Then follow README from the ui directory to install the npm modules
+Follow the README in the [ui](/ui/README.md) directory to install the npm modules
 
 maybe do this one separately
 

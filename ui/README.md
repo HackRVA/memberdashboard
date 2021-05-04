@@ -1,6 +1,6 @@
-# Member Dashboard
+# Member Dashboard UI
 
-Member dashboard is the web interface for the [membership server](../README.md)
+Member dashboard UI is the web interface for the [member dashboard](../README.md).
 
 ## Prerequisites
 
