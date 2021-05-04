@@ -62,16 +62,15 @@ func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
 	// get the rows together
 	for _, p := range paymentList {
 		_, found := paymentMapByDate.Get(p.Date.Format("Jan-06"))
-		if !found {
-			var paymentAmounts []int64
-			paymentAmounts = append(paymentAmounts, int64(p.Amount.AsMajorUnits()))
-			paymentMapByDate.Put(p.Date.Format(("Jan-06")), paymentAmounts)
-		} else {
+		var paymentAmounts []int64
+
+		if found {
 			monthPaymentAmounts, _ := paymentMapByDate.Get(p.Date.Format("Jan-06"))
-			var paymentAmounts []int64 = monthPaymentAmounts.([]int64)
-			paymentAmounts = append(paymentAmounts, int64(p.Amount.AsMajorUnits()))
-			paymentMapByDate.Put(p.Date.Format(("Jan-06")), paymentAmounts)
+			paymentAmounts = monthPaymentAmounts.([]int64)
 		}
+
+		paymentAmounts = append(paymentAmounts, int64(p.Amount.AsMajorUnits()))
+		paymentMapByDate.Put(p.Date.Format(("Jan-06")), paymentAmounts)
 	}
 
 	// now the rows are together, but they are in the form of a map
