@@ -7,14 +7,6 @@ import {
   CSSResult,
 } from "lit-element";
 
-// material
-import "@material/mwc-button";
-import "@material/mwc-dialog";
-import "@material/mwc-textfield";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-list";
-import "@material/mwc-checkbox";
-
 // membership
 import "../shared/card-element";
 import { ResourceService } from "../../service";

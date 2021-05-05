@@ -11,8 +11,6 @@ import {
 // material
 import { Dialog } from "@material/mwc-dialog";
 import { Select } from "@material/mwc-select";
-import "@material/select";
-import "@material/mwc-dialog";
 
 // membership
 import { ResourceService } from "../../../service";

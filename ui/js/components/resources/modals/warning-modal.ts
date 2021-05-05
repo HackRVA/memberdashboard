@@ -9,9 +9,6 @@ import {
 
 // material
 import { Dialog } from "@material/mwc-dialog";
-import "@material/mwc-button";
-import "@material/mwc-dialog";
-import "@material/mwc-textfield";
 
 // membership
 import { ResourceService } from "./../../../service";

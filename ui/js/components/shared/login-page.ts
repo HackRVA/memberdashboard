@@ -7,9 +7,6 @@ import {
   TemplateResult,
 } from "lit-element";
 
-// material
-import "@material/mwc-top-app-bar-fixed";
-
 // membership
 import "./card-element";
 import "./login-form";

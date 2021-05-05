@@ -8,11 +8,6 @@ import {
   property,
 } from "lit-element";
 
-// material
-import "@material/mwc-dialog";
-import "@material/mwc-button";
-import "@material/mwc-textfield";
-
 // membership
 import { UserProfile } from "./types";
 import { showComponent } from "../../function";

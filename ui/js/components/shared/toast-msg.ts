@@ -8,8 +8,6 @@ import {
 } from "lit-element";
 
 // material
-import "@material/mwc-snackbar";
-import "@material/mwc-icon-button";
 import { Snackbar } from "@material/mwc-snackbar";
 
 // membership

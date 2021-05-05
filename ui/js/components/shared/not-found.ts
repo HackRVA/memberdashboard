@@ -7,9 +7,6 @@ import {
   CSSResult,
 } from "lit-element";
 
-// material
-import "@material/mwc-button";
-
 // vaadin
 import { Router } from "@vaadin/router";
 

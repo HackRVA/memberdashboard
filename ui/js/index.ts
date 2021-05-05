@@ -4,6 +4,9 @@ import { LitElement, html, TemplateResult, customElement } from "lit-element";
 // vaadin
 import { Router, RouterLocation } from "@vaadin/router";
 
+// material
+import "./material-loader";
+
 // membership
 import "./router";
 import { UserService } from "./service/user.service";

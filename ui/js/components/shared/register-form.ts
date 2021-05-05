@@ -8,12 +8,6 @@ import {
 } from "lit-element";
 
 // material
-import "@material/mwc-button";
-import "@material/mwc-list";
-import "@material/mwc-textfield";
-import "@material/mwc-list/mwc-list-item";
-import "@material/snackbar";
-import "@material/mwc-formfield";
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership

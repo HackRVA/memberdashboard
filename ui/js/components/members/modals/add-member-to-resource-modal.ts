@@ -11,11 +11,6 @@ import {
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { Dialog } from "@material/mwc-dialog";
 import { Select } from "@material/mwc-select";
-import "@material/mwc-textfield";
-import "@material/mwc-button";
-import "@material/mwc-dialog";
-import "@material/select";
-import "@material/snackbar";
 
 // membership
 import { ResourceService } from "../../../service";

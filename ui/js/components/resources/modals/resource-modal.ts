@@ -8,11 +8,6 @@ import {
 } from "lit-element";
 
 // material
-import "@material/mwc-button";
-import "@material/mwc-dialog";
-import "@material/mwc-textfield";
-import "@material/mwc-checkbox";
-import "@material/mwc-formfield";
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { Dialog } from "@material/mwc-dialog";
 import { Checkbox } from "@material/mwc-checkbox";
