@@ -22,9 +22,6 @@ import (
 // JWTExpireInterval - how long the JWT will last in hours
 const JWTExpireInterval = 8
 
-// CookieName - name of the cookie :3
-const CookieName = "memberserver-token"
-
 var strategy union.Union
 var keeper jwt.SecretsKeeper
 
@@ -109,14 +106,6 @@ func (a API) signup(w http.ResponseWriter, r *http.Request) {
 
 // Logout endpoint for user signin
 func (a API) logout(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     CookieName,
-		Value:    "",
-		Expires:  time.Now(),
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-	})
-
 	w.Header().Set("Content-Type", "application/json")
 
 	j, _ := json.Marshal(struct{ Message string }{
@@ -153,14 +142,6 @@ func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 
 	tokenJSON := &models.TokenResponse{}
 	tokenJSON.Token = token
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     CookieName,
-		Value:    token,
-		Expires:  time.Now().Add(JWTExpireInterval * time.Hour),
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-	})
 
 	w.Header().Set("Content-Type", "application/json")
 
