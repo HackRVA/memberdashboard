@@ -1,55 +1,67 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"memberserver/api/models"
 	"memberserver/config"
 	"memberserver/database"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/shaj13/go-guardian/v2/auth"
+	"github.com/shaj13/go-guardian/v2/auth/strategies/basic"
+	"github.com/shaj13/go-guardian/v2/auth/strategies/jwt"
+	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
+	"github.com/shaj13/libcache"
+	_ "github.com/shaj13/libcache/fifo"
 	log "github.com/sirupsen/logrus"
 )
 
-// JWTExpireInterval - how long the JWT will last
+// JWTExpireInterval - how long the JWT will last in hours
 const JWTExpireInterval = 8
 
-// CookieName - name of the cookie :3
-const CookieName = "memberserver-token"
+var strategy union.Union
+var keeper jwt.SecretsKeeper
 
-// Create the JWT key used to create the signature
-var jwtKey = []byte("my_secret_key")
+func setupGoGuardian(config config.Config, db *database.Database) {
+
+	keeper = jwt.StaticSecret{
+		ID:        "secret-id",
+		Secret:    []byte(config.AccessSecret),
+		Algorithm: jwt.HS256,
+	}
+	cache := libcache.FIFO.New(0)
+	cache.SetTTL(time.Minute * 5)
+	cache.RegisterOnExpired(func(key, _ interface{}) {
+		cache.Peek(key)
+	})
+	basicStrategy := basic.NewCached(getValidator(db), cache)
+	jwtStrategy := jwt.New(cache, keeper)
+	strategy = union.New(jwtStrategy, basicStrategy)
+}
 
 func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenString := r.Header.Get("Authorization")
-		if len(tokenString) == 0 {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Missing Authorization Header"))
-			return
-		}
-		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
-		claims, err := verifyToken(tokenString)
+		_, user, err := strategy.AuthenticateRequest(r)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Error verifying JWT token: " + err.Error()))
+			log.Println(err)
+			code := http.StatusUnauthorized
+			http.Error(w, http.StatusText(code), code)
 			return
 		}
-		name := claims.(jwt.MapClaims)["email"].(string)
-
-		r.Header.Set("email", name)
-		r.Header.Set("Authorization", "bearer "+tokenString)
-
+		r = auth.RequestWithUser(user, r)
 		next.ServeHTTP(w, r)
 	})
 }
 
 // getUser responds with the current logged in user
 func (a API) getUser(w http.ResponseWriter, r *http.Request) {
-	userProfile, err := a.db.GetUser(r.Header.Get("email"))
+	u := auth.User(r)
+	userProfile, err := a.db.GetUser(u.GetUserName())
 	if err != nil {
+		log.Error(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -79,6 +91,7 @@ func (a API) signup(w http.ResponseWriter, r *http.Request) {
 	err = a.db.RegisterUser(creds.Email, creds.Password)
 
 	if err != nil {
+		log.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -93,14 +106,6 @@ func (a API) signup(w http.ResponseWriter, r *http.Request) {
 
 // Logout endpoint for user signin
 func (a API) logout(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     CookieName,
-		Value:    "",
-		Expires:  time.Now(),
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-	})
-
 	w.Header().Set("Content-Type", "application/json")
 
 	j, _ := json.Marshal(struct{ Message string }{
@@ -110,50 +115,26 @@ func (a API) logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-func (a API) getToken(email string) (string, error) {
-
-	//Creating Access Token
-	atClaims := models.Claims{}
-	atClaims.Email = email
-	atClaims.ExpiresAt = time.Now().Add(time.Hour * JWTExpireInterval).Unix()
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-
-	tokenString, err := token.SignedString([]byte(a.config.AccessSecret))
-	return tokenString, err
-}
-
-func verifyToken(tokenString string) (jwt.Claims, error) {
-	c, _ := config.Load()
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(c.AccessSecret), nil
-	})
-	if err != nil {
-		return nil, err
+func getValidator(db *database.Database) basic.AuthenticateFunc {
+	validator := func(ctx context.Context, r *http.Request, userName, password string) (auth.Info, error) {
+		log.Errorf("signing in: %s", userName)
+		err := db.UserSignin(userName, password)
+		if err != nil {
+			log.Errorf("error signing in: %s", err)
+			return nil, fmt.Errorf("Invalid credentials")
+		}
+		// If we reach this point, that means the users password was correct, and that they are authorized
+		// we could attach some of their privledges to this return val I think
+		return auth.NewDefaultUser(userName, userName, nil, nil), nil
 	}
-	return token.Claims, err
+	return validator
 }
 
 func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
-	// Parse and decode the request body into a new `Credentials` instance
-	creds := &database.Credentials{}
-	err := json.NewDecoder(r.Body).Decode(creds)
-	if err != nil {
-		// If there is something wrong with the request body, return a 400 status
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	exp := jwt.SetExpDuration(time.Hour * JWTExpireInterval)
+	u := auth.User(r)
+	token, err := jwt.IssueAccessToken(u, keeper, exp)
 
-	err = a.db.UserSignin(creds.Email, creds.Password)
-	if err != nil {
-		log.Errorf("error signing in: %s", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	// If we reach this point, that means the users password was correct, and that they are authorized
-	// The default 200 status is sent
-
-	token, err := a.getToken(creds.Email)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
@@ -161,14 +142,6 @@ func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 
 	tokenJSON := &models.TokenResponse{}
 	tokenJSON.Token = token
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     CookieName,
-		Value:    token,
-		Expires:  time.Now().Add(JWTExpireInterval * time.Hour),
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-	})
 
 	w.Header().Set("Content-Type", "application/json")
 

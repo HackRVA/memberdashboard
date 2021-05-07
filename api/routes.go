@@ -377,7 +377,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: loginResponse
-	r.HandleFunc("/api/auth/login", api.authenticate).Methods(http.MethodPost)
+	rr.HandleFunc("/auth/login", api.authenticate).Methods(http.MethodPost)
 	// swagger:route POST /api/auth/logout auth logoutRequest
 	//
 	// Logout

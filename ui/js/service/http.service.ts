@@ -5,12 +5,13 @@ import { switchMap, catchError } from "rxjs/operators";
 
 export class HTTPService {
   get(
-    endpoint: string
+    endpoint: string,
+    options?: any
   ): Observable<Response | any | { error: boolean; message: any }> {
     return fromFetch(endpoint, {
       method: "GET",
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
+        Authorization: this.authHeader(options)
       },
     }).pipe(
       switchMap((response: Response) => {
@@ -40,7 +41,7 @@ export class HTTPService {
     return fromFetch(endpoint, {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
+        Authorization: this.authHeader(options)
       },
       body: JSON.stringify(options),
     }).pipe(
@@ -71,7 +72,7 @@ export class HTTPService {
     return fromFetch(endpoint, {
       method: "DELETE",
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
+        Authorization: this.authHeader(options)
       },
       body: JSON.stringify(options),
     }).pipe(
@@ -102,7 +103,7 @@ export class HTTPService {
     return fromFetch(endpoint, {
       method: "PUT",
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwt"),
+        Authorization: this.authHeader(options)
       },
       body: JSON.stringify(options),
     }).pipe(
@@ -124,5 +125,14 @@ export class HTTPService {
         return throwError({ error: true, message: err.message });
       })
     );
+  }
+
+  authHeader(options?: any): string {
+    if (options?.email && options?.password) {
+      return 'Basic ' + btoa(options.email + ':' + options.password);
+    } else if (localStorage.getItem("jwt")) {
+      return "Bearer " + localStorage.getItem("jwt");
+    }
+    return '';
   }
 }
