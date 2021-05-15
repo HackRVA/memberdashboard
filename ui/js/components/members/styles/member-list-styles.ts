@@ -7,7 +7,6 @@ import { primaryLightGray, primaryRed } from "./../../shared/styles/colors";
 export const memberListStyles: CSSResult = css`
   .member-container {
     display: grid;
-    justify-content: center;
     align-items: center;
     text-align: center;
     margin: 20px;

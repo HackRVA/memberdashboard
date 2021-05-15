@@ -21,6 +21,7 @@ export const cardElementStyles: CSSResult = css`
     border-radius: 5px; /* 5px rounded corners */
     min-height: 20vh;
     min-width: 50vw;
+    overflow-x: scroll;
     background-color: ${primaryWhite};
   }
   card-container {
