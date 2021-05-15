@@ -19,7 +19,8 @@ export default {
         replace(
             { 
                 'Reflect.decorate': 'undefined',
-                process: JSON.stringify({ env: { API: '/api' } }) 
+                process: JSON.stringify({ env: { API: '/api' } }),
+                preventAssignment: true
             }
         ),
         resolve(),

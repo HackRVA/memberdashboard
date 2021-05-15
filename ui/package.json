@@ -47,7 +47,7 @@
     "concurrently": "^6.1.0",
     "koa-proxies": "^0.12.1",
     "lit-element": "^2.5.1",
-    "rxjs": "^7.0.1"
+    "rxjs": "^6.6.3"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^2.4.2",
