@@ -145,18 +145,10 @@
           "member"
         ],
         "summary": "Returns a list of the members in the system.",
-        "operationId": "getMemberRequest",
-        "parameters": [
-          {
-            "type": "string",
-            "x-go-name": "Email",
-            "name": "email",
-            "in": "query"
-          }
-        ],
+        "operationId": "member",
         "responses": {
           "200": {
-            "$ref": "#/responses/getMemberResponse"
+            "$ref": "#/responses/getMembersResponse"
           }
         }
       }
@@ -248,6 +240,41 @@
         }
       }
     },
+    "/api/member/{email}": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Returns a member based on the email address.",
+        "operationId": "getMemberByEmailRequest",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Email",
+            "name": "email",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getMemberResponse"
+          }
+        }
+      }
+    },
     "/api/payments/charts": {
       "get": {
         "security": [
@@ -266,7 +293,15 @@
         "tags": [
           "payments"
         ],
-        "operationId": "getPaymentChart",
+        "operationId": "searchPaymentChartRequest",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Type",
+            "name": "type",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/responses/getPaymentChartResponse"
@@ -1077,6 +1112,12 @@
       }
     },
     "getMemberResponse": {
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/Member"
+      }
+    },
+    "getMembersResponse": {
       "description": "",
       "schema": {
         "type": "array",

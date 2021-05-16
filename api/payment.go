@@ -51,6 +51,9 @@ func makeMemberCountTrendChart(payments linkedhashmap.Map) models.PaymentChart {
 }
 
 func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
+	chartType := req.URL.Query().Get("type")
+	var paymentCharts []models.PaymentChart
+
 	paymentList, err := a.db.GetPayments()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -73,14 +76,31 @@ func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
 		paymentMapByDate.Put(p.Date.Format(("Jan-06")), paymentAmounts)
 	}
 
+	if len(chartType) > 0 {
+		if chartType == "line" {
+			paymentCharts = append(paymentCharts, makeMemberCountTrendChart(*paymentMapByDate))
+		}
+
+		if chartType == "pie" {
+			paymentCharts = makeMemberDistributionChart(*paymentMapByDate, paymentCharts)
+		}
+	}
+
+	if len(chartType) == 0 {
+		paymentCharts = append(paymentCharts, makeMemberCountTrendChart(*paymentMapByDate))
+		paymentCharts = makeMemberDistributionChart(*paymentMapByDate, paymentCharts)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	j, _ := json.Marshal(paymentCharts)
+	w.Write(j)
+}
+
+func makeMemberDistributionChart(payments linkedhashmap.Map, paymentCharts []models.PaymentChart) []models.PaymentChart {
 	// now the rows are together, but they are in the form of a map
 	// let's massage it out to match our chart contract
-
-	var paymentCharts []models.PaymentChart
-
-	paymentCharts = append(paymentCharts, makeMemberCountTrendChart(*paymentMapByDate))
-
-	it := paymentMapByDate.Iterator()
+	it := payments.Iterator()
 
 	for it.Next() {
 		var pc models.PaymentChart
@@ -101,8 +121,5 @@ func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
 		paymentCharts = append(paymentCharts, pc)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	j, _ := json.Marshal(paymentCharts)
-	w.Write(j)
+	return paymentCharts
 }

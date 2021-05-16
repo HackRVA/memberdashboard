@@ -5,16 +5,22 @@ import (
 	"memberserver/database"
 )
 
-// swagger:parameters getMemberRequest
-type getMemberRequest struct {
-	// in: query
+// swagger:parameters getMemberByEmailRequest
+type getMemberByEmailRequest struct {
+	// in:path
 	Email string `json:"email"`
+}
+
+// swagger:response getMembersResponse
+type getMembersResponse struct {
+	// in: body
+	Body []database.Member
 }
 
 // swagger:response getMemberResponse
 type getMemberResponse struct {
 	// in: body
-	Body []database.Member
+	Body database.Member
 }
 
 // swagger:response getTierResponse

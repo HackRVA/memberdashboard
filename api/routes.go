@@ -50,7 +50,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getUserResponse
 	rr.HandleFunc("/user", api.getUser)
-	// swagger:route GET /api/member member getMemberRequest
+	// swagger:route GET /api/member member member
 	//
 	// Returns a list of the members in the system.
 	//
@@ -63,8 +63,23 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     - bearerAuth:
 	//
 	//     Responses:
-	//       200: getMemberResponse
+	//       200: getMembersResponse
 	rr.HandleFunc("/member", api.getMembers)
+	// swagger:route GET /api/member/{email} member getMemberByEmailRequest
+	//
+	// Returns a member based on the email address.
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: getMemberResponse
+	rr.HandleFunc("/member/{email}", api.getMemberByEmail)
 	// swagger:route GET /api/member/slack/nonmembers member getSlackNonMemberList
 	//
 	// Returns a list slack users that are possibly not members.
@@ -120,7 +135,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getPaymentRefreshResponse
 	rr.HandleFunc("/payments/refresh", api.refreshPayments)
-	// swagger:route GET /api/payments/charts payments getPaymentChart
+	// swagger:route GET /api/payments/charts payments searchPaymentChartRequest
 	//
 	// Get Chart information of payments
 	//
