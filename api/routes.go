@@ -50,7 +50,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getUserResponse
 	rr.HandleFunc("/user", api.getUser)
-	// swagger:route GET /api/member member getMemberList
+	// swagger:route GET /api/member member getMemberRequest
 	//
 	// Returns a list of the members in the system.
 	//

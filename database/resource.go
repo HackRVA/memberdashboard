@@ -12,7 +12,7 @@ import (
 
 var resourceDbMethod ResourceDatabaseMethod
 
-// Resource a resource that can accespt an access control list
+// Resource a resource that can accept an access control list
 type Resource struct {
 	// UniqueID of the Resource
 	// required: true
@@ -41,7 +41,7 @@ type ResourceDeleteRequest struct {
 	ID string `json:"id"`
 }
 
-// ResourceRequest a resource that can accespt an access control list
+// ResourceRequest a resource that can accept an access control list
 type ResourceRequest struct {
 	// UniqueID of the Resource
 	// required: true
@@ -61,7 +61,7 @@ type ResourceRequest struct {
 	IsDefault bool `json:"isDefault"`
 }
 
-// RegisterResourceRequest a resource that can accespt an access control list
+// RegisterResourceRequest a resource that can accept an access control list
 type RegisterResourceRequest struct {
 	// Name of the Resource
 	// required: true

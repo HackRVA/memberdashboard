@@ -145,7 +145,15 @@
           "member"
         ],
         "summary": "Returns a list of the members in the system.",
-        "operationId": "getMemberList",
+        "operationId": "getMemberRequest",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Email",
+            "name": "email",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/responses/getMemberResponse"
@@ -867,7 +875,7 @@
       "x-go-package": "memberserver/api/models"
     },
     "RegisterResourceRequest": {
-      "description": "Resource a resource that can accespt an access control list",
+      "description": "RegisterResourceRequest a resource that can accept an access control list",
       "type": "object",
       "required": [
         "name",
@@ -896,7 +904,7 @@
       "x-go-package": "memberserver/database"
     },
     "Resource": {
-      "description": "Resource a resource that can accespt an access control list",
+      "description": "Resource a resource that can accept an access control list",
       "type": "object",
       "required": [
         "id",
@@ -954,7 +962,7 @@
       "x-go-package": "memberserver/database"
     },
     "ResourceRequest": {
-      "description": "Resource a resource that can accespt an access control list",
+      "description": "ResourceRequest a resource that can accept an access control list",
       "type": "object",
       "required": [
         "id",

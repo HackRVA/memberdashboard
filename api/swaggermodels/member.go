@@ -5,8 +5,14 @@ import (
 	"memberserver/database"
 )
 
+// swagger:parameters getMemberRequest
+type getMemberRequest struct {
+	// in: query
+	Email string `json:"email"`
+}
+
 // swagger:response getMemberResponse
-type memberResponseBody struct {
+type getMemberResponse struct {
 	// in: body
 	Body []database.Member
 }
@@ -32,10 +38,4 @@ type setRFIDRequest struct {
 // swagger:response getPaymentRefreshResponse
 type getPaymentRefreshResponse struct {
 	Body models.EndpointSuccess
-}
-
-// swagger:parameters getMemberByIDRequest
-type getMemberByIDRequest struct {
-	// in: query
-	ID string
 }
