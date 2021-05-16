@@ -84,7 +84,7 @@ func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
 
 	for it.Next() {
 		var pc models.PaymentChart
-		pc.Options.Title = it.Key().(string) + " - Membership Distribution"
+		pc.Options.Title = it.Key().(string)
 		pc.Options.PieHole = 0.4
 		pc.Type = "pie"
 
