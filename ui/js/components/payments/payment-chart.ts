@@ -140,8 +140,8 @@ export class PaymentChart extends LitElement {
         ${this.getPaymentMonthOptions()}
       </div>
       <div id="payment-chart-container">
-        <google-chart id="membership-trends"> </google-chart>
         <google-chart id="membership-distribution"> </google-chart>
+        <google-chart id="membership-trends"> </google-chart>
       </div>
     `;
   }
