@@ -50,7 +50,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getUserResponse
 	rr.HandleFunc("/user", api.getUser)
-	// swagger:route GET /api/member member member
+	// swagger:route GET /api/member member getMemberListRequest
 	//
 	// Returns a list of the members in the system.
 	//
@@ -65,7 +65,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getMembersResponse
 	rr.HandleFunc("/member", api.getMembers)
-	// swagger:route GET /api/member/{email} member getMemberByEmailRequest
+	// swagger:route GET /api/member/email/{email} member getMemberByEmailRequest
 	//
 	// Returns a member based on the email address.
 	//
@@ -79,7 +79,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getMemberResponse
-	rr.HandleFunc("/member/{email}", api.getMemberByEmail)
+	rr.HandleFunc("/member/email/{email}", api.getMemberByEmail)
 	// swagger:route GET /api/member/slack/nonmembers member getSlackNonMemberList
 	//
 	// Returns a list slack users that are possibly not members.
@@ -346,6 +346,9 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     - application/json
 	//
 	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
 	//
 	//     Responses:
 	//       200: setRFIDResponse

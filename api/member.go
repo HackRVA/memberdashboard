@@ -46,6 +46,7 @@ func (a API) getMemberByEmail(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(member)
 	w.Write(j)
 }

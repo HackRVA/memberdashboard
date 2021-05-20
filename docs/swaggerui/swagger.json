@@ -145,7 +145,7 @@
           "member"
         ],
         "summary": "Returns a list of the members in the system.",
-        "operationId": "member",
+        "operationId": "getMemberListRequest",
         "responses": {
           "200": {
             "$ref": "#/responses/getMembersResponse"
@@ -155,6 +155,11 @@
     },
     "/api/member/assignRFID": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "description": "this is an unauthenticated request, for now.\nit assigns an RFID tag to a member",
         "consumes": [
           "application/json"
@@ -183,6 +188,41 @@
         "responses": {
           "200": {
             "$ref": "#/responses/setRFIDResponse"
+          }
+        }
+      }
+    },
+    "/api/member/email/{email}": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Returns a member based on the email address.",
+        "operationId": "getMemberByEmailRequest",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Email",
+            "name": "email",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getMemberResponse"
           }
         }
       }
@@ -236,41 +276,6 @@
         "responses": {
           "200": {
             "$ref": "#/responses/getTierResponse"
-          }
-        }
-      }
-    },
-    "/api/member/{email}": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "member"
-        ],
-        "summary": "Returns a member based on the email address.",
-        "operationId": "getMemberByEmailRequest",
-        "parameters": [
-          {
-            "type": "string",
-            "x-go-name": "Email",
-            "name": "email",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/getMemberResponse"
           }
         }
       }
