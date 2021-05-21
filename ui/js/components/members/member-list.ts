@@ -66,21 +66,19 @@ export class MemberList extends LitElement {
   }
 
   firstUpdated(): void {
-    this.allMembersCheckBoxTemplate = this.shadowRoot.querySelector(
-      "#all-members"
-    );
+    this.allMembersCheckBoxTemplate =
+      this.shadowRoot.querySelector("#all-members");
   }
 
   updated(): void {
-    this.membersCheckBoxTemplate = this.shadowRoot.querySelectorAll(
-      "mwc-checkbox"
-    );
+    this.membersCheckBoxTemplate =
+      this.shadowRoot.querySelectorAll("mwc-checkbox");
   }
 
   getMembers(): void {
     this.memberService.getMembers().subscribe({
-      next: (result: any) => {
-        this.members = result as MemberResponse[];
+      next: (result: MemberResponse[]) => {
+        this.members = result;
         this.memberCount = this.members.length;
       },
       error: () => {
@@ -118,9 +116,11 @@ export class MemberList extends LitElement {
   handleEmail(event: Event, email: string): void {
     this.allMembersCheckBoxTemplate.checked = false;
 
-    const checked: boolean = (event.target as EventTarget & {
-      checked: boolean;
-    }).checked;
+    const checked: boolean = (
+      event.target as EventTarget & {
+        checked: boolean;
+      }
+    ).checked;
 
     if (checked) {
       this.memberEmails.push(email);
@@ -130,9 +130,11 @@ export class MemberList extends LitElement {
   }
 
   handleAllEmails(event: Event): void {
-    const checked: boolean = (event.target as EventTarget & {
-      checked: boolean;
-    }).checked;
+    const checked: boolean = (
+      event.target as EventTarget & {
+        checked: boolean;
+      }
+    ).checked;
 
     if (checked) {
       this.memberEmails = this.members.map((x: MemberResponse) => x.email);
@@ -151,7 +153,7 @@ export class MemberList extends LitElement {
 
   displayMembersTable(): TemplateResult {
     return html`
-      ${this.members.map((x: MemberResponse) => {
+      ${this.members?.map((x: MemberResponse) => {
         return html`
           <tr>
             <td class="name">

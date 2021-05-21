@@ -1,11 +1,5 @@
 // lit element
-import {
-  LitElement,
-  html,
-  customElement,
-  TemplateResult,
-  property,
-} from "lit-element";
+import { LitElement, html, customElement, TemplateResult } from "lit-element";
 
 // membership
 import { MemberService } from "../../service";
@@ -14,19 +8,10 @@ import { MemberLevel, MemberResponse } from "./types";
 
 @customElement("members-page")
 export class MembersPage extends LitElement {
-  @property({ type: Array })
   members: MemberResponse[];
-
-  @property({ type: Number })
   memberCount: number;
 
   memberService: MemberService = new MemberService();
-
-  constructor() {
-    super();
-    this.members = [];
-    this.memberCount = 0;
-  }
 
   firstUpdated(): void {
     this.getMembers();
@@ -34,9 +19,10 @@ export class MembersPage extends LitElement {
 
   getMembers(): void {
     this.memberService.getMembers().subscribe({
-      next: (result: any) => {
-        this.members = result as MemberResponse[];
+      next: (result: MemberResponse[]) => {
+        this.members = result;
         this.memberCount = this.getActiveMembers().length;
+        this.requestUpdate();
       },
       error: () => {
         console.error("unable to get members");
