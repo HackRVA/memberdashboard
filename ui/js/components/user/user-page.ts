@@ -29,8 +29,8 @@ export class UserPage extends LitElement {
 
   firstUpdated(): void {
     this.userService.getUser().subscribe({
-      next: (result: any) => {
-        const { email } = result as UserProfile;
+      next: (result: UserProfile) => {
+        const { email } = result;
         this.email = email;
         this.requestUpdate();
       },

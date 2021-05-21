@@ -36,9 +36,8 @@ export class AddMemberToResourceModal extends LitElement {
   resourceSelectTemplate: Select;
 
   firstUpdated(): void {
-    this.addResourceToMemberModalTemplate = this.shadowRoot.querySelector(
-      "mwc-dialog"
-    );
+    this.addResourceToMemberModalTemplate =
+      this.shadowRoot.querySelector("mwc-dialog");
     this.emailFieldTemplate = this.shadowRoot.querySelector("mwc-textfield");
     this.resourceSelectTemplate = this.shadowRoot.querySelector("mwc-select");
     this.getResources();
@@ -50,8 +49,8 @@ export class AddMemberToResourceModal extends LitElement {
 
   getResources(): void {
     this.resourceService.getResources().subscribe({
-      next: (result: any) => {
-        this.resources = result as ResourceResponse[];
+      next: (result: ResourceResponse[]) => {
+        this.resources = result;
         this.requestUpdate();
       },
       error: () => {

@@ -38,8 +38,8 @@ export class ResourceManager extends LitElement {
 
   getResources(): void {
     this.resourceService.getResources().subscribe({
-      next: (result: any) => {
-        this.resources = result as ResourceResponse[];
+      next: (result: ResourceResponse[]) => {
+        this.resources = result;
         this.requestUpdate();
       },
       error: () => {

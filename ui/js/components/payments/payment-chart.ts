@@ -72,8 +72,8 @@ export class PaymentChart extends LitElement {
 
   createPaymentReportChart(): void {
     this.paymentService.getPaymentCharts().subscribe({
-      next: (result: any) => {
-        this.paymentCharts = result as PaymentChartResponse[];
+      next: (result: PaymentChartResponse[]) => {
+        this.paymentCharts = result;
         this.paymentCharts = this.updatePaymentCharts(this.paymentCharts);
 
         this.membershipTrendsData = this.paymentCharts[0];

@@ -59,8 +59,8 @@ export class LoginForm extends LitElement {
     };
 
     this.authService.login(opts).subscribe({
-      next: (result: any) => {
-        const { token } = result as Jwt;
+      next: (result: Jwt) => {
+        const { token } = result;
         localStorage.setItem("jwt", token);
         window.location.reload();
       },
