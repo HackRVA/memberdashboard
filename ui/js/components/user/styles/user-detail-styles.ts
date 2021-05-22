@@ -27,6 +27,10 @@ export const userDetailStyles: CSSResult = css`
     margin-bottom: 8px;
   }
 
+  li {
+    margin-bottom: 8px;
+  }
+
   .card-actions {
     text-align: center;
   }
@@ -35,5 +39,13 @@ export const userDetailStyles: CSSResult = css`
     text-align: center;
     font-size: 56px;
     margin-top: 32px;
+  }
+
+  @media only screen and (max-width: 480px) {
+    .user-profile {
+      display: flex;
+      flex-direction: column;
+      row-gap: 24px;
+    }
   }
 `;

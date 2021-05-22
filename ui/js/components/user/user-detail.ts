@@ -57,7 +57,7 @@ export class UserDetail extends LitElement {
           })}
         </ol>
         <div class="lenny-face">
-          ${memberResources?.length <= 1 ? "| (• ◡•)|" : ""}
+          ${memberResources?.length <= 3 ? "| (• ◡•)|" : ""}
         </div>
       `;
     } else {

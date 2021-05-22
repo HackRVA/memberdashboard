@@ -24,10 +24,17 @@ export const cardElementStyles: CSSResult = css`
     overflow-x: scroll;
     background-color: ${primaryWhite};
   }
+
   card-container {
     display: grid;
     justify-content: center;
     margin-top: 5vh;
     margin-bottom: 5vh;
+  }
+
+  @media only screen and (max-width: 480px) {
+    .container {
+      padding: 32px 8px;
+    }
   }
 `;
