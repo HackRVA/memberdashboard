@@ -43,6 +43,7 @@
     "@material/mwc-tab-bar": "^0.21.0",
     "@material/mwc-textfield": "^0.21.0",
     "@material/mwc-top-app-bar-fixed": "^0.21.0",
+    "@polymer/paper-card": "^3.0.1",
     "@vaadin/router": "^1.7.4",
     "concurrently": "^6.1.0",
     "koa-proxies": "^0.12.1",

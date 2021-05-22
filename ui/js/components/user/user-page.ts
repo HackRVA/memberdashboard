@@ -10,11 +10,10 @@ import {
 
 // membership
 import { UserProfile } from "./types";
-import { showComponent } from "../../function";
 import { UserService } from "../../service";
 import { userPageStyles } from "./styles";
 import "../shared/card-element";
-import "../shared/rfid-modal";
+import "./user-detail";
 
 @customElement("user-page")
 export class UserPage extends LitElement {
@@ -28,6 +27,10 @@ export class UserPage extends LitElement {
   }
 
   firstUpdated(): void {
+    this.getUser();
+  }
+
+  getUser(): void {
     this.userService.getUser().subscribe({
       next: (result: UserProfile) => {
         const { email } = result;
@@ -37,30 +40,15 @@ export class UserPage extends LitElement {
     });
   }
 
-  openRFIDModal(): void {
-    showComponent("#rfid-modal", this.shadowRoot);
+  displayUserDetail(): TemplateResult {
+    if (this.email) {
+      return html` <user-detail .email=${this.email}> </user-detail> `;
+    } else {
+      return html``;
+    }
   }
 
   render(): TemplateResult {
-    return html`
-    <card-element>
-      <div class="center">
-        <div> 
-          <span class="email">${this.email} </span>
-        </div>
-        <div> 
-          <mwc-button 
-          class="rfid-button" 
-          label="Assign rfid" 
-          dense
-          unelevated
-          @click=${this.openRFIDModal}> 
-          </mvc-button>
-        </div> 
-      </div>
-    </card-element> 
-    <rfid-modal id="rfid-modal" .email=${this.email}>
-    </rfid-modal>
-    `;
+    return html` <card-element> ${this.displayUserDetail()} </card-element> `;
   }
 }

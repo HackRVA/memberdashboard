@@ -87,7 +87,9 @@ export class RFIDModal extends LitElement {
 
   emptyFormField(): void {
     // fields are readonly
-    this.emailFieldTemplate.value = "";
+    if (!this.email) {
+      this.emailFieldTemplate.value = "";
+    }
     this.rfidFieldTemplate.value = "";
   }
 

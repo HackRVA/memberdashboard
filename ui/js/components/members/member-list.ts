@@ -12,7 +12,7 @@ import {
 import { Checkbox } from "@material/mwc-checkbox";
 
 // membership
-import { MemberLevel, MemberResource, MemberResponse } from "./types";
+import { MemberResource, MemberResponse } from "./types";
 import { showComponent } from "./../../function";
 import { ResourceService, MemberService, PaymentService } from "../../service";
 import { memberListStyles } from "./styles/member-list-styles";
@@ -22,6 +22,7 @@ import "./modals/remove-member-from-resource-modal";
 import "./modals/add-members-to-resource-modal";
 import "../shared/card-element";
 import { ToastMessage } from "../shared/types";
+import { displayMemberStatus } from "./function";
 
 @customElement("member-list")
 export class MemberList extends LitElement {
@@ -46,23 +47,6 @@ export class MemberList extends LitElement {
 
   static get styles(): CSSResult[] {
     return [memberListStyles];
-  }
-
-  displayMemberStatus(memberLevel: MemberLevel): string {
-    switch (memberLevel) {
-      case MemberLevel.inactive:
-        return "Inactive";
-      case MemberLevel.credited:
-        return "Credited";
-      case MemberLevel.classic:
-        return "Classic";
-      case MemberLevel.standard:
-        return "Standard";
-      case MemberLevel.premium:
-        return "Premium";
-      default:
-        return "No member status found";
-    }
   }
 
   firstUpdated(): void {
@@ -162,7 +146,7 @@ export class MemberList extends LitElement {
             <span>${x.name}</span>
             </td>
             <td>${x.email}</td>
-            <td>${this.displayMemberStatus(x.memberLevel)}</td>
+            <td>${displayMemberStatus(x.memberLevel)}</td>
             <td>
               <div class="horizontal-scrollbar">${this.displayMemberResources(
                 x.resources
@@ -183,7 +167,7 @@ export class MemberList extends LitElement {
                 ></mwc-button>
             </td>
             <td>
-              ${x.rfid}
+              ${x.rfid !== "notset" ? x.rfid : "Not set"}
             </td>
           </tr>
         `;
