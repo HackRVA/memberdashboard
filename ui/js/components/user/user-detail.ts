@@ -1,10 +1,5 @@
+// lit element
 import {
-  MemberResource,
-  MemberResponse,
-} from "./../members/types/member.interface";
-import { MemberService } from "./../../service/member.service";
-import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -13,10 +8,16 @@ import {
   TemplateResult,
 } from "lit-element";
 
+// polymer
 import "@polymer/paper-card";
+
+// membership
+import { userDetailStyles } from "./styles";
+import { MemberResource, MemberResponse } from "./../members/types";
 import { displayMemberStatus } from "../members/function";
 import { showComponent } from "../../function";
 import "../shared/rfid-modal";
+import { MemberService } from "./../../service/";
 
 @customElement("user-detail")
 export class UserDetail extends LitElement {
@@ -26,43 +27,8 @@ export class UserDetail extends LitElement {
 
   memberService: MemberService = new MemberService();
 
-  static get styles(): CSSResult {
-    return css`
-      .user-profile {
-        display: flex;
-        gap: calc(100% / 8);
-        justify-content: center;
-      }
-
-      paper-card {
-        height: 320px;
-        width: 360px;
-      }
-
-      dl {
-        font-size: 16px;
-        text-align: left;
-      }
-
-      dt {
-        margin-bottom: 8px;
-        font-weight: bold;
-      }
-
-      dd {
-        margin-bottom: 8px;
-      }
-
-      .card-actions {
-        text-align: center;
-      }
-
-      .lenny-face {
-        text-align: center;
-        font-size: 56px;
-        margin-top: 32px;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [userDetailStyles];
   }
 
   firstUpdated(): void {
