@@ -45,7 +45,10 @@ export const userDetailStyles: CSSResult = css`
     .user-profile {
       display: flex;
       flex-direction: column;
-      row-gap: 24px;
+    }
+
+    paper-card {
+      margin-bottom: 24px;
     }
   }
 `;
