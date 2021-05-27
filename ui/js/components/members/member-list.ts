@@ -35,6 +35,8 @@ export class MemberList extends LitElement {
   memberResources: Array<MemberResource> = [];
   email: string = "";
 
+  showSpinner: boolean;
+
   memberEmails: string[] = [];
   toastMsg: ToastMessage;
 
@@ -188,12 +190,25 @@ export class MemberList extends LitElement {
   }
 
   refreshMembersPayments(): void {
+    this.showSpinner = true;
+    this.requestUpdate();
     this.paymentsService.refreshPayments().subscribe({
       complete: () => {
+        this.showSpinner = false;
         this.refreshMemberList();
         this.displayToastMsg("Success");
       },
     });
+  }
+
+  displaySpinner(showSpinner: boolean): TemplateResult {
+    if (showSpinner) {
+      return html`
+        <mwc-circular-progress indeterminate></mwc-circular-progress>
+      `;
+    } else {
+      return html``;
+    }
   }
 
   displayToastMsg(message: string): void {
@@ -216,7 +231,9 @@ export class MemberList extends LitElement {
                 unelevated 
                 dense 
                 label="Refresh member list"
-                @click=${this.refreshMembersPayments}> 
+                .disabled=${this.showSpinner}
+                @click=${this.refreshMembersPayments}>
+                ${this.displaySpinner(this.showSpinner)}
               </mwc-button>
               <mwc-button 
                 class="rfid-button" 

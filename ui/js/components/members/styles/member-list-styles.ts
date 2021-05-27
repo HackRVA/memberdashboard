@@ -73,4 +73,11 @@ export const memberListStyles: CSSResult = css`
     position: relative;
     top: 5px;
   }
+
+  mwc-circular-progress {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    bottom: 14px;
+  }
 `;

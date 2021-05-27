@@ -30,6 +30,7 @@
     "@google-web-components/google-chart": "^4.0.2",
     "@material/mwc-button": "^0.21.0",
     "@material/mwc-checkbox": "^0.21.0",
+    "@material/mwc-circular-progress": "^0.21.0",
     "@material/mwc-dialog": "^0.21.0",
     "@material/mwc-drawer": "^0.21.0",
     "@material/mwc-fab": "^0.21.0",
