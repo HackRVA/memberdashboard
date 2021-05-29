@@ -1,3 +1,3 @@
 "id","description","device_identifier"
-"cd72a235-e59f-415a-831d-560b8d77f1e3","test","123addr"
-"cd72a235-e59f-415a-831d-560b8d77f1ea","test1234","addr123"
+"cd72a235-e59f-415a-831d-560b8d77f1e3","test","123addr", true
+"cd72a235-e59f-415a-831d-560b8d77f1ea","test1234","addr123", true
