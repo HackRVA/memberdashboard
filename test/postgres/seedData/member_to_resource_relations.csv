@@ -1,5 +1,2 @@
-"id","description","device_identifier"
+"id","member_id","resource_id"
 "bc72a235-e59f-415a-831d-560b8d77f1eb","bd72a235-e59f-415a-831d-560b8d77f1eb","cd72a235-e59f-415a-831d-560b8d77f1ea"
-"bc72a235-e59f-415a-831d-560b8d77f1ea","bd72a235-e59f-415a-831d-560b8d77f1ea","cd72a235-e59f-415a-831d-560b8d77f1ea"
-"bc72a235-e59f-415a-831d-560b8d77f1ec","bd72a235-e59f-415a-831d-560b8d77f1ec","cd72a235-e59f-415a-831d-560b8d77f1ea"
-"bc72a235-e59f-415a-831d-560b8d77f1e2","bd72a235-e59f-415a-831d-560b8d77f1e2","cd72a235-e59f-415a-831d-560b8d77f1ea"
