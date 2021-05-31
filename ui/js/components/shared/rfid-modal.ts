@@ -22,6 +22,8 @@ import "../shared/toast-msg";
 export class RFIDModal extends LitElement {
   @property({ type: String })
   email: string = "";
+  @property({ type: Boolean })
+  showNewMemberOption: boolean = false;
 
   memberService: MemberService = new MemberService();
 
@@ -30,6 +32,8 @@ export class RFIDModal extends LitElement {
   rfidFieldTemplate: TextField;
 
   toastMsg: ToastMessage;
+
+  isNewMember: Boolean;
 
   firstUpdated(): void {
     this.rfidModalTemplate = this.shadowRoot?.querySelector("mwc-dialog");
@@ -53,7 +57,25 @@ export class RFIDModal extends LitElement {
       rfid: this.rfidFieldTemplate.value.trim(),
     };
 
+    if (this.isNewMember) {
+      this.assignNewMemberToRFID(request);
+      return;
+    }
     this.assignMemberToRFID(request);
+  }
+
+  assignNewMemberToRFID(request: AssignRFIDRequest): void {
+    this.memberService.assignNewMemberRFID(request).subscribe({
+      complete: () => {
+        this.displayToastMsg("Success");
+        this.fireUpdatedEvent();
+        this.emptyFormField();
+        this.rfidModalTemplate.close();
+      },
+      error: () => {
+        this.displayToastMsg("Hrmmm, something went wrong? :3");
+      },
+    });
   }
 
   assignMemberToRFID(request: AssignRFIDRequest): void {
@@ -70,9 +92,13 @@ export class RFIDModal extends LitElement {
     });
   }
 
+  handleNewMember(): void {
+    this.isNewMember = !this.isNewMember
+  }
+
   handleSubmit(): void {
     if (this.isValid()) {
-      this.tryToAssigningMemberToRFID();
+        this.tryToAssigningMemberToRFID();
     } else {
       this.displayToastMsg(
         "Hrmmm, are you sure everything in the form is correct?"
@@ -110,6 +136,18 @@ export class RFIDModal extends LitElement {
     showComponent("#toast-msg", this.shadowRoot);
   }
 
+  displayNewMemberCheckBox(): TemplateResult {
+    if (!this.showNewMemberOption) return html``;
+
+    return html`
+      <mwc-formfield label="New member">
+        <mwc-checkbox @change=${
+          this.handleNewMember
+        }></mwc-checkbox>
+      </mwc-formfield>
+    `;
+  }
+
   render(): TemplateResult {
     return html`
       <mwc-dialog heading="Assign RFID" @closed=${this.handleClosed}>
@@ -127,6 +165,7 @@ export class RFIDModal extends LitElement {
           id="rfid"
           type="number"
         ></mwc-textfield>
+        ${this.displayNewMemberCheckBox()}
         <mwc-button slot="primaryAction" @click=${this.handleSubmit}>
           Submit
         </mwc-button>

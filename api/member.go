@@ -121,6 +121,14 @@ func (a API) addNewMember(w http.ResponseWriter, req *http.Request) {
 	})
 	w.Write(j)
 
-	go resourcemanager.UpdateResources()
+	_, err = a.db.SetRFIDTag(newMember.Email, newMember.RFID)
 
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	a.db.AddUserToDefaultResources(newMember.Email)
+
+	go resourcemanager.UpdateResources()
 }

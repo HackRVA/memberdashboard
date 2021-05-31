@@ -32,7 +32,7 @@ func (payment *PaymentDatabaseMethod) checkLastPayment() string {
 	ON membership.payments.member_id = membership.members.id
 	WHERE member_id = $1
 	ORDER BY date DESC
-	limit $2;`
+	limit 2;`
 
 	return checkLastPaymentQuery
 }

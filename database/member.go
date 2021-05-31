@@ -205,7 +205,14 @@ VALUES `
 	for _, m := range members {
 		// postgres doesn't like apostrophes
 		memberName := strings.Replace(m.Name, "'", "''", -1)
-		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d)", memberName, m.Email, 1))
+
+		// if member level isn't set them to inactive,
+		//   otherwise, use the level they already have.
+		if m.Level == 0 {
+			m.Level = uint8(Inactive)
+		}
+
+		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d)", memberName, m.Email, m.Level))
 
 		db.AddUserToDefaultResources(m.Email)
 	}

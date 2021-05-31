@@ -51,6 +51,10 @@ export const memberListStyles: CSSResult = css`
   }
 
   .refresh-members-list {
+    margin-right: 24px;
+  }
+  
+  .new-member-button {
     width: 192px;
     margin-right: 24px;
     --mdc-typography-button-font-size: 12px;

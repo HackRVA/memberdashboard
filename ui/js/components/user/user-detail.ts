@@ -109,6 +109,7 @@ export class UserDetail extends LitElement {
       <rfid-modal
         id="rfid-modal"
         .email=${this.email}
+        .showNewMemberOption=${false}
         @updated=${this.refreshMember}
       >
       </rfid-modal>

@@ -920,13 +920,16 @@
       "x-go-package": "memberserver/api/models"
     },
     "NewMember": {
+      "description": "NewMember - add a new member",
       "type": "object",
       "properties": {
-        "Email": {
-          "type": "string"
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
         },
-        "RFID": {
-          "type": "string"
+        "rfid": {
+          "type": "string",
+          "x-go-name": "RFID"
         }
       },
       "x-go-package": "memberserver/api/models"

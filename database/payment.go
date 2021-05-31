@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"memberserver/mail"
 	"strings"
@@ -153,20 +152,17 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 	var amount int64
 	var email string
 
-	// TODO: see if they have multiple memberships
-	numMemberships := 1
+	m, err := db.GetMemberByID(memberID)
+	if MemberLevel(m.Level) == Credited {
+		return fmt.Errorf("member is credited a membership: %s", err)
+	}
 
-	err := db.getConn().QueryRow(context.Background(), paymentDbMethod.checkLastPayment(), memberID, numMemberships).Scan(&daysSincePayment, &amount, &email)
+	err = db.getConn().QueryRow(context.Background(), paymentDbMethod.checkLastPayment(), memberID).Scan(&daysSincePayment, &amount, &email)
 	if err != nil {
-		return fmt.Errorf("conn.Query failed: %v", err)
+		log.Errorf("error finding members payments: %s", err)
 	}
 
 	if daysSincePayment > memberGracePeriod { // revoke
-		m, err := db.GetMemberByID(memberID)
-		if err != nil {
-			return errors.New(fmt.Sprintf("could not find member to revoke: %s", err))
-		}
-
 		// if this is an active member, then they are just now being revoked.
 		// if they are not active, they have already been revoked.
 		if MemberLevel(m.Level) == Inactive {

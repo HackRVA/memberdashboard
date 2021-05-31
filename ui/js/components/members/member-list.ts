@@ -95,6 +95,10 @@ export class MemberList extends LitElement {
     showComponent("#remove-member-from-resource-modal", this.shadowRoot);
   }
 
+  openNewMemberModal(): void {
+    showComponent("#new-member-modal", this.shadowRoot);
+  }
+
   openRFIDModal(): void {
     showComponent("#rfid-modal", this.shadowRoot);
   }
@@ -241,7 +245,7 @@ export class MemberList extends LitElement {
                 unelevated 
                 dense 
                 @click=${this.openRFIDModal}> 
-              </mvc-button>
+              </mwc-button>
             </div>
           </div>
           <div class="all-members-action-container">
@@ -288,6 +292,7 @@ export class MemberList extends LitElement {
       </remove-member-from-resource-modal>
       <rfid-modal
         id="rfid-modal"
+        .showNewMemberOption=${true}
         @updated=${this.refreshMemberList}> 
       </rfid-modal>
       <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>

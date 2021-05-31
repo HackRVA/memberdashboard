@@ -17,6 +17,10 @@ export class MemberService extends HTTPService {
     return this.post<void>(this.memberUrlSegment + "/assignRFID", request);
   }
 
+  assignNewMemberRFID(request: AssignRFIDRequest): Observable<void> {
+    return this.post<void>(this.memberUrlSegment + "/new", request);
+  }
+
   getMemberByEmail(email: string): Observable<MemberResponse> {
     return this.get<MemberResponse>(`${this.memberUrlSegment}/email/${email}`);
   }
