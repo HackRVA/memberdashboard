@@ -38,7 +38,7 @@ func (a API) getMemberByEmail(w http.ResponseWriter, req *http.Request) {
 
 	memberEmail := routeVars["email"]
 
-	member, err := a.db.GetMemberByEmail((memberEmail))
+	member, err := a.db.GetMemberByEmail(memberEmail)
 
 	if err != nil {
 		log.Errorf("error getting member by email: %s", err)

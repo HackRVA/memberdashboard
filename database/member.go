@@ -218,6 +218,8 @@ VALUES `
 		// postgres doesn't like apostrophes
 		memberName := strings.Replace(m.Name, "'", "''", -1)
 		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d)", memberName, m.Email, 1))
+
+		db.AddUserToDefaultResources(m.Email)
 	}
 
 	str := strings.Join(valStr, ",")
