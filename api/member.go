@@ -7,6 +7,7 @@ import (
 	"memberserver/api/models"
 	"memberserver/database"
 	"memberserver/payments"
+	"memberserver/resourcemanager"
 	"memberserver/slack"
 	"net/http"
 	"strings"
@@ -70,6 +71,8 @@ func (a API) assignRFID(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(r)
 	w.Write(j)
+
+	go resourcemanager.UpdateResources()
 }
 
 func (a API) refreshPayments(w http.ResponseWriter, req *http.Request) {
