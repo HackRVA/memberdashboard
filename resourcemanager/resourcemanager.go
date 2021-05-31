@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"strings"
 
@@ -104,6 +105,8 @@ func UpdateResources() {
 				ValidUntil:      -86400,
 			})
 			Publish(r.Name, string(b))
+
+			time.Sleep(2 * time.Second)
 		}
 	}
 
