@@ -94,3 +94,33 @@ func (a API) getNonMembersOnSlack(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Disposition", "attachment; filename=nonmembersOnSlack.csv")
 	w.Write(buf.Bytes())
 }
+
+func (a API) addNewMember(w http.ResponseWriter, req *http.Request) {
+	var newMember database.Member
+
+	err := json.NewDecoder(req.Body).Decode(&newMember)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// granting standard membership for the day - if their paypal email address doesn't match
+	//  their membership will be revoked
+	newMember.Level = uint8(database.Standard)
+
+	err = a.db.AddMembers([]database.Member{newMember})
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(models.EndpointSuccess{
+		Ack: true,
+	})
+	w.Write(j)
+
+	go resourcemanager.UpdateResources()
+
+}

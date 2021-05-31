@@ -65,6 +65,28 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: getMembersResponse
 	rr.HandleFunc("/member", api.getMembers)
+	// swagger:route POST /api/member/new member addNewMemberRequest
+	//
+	// Add a new member
+	//
+	// Add a member that doesn't exist in our system.
+	//  This would most likely be because they just signed up
+	//  and we don't have information from paypal yet.
+	//
+	// If the paypal email doesn't match, their access will be revoked
+	//   when we next sync with paypal.
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: endpointSuccessResponse
+	rr.HandleFunc("/member/new", api.addNewMember)
 	// swagger:route GET /api/member/email/{email} member getMemberByEmailRequest
 	//
 	// Returns a member based on the email address.

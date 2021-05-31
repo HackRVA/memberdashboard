@@ -45,3 +45,9 @@ type setRFIDRequest struct {
 type getPaymentRefreshResponse struct {
 	Body models.EndpointSuccess
 }
+
+// swagger:parameters addNewMemberRequest
+type addNewMemberRequest struct {
+	// in: body
+	Body models.NewMember
+}

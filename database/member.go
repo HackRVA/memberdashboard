@@ -195,18 +195,6 @@ func (db *Database) SetRFIDTag(email string, RFIDTag string) (Member, error) {
 	return m, err
 }
 
-// AddMember adds a member to the database
-func (db *Database) AddMember(email string, name string) (Member, error) {
-	var m Member
-
-	err := db.getConn().QueryRow(context.Background(), memberDbMethod.insertMember(), name, email).Scan(&m.ID, &m.Name, &m.Email)
-	if err != nil {
-		return m, fmt.Errorf("conn.Query failed: %v", err)
-	}
-
-	return m, err
-}
-
 // AddMembers adds multiple members to the database
 func (db *Database) AddMembers(members []Member) error {
 	sqlStr := `INSERT INTO membership.members(

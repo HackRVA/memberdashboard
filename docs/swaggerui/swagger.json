@@ -227,6 +227,42 @@
         }
       }
     },
+    "/api/member/new": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Add a member that doesn't exist in our system.\nThis would most likely be because they just signed up\nand we don't have information from paypal yet.\n\nIf the paypal email doesn't match, their access will be revoked\nwhen we next sync with paypal.",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Add a new member",
+        "operationId": "addNewMemberRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/NewMember"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/endpointSuccessResponse"
+          }
+        }
+      }
+    },
     "/api/member/slack/nonmembers": {
       "get": {
         "security": [
@@ -879,6 +915,18 @@
           "type": "string",
           "x-go-name": "ID",
           "example": "string"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
+    },
+    "NewMember": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "string"
+        },
+        "RFID": {
+          "type": "string"
         }
       },
       "x-go-package": "memberserver/api/models"
