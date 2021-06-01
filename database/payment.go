@@ -169,7 +169,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 			log.Debugf("Member is already inactive: %s", m.Name)
 			return nil
 		}
-		mail.SendRevokedEmail(email)
+		mail.SendRevokedEmail(m.Email, m)
 
 		rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberID, Inactive)
 		if err != nil {
@@ -183,8 +183,8 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 			//   it would be better if we could send these only once.
 
 			// send notification because they are in a grace period
-			// mail.SendGracePeriodMessage(email)
-			// mail.SendGracePeriodMessageToLeadership(email)
+			// mail.SendGracePeriodMessage(m.Email, m)
+			// mail.SendGracePeriodMessageToLeadership("info@hackrva.org", m)
 		}
 
 		// a valid member

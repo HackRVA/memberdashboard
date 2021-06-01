@@ -117,7 +117,8 @@ func checkIPAddressTick() {
 		return
 	}
 
-	log.Debugf("ip addr: %s", string(body))
+	ip := string(body)
+	log.Debugf("ip addr: %s", ip)
 
 	// detect if file exists
 	_, err = os.Stat(".public_ip_address")
@@ -149,5 +150,5 @@ func checkIPAddressTick() {
 	if string(b) == "" {
 		return
 	}
-	mail.SendIPHasChanged()
+	mail.SendIPHasChanged(ip)
 }
