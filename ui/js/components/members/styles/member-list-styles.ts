@@ -9,7 +9,7 @@ export const memberListStyles: CSSResult = css`
     display: grid;
     align-items: center;
     text-align: center;
-    margin: 20px;
+    margin: 0px 20px;
   }
   .member-header {
     display: inherit;
@@ -53,7 +53,7 @@ export const memberListStyles: CSSResult = css`
   .refresh-members-list {
     margin-right: 24px;
   }
-  
+
   .new-member-button {
     width: 192px;
     margin-right: 24px;

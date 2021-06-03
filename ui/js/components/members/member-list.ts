@@ -20,7 +20,6 @@ import "../shared/rfid-modal";
 import "./modals/add-member-to-resource-modal";
 import "./modals/remove-member-from-resource-modal";
 import "./modals/add-members-to-resource-modal";
-import "../shared/card-element";
 import { ToastMessage } from "../shared/types";
 import { displayMemberStatus } from "./function";
 
@@ -34,8 +33,6 @@ export class MemberList extends LitElement {
 
   memberResources: Array<MemberResource> = [];
   email: string = "";
-
-  showSpinner: boolean;
 
   memberEmails: string[] = [];
   toastMsg: ToastMessage;
@@ -193,28 +190,6 @@ export class MemberList extends LitElement {
     this.requestUpdate();
   }
 
-  refreshMembersPayments(): void {
-    this.showSpinner = true;
-    this.requestUpdate();
-    this.paymentsService.refreshPayments().subscribe({
-      complete: () => {
-        this.showSpinner = false;
-        this.refreshMemberList();
-        this.displayToastMsg("Success");
-      },
-    });
-  }
-
-  displaySpinner(showSpinner: boolean): TemplateResult {
-    if (showSpinner) {
-      return html`
-        <mwc-circular-progress indeterminate></mwc-circular-progress>
-      `;
-    } else {
-      return html``;
-    }
-  }
-
   displayToastMsg(message: string): void {
     this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
     this.requestUpdate();
@@ -223,77 +198,73 @@ export class MemberList extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <card-element>
-        <div class="member-container">
-          <div class="member-header">
-            <h3 class="member-count">
-              Number of active members: ${this.memberCount} 
-            </h3>
-            <div class="buttons-container">
-              <mwc-button 
-                class="refresh-members-list" 
-                unelevated 
-                dense 
-                label="Refresh member list"
-                .disabled=${this.showSpinner}
-                @click=${this.refreshMembersPayments}>
-                ${this.displaySpinner(this.showSpinner)}
-              </mwc-button>
-              <mwc-button 
-                class="rfid-button" 
-                label="Assign rfid"
-                unelevated 
-                dense 
-                @click=${this.openRFIDModal}> 
-              </mwc-button>
-            </div>
-          </div>
-          <div class="all-members-action-container">
+      <div class="member-container">
+        <div class="member-header">
+          <h3 class="member-count">
+            Number of active members: ${this.memberCount}
+          </h3>
+          <div class="buttons-container">
             <mwc-button
-              class="add-resource-to-members"
+              class="rfid-button"
+              label="Assign rfid"
               unelevated
               dense
-              label="Add resource to members"
-              @click=${this.openAddMembersToResourceModal}>
+              @click=${this.openRFIDModal}
+            >
             </mwc-button>
-            <mwc-formfield label="All members" class="all-members-checkbox">
-              <mwc-checkbox id="all-members" @change=${
-                this.handleAllEmails
-              }></mwc-checkbox>
-            </mwc-formfield>
           </div>
-          <table>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Member Status</th>
-              <th>Resources</th>
-              <th>RFID</th>
-            </tr>
-            ${this.displayMembersTable()}
-          </table>
         </div>
-      </card-element>
+        <div class="all-members-action-container">
+          <mwc-button
+            class="add-resource-to-members"
+            unelevated
+            dense
+            label="Add resource to members"
+            @click=${this.openAddMembersToResourceModal}
+          >
+          </mwc-button>
+          <mwc-formfield label="All members" class="all-members-checkbox">
+            <mwc-checkbox
+              id="all-members"
+              @change=${this.handleAllEmails}
+            ></mwc-checkbox>
+          </mwc-formfield>
+        </div>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Member Status</th>
+            <th>Resources</th>
+            <th>RFID</th>
+          </tr>
+          ${this.displayMembersTable()}
+        </table>
+      </div>
       <add-members-to-resource-modal
         id="add-members-to-resource-modal"
         .emails=${this.memberEmails}
-        @updated=${this.refreshMemberList}>
+        @updated=${this.refreshMemberList}
+      >
       </add-members-to-resource-modal>
-      <add-member-to-resource-modal 
+      <add-member-to-resource-modal
         id="add-member-to-resource-modal"
         .email=${this.email}
-        @updated=${this.refreshMemberList}> 
+        @updated=${this.refreshMemberList}
+      >
       </add-member-to-resource-modal>
       <remove-member-from-resource-modal
         id="remove-member-from-resource-modal"
         .email=${this.email}
         .memberResources=${this.memberResources}
-        @updated=${this.refreshMemberList}> 
+        @updated=${this.refreshMemberList}
+      >
       </remove-member-from-resource-modal>
       <rfid-modal
         id="rfid-modal"
         .showNewMemberOption=${true}
-        @updated=${this.refreshMemberList}> 
+        @updated=${this.refreshMemberList}
+      >
       </rfid-modal>
       <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
