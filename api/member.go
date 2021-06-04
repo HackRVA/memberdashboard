@@ -72,7 +72,7 @@ func (a API) assignRFID(w http.ResponseWriter, req *http.Request) {
 	j, _ := json.Marshal(r)
 	w.Write(j)
 
-	go resourcemanager.UpdateResources()
+	go resourcemanager.PushOne(database.Member{Email: assignRFIDRequest.Email})
 }
 
 func (a API) refreshPayments(w http.ResponseWriter, req *http.Request) {
@@ -130,5 +130,5 @@ func (a API) addNewMember(w http.ResponseWriter, req *http.Request) {
 
 	a.db.AddUserToDefaultResources(newMember.Email)
 
-	go resourcemanager.UpdateResources()
+	go resourcemanager.PushOne(newMember)
 }

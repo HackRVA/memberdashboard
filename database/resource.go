@@ -335,3 +335,36 @@ func (db *Database) GetResourceACLWithMemberInfo(r Resource) ([]Member, error) {
 
 	return accessList, nil
 }
+
+// MemberAccess represents that a member has access to a certain resource.
+//  this will get pushed to a device.
+type MemberAccess struct {
+	Email           string
+	ResourceAddress string
+	ResourceName    string
+	Name            string
+	RFID            string
+}
+
+// GetMembersAccess returns a list of a specific members access
+//   this is used for sending a new rfid assigment to a resource
+func (db *Database) GetMembersAccess(m Member) ([]MemberAccess, error) {
+	var memberAccess []MemberAccess
+
+	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByEmail(), m.Email)
+	if err != nil {
+		return memberAccess, fmt.Errorf("error getting members access info: %s", err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var resourceUpdate MemberAccess
+
+		rows.Scan(&resourceUpdate.Email, &resourceUpdate.ResourceAddress, &resourceUpdate.ResourceName, &resourceUpdate.Name, &resourceUpdate.RFID)
+
+		memberAccess = append(memberAccess, resourceUpdate)
+	}
+
+	return memberAccess, nil
+}

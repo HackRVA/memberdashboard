@@ -113,6 +113,29 @@ func UpdateResources() {
 	db.Release()
 }
 
+// PushOne - update one user on the resources
+func PushOne(m database.Member) {
+	db, err := database.Setup()
+	if err != nil {
+		log.Errorf("error setting up db: %s", err)
+	}
+
+	memberAccess, _ := db.GetMembersAccess(m)
+	for _, m := range memberAccess {
+		b, _ := json.Marshal(&AddMemberRequest{
+			ResourceAddress: m.ResourceAddress,
+			Command:         "adduser",
+			UserName:        m.Name,
+			RFID:            m.RFID,
+			AccessType:      1,
+			ValidUntil:      -86400,
+		})
+		Publish(r.Name, string(b))
+	}
+
+	db.Release()
+}
+
 func DeleteResourceACL() {
 	db, err := database.Setup()
 	if err != nil {
