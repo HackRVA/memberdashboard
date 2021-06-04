@@ -16,7 +16,9 @@ export const showComponent = (
   elementId: string,
   shadowRoot: ShadowRoot
 ): void => {
-  (shadowRoot?.querySelector(elementId) as HTMLElement & {
-    show: Function;
-  }).show();
+  (
+    shadowRoot?.querySelector(elementId) as HTMLElement & {
+      show: Function;
+    }
+  ).show();
 };

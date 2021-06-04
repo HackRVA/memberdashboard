@@ -13,12 +13,13 @@ import "./member-list";
 import { MemberLevel, MemberResponse } from "./types";
 import "../shared/card-element";
 import { membersPageStyles } from "./styles/members-page-styles";
+import "../shared/loading-content";
 
 @customElement("members-page")
 export class MembersPage extends LitElement {
   members: MemberResponse[];
   memberCount: number;
-  showSpinner: boolean = true;
+  finishedLoading: boolean = false;
 
   memberService: MemberService = new MemberService();
 
@@ -33,7 +34,7 @@ export class MembersPage extends LitElement {
   getMembers(): void {
     this.memberService.getMembers().subscribe({
       next: (result: MemberResponse[]) => {
-        this.showSpinner = false;
+        this.finishedLoading = true;
         this.members = result;
         this.memberCount = this.getActiveMembers().length;
         this.requestUpdate();
@@ -50,25 +51,15 @@ export class MembersPage extends LitElement {
     );
   }
 
-  displayMemberList(): TemplateResult {
-    if (this.showSpinner) {
-      return html`<mwc-circular-progress
-        indeterminate
-      ></mwc-circular-progress>`;
-    }
-
-    return html`
-      <member-list
-        .members=${this.members}
-        .memberCount=${this.memberCount}
-      ></member-list>
-    `;
-  }
-
   render(): TemplateResult {
     return html`
       <card-element class="text-center">
-        ${this.displayMemberList()}
+        <loading-content .finishedLoading=${this.finishedLoading}>
+          <member-list
+            .members=${this.members}
+            .memberCount=${this.memberCount}
+          ></member-list>
+        </loading-content>
       </card-element>
     `;
   }
