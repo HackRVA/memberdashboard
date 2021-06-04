@@ -2,14 +2,14 @@ package mail
 
 import (
 	"context"
-	"log"
 	"net/smtp"
 	"time"
 
+	"memberserver/config"
+
 	"github.com/jordan-wright/email"
 	"github.com/mailgun/mailgun-go/v4"
-
-	"memberserver/config"
+	log "github.com/sirupsen/logrus"
 )
 
 // Provider has config information for connecting to mailgun
@@ -50,10 +50,6 @@ func (mp Provider) SendSMTP(address, subject, text string) (string, error) {
 	return "_", err
 }
 
-// SendSimpleMessage - sends an email via the api
-//  I haven't been able to get this to work due to credentials issues.
-//  I'm assuming I'm doing something wrong in the control panel
-//  eventually this will be the better way to send email
 func (mp Provider) SendSimpleMessage(address, subject, text string) (string, error) {
 	mg := mailgun.NewMailgun(mp.URL, mp.Key)
 	m := mg.NewMessage(
@@ -66,16 +62,10 @@ func (mp Provider) SendSimpleMessage(address, subject, text string) (string, err
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	println("attempting to send simple mail")
-
 	_, id, err := mg.Send(ctx, m)
 	return id, err
 }
 
-// SendComplexMessage - sends an email via the api but allows for html body to be attached
-//  I haven't been able to get this to work due to credentials issues.
-//  I'm assuming I'm doing something wrong in the control panel
-//  eventually this will be the better way to send email
 func (mp Provider) SendComplexMessage(address, subject, html string) (string, error) {
 	mg := mailgun.NewMailgun(mp.URL, mp.Key)
 	m := mg.NewMessage(
@@ -92,8 +82,6 @@ func (mp Provider) SendComplexMessage(address, subject, html string) (string, er
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
-
-	println("attempting to send complex mail")
 
 	_, id, err := mg.Send(ctx, m)
 	return id, err

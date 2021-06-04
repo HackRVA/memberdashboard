@@ -33,6 +33,7 @@ type Config struct {
 	//   the predefined addresses
 	EmailOverrideAddress string `json:"emailOverrideAddress"`
 	SlackToken           string `json:"slackToken"`
+	AdminEmail           string `json:"adminEmail"`
 }
 
 // Load in the config file to memory
@@ -58,6 +59,8 @@ func Load() (Config, error) {
 	c.EnableInfoEmails = false
 	c.EnableNotificationEmailsToMembers = false
 	c.SlackToken = os.Getenv("SLACK_TOKEN")
+	c.AdminEmail = getEnvOrDefault("ADMIN_EMAIL", "info@hackrva.org")
+
 	if len(os.Getenv("ENABLE_INFO_EMAILS")) > 0 {
 		c.EnableInfoEmails = true
 	}
@@ -86,4 +89,11 @@ func Load() (Config, error) {
 
 	// if we still don't have an access secret let's generate a random one
 	return c, nil
+}
+
+func getEnvOrDefault(key string, defaultValue string) string {
+	if val, ok := os.LookupEnv("ADMIN_EMAIL"); ok {
+		return val
+	}
+	return defaultValue
 }

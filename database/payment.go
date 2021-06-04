@@ -169,7 +169,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 			log.Debugf("Member is already inactive: %s", m.Name)
 			return nil
 		}
-		mail.SendRevokedEmail(email)
+		mail.SendRevokedEmail(m.Email, m)
 
 		rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberID, Inactive)
 		if err != nil {
@@ -182,9 +182,10 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 			// currently these would send everyday and everytime the app starts.
 			//   it would be better if we could send these only once.
 
+			//c, _ := config.Load()
 			// send notification because they are in a grace period
-			// mail.SendGracePeriodMessage(email)
-			// mail.SendGracePeriodMessageToLeadership(email)
+			// mail.SendGracePeriodMessage(m.Email, m)
+			// mail.SendGracePeriodMessageToLeadership(c.AdminEmail, m)
 		}
 
 		// a valid member

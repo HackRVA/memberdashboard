@@ -1,81 +1,86 @@
 package mail
 
 import (
+	"bytes"
+	"html/template"
 	"memberserver/config"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func SendGracePeriodMessageToLeadership(address string) {
+func SendGracePeriodMessageToLeadership(recipient string, member interface{}) {
 	infoAddress := "info@hackrva.org"
+	SendTemplatedEmail("pending_revokation_leadership.html.tmpl", infoAddress, "hackRVA Grace Period", member)
+}
 
+func SendGracePeriodMessage(recipient string, member interface{}) {
+	SendTemplatedEmail("pending_revokation_member.html.tmpl", recipient, "hackRVA Grace Period", member)
+}
+
+func SendRevokedEmail(recipient string, member interface{}) {
+	SendTemplatedEmail("access_revoked.html.tmpl", recipient, "hackRVA Grace Period", member)
+}
+
+func SendRevokedEmailToLeadership(recipient string, member interface{}) {
+	SendTemplatedEmail("access_revoked_leadership.html.tmpl", recipient, "hackRVA Grace Period", member)
+}
+
+func SendIPHasChanged(newIpAddress string) {
+	c, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	recipient := c.AdminEmail
+	ipModel := struct {
+		IpAddress string
+	}{
+		IpAddress: newIpAddress}
+	SendTemplatedEmail("ip_changed.html.tmpl", recipient, "IP Address Changed", ipModel)
+}
+
+func generateEmailContent(templatePath string, model interface{}) (string, error) {
+	tmpl, err := template.ParseFiles(templatePath)
+	if err != nil {
+		log.Errorf("Error loading template %v", err)
+		return "", err
+	}
+	tmpl.Option("missingkey=error")
+	var tpl bytes.Buffer
+	err = tmpl.Execute(&tpl, model)
+	if err != nil {
+		log.Errorf("Error generating content %v", err)
+		return "", err
+	}
+	return tpl.String(), nil
+}
+
+func SendTemplatedEmail(templateName string, to string, subject string, model interface{}) {
 	conf, _ := config.Load()
+
 	if !conf.EnableInfoEmails {
+		log.Info("email not enabled")
 		return
 	}
 
 	mp, err := Setup()
 	if err != nil {
 		log.Errorf("error setting up mailprovider when attempting to send email notification")
-	}
-
-	if len(conf.EmailOverrideAddress) > 0 {
-		infoAddress = conf.EmailOverrideAddress
-	}
-
-	mp.SendSMTP(infoAddress, address+": hackrva grace period", address+" membership is in a grace period.  \n\nIf a payment isn't received, their membership will be revoked.")
-}
-
-func SendGracePeriodMessage(address string) {
-	conf, _ := config.Load()
-	if !conf.EnableNotificationEmailsToMembers {
-		return
-	}
-	mp, err := Setup()
-	if err != nil {
-		log.Errorf("error setting up mailprovider when attempting to send email notification")
-	}
-
-	if len(conf.EmailOverrideAddress) > 0 {
-		address = conf.EmailOverrideAddress
-	}
-
-	mp.SendSMTP(address, "hackrva grace period", "This is an automated message.\n\n You're membership is in a grace period.  Please try to pay your hackrva membership dues soon.  If you have concerns, please reach out to info@hackrva.org")
-}
-
-func SendRevokedEmail(address string) {
-	conf, _ := config.Load()
-	if !conf.EnableNotificationEmailsToMembers {
-		return
-	}
-	mp, err := Setup()
-	if err != nil {
-		log.Errorf("error setting up mailprovider when attempting to send email notification")
-	}
-
-	if len(conf.EmailOverrideAddress) > 0 {
-		address = conf.EmailOverrideAddress
-	}
-
-	mp.SendSMTP(address, "hackrva membership revoked", "Unfortunately, hackrva hasn't received your membership dues.  Your membership has been revoked until a payment is received.  Please reach out to us if you have any concerns.")
-}
-
-func SendIPHasChanged() {
-	conf, _ := config.Load()
-	if !conf.EnableInfoEmails {
 		return
 	}
 
-	mp, err := Setup()
-	if err != nil {
-		log.Errorf("error setting up mailprovider when attempting to send email notification")
-	}
-
-	infoAddress := "info@hackrva.org"
-
 	if len(conf.EmailOverrideAddress) > 0 {
-		infoAddress = conf.EmailOverrideAddress
+		to = conf.EmailOverrideAddress
 	}
 
-	mp.SendSMTP(infoAddress, "hackrva's ip address has changed", "HackRVAs IP address has changed.  This is significant because the database for the member dashboard is IP whitelisted.  For the dashboard to work, someone will need to update the whitelisting.")
+	content, err := generateEmailContent("./templates/"+templateName, model)
+	if err != nil {
+		log.Errorf("Error generating email contnent. Error: %v", err)
+		return
+	}
+
+	_, err = mp.SendComplexMessage(to, subject, content)
+	if err != nil {
+		log.Errorf("Error sending mail %v", err)
+	}
 }

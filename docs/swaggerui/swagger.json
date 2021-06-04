@@ -63,9 +63,7 @@
         "summary": "Logout",
         "operationId": "logoutRequest",
         "responses": {
-          "200": {
-            "description": ""
-          }
+          "200": {}
         }
       }
     },
@@ -469,9 +467,7 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": ""
-          }
+          "200": {}
         }
       }
     },
@@ -1134,7 +1130,6 @@
   },
   "responses": {
     "VersionResponse": {
-      "description": "",
       "headers": {
         "commit": {
           "type": "string",
@@ -1144,13 +1139,11 @@
       }
     },
     "addMemberToResourceResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/MemberResourceRelation"
       }
     },
     "addMulitpleMembersToResourceResponse": {
-      "description": "",
       "schema": {
         "type": "array",
         "items": {
@@ -1159,7 +1152,6 @@
       }
     },
     "endpointSuccessResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/EndpointSuccess"
       },
@@ -1168,13 +1160,11 @@
       }
     },
     "getMemberResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/Member"
       }
     },
     "getMembersResponse": {
-      "description": "",
       "schema": {
         "type": "array",
         "items": {
@@ -1192,7 +1182,6 @@
       }
     },
     "getPaymentRefreshResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/EndpointSuccess"
       },
@@ -1201,13 +1190,11 @@
       }
     },
     "getResourceResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/Resource"
       }
     },
     "getResourceStatusResponse": {
-      "description": "",
       "schema": {
         "type": "object",
         "additionalProperties": {
@@ -1217,7 +1204,6 @@
       }
     },
     "getTierResponse": {
-      "description": "",
       "schema": {
         "type": "array",
         "items": {
@@ -1226,13 +1212,11 @@
       }
     },
     "getUserResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/UserResponse"
       }
     },
     "infoResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/InfoResponse"
       },
@@ -1247,13 +1231,11 @@
       }
     },
     "postResourceResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/Resource"
       }
     },
     "removeMemberSuccessResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/EndpointSuccess"
       },
@@ -1262,7 +1244,6 @@
       }
     },
     "setRFIDResponse": {
-      "description": "",
       "schema": {
         "$ref": "#/definitions/AssignRFIDRequest"
       }
