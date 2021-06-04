@@ -59,3 +59,29 @@ export MEMBER_SERVER_CONFIG_FILE="/etc/hackrva/config.json"
 ### Generating Swagger Docs
 
 Follow instructions in [./docs/README.md](./docs/README.md)
+
+## Database Migrations
+Database migrations are managed using [golang-migrate/migrate](https://github.com/golang-migrate/migrate).  Migrations can be applied using the migrate CLI or through a docker container.
+
+### How to install golang-migrate
+```
+go install github.com/golang-migrate/migrate/v4/cmd/migrate
+```
+
+### How to add a migration
+A migration can be added by creating an up and down migration file in the migrations folder.  The migration file names should be named according to {sequentialNumber}_{description}.up.sql and {sequentialNumber}_{description}.down.sql.  These files can be created manaully, or by using the migrate CLI.
+```
+migrate create -ext sql -dir migrations -seq <description>
+```
+Populate the up and down scripts.  Up scripts should be idempotent.  Down scripts should revert all changes made by up script
+
+### How to run a migration
+
+Migrations can be applied using the CLI
+```
+migrate -database postgres://test:test@localhost:5432/membership?sslmode=disable -verbose -path migrations up
+```
+or via docker
+```
+docker run -v migrations:/migrations --network host migrate/migrate -path=/migrations -database postgres://test:test@localhost:5432/membership?sslmode=disable up
+```
