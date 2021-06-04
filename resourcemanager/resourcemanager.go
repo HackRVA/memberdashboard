@@ -130,7 +130,7 @@ func PushOne(m database.Member) {
 			AccessType:      1,
 			ValidUntil:      -86400,
 		})
-		Publish(r.Name, string(b))
+		Publish(m.ResourceName, string(b))
 	}
 
 	db.Release()
