@@ -82,7 +82,7 @@ func (resource *ResourceDatabaseMethod) getResourceACLByEmail() string {
 	ON membership.member_resource.member_id = membership.members.id
 	LEFT JOIN membership.resources
 	ON membership.member_resource.resource_id = membership.resources.id 
-	WHERE rfid is not NULL and name = $1;`
+	WHERE rfid is not NULL and email = $1;`
 }
 
 func (resource *ResourceDatabaseMethod) getMemberResource() string {
