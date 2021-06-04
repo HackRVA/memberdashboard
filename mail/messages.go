@@ -26,12 +26,17 @@ func SendRevokedEmailToLeadership(recipient string, member interface{}) {
 }
 
 func SendIPHasChanged(newIpAddress string) {
-	recipient := "info@hackrva.org"
-	model := struct {
+	c, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	recipient := c.AdminEmail
+	ipModel := struct {
 		IpAddress string
 	}{
 		IpAddress: newIpAddress}
-	SendTemplatedEmail("ip_changed.html.tmpl", recipient, "IP Address Changed", model)
+	SendTemplatedEmail("ip_changed.html.tmpl", recipient, "IP Address Changed", ipModel)
 }
 
 func generateEmailContent(templatePath string, model interface{}) (string, error) {

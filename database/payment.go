@@ -182,9 +182,10 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 			// currently these would send everyday and everytime the app starts.
 			//   it would be better if we could send these only once.
 
+			//c, _ := config.Load()
 			// send notification because they are in a grace period
 			// mail.SendGracePeriodMessage(m.Email, m)
-			// mail.SendGracePeriodMessageToLeadership("info@hackrva.org", m)
+			// mail.SendGracePeriodMessageToLeadership(c.AdminEmail, m)
 		}
 
 		// a valid member

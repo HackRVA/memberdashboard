@@ -130,9 +130,5 @@ func (a API) addNewMember(w http.ResponseWriter, req *http.Request) {
 
 	a.db.AddUserToDefaultResources(newMember.Email)
 
-	//TODO: [ML] Does this make sense here?  Should this be sent at all?  Maybe it should be invoked
-	//in a paypal webhook when a new subscription is created.
-	//mail.SendTemplatedEmail("welcome.html.tmpl", newMember.Email, "Welcome to hackRVA", newMember)
-
 	go resourcemanager.UpdateResources()
 }
