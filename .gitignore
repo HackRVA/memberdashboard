@@ -5,3 +5,4 @@ tsconfig.tsbuildinfo
 server
 passwordfile
 memberserver.local.env
+.public_ip_address
