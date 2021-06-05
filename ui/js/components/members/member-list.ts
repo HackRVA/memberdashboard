@@ -22,6 +22,7 @@ import "./modals/remove-member-from-resource-modal";
 import "./modals/add-members-to-resource-modal";
 import { ToastMessage } from "../shared/types";
 import { displayMemberStatus } from "./function";
+import "@polymer/paper-tooltip";
 
 @customElement("member-list")
 export class MemberList extends LitElement {
@@ -222,13 +223,18 @@ export class MemberList extends LitElement {
           </h3>
           <div class="buttons-container">
             <mwc-button
+              id="slack-clean-up"
               class="mr-24"
-              label="Export nonmembers"
+              label="Slack Clean Up"
               unelevated
               dense
               @click=${this.exportNonMembers}
             >
             </mwc-button>
+            <paper-tooltip for="slack-clean-up" animation-delay="0">
+              This will download a csv of email addresses on slack that aren't
+              members.
+            </paper-tooltip>
             <mwc-button
               class="rfid-button"
               label="Assign rfid"
