@@ -85,9 +85,9 @@ func FindNonMembers() []string {
 			continue
 		}
 
-		// if u.Deleted {
-		// 	continue
-		// }
+		if u.Deleted {
+			continue
+		}
 
 		_, ok := memberMap[u.Profile.Email]
 		if !ok {
