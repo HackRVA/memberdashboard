@@ -24,4 +24,8 @@ export class MemberService extends HTTPService {
   getMemberByEmail(email: string): Observable<MemberResponse> {
     return this.get<MemberResponse>(`${this.memberUrlSegment}/email/${email}`);
   }
+
+  downloadNonMembersCSV(): Observable<Blob> {
+    return this.get<Blob>(`${this.memberUrlSegment}/slack/nonmembers`);
+  }
 }

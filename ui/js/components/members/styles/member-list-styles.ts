@@ -78,6 +78,10 @@ export const memberListStyles: CSSResult = css`
     top: 5px;
   }
 
+  .mr-24 {
+    margin-right: 24px;
+  }
+
   mwc-circular-progress {
     width: 20px;
     height: 20px;

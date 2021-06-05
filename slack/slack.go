@@ -24,6 +24,7 @@ type SlackUser struct {
 	RealName string  `json:"real_name"`
 	Profile  Profile `json:"profile"`
 	IsBot    bool    `json:"is_bot"`
+	Deleted  bool    `json:"deleted"`
 }
 
 type SlackUserResponse struct {
@@ -81,6 +82,10 @@ func FindNonMembers() []string {
 
 	for _, u := range users {
 		if u.IsBot {
+			continue
+		}
+
+		if u.Deleted {
 			continue
 		}
 

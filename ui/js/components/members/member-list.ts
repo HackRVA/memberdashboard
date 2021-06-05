@@ -116,6 +116,23 @@ export class MemberList extends LitElement {
     }
   }
 
+  exportNonMembers(): void {
+    this.memberService.downloadNonMembersCSV().subscribe({
+      next: (response: Blob) => {
+        const link: HTMLAnchorElement = document.createElement("a");
+        const url: string = window.URL.createObjectURL(response);
+        link.href = url;
+        link.setAttribute("download", `nonmembersOnSlack.csv`);
+        link.click();
+
+        window.URL.revokeObjectURL(url); // no need to keep it in memory if it has been used.
+      },
+      error: () => {
+        this.displayToastMsg("Hrmmm, unable to export nonmembers");
+      },
+    });
+  }
+
   handleAllEmails(event: Event): void {
     const checked: boolean = (
       event.target as EventTarget & {
@@ -204,6 +221,14 @@ export class MemberList extends LitElement {
             Number of active members: ${this.memberCount}
           </h3>
           <div class="buttons-container">
+            <mwc-button
+              class="mr-24"
+              label="Export nonmembers"
+              unelevated
+              dense
+              @click=${this.exportNonMembers}
+            >
+            </mwc-button>
             <mwc-button
               class="rfid-button"
               label="Assign rfid"

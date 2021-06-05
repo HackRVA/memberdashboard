@@ -14,7 +14,7 @@ export class HTTPService {
       switchMap((response: Response) => {
         if (response.ok) {
           // OK return data
-          return response.json();
+          return this.formatResponse(response);
         } else {
           // Server is returning a status requiring the client to try something else.
           return throwError({
@@ -113,6 +113,16 @@ export class HTTPService {
         return throwError({ error: true, message: err.message });
       })
     );
+  }
+
+  formatResponse(response: Response): Promise<any> {
+    const contentType: string = response.headers.get("content-type");
+
+    if (contentType === "text/csv") {
+      return response.blob();
+    }
+
+    return response.json();
   }
 
   authHeader(options?: any): string {
