@@ -5,7 +5,7 @@ import { map } from "rxjs/operators";
 // membership
 import { LoginRequest, RegisterRequest } from "../components/shared/types";
 import { ENV } from "../env";
-import { Jwt } from "./../components/shared/types/auth.interface";
+import { Jwt } from "../components/shared/types/auth.interface";
 import { HTTPService } from "./http.service";
 
 export class AuthService extends HTTPService {

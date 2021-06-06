@@ -13,7 +13,7 @@ import { Checkbox } from "@material/mwc-checkbox";
 
 // membership
 import { MemberResource, MemberResponse } from "./types";
-import { showComponent } from "./../../function";
+import { showComponent } from "../../function";
 import { ResourceService, MemberService, PaymentService } from "../../service";
 import { memberListStyles } from "./styles/member-list-styles";
 import "../shared/rfid-modal";

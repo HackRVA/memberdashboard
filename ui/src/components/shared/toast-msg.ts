@@ -11,7 +11,7 @@ import {
 import { Snackbar } from "@material/mwc-snackbar";
 
 // membership
-import { ToastMessage } from "../shared/types";
+import { ToastMessage } from "./types";
 
 @customElement("toast-msg")
 export class ToastMsg extends LitElement {
@@ -21,9 +21,8 @@ export class ToastMsg extends LitElement {
   toastMsgSnackBarTemplate: Snackbar;
 
   firstUpdated(): void {
-    this.toastMsgSnackBarTemplate = this.shadowRoot?.querySelector(
-      "mwc-snackbar"
-    );
+    this.toastMsgSnackBarTemplate =
+      this.shadowRoot?.querySelector("mwc-snackbar");
   }
 
   updated(): void {

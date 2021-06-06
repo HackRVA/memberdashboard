@@ -11,7 +11,7 @@ import {
 import { Router } from "@vaadin/router";
 
 // membership
-import "../shared/card-element";
+import "./card-element";
 import { notFoundStyles } from "./styles";
 
 @customElement("not-found")

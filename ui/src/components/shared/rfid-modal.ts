@@ -15,8 +15,8 @@ import { Dialog } from "@material/mwc-dialog";
 import { MemberService } from "../../service";
 import { AssignRFIDRequest } from "../members/types";
 import { showComponent } from "../../function";
-import { ToastMessage } from "../shared/types";
-import "../shared/toast-msg";
+import { ToastMessage } from "./types";
+import "./toast-msg";
 
 @customElement("rfid-modal")
 export class RFIDModal extends LitElement {
@@ -93,12 +93,12 @@ export class RFIDModal extends LitElement {
   }
 
   handleNewMember(): void {
-    this.isNewMember = !this.isNewMember
+    this.isNewMember = !this.isNewMember;
   }
 
   handleSubmit(): void {
     if (this.isValid()) {
-        this.tryToAssigningMemberToRFID();
+      this.tryToAssigningMemberToRFID();
     } else {
       this.displayToastMsg(
         "Hrmmm, are you sure everything in the form is correct?"
@@ -141,9 +141,7 @@ export class RFIDModal extends LitElement {
 
     return html`
       <mwc-formfield label="New member">
-        <mwc-checkbox @change=${
-          this.handleNewMember
-        }></mwc-checkbox>
+        <mwc-checkbox @change=${this.handleNewMember}></mwc-checkbox>
       </mwc-formfield>
     `;
   }

@@ -13,7 +13,7 @@ import { Dialog } from "@material/mwc-dialog";
 import { Checkbox } from "@material/mwc-checkbox";
 
 // membership
-import { ResourceService } from "./../../../service";
+import { ResourceService } from "../../../service";
 import {
   RegisterResourceRequest,
   UpdateResourceRequest,
@@ -39,21 +39,20 @@ export class ResourceModal extends LitElement {
 
   firstUpdated(): void {
     this.resourceModalTemplate = this.shadowRoot.querySelector("mwc-dialog");
-    this.resourceNameFieldTemplate = this.shadowRoot.querySelector(
-      "#resource-name"
-    );
-    this.resourceAddressFieldTemplate = this.shadowRoot.querySelector(
-      "#resource-address"
-    );
-    this.defaultResourceTemplate = this.shadowRoot.querySelector(
-      "mwc-checkbox"
-    );
+    this.resourceNameFieldTemplate =
+      this.shadowRoot.querySelector("#resource-name");
+    this.resourceAddressFieldTemplate =
+      this.shadowRoot.querySelector("#resource-address");
+    this.defaultResourceTemplate =
+      this.shadowRoot.querySelector("mwc-checkbox");
   }
 
   updated(): void {
     if (this.resourceModalData?.isEdit) {
-      this.resourceNameFieldTemplate.value = this.resourceModalData.resourceName;
-      this.resourceAddressFieldTemplate.value = this.resourceModalData.resourceAddress;
+      this.resourceNameFieldTemplate.value =
+        this.resourceModalData.resourceName;
+      this.resourceAddressFieldTemplate.value =
+        this.resourceModalData.resourceAddress;
       this.defaultResourceTemplate.checked = this.resourceModalData.isDefault;
     }
   }

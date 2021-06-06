@@ -2,7 +2,7 @@
 import { css, CSSResult } from "lit-element";
 
 // membership
-import { primaryLightGray, primaryRed } from "./../../shared/styles/colors";
+import { primaryLightGray, primaryRed } from "../../shared/styles/colors";
 
 export const memberListStyles: CSSResult = css`
   .member-container {

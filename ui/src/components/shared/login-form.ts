@@ -12,11 +12,11 @@ import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership
 import { AuthService } from "../../service";
-import { LoginRequest, Jwt } from "../shared/types";
-import { ToastMessage } from "../shared/types";
+import { LoginRequest, Jwt } from "./types";
+import { ToastMessage } from "./types";
 import { showComponent } from "../../function";
 import { loginFormStyles } from "./styles";
-import "../shared/toast-msg";
+import "./toast-msg";
 
 @customElement("login-form")
 export class LoginForm extends LitElement {

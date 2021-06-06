@@ -3,7 +3,7 @@ import { Observable } from "rxjs";
 
 // membership
 import { HTTPService } from "./http.service";
-import { ENV } from "./../env";
+import { ENV } from "../env";
 import { AssignRFIDRequest, MemberResponse } from "../components/members/types";
 
 export class MemberService extends HTTPService {

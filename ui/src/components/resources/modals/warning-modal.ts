@@ -11,8 +11,8 @@ import {
 import { Dialog } from "@material/mwc-dialog";
 
 // membership
-import { ResourceService } from "./../../../service";
-import { RemoveResourceRequest } from "./../types";
+import { ResourceService } from "../../../service";
+import { RemoveResourceRequest } from "../types";
 import { ToastMessage } from "../../shared/types";
 import { showComponent } from "../../../function";
 import "../../shared/toast-msg";
@@ -32,9 +32,8 @@ export class WarningModal extends LitElement {
   resourceService: ResourceService = new ResourceService();
 
   firstUpdated(): void {
-    this.resourceWarningModalTemplate = this.shadowRoot.querySelector(
-      "mwc-dialog"
-    );
+    this.resourceWarningModalTemplate =
+      this.shadowRoot.querySelector("mwc-dialog");
   }
 
   show(): void {

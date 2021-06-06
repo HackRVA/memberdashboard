@@ -11,7 +11,7 @@ import {
 import "./card-element";
 import "./login-form";
 import "./register-form";
-import { loginPageStyles } from "./styles/";
+import { loginPageStyles } from "./styles";
 
 @customElement("login-page")
 export class LoginPage extends LitElement {

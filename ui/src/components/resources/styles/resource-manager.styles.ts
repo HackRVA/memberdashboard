@@ -7,7 +7,7 @@ import {
   primaryLightGreen,
   primaryRed,
   primaryYellow,
-} from "./../../shared/styles/colors";
+} from "../../shared/styles/colors";
 
 export const resourceManagerStyles: CSSResult = css`
   .resource-container {

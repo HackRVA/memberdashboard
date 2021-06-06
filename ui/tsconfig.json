@@ -18,7 +18,7 @@
       "sourceMap": true, /* Generates corresponding '.map' file. */
       // "outFile": "./bundle1.js",                          /* Concatenate and emit output to single file. */
       "outDir": "build", /* Redirect output structure to the directory. */
-      "rootDir": "./js", /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+      "rootDir": "src", /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
       /* Strict Type-Checking Options */
       // "strict": true, /* Enable all strict type-checking options. */
       "noUnusedLocals": true,
@@ -54,7 +54,7 @@
       ]
     },
     "include": [
-      "./js/**/*.ts"
+      "src/**/*.ts"
     ],
     "exclude": []
   }

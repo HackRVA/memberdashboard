@@ -13,11 +13,11 @@ import "@polymer/paper-card";
 
 // membership
 import { userDetailStyles } from "./styles";
-import { MemberResource, MemberResponse } from "./../members/types";
+import { MemberResource, MemberResponse } from "../members/types";
 import { displayMemberStatus } from "../members/function";
 import { showComponent } from "../../function";
 import "../shared/rfid-modal";
-import { MemberService } from "./../../service/";
+import { MemberService } from "../../service";
 
 @customElement("user-detail")
 export class UserDetail extends LitElement {

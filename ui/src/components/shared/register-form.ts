@@ -11,12 +11,12 @@ import {
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
 // membership
-import { showComponent } from "./../../function";
+import { showComponent } from "../../function";
 import { AuthService } from "../../service";
-import { RegisterRequest } from "../shared/types";
+import { RegisterRequest } from "./types";
 import { ToastMessage } from "./types";
 import { registerFormStyles } from "./styles/register-form-styles";
-import "../shared/toast-msg";
+import "./toast-msg";
 
 @customElement("register-form")
 export class RegisterForm extends LitElement {
@@ -36,9 +36,8 @@ export class RegisterForm extends LitElement {
   firstUpdated(): void {
     this.emailFieldTemplate = this.shadowRoot.querySelector("#email");
     this.passwordFieldTemplate = this.shadowRoot.querySelector("#password");
-    this.confirmPasswordFieldTemplate = this.shadowRoot.querySelector(
-      "#confirm-password"
-    );
+    this.confirmPasswordFieldTemplate =
+      this.shadowRoot.querySelector("#confirm-password");
   }
 
   handleUserRegister(): void {

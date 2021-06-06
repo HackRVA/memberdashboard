@@ -13,8 +13,8 @@ import { Select } from "@material/mwc-select";
 import { TextField } from "@material/mwc-textfield";
 
 // membership
-import { ResourceService } from "./../../../service";
-import { isEmpty, showComponent } from "./../../../function";
+import { ResourceService } from "../../../service";
+import { isEmpty, showComponent } from "../../../function";
 import { MemberResource } from "../types";
 import { RemoveMemberResourceRequest } from "../../resources/types";
 import { ToastMessage } from "../../shared/types";
@@ -36,13 +36,11 @@ export class RemoveMemberFromResourceModal extends LitElement {
   memberResourceSelectTemplate: Select;
 
   firstUpdated(): void {
-    this.removeResourceFromMemberModalTemplate = this.shadowRoot.querySelector(
-      "mwc-dialog"
-    );
+    this.removeResourceFromMemberModalTemplate =
+      this.shadowRoot.querySelector("mwc-dialog");
     this.emailFieldTemplate = this.shadowRoot.querySelector("mwc-textfield");
-    this.memberResourceSelectTemplate = this.shadowRoot.querySelector(
-      "mwc-select"
-    );
+    this.memberResourceSelectTemplate =
+      this.shadowRoot.querySelector("mwc-select");
   }
 
   show(): void {
