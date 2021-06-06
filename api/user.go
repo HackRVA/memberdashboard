@@ -8,6 +8,7 @@ import (
 	"memberserver/config"
 	"memberserver/database"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/shaj13/go-guardian/v2/auth"
@@ -131,6 +132,11 @@ func getValidator(db *database.Database) basic.AuthenticateFunc {
 		var resources []string
 		for _, resource := range user.Resources {
 			resources = append(resources, resource.Name)
+		}
+
+		conf, _ := config.Load()
+		if strings.Contains(conf.AlwaysAdmin, "true") {
+			resources = append(resources, "admin")
 		}
 
 		return auth.NewDefaultUser(userName, userName, resources, nil), nil
