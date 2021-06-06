@@ -64,7 +64,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getMembersResponse
-	rr.HandleFunc("/member", api.getMembers)
+	rr.HandleFunc("/member", api.rbac(api.getMembers, []UserRole{admin}))
 	// swagger:route POST /api/member/new member addNewMemberRequest
 	//
 	// Add a new member
@@ -86,7 +86,22 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	rr.HandleFunc("/member/new", api.addNewMember)
+	rr.HandleFunc("/member/new", api.rbac(api.addNewMember, []UserRole{admin}))
+	// swagger:route GET /api/member/self member getMemberByEmailRequest
+	//
+	// Returns current members information
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: getMemberResponse
+	rr.HandleFunc("/member/self", api.getCurrentUserMemberInfo)
 	// swagger:route GET /api/member/email/{email} member getMemberByEmailRequest
 	//
 	// Returns a member based on the email address.
@@ -101,7 +116,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getMemberResponse
-	rr.HandleFunc("/member/email/{email}", api.getMemberByEmail)
+	rr.HandleFunc("/member/email/{email}", api.rbac(api.getMemberByEmail, []UserRole{admin}))
 	// swagger:route GET /api/member/slack/nonmembers member getSlackNonMemberList
 	//
 	// Returns a list slack users that are possibly not members.
@@ -118,7 +133,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: text/csv
-	rr.HandleFunc("/member/slack/nonmembers", api.getNonMembersOnSlack)
+	rr.HandleFunc("/member/slack/nonmembers", api.rbac(api.getNonMembersOnSlack, []UserRole{admin}))
 	// swagger:route GET /api/member/tier member getTiers
 	//
 	// Returns a list the member tiers.
@@ -133,7 +148,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getTierResponse
-	rr.HandleFunc("/member/tier", api.getTiers)
+	rr.HandleFunc("/member/tier", api.rbac(api.getTiers, []UserRole{admin}))
 	// swagger:route POST /api/payments/refresh payments getRefreshPayments
 	//
 	// Refresh payment information
@@ -156,7 +171,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getPaymentRefreshResponse
-	rr.HandleFunc("/payments/refresh", api.refreshPayments)
+	rr.HandleFunc("/payments/refresh", api.rbac(api.refreshPayments, []UserRole{admin}))
 	// swagger:route GET /api/payments/charts payments searchPaymentChartRequest
 	//
 	// Get Chart information of payments
@@ -172,7 +187,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getPaymentChartResponse
-	rr.HandleFunc("/payments/charts", api.getPaymentChart)
+	rr.HandleFunc("/payments/charts", api.rbac(api.getPaymentChart, []UserRole{admin}))
 	// swagger:route GET /api/resource resource getResourceRequest
 	//
 	// Returns a resource.
@@ -224,7 +239,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200:
-	rr.HandleFunc("/resource", api.resource.Resource).Methods(http.MethodPut, http.MethodDelete, http.MethodGet)
+	rr.HandleFunc("/resource", api.rbac(api.resource.Resource, []UserRole{admin})).Methods(http.MethodPut, http.MethodDelete, http.MethodGet)
 	// swagger:route GET /api/resource/status resource getResourceStatus
 	//
 	// Returns status of the resources.
@@ -246,7 +261,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getResourceStatusResponse
-	rr.HandleFunc("/resource/status", api.resource.status).Methods(http.MethodGet)
+	rr.HandleFunc("/resource/status", api.rbac(api.resource.status, []UserRole{admin})).Methods(http.MethodGet)
 	// swagger:route POST /api/resource/register resource registerResourceRequest
 	//
 	// Updates a resource.
@@ -264,7 +279,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: postResourceResponse
-	rr.HandleFunc("/resource/register", api.resource.register).Methods(http.MethodPost)
+	rr.HandleFunc("/resource/register", api.rbac(api.resource.register, []UserRole{admin})).Methods(http.MethodPost)
 	// swagger:route POST /api/resource/member/bulk resource resourceBulkMemberRequest
 	//
 	// Adds multple members to a resource.
@@ -282,7 +297,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: addMulitpleMembersToResourceResponse
-	rr.HandleFunc("/resource/member/bulk", api.resource.addMultipleMembersToResource).Methods(http.MethodPost)
+	rr.HandleFunc("/resource/member/bulk", api.rbac(api.resource.addMultipleMembersToResource, []UserRole{admin})).Methods(http.MethodPost)
 	// swagger:route DELETE /api/resource/deleteacls resource resourceDeleteACLS
 	//
 	// Clears out all Resource ACLs on those devices
@@ -300,7 +315,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	rr.HandleFunc("/resource/deleteacls", api.resource.deleteResourceACL).Methods(http.MethodDelete)
+	rr.HandleFunc("/resource/deleteacls", api.rbac(api.resource.deleteResourceACL, []UserRole{admin})).Methods(http.MethodDelete)
 	// swagger:route POST /api/resource/updateacls resource resourceUpdateACLS
 	//
 	// Attempts to send all members to a Resource
@@ -318,7 +333,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	rr.HandleFunc("/resource/updateacls", api.resource.updateResourceACL).Methods(http.MethodPost)
+	rr.HandleFunc("/resource/updateacls", api.rbac(api.resource.updateResourceACL, []UserRole{admin})).Methods(http.MethodPost)
 	// swagger:route DELETE /api/resource/member resource resourceRemoveMemberRequest
 	//
 	// Removes a member from a resource.
@@ -336,7 +351,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: removeMemberSuccessResponse
-	rr.HandleFunc("/resource/member", api.resource.removeMember).Methods(http.MethodDelete)
+	rr.HandleFunc("/resource/member", api.rbac(api.resource.removeMember, []UserRole{admin})).Methods(http.MethodDelete)
 	// swagger:route GET /api/info info info
 	//
 	// A simple hello world.
@@ -354,11 +369,30 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: infoResponse
 	rr.HandleFunc("/info", api.Info)
+	// swagger:route POST /api/member/assignRFID/self member setRFIDRequest
+	//
+	// Assigns an RFID tag to the currently logged in user
+	//
+	//   it assigns an RFID tag to a member to the current user
+	//
+	//     Consumes:
+	//     - application/json
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: setRFIDResponse
+	rr.HandleFunc("/member/assignRFID/self", api.assignRFIDSelf).Methods(http.MethodPost)
 	// swagger:route POST /api/member/assignRFID member setRFIDRequest
 	//
 	// Assigns an RFID tag to a member
 	//
-	//   this is an unauthenticated request, for now.
 	//   it assigns an RFID tag to a member
 	//
 	//     Consumes:
@@ -374,7 +408,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: setRFIDResponse
-	rr.HandleFunc("/member/assignRFID", api.assignRFID).Methods(http.MethodPost)
+	rr.HandleFunc("/member/assignRFID", api.rbac(api.assignRFID, []UserRole{admin})).Methods(http.MethodPost)
 	// swagger:route GET /api/version version Version
 	//
 	// Version

@@ -32,15 +32,15 @@ export class UserDetail extends LitElement {
   }
 
   firstUpdated(): void {
-    this.getMemberByEmail(this.email);
+    this.getMemberByEmail();
   }
 
   openRFIDModal(): void {
     showComponent("#rfid-modal", this.shadowRoot);
   }
 
-  getMemberByEmail(email: string): void {
-    this.memberService.getMemberByEmail(email).subscribe({
+  getMemberByEmail(): void {
+    this.memberService.getUsersMemberInfo().subscribe({
       next: (response: MemberResponse) => {
         this.memberUser = response;
         this.requestUpdate();
@@ -71,7 +71,7 @@ export class UserDetail extends LitElement {
   }
 
   refreshMember(): void {
-    this.getMemberByEmail(this.email);
+    this.getMemberByEmail();
   }
 
   render(): TemplateResult {

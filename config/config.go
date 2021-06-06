@@ -34,6 +34,7 @@ type Config struct {
 	EmailOverrideAddress string `json:"emailOverrideAddress"`
 	SlackToken           string `json:"slackToken"`
 	AdminEmail           string `json:"adminEmail"`
+	AlwaysAdmin          string `json:"alwaysAdmin"`
 }
 
 // Load in the config file to memory
@@ -60,6 +61,7 @@ func Load() (Config, error) {
 	c.EnableNotificationEmailsToMembers = false
 	c.SlackToken = os.Getenv("SLACK_TOKEN")
 	c.AdminEmail = getEnvOrDefault("ADMIN_EMAIL", "info@hackrva.org")
+	c.AlwaysAdmin = getEnvOrDefault("ALWAYS_ADMIN", "false")
 
 	if len(os.Getenv("ENABLE_INFO_EMAILS")) > 0 {
 		c.EnableInfoEmails = true
@@ -92,7 +94,7 @@ func Load() (Config, error) {
 }
 
 func getEnvOrDefault(key string, defaultValue string) string {
-	if val, ok := os.LookupEnv("ADMIN_EMAIL"); ok {
+	if val, ok := os.LookupEnv(key); ok {
 		return val
 	}
 	return defaultValue

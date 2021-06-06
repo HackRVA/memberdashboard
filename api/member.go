@@ -34,6 +34,23 @@ func (a API) getMembers(w http.ResponseWriter, req *http.Request) {
 	w.Write(j)
 }
 
+// getCurrentMember returns the logged in member details
+func (a API) getCurrentUserMemberInfo(w http.ResponseWriter, req *http.Request) {
+	_, user, _ := strategy.AuthenticateRequest(req)
+
+	member, err := a.db.GetMemberByEmail(user.GetUserName())
+
+	if err != nil {
+		log.Errorf("error getting member by email: %s", err)
+		http.Error(w, errors.New("error getting member by email").Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(member)
+	w.Write(j)
+}
+
 func (a API) getMemberByEmail(w http.ResponseWriter, req *http.Request) {
 	routeVars := mux.Vars(req)
 
@@ -50,6 +67,31 @@ func (a API) getMemberByEmail(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(member)
 	w.Write(j)
+}
+
+// assignRFID to the current logged in user
+func (a API) assignRFIDSelf(w http.ResponseWriter, req *http.Request) {
+	var assignRFIDRequest database.AssignRFIDRequest
+
+	err := json.NewDecoder(req.Body).Decode(&assignRFIDRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	_, user, _ := strategy.AuthenticateRequest(req)
+
+	r, err := a.db.SetRFIDTag(user.GetUserName(), assignRFIDRequest.RFID)
+	if err != nil {
+		log.Errorf("error trying to assign rfid to member: %s", err.Error())
+		http.Error(w, errors.New("unable to assign rfid").Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(r)
+	w.Write(j)
+
+	go resourcemanager.PushOne(database.Member{Email: assignRFIDRequest.Email})
 }
 
 func (a API) assignRFID(w http.ResponseWriter, req *http.Request) {

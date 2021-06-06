@@ -125,7 +125,15 @@ func getValidator(db *database.Database) basic.AuthenticateFunc {
 		}
 		// If we reach this point, that means the users password was correct, and that they are authorized
 		// we could attach some of their privledges to this return val I think
-		return auth.NewDefaultUser(userName, userName, nil, nil), nil
+
+		// get the user's resources/roles from the db
+		user, _ := db.GetMemberByEmail(userName)
+		var resources []string
+		for _, resource := range user.Resources {
+			resources = append(resources, resource.Name)
+		}
+
+		return auth.NewDefaultUser(userName, userName, resources, nil), nil
 	}
 	return validator
 }
