@@ -63,6 +63,6 @@ func (api API) rbac(next http.HandlerFunc, allowedRoles []UserRole) http.Handler
 			}
 		}
 
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 	})
 }
