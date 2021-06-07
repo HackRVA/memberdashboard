@@ -40,11 +40,9 @@ export class UserPage extends LitElement {
     });
   }
 
-  displayUserDetail(): TemplateResult {
+  displayUserDetail(): TemplateResult | void {
     if (this.email) {
       return html` <user-detail .email=${this.email}> </user-detail> `;
-    } else {
-      return html``;
     }
   }
 

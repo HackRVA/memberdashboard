@@ -5,6 +5,7 @@ import {
   customElement,
   TemplateResult,
   CSSResult,
+  property,
 } from "lit-element";
 
 // membership
@@ -12,14 +13,16 @@ import "../shared/card-element";
 import { ResourceService } from "../../service";
 import { showComponent } from "../../function";
 import { ResourceResponse, ResourceModalData } from "./types";
-import { resourceManagerStyles } from "./styles/resource-manager.styles";
+import { resourceManagerStyles } from "./styles/resource-manager-styles";
 import "./modals";
 import { ToastMessage } from "../shared/types";
 
 @customElement("resource-manager")
 export class ResourceManager extends LitElement {
+  @property({ type: Array })
+  resources: ResourceResponse[] = [];
+
   resourceService: ResourceService = new ResourceService();
-  resources: Array<ResourceResponse> = [];
 
   resourceModalData: ResourceModalData;
 
@@ -32,11 +35,7 @@ export class ResourceManager extends LitElement {
     return [resourceManagerStyles];
   }
 
-  firstUpdated(): void {
-    this.getResources();
-  }
-
-  getResources(): void {
+  private getResources(): void {
     this.resourceService.getResources().subscribe({
       next: (result: ResourceResponse[]) => {
         this.resources = result;
@@ -48,13 +47,13 @@ export class ResourceManager extends LitElement {
     });
   }
 
-  updateACLs(): void {
+  private updateACLs(): void {
     this.resourceService.updateACLs().subscribe(() => {
       this.displayToastMsg("Successfully update ACL for all resource");
     });
   }
 
-  removeACLs(): void {
+  private removeACLs(): void {
     this.resourceService.removeACLs().subscribe(() => {
       this.displayToastMsg("Successfully remove ACL for all resource");
     });
@@ -66,14 +65,14 @@ export class ResourceManager extends LitElement {
     showComponent("#toast-msg", this.shadowRoot);
   }
 
-  openResourceWarningModal(resource: ResourceResponse): void {
+  private openResourceWarningModal(resource: ResourceResponse): void {
     this.resourceName = resource.name;
     this.resourceId = resource.id;
     this.requestUpdate();
     showComponent("#resource-warning-modal", this.shadowRoot);
   }
 
-  openRegisterResourceModal(): void {
+  private openRegisterResourceModal(): void {
     this.resourceModalData = Object.assign(
       {},
       {
@@ -89,7 +88,7 @@ export class ResourceManager extends LitElement {
     showComponent("#resource-modal", this.shadowRoot);
   }
 
-  openEditResourceModal(resource: ResourceResponse): void {
+  private openEditResourceModal(resource: ResourceResponse): void {
     this.resourceModalData = Object.assign(
       {},
       {
@@ -104,12 +103,12 @@ export class ResourceManager extends LitElement {
     showComponent("#resource-modal", this.shadowRoot);
   }
 
-  refreshResources(): void {
+  private refreshResources(): void {
     this.getResources();
     this.requestUpdate();
   }
 
-  displayOnlineState(lastHeartBeat: string): TemplateResult {
+  private displayOnlineState(lastHeartBeat: string): TemplateResult {
     const lastActiveTime: number = new Date(lastHeartBeat).getTime();
     const currentTime: number = new Date().getTime();
 
@@ -120,7 +119,7 @@ export class ResourceManager extends LitElement {
     }
   }
 
-  isTimeWitihinActiveRange(
+  private isTimeWitihinActiveRange(
     lastActiveTime: number,
     currentTime: number
   ): boolean {
@@ -133,7 +132,7 @@ export class ResourceManager extends LitElement {
     return false;
   }
 
-  displayResources(): TemplateResult {
+  private displayResources(): TemplateResult {
     return html`
       ${this.resources?.map((x: ResourceResponse) => {
         return html`

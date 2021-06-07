@@ -53,7 +53,7 @@ export class MembersPage extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <card-element class="text-center">
+      <card-element class="center">
         <loading-content .finishedLoading=${this.finishedLoading}>
           <member-list
             .members=${this.members}
