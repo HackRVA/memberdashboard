@@ -1,3 +1,10 @@
+// jwt-decode
+import jwt_decode from "jwt-decode";
+
+// membership
+import { JwtClaims } from "./components/shared/types";
+import { Roles } from "./enums";
+
 /**
  *
  * @param {string|Array} value
@@ -21,4 +28,16 @@ export const showComponent = (
       show: Function;
     }
   ).show();
+};
+
+/**
+ *
+ * @description check if the user is an Admin
+ */
+export const isAdmin = (): boolean => {
+  const jwtClaims: JwtClaims = jwt_decode(localStorage.getItem("jwt"));
+
+  const roles = new Set(jwtClaims.Groups);
+
+  return roles.has(Roles.admin);
 };
