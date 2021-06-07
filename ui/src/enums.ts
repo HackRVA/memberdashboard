@@ -5,3 +5,8 @@ export enum TabIndex {
   members = 3,
   resources = 4,
 }
+
+export enum Roles {
+  admin = "admin",
+  user = "user",
+}

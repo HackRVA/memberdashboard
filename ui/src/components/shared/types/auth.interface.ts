@@ -11,3 +11,7 @@ export interface LoginRequest {
 export interface Jwt {
   token: string;
 }
+
+export interface JwtClaims {
+  Groups: string[];
+}

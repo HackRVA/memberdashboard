@@ -15,6 +15,7 @@ import { Router } from "@vaadin/router";
 import { TabIndex } from "../../enums";
 import { AuthService } from "../../service";
 import { memberDashboardContentStyles } from "./styles";
+import { isAdmin } from "./../../function";
 
 @customElement("member-dashboard-content")
 export class MemberDashboardContent extends LitElement {
@@ -84,20 +85,9 @@ export class MemberDashboardContent extends LitElement {
     `;
   }
 
-  render(): TemplateResult {
-    return html`
-      <mwc-top-app-bar-fixed centerTitle>
-        <div slot="title">Member Dashboard</div>
-        <div slot="actionItems">${this.email}</div>
-        ${this.displayLogout()}
-      </mwc-top-app-bar-fixed>
-      <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
-        <mwc-tab label="Home" icon="home" @click=${this.goToHome}></mwc-tab>
-        <mwc-tab
-          label="User"
-          icon="account_circle"
-          @click=${this.goToUser}
-        ></mwc-tab>
+  renderAdminTabs(): TemplateResult | void {
+    if (isAdmin()) {
+      return html`
         <mwc-tab
           label="Reports"
           icon="show_chart"
@@ -113,6 +103,27 @@ export class MemberDashboardContent extends LitElement {
           icon="devices"
           @click=${this.goToResources}
         ></mwc-tab>
+      `;
+    }
+
+    return html``;
+  }
+
+  render(): TemplateResult {
+    return html`
+      <mwc-top-app-bar-fixed centerTitle>
+        <div slot="title">Member Dashboard</div>
+        <div slot="actionItems">${this.email}</div>
+        ${this.displayLogout()}
+      </mwc-top-app-bar-fixed>
+      <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
+        <mwc-tab label="Home" icon="home" @click=${this.goToHome}></mwc-tab>
+        <mwc-tab
+          label="User"
+          icon="account_circle"
+          @click=${this.goToUser}
+        ></mwc-tab>
+        ${this.renderAdminTabs()}
       </mwc-tab-bar>
 
       <slot> </slot>
