@@ -6,16 +6,18 @@ export class RoleGuard {
     context: Context,
     commands: Commands
   ): Promise<RedirectResult | void> {
-    const isAuthorized = await this.isAuthorized();
+    const isAuthorized: boolean = await this.isAuthorized();
 
-    if (!isAuthorized) {
-      return commands.redirect("/");
+    if (isAuthorized) {
+      return;
     }
+
+    return commands.redirect("/");
   }
 
   private isAuthorized(): Promise<boolean> {
     return new Promise((resolve: Function, reject: Function) => {
-      resolve(isAdmin() === true);
+      resolve(isAdmin());
     });
   }
 }
