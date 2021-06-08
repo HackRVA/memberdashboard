@@ -68,7 +68,7 @@ export class MemberDashboardContent extends LitElement {
     this.authService.logout().subscribe({
       next: (response: null) => {
         localStorage.removeItem("jwt");
-        window.location.reload();
+        window.location.href = "/home";
       },
     });
   }
