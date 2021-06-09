@@ -4,6 +4,7 @@ import (
 	"testing"
 )
 
+var generator fileTemplateGenerator = fileTemplateGenerator{}
 var memberModel = struct {
 	Name  string
 	Email string
@@ -18,7 +19,7 @@ func TestIpChangedTemplate(t *testing.T) {
 	}{
 		IpAddress: "127.0.0.1",
 	}
-	content, err := generateEmailContent("../templates/ip_changed.html.tmpl", ipModel)
+	content, err := generator.generateEmailContent("../templates/ip_changed.html.tmpl", ipModel)
 	if err != nil {
 		t.Fatalf("Failed to generate content. %v", err)
 	}
@@ -28,7 +29,7 @@ func TestIpChangedTemplate(t *testing.T) {
 }
 
 func TestAccessRevokedLeadershipTemplate(t *testing.T) {
-	content, err := generateEmailContent("../templates/access_revoked_leadership.html.tmpl", memberModel)
+	content, err := generator.generateEmailContent("../templates/access_revoked_leadership.html.tmpl", memberModel)
 	if err != nil {
 		t.Fatalf("Failed to generate content. %v", err)
 	}
@@ -38,7 +39,7 @@ func TestAccessRevokedLeadershipTemplate(t *testing.T) {
 }
 
 func TestAccessRevokedTemplate(t *testing.T) {
-	content, err := generateEmailContent("../templates/access_revoked.html.tmpl", memberModel)
+	content, err := generator.generateEmailContent("../templates/access_revoked.html.tmpl", memberModel)
 	if err != nil {
 		t.Fatalf("Failed to generate content. %v", err)
 	}
@@ -48,7 +49,7 @@ func TestAccessRevokedTemplate(t *testing.T) {
 }
 
 func TestPendingRevokationLeadershipTemplate(t *testing.T) {
-	content, err := generateEmailContent("../templates/pending_revokation_leadership.html.tmpl", memberModel)
+	content, err := generator.generateEmailContent("../templates/pending_revokation_leadership.html.tmpl", memberModel)
 	if err != nil {
 		t.Fatalf("Failed to generate content. %v", err)
 	}
@@ -58,7 +59,7 @@ func TestPendingRevokationLeadershipTemplate(t *testing.T) {
 }
 
 func TestPendingRevokationMemberTemplate(t *testing.T) {
-	content, err := generateEmailContent("../templates/pending_revokation_member.html.tmpl", memberModel)
+	content, err := generator.generateEmailContent("../templates/pending_revokation_member.html.tmpl", memberModel)
 	if err != nil {
 		t.Fatalf("Failed to generate content. %v", err)
 	}
@@ -68,7 +69,7 @@ func TestPendingRevokationMemberTemplate(t *testing.T) {
 }
 
 func TestWelcomeTemplate(t *testing.T) {
-	content, err := generateEmailContent("../templates/welcome.html.tmpl", memberModel)
+	content, err := generator.generateEmailContent("../templates/welcome.html.tmpl", memberModel)
 	if err != nil {
 		t.Fatalf("Failed to generate content. %v", err)
 	}

@@ -50,7 +50,7 @@ func (mp Provider) SendSMTP(address, subject, text string) (string, error) {
 	return "_", err
 }
 
-func (mp Provider) SendSimpleMessage(address, subject, text string) (string, error) {
+func (mp Provider) SendPlainTextMail(address, subject, text string) (string, error) {
 	mg := mailgun.NewMailgun(mp.URL, mp.Key)
 	m := mg.NewMessage(
 		"noreply <"+mp.from+">",
@@ -66,7 +66,7 @@ func (mp Provider) SendSimpleMessage(address, subject, text string) (string, err
 	return id, err
 }
 
-func (mp Provider) SendComplexMessage(address, subject, html string) (string, error) {
+func (mp Provider) SendHtmlMail(address, subject, html string) (string, error) {
 	mg := mailgun.NewMailgun(mp.URL, mp.Key)
 	m := mg.NewMessage(
 		"noreply <"+mp.from+">",
