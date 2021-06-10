@@ -13,7 +13,7 @@ export const resourceManagerStyles: CSSResult = css`
   .resource-container {
     display: grid;
     align-items: center;
-    margin: 20px;
+    margin: 16px;
   }
 
   .resource-header {

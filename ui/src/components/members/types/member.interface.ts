@@ -18,3 +18,8 @@ export interface MemberResource {
   resourceID: string;
   name: string;
 }
+
+export interface CreateMemberRequest {
+  email: string;
+  rfid: string;
+}

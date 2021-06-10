@@ -11,6 +11,12 @@ type getMemberByEmailRequest struct {
 	Email string `json:"email"`
 }
 
+// swagger:parameters getCurrentMemberRequest
+type getCurrentMemberRequest struct {
+	// in:path
+	Email string `json:"email"`
+}
+
 // swagger:response getMembersResponse
 type getMembersResponse struct {
 	// in: body
@@ -37,6 +43,12 @@ type setRFIDResponse struct {
 
 // swagger:parameters setRFIDRequest
 type setRFIDRequest struct {
+	// in: body
+	Body database.AssignRFIDRequest
+}
+
+// swagger:parameters setSelfRFIDRequest
+type setSelfRFIDRequest struct {
 	// in: body
 	Body database.AssignRFIDRequest
 }

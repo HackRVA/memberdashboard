@@ -175,7 +175,7 @@
           "member"
         ],
         "summary": "Assigns an RFID tag to a member",
-        "operationId": "setRFIDRequest",
+        "operationId": "setSelfRFIDRequest",
         "parameters": [
           {
             "name": "Body",
@@ -199,7 +199,7 @@
             "bearerAuth": []
           }
         ],
-        "description": "it assigns an RFID tag to a member",
+        "description": "it assigns an RFID tag to a member to the current user",
         "consumes": [
           "application/json"
         ],
@@ -213,7 +213,7 @@
         "tags": [
           "member"
         ],
-        "summary": "Assigns an RFID tag to a member",
+        "summary": "Assigns an RFID tag to the currently logged in user",
         "operationId": "setRFIDRequest",
         "parameters": [
           {
@@ -309,6 +309,7 @@
             "bearerAuth": []
           }
         ],
+        "description": "Returns current members information",
         "produces": [
           "application/json"
         ],
@@ -319,8 +320,7 @@
         "tags": [
           "member"
         ],
-        "summary": "Returns a member based on the email address.",
-        "operationId": "getMemberByEmailRequest",
+        "operationId": "getCurrentMemberRequest",
         "parameters": [
           {
             "type": "string",

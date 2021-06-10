@@ -87,7 +87,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: endpointSuccessResponse
 	rr.HandleFunc("/member/new", api.rbac(api.addNewMember, []UserRole{admin}))
-	// swagger:route GET /api/member/self member getMemberByEmailRequest
+	// swagger:route GET /api/member/self member getCurrentMemberRequest
 	//
 	// Returns current members information
 	//
@@ -389,7 +389,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: setRFIDResponse
 	rr.HandleFunc("/member/assignRFID/self", api.assignRFIDSelf).Methods(http.MethodPost)
-	// swagger:route POST /api/member/assignRFID member setRFIDRequest
+	// swagger:route POST /api/member/assignRFID member setSelfRFIDRequest
 	//
 	// Assigns an RFID tag to a member
 	//

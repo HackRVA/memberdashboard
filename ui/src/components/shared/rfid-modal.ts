@@ -13,7 +13,7 @@ import { Dialog } from "@material/mwc-dialog";
 
 // membership
 import { MemberService } from "../../service";
-import { AssignRFIDRequest } from "../members/types";
+import { AssignRFIDRequest, CreateMemberRequest } from "../members/types";
 import { showComponent } from "../../function";
 import { ToastMessage } from "./types";
 import "./toast-msg";
@@ -44,6 +44,7 @@ export class RFIDModal extends LitElement {
   updated(): void {
     if (this.email) {
       this.emailFieldTemplate.value = this.email;
+      this.emailFieldTemplate.disabled = true;
     }
   }
 
@@ -52,7 +53,7 @@ export class RFIDModal extends LitElement {
   }
 
   tryToAssigningMemberToRFID(): void {
-    const request: AssignRFIDRequest = {
+    const request: AssignRFIDRequest | CreateMemberRequest = {
       email: this.emailFieldTemplate.value.trim(),
       rfid: this.rfidFieldTemplate.value.trim(),
     };
@@ -64,7 +65,16 @@ export class RFIDModal extends LitElement {
     this.assignMemberToRFID(request);
   }
 
-  assignNewMemberToRFID(request: AssignRFIDRequest): void {
+  tryToAssigningSelfToRFID(): void {
+    const request: AssignRFIDRequest = {
+      email: this.emailFieldTemplate.value.trim(),
+      rfid: this.rfidFieldTemplate.value.trim(),
+    };
+
+    this.assignRFIDToSelf(request);
+  }
+
+  assignNewMemberToRFID(request: CreateMemberRequest): void {
     this.memberService.assignNewMemberRFID(request).subscribe({
       complete: () => {
         this.displayToastMsg("Success");
@@ -92,13 +102,30 @@ export class RFIDModal extends LitElement {
     });
   }
 
+  assignRFIDToSelf(request: AssignRFIDRequest): void {
+    this.memberService.assignRFIDToSelf(request).subscribe({
+      complete: () => {
+        this.displayToastMsg("Success");
+        this.fireUpdatedEvent();
+        this.rfidModalTemplate.close();
+      },
+      error: () => {
+        this.displayToastMsg("Hrmmm, are you sure this is a member? :3");
+      },
+    });
+  }
+
   handleNewMember(): void {
     this.isNewMember = !this.isNewMember;
   }
 
   handleSubmit(): void {
     if (this.isValid()) {
-      this.tryToAssigningMemberToRFID();
+      if (this.email) {
+        this.tryToAssigningSelfToRFID();
+      } else {
+        this.tryToAssigningMemberToRFID();
+      }
     } else {
       this.displayToastMsg(
         "Hrmmm, are you sure everything in the form is correct?"

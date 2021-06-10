@@ -12,7 +12,7 @@ export const cardElementStyles: CSSResult = css`
 
   /* Add some padding inside the card container */
   .container {
-    padding: 32px;
+    padding: 24px;
   }
 
   .card {

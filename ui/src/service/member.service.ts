@@ -4,7 +4,11 @@ import { Observable } from "rxjs";
 // membership
 import { HTTPService } from "./http.service";
 import { ENV } from "../env";
-import { AssignRFIDRequest, MemberResponse } from "../components/members/types";
+import {
+  AssignRFIDRequest,
+  MemberResponse,
+  CreateMemberRequest,
+} from "../components/members/types";
 
 export class MemberService extends HTTPService {
   private readonly memberUrlSegment: string = ENV.api + "/member";
@@ -17,8 +21,12 @@ export class MemberService extends HTTPService {
     return this.post<void>(this.memberUrlSegment + "/assignRFID", request);
   }
 
-  assignNewMemberRFID(request: AssignRFIDRequest): Observable<void> {
+  assignNewMemberRFID(request: CreateMemberRequest): Observable<void> {
     return this.post<void>(this.memberUrlSegment + "/new", request);
+  }
+
+  assignRFIDToSelf(request: AssignRFIDRequest): Observable<void> {
+    return this.post<void>(this.memberUrlSegment + "/assignRFID/self", request);
   }
 
   getMemberByEmail(email: string): Observable<MemberResponse> {
