@@ -15,7 +15,7 @@ import { AuthService } from "../../service";
 import { LoginRequest, Jwt } from "./types";
 import { ToastMessage } from "./types";
 import { showComponent } from "../../function";
-import { loginFormStyles } from "./styles";
+import { loginFormStyles, coreStyles } from "./styles";
 import "./toast-msg";
 
 @customElement("login-form")
@@ -29,7 +29,7 @@ export class LoginForm extends LitElement {
   toastMsg: ToastMessage;
 
   static get styles(): CSSResult[] {
-    return [loginFormStyles];
+    return [loginFormStyles, coreStyles];
   }
 
   firstUpdated(): void {

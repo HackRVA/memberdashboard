@@ -11,14 +11,14 @@ import {
 import "./card-element";
 import "./login-form";
 import "./register-form";
-import { loginPageStyles } from "./styles";
+import { loginPageStyles, coreStyles } from "./styles";
 
 @customElement("login-page")
 export class LoginPage extends LitElement {
   isRegister: boolean = false;
 
   static get styles(): CSSResult[] {
-    return [loginPageStyles];
+    return [loginPageStyles, coreStyles];
   }
 
   handleSwitch(): void {

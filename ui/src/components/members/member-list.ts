@@ -16,6 +16,7 @@ import { MemberResource, MemberResponse } from "./types";
 import { showComponent } from "../../function";
 import { ResourceService, MemberService, PaymentService } from "../../service";
 import { memberListStyles } from "./styles/member-list-styles";
+import { coreStyles } from "./../shared/styles/core-styles";
 import "../shared/rfid-modal";
 import "./modals/add-member-to-resource-modal";
 import "./modals/remove-member-from-resource-modal";
@@ -46,7 +47,7 @@ export class MemberList extends LitElement {
   paymentsService: PaymentService = new PaymentService();
 
   static get styles(): CSSResult[] {
-    return [memberListStyles];
+    return [memberListStyles, coreStyles];
   }
 
   firstUpdated(): void {
@@ -178,7 +179,7 @@ export class MemberList extends LitElement {
                   @click=${() => this.openAddMemberToResourceModal(x.email)}
                 ></mwc-button>
                 <mwc-button
-                  class="remove"
+                  class="destructive-button"
                   label="Remove resource"
                   @click=${() =>
                     this.openRemoveMemberFromResourceModal(
@@ -224,7 +225,7 @@ export class MemberList extends LitElement {
           <div class="buttons-container">
             <mwc-button
               id="slack-clean-up"
-              class="mr-24"
+              class="margin-r-24"
               label="Slack Clean Up"
               unelevated
               dense

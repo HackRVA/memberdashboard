@@ -13,6 +13,7 @@ import "../shared/card-element";
 import { ResourceService } from "../../service";
 import { showComponent } from "../../function";
 import { ResourceResponse, ResourceModalData } from "./types";
+import { coreStyles } from "./../shared/styles/core-styles";
 import { resourceManagerStyles } from "./styles/resource-manager-styles";
 import "./modals";
 import { ToastMessage } from "../shared/types";
@@ -32,7 +33,7 @@ export class ResourceManager extends LitElement {
   toastMsg: ToastMessage;
 
   static get styles(): CSSResult[] {
-    return [resourceManagerStyles];
+    return [resourceManagerStyles, coreStyles];
   }
 
   private getResources(): void {
@@ -146,7 +147,7 @@ export class ResourceManager extends LitElement {
               >
               </mwc-button>
               <mwc-button
-                class="remove"
+                class="destructive-button"
                 @click="${() => this.openResourceWarningModal(x)}"
                 label="Delete"
               >

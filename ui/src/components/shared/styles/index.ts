@@ -4,4 +4,5 @@ export * from "./register-form-styles";
 export * from "./not-found-styles";
 export * from "./member-dashboard-content-styles";
 export * from "./login-page-styles";
+export * from "./core-styles";
 export * from "./colors";

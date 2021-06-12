@@ -2,7 +2,7 @@
 import { css, CSSResult } from "lit-element";
 
 // membership
-import { primaryBlue, primaryDarkGreen } from "./colors";
+import { primaryDarkGreen } from "./colors";
 
 export const loginFormStyles: CSSResult = css`
   mwc-formfield {
@@ -18,6 +18,5 @@ export const loginFormStyles: CSSResult = css`
 
   a {
     float: right;
-    color: ${primaryBlue};
   }
 `;

@@ -44,8 +44,4 @@ export const loginPageStyles: CSSResult = css`
     opacity: 0.7;
     color: ${plainWhite};
   }
-
-  a {
-    color: ${primaryBlue};
-  }
 `;

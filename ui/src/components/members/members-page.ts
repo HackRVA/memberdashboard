@@ -12,6 +12,7 @@ import { MemberService } from "../../service";
 import "./member-list";
 import { MemberLevel, MemberResponse } from "./types";
 import "../shared/card-element";
+import { coreStyles } from "./../shared/styles/core-styles";
 import { membersPageStyles } from "./styles/members-page-styles";
 import "../shared/loading-content";
 
@@ -24,7 +25,7 @@ export class MembersPage extends LitElement {
   memberService: MemberService = new MemberService();
 
   static get styles(): CSSResult[] {
-    return [membersPageStyles];
+    return [membersPageStyles, coreStyles];
   }
 
   firstUpdated(): void {
@@ -53,7 +54,7 @@ export class MembersPage extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <card-element class="center">
+      <card-element class="center-text">
         <loading-content .finishedLoading=${this.finishedLoading}>
           <member-list
             .members=${this.members}

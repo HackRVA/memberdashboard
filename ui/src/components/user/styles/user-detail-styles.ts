@@ -23,16 +23,9 @@ export const userDetailStyles: CSSResult = css`
     font-weight: bold;
   }
 
-  dd {
-    margin-bottom: 8px;
-  }
-
+  dd,
   li {
     margin-bottom: 8px;
-  }
-
-  .card-actions {
-    text-align: center;
   }
 
   .lenny-face {

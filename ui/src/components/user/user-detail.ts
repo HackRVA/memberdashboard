@@ -13,6 +13,7 @@ import "@polymer/paper-card";
 
 // membership
 import { userDetailStyles } from "./styles";
+import { coreStyles } from "./../shared/styles/core-styles";
 import { MemberResource, MemberResponse } from "../members/types";
 import { displayMemberStatus } from "../members/function";
 import { showComponent } from "../../function";
@@ -28,7 +29,7 @@ export class UserDetail extends LitElement {
   memberService: MemberService = new MemberService();
 
   static get styles(): CSSResult[] {
-    return [userDetailStyles];
+    return [userDetailStyles, coreStyles];
   }
 
   firstUpdated(): void {
@@ -94,7 +95,7 @@ export class UserDetail extends LitElement {
               </dd>
             </dl>
           </div>
-          <div class="card-actions">
+          <div class="card-actions center-text">
             <mwc-button label="Assign RFID" @click=${this.openRFIDModal}>
             </mwc-button>
           </div>

@@ -13,6 +13,7 @@ import "./resource-manager";
 import { ResourceResponse } from "./types/resource.interface";
 import { ResourceService } from "./../../service/resource.service";
 import "../shared/loading-content";
+import { coreStyles } from "./../shared/styles/core-styles";
 import { resourcesPageStyles } from "./styles/resources-page-styles";
 
 @customElement("resources-page")
@@ -22,7 +23,7 @@ export class ResourcesPage extends LitElement {
   finishedLoading: boolean = false;
 
   static get styles(): CSSResult[] {
-    return [resourcesPageStyles];
+    return [resourcesPageStyles, coreStyles];
   }
 
   firstUpdated(): void {
@@ -44,7 +45,7 @@ export class ResourcesPage extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <card-element class="center">
+      <card-element class="center-text">
         <loading-content .finishedLoading=${this.finishedLoading}>
           <resource-manager .resources=${this.resources}> </resource-manager>
         </loading-content>

@@ -2,7 +2,7 @@
 import { css, CSSResult } from "lit-element";
 
 // membership
-import { primaryLightGray, primaryRed } from "../../shared/styles/colors";
+import { primaryLightGray } from "../../shared/styles/colors";
 
 export const memberListStyles: CSSResult = css`
   .member-container {
@@ -50,19 +50,12 @@ export const memberListStyles: CSSResult = css`
     --mdc-typography-button-font-size: 12px;
   }
 
-  .refresh-members-list {
-    margin-right: 24px;
-  }
-
   .new-member-button {
     width: 192px;
     margin-right: 24px;
     --mdc-typography-button-font-size: 12px;
   }
 
-  .remove {
-    --mdc-theme-primary: ${primaryRed};
-  }
   .horizontal-scrollbar {
     overflow: auto;
     max-width: 320px;
@@ -76,10 +69,6 @@ export const memberListStyles: CSSResult = css`
   .all-members-checkbox {
     position: relative;
     top: 5px;
-  }
-
-  .mr-24 {
-    margin-right: 24px;
   }
 
   mwc-circular-progress {

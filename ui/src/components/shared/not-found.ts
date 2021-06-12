@@ -12,12 +12,12 @@ import { Router } from "@vaadin/router";
 
 // membership
 import "./card-element";
-import { notFoundStyles } from "./styles";
+import { coreStyles, notFoundStyles } from "./styles";
 
 @customElement("not-found")
 export class NotFound extends LitElement {
   static get styles(): CSSResult[] {
-    return [notFoundStyles];
+    return [notFoundStyles, coreStyles];
   }
 
   goBackToHomePage(): void {
@@ -26,7 +26,7 @@ export class NotFound extends LitElement {
 
   render(): TemplateResult {
     return html` 
-      <div class="not-found-container text-center">
+      <div class="not-found-container center-text">
         <div>
           <strong>404</strong>
         </div>
