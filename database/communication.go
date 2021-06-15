@@ -7,6 +7,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var communicationDbMethod CommunicationDatabaseMethod
+
 // Communication defines an email communication
 type Communication struct {
 	ID                int    `json:"id"`
@@ -18,7 +20,7 @@ type Communication struct {
 
 // GetCommunnications returns all communications from the database
 func (db *Database) GetCommunications() []Communication {
-	rows, err := db.getConn().Query(context.Background(), getCommunications)
+	rows, err := db.getConn().Query(context.Background(), communicationDbMethod.getCommunications())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -38,7 +40,7 @@ func (db *Database) GetCommunications() []Communication {
 // GetCommunnication returns all the requested communication from the database
 func (db *Database) GetCommunication(name string) (Communication, error) {
 	var c Communication
-	err := db.getConn().QueryRow(context.Background(), getCommunication, name).
+	err := db.getConn().QueryRow(context.Background(), communicationDbMethod.getCommunication(), name).
 		Scan(&c.ID, &c.Name, &c.Subject, &c.FrequencyThrottle, &c.Template)
 	if err != nil {
 		return c, err
@@ -48,7 +50,7 @@ func (db *Database) GetCommunication(name string) (Communication, error) {
 
 func (db *Database) GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error) {
 	var d time.Time
-	err := db.getConn().QueryRow(context.Background(), getLastCommunication, memberId, commId).Scan(&d)
+	err := db.getConn().QueryRow(context.Background(), communicationDbMethod.getLastCommunication(), memberId, commId).Scan(&d)
 	if err != nil {
 		return d, err
 	}
@@ -56,7 +58,7 @@ func (db *Database) GetMostRecentCommunicationToMember(memberId string, commId i
 }
 
 func (db *Database) LogCommunication(communicationId int, memberId string) error {
-	_, err := db.getConn().Exec(context.Background(), logCommunication, communicationId, memberId)
+	_, err := db.getConn().Exec(context.Background(), communicationDbMethod.insertCommunicationLog(), communicationId, memberId)
 	if err != nil {
 		return err
 	}
