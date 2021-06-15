@@ -12,6 +12,14 @@
       "program": "${workspaceFolder}/main.go"
     },
     {
+      "name": "Debug current file",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${file}",
+      "args": ["${input:args}"]
+    },
+    {
       "name": "Test Current File",
       "type": "go",
       "request": "launch",
@@ -24,5 +32,12 @@
       "args": [],
       "showLog": true
   }
+  ],
+  "inputs": [
+    {
+      "id": "args",
+      "description": "Arguments",
+      "type": "promptString"
+    }
   ]
 }

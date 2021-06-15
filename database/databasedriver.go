@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
 
@@ -16,6 +17,7 @@ import (
 type Database struct {
 	pool *pgxpool.Pool
 	ctx  context.Context
+	mu   sync.Mutex
 }
 
 // Setup - sets up connection pool so that we can connect to the db in a
@@ -41,13 +43,23 @@ func (db *Database) Release() error {
 }
 
 func (db *Database) getConn() *pgxpool.Pool {
+
+	db.mu.Lock()
 	conn, _ := db.pool.Acquire(context.Background())
 	if conn.Conn().IsClosed() {
 		db.pool = getDBConnection(context.Background())
 	}
 
 	defer conn.Release()
+	db.mu.Unlock()
+
 	return db.pool
+}
+
+func (db *Database) PrintStat() {
+	stat := db.pool.Stat()
+	log.Printf("Pool Stat:\tAquired\tConst\tIdle\tMax\tTotal")
+	log.Printf("\t\t%v\t%v\t%v\t%v\t%v", stat.AcquiredConns(), stat.ConstructingConns(), stat.IdleConns(), stat.MaxConns(), stat.TotalConns())
 }
 
 func getDBConnection(ctx context.Context) *pgxpool.Pool {
@@ -84,24 +96,17 @@ func getDBConnection(ctx context.Context) *pgxpool.Pool {
 
 	// Get a connection from the pool and check if the database connection is active and working
 	db, err := dbPool.Acquire(ctx)
+
 	if err != nil {
 		log.Fatalf("failed to get connection on startup: %v\n", err)
 	}
+
+	// Add the connection back to the pool
+	defer db.Release()
+
 	if err := db.Conn().Ping(ctx); err != nil {
 		log.Fatalln(err)
 	}
 
-	// Add the connection back to the pool
-	db.Release()
-
 	return dbPool
-}
-
-func (db *Database) clearIdleConnections() {
-	db.getConn().Query(db.ctx, `SELECT
-pg_terminate_backend(pid)
-FROM
-pg_stat_activity
-WHERE
-state = 'idle';`)
 }

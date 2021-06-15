@@ -4,17 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	//"memberserver/mail"
 	"strings"
 	"time"
 
 	"github.com/Rhymond/go-money"
+	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
 )
-
-// memberGracePeriod if the member has made a payment in the last 45 days they will remain in a grace period
-const memberGracePeriod = 46
-const membershipMonth = 31
 
 var paymentDbMethod PaymentDatabaseMethod
 
@@ -39,6 +35,15 @@ type Payment struct {
 	MemberID string
 	Email    string
 	Name     string
+}
+
+// PastDueAccount represents accounts that do not have a recent payment recorded
+type PastDueAccount struct {
+	MemberId             string
+	Name                 string
+	Email                string
+	LastPaymentDate      time.Time
+	DaysSinceLastPayment int
 }
 
 // GetPayments - get list of payments that we have in the db
@@ -100,107 +105,64 @@ VALUES `
 
 	str := strings.Join(valStr, ",")
 
-	_, err := db.getConn().Query(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	_, err := db.getConn().Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
 	if err != nil {
-		return fmt.Errorf("conn.Query failed: %v", err)
+		return fmt.Errorf("conn.Exec failed: %v", err)
 	}
 
 	return err
 }
 
-// membersContains checks that a member exists within a list of members
-func membersContains(members []Member, m Member) bool {
-	for _, v := range members {
-		if v.ID == m.ID {
-			log.Debugf("%s gets a credit", m.ID)
-			return true
-		}
+// SetMemberLevel sets a member's membership tier
+func (db *Database) SetMemberLevel(memberId string, level MemberLevel) error {
+	rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberId, level)
+	if err != nil {
+		log.Errorf("Set member level failed: %v", err)
+		return err
 	}
-
-	return false
+	defer rows.Close()
+	return nil
 }
 
-// EvaluateMembers loops through all members and evaluates their status
-func (db *Database) EvaluateMembers() {
-	members := db.GetMembers()
-
+// ApplyMemberCredits updates members tiers for all members with credit to Credited
+func (db *Database) ApplyMemberCredits() {
+	//	Member credits are currently managed by DB commands.  #102 will address this.
 	memberCredits := db.GetMembersWithCredit()
 	for _, m := range memberCredits {
-		rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), m.ID, Credited)
+		err := db.SetMemberLevel(m.ID, Credited)
 		if err != nil {
 			log.Errorf("member credit failed: %v", err)
 		}
-		defer rows.Close()
 	}
-
-	for _, m := range members {
-		if membersContains(memberCredits, m) {
-			continue
-		}
-		err := db.EvaluateMemberStatus(m.ID)
-		if err != nil {
-			log.Errorf("error evaluating member's status: %s", err.Error())
-		}
-	}
-
-	db.clearIdleConnections()
 }
 
-// EvaluateMemberStatus look in the db and determine the members' last payment date
-//  if it's greater than a certain date revoke their membership
-func (db *Database) EvaluateMemberStatus(memberID string) error {
-	var daysSincePayment int64
-	var amount int64
-	var email string
+// UpdateMemberTiers updates member tiers based on the most recent payment amount
+func (db *Database) UpdateMemberTiers() {
+	db.getConn().Exec(context.Background(), paymentDbMethod.updateMemberTiers())
+}
 
-	m, err := db.GetMemberByID(memberID)
-	if MemberLevel(m.Level) == Credited {
-		return fmt.Errorf("member is credited a membership: %s", err)
+// GetPastDueAccounts retrieves all active members without a payment in the last month
+func (db *Database) GetPastDueAccounts() []PastDueAccount {
+	var pastDueAccounts []PastDueAccount
+	rows, err := db.getConn().Query(context.Background(), paymentDbMethod.pastDuePayments())
+
+	if err == pgx.ErrNoRows {
+		return pastDueAccounts
 	}
 
-	err = db.getConn().QueryRow(context.Background(), paymentDbMethod.checkLastPayment(), memberID).Scan(&daysSincePayment, &amount, &email)
 	if err != nil {
-		log.Errorf("error finding members payments: %s", err)
+		log.Errorf("conn.Query failed: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var p PastDueAccount
+		err = rows.Scan(&p.MemberId, &p.Name, &p.Email, &p.LastPaymentDate, &p.DaysSinceLastPayment)
+		if err != nil {
+			log.Errorf("error scanning row: %s", err)
+		}
+		pastDueAccounts = append(pastDueAccounts, p)
 	}
 
-	if daysSincePayment > memberGracePeriod { // revoke
-		// if this is an active member, then they are just now being revoked.
-		// if they are not active, they have already been revoked.
-		if MemberLevel(m.Level) == Inactive {
-			log.Debugf("Member is already inactive: %s", m.Name)
-			return nil
-		}
-		//TODO: [ML] Move business logic out of database package and user mailer
-		//mail.SendRevokedEmail(m.Email, m)
-
-		rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberID, Inactive)
-		if err != nil {
-			return fmt.Errorf("conn.Query failed: %v", err)
-		}
-		defer rows.Close()
-	} else if daysSincePayment <= memberGracePeriod {
-		if daysSincePayment > membershipMonth {
-
-			// currently these would send everyday and everytime the app starts.
-			//   it would be better if we could send these only once.
-
-			//c, _ := config.Load()
-			// send notification because they are in a grace period
-			//TODO: [ML] Move business logic out of database package and user mailer
-			// mail.SendGracePeriodMessage(m.Email, m)
-			// mail.SendGracePeriodMessageToLeadership(c.AdminEmail, m)
-		}
-
-		// a valid member
-		// determine their membership level
-		mLevel := MemberLevelFromAmount[amount]
-
-		rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberID, mLevel)
-		if err != nil {
-			return fmt.Errorf("conn.Query failed: %v", err)
-		}
-		defer rows.Close()
-	}
-
-	return nil
+	return pastDueAccounts
 }

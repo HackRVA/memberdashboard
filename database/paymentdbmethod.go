@@ -22,21 +22,6 @@ func (payment *PaymentDatabaseMethod) insertPayment() string {
 	return insertPaymentQuery
 }
 
-func (payment *PaymentDatabaseMethod) checkLastPayment() string {
-	// checkRecentPayment - if the member doesn't have a recent payment,
-	//    we will revoke their membership
-	const checkLastPaymentQuery = `
-	SELECT current_date - date as last_payment, amount, email
-	FROM membership.payments
-	LEFT JOIN membership.members
-	ON membership.payments.member_id = membership.members.id
-	WHERE member_id = $1
-	ORDER BY date DESC
-	limit 2;`
-
-	return checkLastPaymentQuery
-}
-
 func (payment *PaymentDatabaseMethod) countPaymentsOfMemberSince() string {
 	const countPaymentsOfMemberSinceQuery = `
 	SELECT COUNT(*) as num_payments
@@ -57,4 +42,45 @@ func (payment *PaymentDatabaseMethod) updateMembershipLevel() string {
 	RETURNING *;`
 
 	return updateMembershipLevelQuery
+}
+
+func (payment *PaymentDatabaseMethod) pastDuePayments() string {
+	const sql = `
+	SELECT m.id, m.name, m.email, COALESCE(max(p.date), '0001-01-01') as lastPaymentDate,
+		current_date - COALESCE(max(p.date), '0001-01-01') as daysSinceLastPayment
+	FROM membership.members m
+	INNER JOIN membership.member_tiers t
+	on m.member_tier_id = t.id
+	LEFT JOIN membership.payments p
+	on m.id = p.member_id
+	WHERE t.description not in ('Inactive', 'Credited')
+	GROUP BY m.id, m.name, m.email
+	HAVING MAX(p.date) is null or MAX(p.date) < current_date - interval '1 month';`
+	return sql
+}
+
+func (payment *PaymentDatabaseMethod) updateMemberTiers() string {
+	const sql = `
+	with cte as (
+		SELECT m.id as MemberId, p.amount,
+			ROW_NUMBER() over (
+				Partition By m.id
+				order by p.date DESC
+			) row_num
+		FROM membership.members m
+		INNER JOIN membership.payments p
+		ON m.id = p.member_id
+			AND p.amount > 0
+		WHERE p.date > current_date - interval '1 month'
+	)
+	UPDATE membership.members m
+	SET member_tier_id = t.id
+	FROM cte c
+	INNER JOIN membership.member_tiers t
+	ON c.amount = t.price
+	WHERE c.memberid = m.id
+		AND c.row_num = 1
+		AND m.member_tier_id != t.id;
+	`
+	return sql
 }
