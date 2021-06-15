@@ -7,17 +7,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const getCommunications string = "Select id, name, subject, frequency_throttle, template from membership.communication;"
-const getCommunication string = "Select id, name, subject, frequency_throttle, template from membership.communication where name = $1;"
-const getLastCommunication string = "Select created_at from membership.communication_log where member_id = $1 and communication_id = $2;"
-const logCommunication string = "Insert into membership.communication_log (member_id, communication_Id) values ($1, $2);"
-
 // Communication defines an email communication
 type Communication struct {
 	ID                int    `json:"id"`
 	Name              string `json:"name"`
 	Subject           string `json:"subject"`
-	FrequencyThrottle int    `json:"frequency_throttle"`
+	FrequencyThrottle int    `json:"frequencyThrottle"`
 	Template          string `json:"template"`
 }
 
@@ -53,7 +48,7 @@ func (db *Database) GetCommunication(name string) (Communication, error) {
 
 func (db *Database) GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error) {
 	var d time.Time
-	err := db.getConn().QueryRow(context.Background(), getCommunication, memberId, commId).Scan(&d)
+	err := db.getConn().QueryRow(context.Background(), getLastCommunication, memberId, commId).Scan(&d)
 	if err != nil {
 		return d, err
 	}

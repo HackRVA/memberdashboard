@@ -30,7 +30,7 @@ Either open the folder in VS Code and choose reopen in container or run the Remo
 
 The backend server can be started by debugging in VS Code. Otherwise, you can start the server without debugging using `sh buildandrun.sh`.
 
-Start the react app as described in the [UI README](/ui/README.md).
+Start the web app as described in the [UI README](/ui/README.md).
 ```
 # navigate to ui folder
 cd ui
