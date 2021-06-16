@@ -3,7 +3,8 @@ package database
 import (
 	"context"
 	"fmt"
-	"memberserver/mail"
+
+	//"memberserver/mail"
 	"strings"
 	"time"
 
@@ -169,7 +170,8 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 			log.Debugf("Member is already inactive: %s", m.Name)
 			return nil
 		}
-		mail.SendRevokedEmail(m.Email, m)
+		//TODO: [ML] Move business logic out of database package and user mailer
+		//mail.SendRevokedEmail(m.Email, m)
 
 		rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberID, Inactive)
 		if err != nil {
@@ -184,6 +186,7 @@ func (db *Database) EvaluateMemberStatus(memberID string) error {
 
 			//c, _ := config.Load()
 			// send notification because they are in a grace period
+			//TODO: [ML] Move business logic out of database package and user mailer
 			// mail.SendGracePeriodMessage(m.Email, m)
 			// mail.SendGracePeriodMessageToLeadership(c.AdminEmail, m)
 		}

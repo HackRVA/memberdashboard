@@ -2,12 +2,14 @@ package scheduler
 
 import (
 	"io/ioutil"
+	"memberserver/config"
 	"memberserver/database"
 	"memberserver/mail"
 	"memberserver/payments"
 	"memberserver/resourcemanager"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -27,10 +29,16 @@ const resourceUpdateInterval = 4
 // checkIPInterval - check the IP Address daily
 const checkIPInterval = 24
 
+var c config.Config
+var mailApi mail.MailApi
+
 // Setup Scheduler
 //  We want certain tasks to happen on a regular basis
 //  The scheduler will make sure that happens
 func Setup() {
+	mailApi, _ = mail.Setup()
+	c, _ = config.Load()
+
 	scheduleTask(checkPaymentsInterval*time.Hour, payments.GetPayments, payments.GetPayments)
 	scheduleTask(evaluateMemberStatusInterval*time.Hour, checkMemberStatus, checkMemberStatus)
 	scheduleTask(resourceStatusCheckInterval*time.Hour, checkResourceInit, checkResourceTick)
@@ -117,15 +125,16 @@ func checkIPAddressTick() {
 		return
 	}
 
-	ip := string(body)
-	log.Debugf("ip addr: %s", ip)
+	currentIp := strings.TrimSpace(string(body))
+	log.Debugf("ip addr: %s", currentIp)
 
+	const ipFileName string = ".public_ip_address"
 	// detect if file exists
-	_, err = os.Stat(".public_ip_address")
+	_, err = os.Stat(ipFileName)
 
 	// create file if not exists
 	if os.IsNotExist(err) {
-		var file, err = os.Create(".public_ip_address")
+		var file, err = os.Create(ipFileName)
 		if err != nil {
 			log.Error(err)
 			return
@@ -133,13 +142,13 @@ func checkIPAddressTick() {
 		defer file.Close()
 	}
 
-	b, err := ioutil.ReadFile(".public_ip_address")
+	b, err := ioutil.ReadFile(ipFileName)
 	if err != nil {
 		log.Error(err)
 		return
 	}
 
-	err = ioutil.WriteFile(".public_ip_address", body, 0644)
+	err = ioutil.WriteFile(ipFileName, body, 0644)
 	if err != nil {
 		log.Error(err)
 		return
@@ -147,8 +156,22 @@ func checkIPAddressTick() {
 
 	// if this is the first run, don't send an email,
 	//   but set the ip address
-	if string(b) == "" {
+	previousIp := strings.TrimSpace(string(b))
+	if previousIp == "" || previousIp == currentIp {
 		return
 	}
-	mail.SendIPHasChanged(ip)
+
+	db, err := database.Setup()
+	if err != nil {
+		log.Printf("Err: %v", err)
+	}
+
+	ipModel := struct {
+		IpAddress string
+	}{
+		IpAddress: currentIp,
+	}
+
+	mailer := mail.NewMailer(db, mailApi, c)
+	mailer.SendCommunication(mail.IpChanged, c.AdminEmail, ipModel)
 }

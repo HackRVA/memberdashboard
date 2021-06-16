@@ -116,7 +116,7 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 	err := db.getConn().QueryRow(context.Background(), memberDbMethod.getMemberByEmail(), memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
 	if err != nil {
 		log.Errorf("error getting member by email: %v", memberEmail)
-		return m, fmt.Errorf("conn.Query failed: %v", err)
+		return m, fmt.Errorf("conn.Query failed: %w", err)
 	}
 
 	resourceMemo := make(map[string]MemberResource)

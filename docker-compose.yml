@@ -6,9 +6,9 @@ services:
             dockerfile: Dockerfile
             args:
                 GIT_COMMIT: ${GIT_COMMIT}
-        ports: 
+        ports:
             - 3000:3000
-        # volumes: 
+        # volumes:
         #     - .src/:/membership
         depends_on:
             - postgres
@@ -32,6 +32,19 @@ services:
             # - ./test/postgres/:/docker-entrypoint-initdb.d/
         networks:
             - membership
+
+    mosquitto:
+        container_name: mosquitto
+        image: eclipse-mosquitto:1.6.10
+        volumes:
+            - ./test/resourcebridge/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+            # - /etc/hackrva/mqtt.passwordfile:/mosquitto/config/mqtt.passwordfile
+        ports:
+            - '8883:8883'
+            - '1883:1883'
+        networks:
+            - membership
+        restart: unless-stopped
 
 networks:
     membership:
