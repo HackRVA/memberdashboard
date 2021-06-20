@@ -86,13 +86,13 @@ func checkMemberStatus() {
 	pastDueAccounts := db.GetPastDueAccounts()
 	for _, a := range pastDueAccounts {
 		if a.DaysSinceLastPayment > memberGracePeriod {
-			mailer.SendCommunication(mail.AccessRevokedLeadership, "info@hackrva.org", a)
+			mailer.SendCommunication(mail.AccessRevokedLeadership, c.AdminEmail, a)
 			mailer.SendCommunication(mail.AccessRevokedMember, a.Email, a)
 			db.SetMemberLevel(a.MemberId, database.Inactive)
 		} else if a.DaysSinceLastPayment > membershipMonth {
 			if !mailer.IsThrottled(pendingRevokation, database.Member{ID: a.MemberId}) {
 				//TODO: [ML] Does it make sense to send this to leadership?  It might be like spam...
-				mailer.SendCommunication(mail.PendingRevokationLeadership, "info@hackrva.org", a)
+				mailer.SendCommunication(mail.PendingRevokationLeadership, c.AdminEmail, a)
 				mailer.SendCommunication(mail.PendingRevokationMember, a.Email, a)
 			}
 		}
