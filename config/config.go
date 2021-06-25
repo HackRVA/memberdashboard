@@ -35,6 +35,7 @@ type Config struct {
 	SlackToken           string `json:"slackToken"`
 	AdminEmail           string `json:"adminEmail"`
 	AlwaysAdmin          string `json:"alwaysAdmin"`
+	UM3StreamURL         string `json:"um3StreamURL"`
 }
 
 // Load in the config file to memory
@@ -62,6 +63,7 @@ func Load() (Config, error) {
 	c.SlackToken = os.Getenv("SLACK_TOKEN")
 	c.AdminEmail = getEnvOrDefault("ADMIN_EMAIL", "info@hackrva.org")
 	c.AlwaysAdmin = getEnvOrDefault("ALWAYS_ADMIN", "false")
+	c.UM3StreamURL = getEnvOrDefault("UM3_STREAM_URL", "")
 
 	if len(os.Getenv("ENABLE_INFO_EMAILS")) > 0 {
 		c.EnableInfoEmails = true

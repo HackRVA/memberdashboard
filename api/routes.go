@@ -482,5 +482,15 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: endpointSuccessResponse
 	r.HandleFunc("/api/auth/register", api.signup)
+	// swagger:route GET /api/ultimaker/camera ultimaker
+	//
+	// Proxy ultimaker 3 camera stream
+	//
+	//
+	//     Schemes: http, https
+	//
+	//     Responses:
+	//       200: endpointSuccessResponse
+	r.HandleFunc("/api/ultimaker/camera", api.um3Camera)
 	return rr
 }
