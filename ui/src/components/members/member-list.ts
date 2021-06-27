@@ -11,6 +11,9 @@ import {
 // material
 import { Checkbox } from "@material/mwc-checkbox";
 
+// polymer
+import "@polymer/paper-tooltip";
+
 // membership
 import { MemberResource, MemberResponse } from "./types";
 import { showComponent } from "../../function";
@@ -23,7 +26,6 @@ import "./modals/remove-member-from-resource-modal";
 import "./modals/add-members-to-resource-modal";
 import { ToastMessage } from "../shared/types";
 import { displayMemberStatus } from "./function";
-import "@polymer/paper-tooltip";
 
 @customElement("member-list")
 export class MemberList extends LitElement {
@@ -98,7 +100,10 @@ export class MemberList extends LitElement {
     showComponent("#new-member-modal", this.shadowRoot);
   }
 
-  openRFIDModal(): void {
+  openRFIDModal(email: string = ""): void {
+    this.email = email;
+    this.requestUpdate();
+
     showComponent("#rfid-modal", this.shadowRoot);
   }
 
@@ -133,6 +138,26 @@ export class MemberList extends LitElement {
         this.displayToastMsg("Hrmmm, unable to export nonmembers");
       },
     });
+  }
+
+  getMoreActions(member: MemberResponse): TemplateResult {
+    return html`
+      <div class="more-actions-container">
+        <mwc-menu id=${"more-actions-" + member.id} x="-50" y="-50">
+          <mwc-list-item @click=${() => this.openRFIDModal(member.email)}> Assign RFID </mwc-list-item>
+          <mwc-list-item @click=${() => this.openAddMemberToResourceModal(member.email)}> 
+            <span class="add-resources"> Add resource <span> 
+          </mwc-list-item>
+          <mwc-list-item @click=${() => this.openRemoveMemberFromResourceModal(member.email, member.resources)}> 
+            <span class="remove-resources">Remove resource </span> 
+          </mwc-list-item>
+        </mwc-menu>
+      </div>
+    `
+  }
+
+  handleMoreActions(memberId: string): void {
+    showComponent("#more-actions-" + memberId, this.shadowRoot);
   }
 
   handleAllEmails(event: Event): void {
@@ -170,26 +195,18 @@ export class MemberList extends LitElement {
             <td>${x.email}</td>
             <td>${displayMemberStatus(x.memberLevel)}</td>
             <td>
-              <div class="horizontal-scrollbar">${this.displayMemberResources(
-                x.resources
-              )}</div>
-              <div>
-                <mwc-button
-                  label="Add resource"
-                  @click=${() => this.openAddMemberToResourceModal(x.email)}
-                ></mwc-button>
-                <mwc-button
-                  class="destructive-button"
-                  label="Remove resource"
-                  @click=${() =>
-                    this.openRemoveMemberFromResourceModal(
-                      x.email,
-                      x.resources
-                    )}
-                ></mwc-button>
+              <div class="horizontal-scrollbar">
+                ${this.displayMemberResources(
+                  x.resources
+                )}
+              </div>
             </td>
             <td>
               ${x.rfid !== "notset" ? x.rfid : "Not set"}
+            </td>
+            <td>
+              <mwc-icon-button icon="more_horiz" @click=${() => this.handleMoreActions(x.id)}></mwc-icon-button>
+              ${this.getMoreActions(x)}
             </td>
           </tr>
         `;
@@ -241,7 +258,7 @@ export class MemberList extends LitElement {
               label="Assign rfid"
               unelevated
               dense
-              @click=${this.openRFIDModal}
+              @click=${() => this.openRFIDModal()}
             >
             </mwc-button>
           </div>
@@ -269,6 +286,7 @@ export class MemberList extends LitElement {
             <th>Member Status</th>
             <th>Resources</th>
             <th>RFID</th>
+            <th> Actions </th>
           </tr>
           ${this.displayMembersTable()}
         </table>
@@ -294,6 +312,7 @@ export class MemberList extends LitElement {
       </remove-member-from-resource-modal>
       <rfid-modal
         id="rfid-modal"
+        .email=${this.email}
         .showNewMemberOption=${true}
         @updated=${this.refreshMemberList}
       >

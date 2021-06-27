@@ -113,7 +113,6 @@ export class PaymentChart extends LitElement {
   }
 
   getPaymentMonthOptions(): TemplateResult {
-    this.requestUpdate();
     return html`
       <mwc-menu x="10" y="40" id="membership-months">
         ${this.membershipDistributionData.map((x: PaymentChartResponse) => {

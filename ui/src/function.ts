@@ -35,9 +35,15 @@ export const showComponent = (
  * @description check if the user is an Admin
  */
 export const isAdmin = (): boolean => {
-  const jwtClaims: JwtClaims = jwt_decode(localStorage.getItem("jwt"));
+  const jwt: string = localStorage.getItem("jwt");
+  
+  if (jwt) {
+    const jwtClaims: JwtClaims = jwt_decode(jwt);
+    
+    const roles = new Set(jwtClaims.Groups);
+    
+    return roles.has(Roles.admin);
+  }
 
-  const roles = new Set(jwtClaims.Groups);
-
-  return roles.has(Roles.admin);
+  return false;
 };

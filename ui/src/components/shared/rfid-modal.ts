@@ -1,5 +1,6 @@
 // lit element
 import {
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -17,13 +18,18 @@ import { AssignRFIDRequest, CreateMemberRequest } from "../members/types";
 import { showComponent } from "../../function";
 import { ToastMessage } from "./types";
 import "./toast-msg";
+import { coreStyles, rfidModalStyles } from "./styles";
 
 @customElement("rfid-modal")
 export class RFIDModal extends LitElement {
   @property({ type: String })
   email: string = "";
+  
   @property({ type: Boolean })
   showNewMemberOption: boolean = false;
+  
+  @property({ type: Boolean})
+  isThisSelf: boolean = false;
 
   memberService: MemberService = new MemberService();
 
@@ -35,6 +41,10 @@ export class RFIDModal extends LitElement {
 
   isNewMember: Boolean;
 
+  static get styles(): CSSResult[] {
+    return [rfidModalStyles, coreStyles];
+  }
+
   firstUpdated(): void {
     this.rfidModalTemplate = this.shadowRoot?.querySelector("mwc-dialog");
     this.emailFieldTemplate = this.shadowRoot?.querySelector("#email");
@@ -42,8 +52,9 @@ export class RFIDModal extends LitElement {
   }
 
   updated(): void {
-    if (this.email) {
-      this.emailFieldTemplate.value = this.email;
+    this.emailFieldTemplate.value = this.email;
+
+    if (this.isThisSelf) {
       this.emailFieldTemplate.disabled = true;
     }
   }
@@ -121,7 +132,7 @@ export class RFIDModal extends LitElement {
 
   handleSubmit(): void {
     if (this.isValid()) {
-      if (this.email) {
+      if (this.isThisSelf) {
         this.tryToAssigningSelfToRFID();
       } else {
         this.tryToAssigningMemberToRFID();
@@ -167,7 +178,7 @@ export class RFIDModal extends LitElement {
     if (!this.showNewMemberOption) return html``;
 
     return html`
-      <mwc-formfield label="New member">
+      <mwc-formfield label="New member" class="new-member">
         <mwc-checkbox @change=${this.handleNewMember}></mwc-checkbox>
       </mwc-formfield>
     `;

@@ -2,7 +2,7 @@
 import { css, CSSResult } from "lit-element";
 
 // membership
-import { primaryLightGray } from "../../shared/styles/colors";
+import { primaryBlue, primaryLightGray, primaryRed } from "../../shared/styles/colors";
 
 export const memberListStyles: CSSResult = css`
   .member-container {
@@ -76,5 +76,21 @@ export const memberListStyles: CSSResult = css`
     height: 20px;
     position: relative;
     bottom: 14px;
+  }
+
+  .more-actions-container {
+    position: relative;
+  }
+
+  mwc-icon-button {
+    color: ${primaryBlue}
+  }
+
+  .add-resources {
+    color: ${primaryBlue}
+  }
+
+  .remove-resources {
+    color: ${primaryRed}
   }
 `;
