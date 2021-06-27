@@ -23,6 +23,9 @@ export class ResourceManager extends LitElement {
   @property({ type: Array })
   resources: ResourceResponse[] = [];
 
+  @property({ type: Number })
+  resourceCount: number = 0;
+
   resourceService: ResourceService = new ResourceService();
 
   resourceModalData: ResourceModalData;
@@ -38,8 +41,9 @@ export class ResourceManager extends LitElement {
 
   private getResources(): void {
     this.resourceService.getResources().subscribe({
-      next: (result: ResourceResponse[]) => {
-        this.resources = result;
+      next: (response: ResourceResponse[]) => {
+        this.resources = response;
+        this.resourceCount = response.length;
         this.requestUpdate();
       },
       error: () => {
@@ -140,6 +144,7 @@ export class ResourceManager extends LitElement {
           <tr>
             <td>${x.name} ${x.isDefault ? "(default)" : ""}</td>
             <td>${x.address}</td>
+            <td>${this.displayOnlineState(x.lastHeartBeat)}</td>
             <td>
               <mwc-button
                 @click="${() => this.openEditResourceModal(x)}"
@@ -153,7 +158,6 @@ export class ResourceManager extends LitElement {
               >
               </mwc-button>
             </td>
-            <td>${this.displayOnlineState(x.lastHeartBeat)}</td>
           </tr>
         `;
       })}
@@ -164,7 +168,8 @@ export class ResourceManager extends LitElement {
     return html`
       <div class="resource-container">
         <div class="resource-header">
-          <div class="button-container">
+          <h3>Number of resources: ${this.resourceCount}</h3>
+          <div>
             <span class="update-acls">
               <mwc-button
                 @click=${this.updateACLs}
@@ -196,8 +201,8 @@ export class ResourceManager extends LitElement {
           <tr>
             <th>Name</th>
             <th>Address</th>
-            <th>Actions</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
           ${this.displayResources()}
         </table>

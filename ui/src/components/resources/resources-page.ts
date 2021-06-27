@@ -20,6 +20,7 @@ import { resourcesPageStyles } from "./styles/resources-page-styles";
 export class ResourcesPage extends LitElement {
   resourceService: ResourceService = new ResourceService();
   resources: ResourceResponse[];
+  resourceCount: number;
   finishedLoading: boolean = false;
 
   static get styles(): CSSResult[] {
@@ -32,9 +33,10 @@ export class ResourcesPage extends LitElement {
 
   getResources(): void {
     this.resourceService.getResources().subscribe({
-      next: (result: ResourceResponse[]) => {
+      next: (response: ResourceResponse[]) => {
         this.finishedLoading = true;
-        this.resources = result;
+        this.resources = response;
+        this.resourceCount = response.length;
         this.requestUpdate();
       },
       error: () => {
@@ -47,7 +49,11 @@ export class ResourcesPage extends LitElement {
     return html`
       <card-element class="center-text">
         <loading-content .finishedLoading=${this.finishedLoading}>
-          <resource-manager .resources=${this.resources}> </resource-manager>
+          <resource-manager
+            .resources=${this.resources}
+            .resourceCount=${this.resourceCount}
+          >
+          </resource-manager>
         </loading-content>
       </card-element>
     `;

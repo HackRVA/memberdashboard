@@ -13,17 +13,26 @@ export const resourceManagerStyles: CSSResult = css`
   .resource-container {
     display: grid;
     align-items: center;
-    margin: 16px;
+    margin: 0px 16px;
   }
 
   .resource-header {
     display: inherit;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
   }
 
-  .button-container {
+  .resource-header > h3 {
+    justify-self: start;
+  }
+
+  .resource-header > div {
     justify-self: end;
+  }
+
+  table {
+    margin-top: 24px;
+    border-spacing: 0px;
   }
 
   td,
@@ -33,10 +42,6 @@ export const resourceManagerStyles: CSSResult = css`
     font-size: 20px;
     border: 1px solid ${primaryLightGray};
     max-width: 320px;
-  }
-  table {
-    margin-top: 24px;
-    border-spacing: 0px;
   }
 
   .remove-acls {

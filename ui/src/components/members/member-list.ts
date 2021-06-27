@@ -144,16 +144,22 @@ export class MemberList extends LitElement {
     return html`
       <div class="more-actions-container">
         <mwc-menu id=${"more-actions-" + member.id} x="-50" y="-50">
-          <mwc-list-item @click=${() => this.openRFIDModal(member.email)}> Assign RFID </mwc-list-item>
-          <mwc-list-item @click=${() => this.openAddMemberToResourceModal(member.email)}> 
+          <mwc-list-item @click=${() =>
+            this.openRFIDModal(member.email)}> Assign RFID </mwc-list-item>
+          <mwc-list-item @click=${() =>
+            this.openAddMemberToResourceModal(member.email)}> 
             <span class="add-resources"> Add resource <span> 
           </mwc-list-item>
-          <mwc-list-item @click=${() => this.openRemoveMemberFromResourceModal(member.email, member.resources)}> 
+          <mwc-list-item @click=${() =>
+            this.openRemoveMemberFromResourceModal(
+              member.email,
+              member.resources
+            )}> 
             <span class="remove-resources">Remove resource </span> 
           </mwc-list-item>
         </mwc-menu>
       </div>
-    `
+    `;
   }
 
   handleMoreActions(memberId: string): void {
@@ -187,25 +193,25 @@ export class MemberList extends LitElement {
       ${this.members?.map((x: MemberResponse) => {
         return html`
           <tr>
-            <td class="name">
-            <mwc-checkbox @change=${(event: Event) =>
-              this.handleEmail(event, x.email)}></mwc-checkbox> 
-            <span>${x.name}</span>
+            <td>
+              <mwc-checkbox
+                @change=${(event: Event) => this.handleEmail(event, x.email)}
+              ></mwc-checkbox>
+              <span>${x.name}</span>
             </td>
             <td>${x.email}</td>
             <td>${displayMemberStatus(x.memberLevel)}</td>
             <td>
               <div class="horizontal-scrollbar">
-                ${this.displayMemberResources(
-                  x.resources
-                )}
+                ${this.displayMemberResources(x.resources)}
               </div>
             </td>
+            <td>${x.rfid !== "notset" ? x.rfid : "Not set"}</td>
             <td>
-              ${x.rfid !== "notset" ? x.rfid : "Not set"}
-            </td>
-            <td>
-              <mwc-icon-button icon="more_horiz" @click=${() => this.handleMoreActions(x.id)}></mwc-icon-button>
+              <mwc-icon-button
+                icon="more_horiz"
+                @click=${() => this.handleMoreActions(x.id)}
+              ></mwc-icon-button>
               ${this.getMoreActions(x)}
             </td>
           </tr>
@@ -236,10 +242,8 @@ export class MemberList extends LitElement {
     return html`
       <div class="member-container">
         <div class="member-header">
-          <h3 class="member-count">
-            Number of active members: ${this.memberCount}
-          </h3>
-          <div class="buttons-container">
+          <h3>Number of active members: ${this.memberCount}</h3>
+          <div>
             <mwc-button
               id="slack-clean-up"
               class="margin-r-24"
@@ -265,14 +269,13 @@ export class MemberList extends LitElement {
         </div>
         <div class="all-members-action-container">
           <mwc-button
-            class="add-resource-to-members"
             unelevated
             dense
             label="Add resource to members"
             @click=${this.openAddMembersToResourceModal}
           >
           </mwc-button>
-          <mwc-formfield label="All members" class="all-members-checkbox">
+          <mwc-formfield label="All members">
             <mwc-checkbox
               id="all-members"
               @change=${this.handleAllEmails}
@@ -286,7 +289,7 @@ export class MemberList extends LitElement {
             <th>Member Status</th>
             <th>Resources</th>
             <th>RFID</th>
-            <th> Actions </th>
+            <th>Actions</th>
           </tr>
           ${this.displayMembersTable()}
         </table>
