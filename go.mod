@@ -26,4 +26,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
 	gopkg.in/errgo.v2 v2.1.0
+	syreclabs.com/go/faker v1.2.3
 )

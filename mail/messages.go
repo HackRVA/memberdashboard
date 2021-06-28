@@ -1,19 +1,14 @@
 package mail
 
 import (
-	"bytes"
 	"errors"
 	"memberserver/config"
 	"memberserver/database"
-	"text/template"
 	"time"
 
 	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
 )
-
-//TODO: [ML] Redesign to throttle emails and only expose methods through a management struct?
-//maybe a mailer struct
 
 type CommunicationTemplate string
 
@@ -82,7 +77,7 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 		return false, err
 	}
 
-	if memberExists && m.isThrottled(c, member) {
+	if memberExists && m.IsThrottled(c, member) {
 		log.Printf("Communication %v not sent to %v due to throttling", communication.String(), recipient)
 		return false, nil
 	}
@@ -99,6 +94,7 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 
 	_, err = m.m.SendHtmlMail(recipient, c.Subject, content)
 	if err != nil {
+		log.Printf("Failed to send mail to %v.  Err: %v", recipient, err)
 		return false, err
 	}
 
@@ -109,7 +105,7 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 	return true, nil
 }
 
-func (m *mailer) isThrottled(c database.Communication, member database.Member) bool {
+func (m *mailer) IsThrottled(c database.Communication, member database.Member) bool {
 
 	if c.FrequencyThrottle > 0 {
 		last, err := m.db.GetMostRecentCommunicationToMember(member.ID, c.ID)
@@ -122,25 +118,4 @@ func (m *mailer) isThrottled(c database.Communication, member database.Member) b
 		}
 	}
 	return false
-}
-
-type templateGenerator interface {
-	generateEmailContent(templateSource string, model interface{}) (string, error)
-}
-type fileTemplateGenerator struct{}
-
-func (fileTemplateGenerator) generateEmailContent(templateSource string, model interface{}) (string, error) {
-	tmpl, err := template.ParseFiles(templateSource)
-	if err != nil {
-		log.Errorf("Error loading template %v", err)
-		return "", err
-	}
-	tmpl.Option("missingkey=error")
-	var tpl bytes.Buffer
-	err = tmpl.Execute(&tpl, model)
-	if err != nil {
-		log.Errorf("Error generating content %v", err)
-		return "", err
-	}
-	return tpl.String(), nil
 }

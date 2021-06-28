@@ -120,7 +120,8 @@ func (a API) assignRFID(w http.ResponseWriter, req *http.Request) {
 func (a API) refreshPayments(w http.ResponseWriter, req *http.Request) {
 	payments.GetPayments()
 
-	a.db.EvaluateMembers()
+	a.db.ApplyMemberCredits()
+	a.db.UpdateMemberTiers()
 
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(models.EndpointSuccess{

@@ -20,6 +20,7 @@ func main() {
 	if err != nil {
 		log.Errorf("error setting up db: %s", err)
 	}
+	defer db.Release()
 
 	router := api.Setup(db)
 
@@ -31,7 +32,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	go scheduler.Setup()
+	go scheduler.Setup(db)
 
 	log.Debug("Server listening on http://localhost:3000/")
 	log.Fatal(srv.ListenAndServe())

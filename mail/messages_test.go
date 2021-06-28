@@ -19,7 +19,7 @@ func TestSendMessageToNonMemberWithoutLogging(t *testing.T) {
 
 	db.memberError = pgx.ErrNoRows
 
-	sent, err := mailer.SendCommunication(AccessRevokedLeadership, "info@hackrva.org", memberModel)
+	sent, err := mailer.SendCommunication(AccessRevokedLeadership, c.AdminEmail, memberModel)
 	if err != nil {
 		t.Errorf("Error sending communication %v", err)
 	}
@@ -63,7 +63,7 @@ func TestSendMessageToShouldThrottle(t *testing.T) {
 	db.communicationResult.FrequencyThrottle = 10
 	db.mostRecentCommResult = time.Now().AddDate(0, 0, -5)
 
-	sent, err := mailer.SendCommunication(AccessRevokedLeadership, "info@hackrva.org", memberModel)
+	sent, err := mailer.SendCommunication(AccessRevokedLeadership, c.AdminEmail, memberModel)
 	if err != nil {
 		t.Errorf("Error sending communication %v", err)
 	}

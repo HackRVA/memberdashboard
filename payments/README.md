@@ -28,7 +28,7 @@ We will send the member an email stating that their membership has been revoked 
 | Credited | $1    | 
 | *Classic | $30   |
 | Standard | $35   |
-| Permiere | $50   |
+| Premiere | $50   |
 | Donation | >$50  |
 
 

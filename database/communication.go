@@ -32,7 +32,9 @@ func (db *Database) GetCommunications() []Communication {
 	for rows.Next() {
 		var c Communication
 		err = rows.Scan(&c.ID, &c.Name, &c.Subject, &c.FrequencyThrottle, &c.Template)
-		communications = append(communications, c)
+		if err == nil {
+			communications = append(communications, c)
+		}
 	}
 	return communications
 }
@@ -58,7 +60,7 @@ func (db *Database) GetMostRecentCommunicationToMember(memberId string, commId i
 }
 
 func (db *Database) LogCommunication(communicationId int, memberId string) error {
-	_, err := db.getConn().Exec(context.Background(), communicationDbMethod.insertCommunicationLog(), communicationId, memberId)
+	_, err := db.getConn().Exec(context.Background(), communicationDbMethod.insertCommunicationLog(), memberId, communicationId)
 	if err != nil {
 		return err
 	}

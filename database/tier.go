@@ -62,7 +62,9 @@ func (db *Database) GetMemberTiers() []Tier {
 	for rows.Next() {
 		var t Tier
 		err = rows.Scan(&t.ID, &t.Name)
-		tiers = append(tiers, t)
+		if err == nil {
+			tiers = append(tiers, t)
+		}
 	}
 
 	return tiers

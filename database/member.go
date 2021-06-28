@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -114,6 +115,9 @@ func (db *Database) GetMemberByEmail(memberEmail string) (Member, error) {
 	var rIDs []string
 
 	err := db.getConn().QueryRow(context.Background(), memberDbMethod.getMemberByEmail(), memberEmail).Scan(&m.ID, &m.Name, &m.Email, &m.RFID, &m.Level, &rIDs)
+	if err == pgx.ErrNoRows {
+		return m, err
+	}
 	if err != nil {
 		log.Errorf("error getting member by email: %v", memberEmail)
 		return m, fmt.Errorf("conn.Query failed: %w", err)
@@ -213,15 +217,17 @@ VALUES `
 		}
 
 		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d)", memberName, m.Email, m.Level))
-
-		db.AddUserToDefaultResources(m.Email)
 	}
 
 	str := strings.Join(valStr, ",")
 
-	_, err := db.getConn().Query(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	_, err := db.getConn().Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
 	if err != nil {
 		return fmt.Errorf("add members query failed: %v", err)
+	}
+	for _, m := range members {
+		log.Println("Adding default resource")
+		db.AddUserToDefaultResources(m.Email)
 	}
 
 	return err

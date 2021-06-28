@@ -31,13 +31,15 @@ const checkIPInterval = 24
 
 var c config.Config
 var mailApi mail.MailApi
+var db *database.Database
 
 // Setup Scheduler
 //  We want certain tasks to happen on a regular basis
 //  The scheduler will make sure that happens
-func Setup() {
+func Setup(d *database.Database) {
 	mailApi, _ = mail.Setup()
 	c, _ = config.Load()
+	db = d
 
 	scheduleTask(checkPaymentsInterval*time.Hour, payments.GetPayments, payments.GetPayments)
 	scheduleTask(evaluateMemberStatusInterval*time.Hour, checkMemberStatus, checkMemberStatus)
@@ -66,24 +68,39 @@ func scheduleTask(interval time.Duration, initFunc func(), tickFunc func()) {
 }
 
 func checkMemberStatus() {
-	db, err := database.Setup()
-	if err != nil {
-		log.Errorf("error setting up db: %s", err)
-	}
-	defer db.Release()
+	db.ApplyMemberCredits()
+	db.UpdateMemberTiers()
 
-	db.EvaluateMembers()
-}
+	const memberGracePeriod = 46
+	const membershipMonth = 31
 
-func checkResourceInit() {
-	db, err := database.Setup()
+	mailer := mail.NewMailer(db, mailApi, c)
+
+	pendingRevokation, err := db.GetCommunication(mail.PendingRevokationMember.String())
+
 	if err != nil {
-		log.Errorf("error setting up db: %s", err)
+		log.Errorf("Unable to get communication %v. Err: %v", mail.PendingRevokationMember, err)
 		return
 	}
 
+	pastDueAccounts := db.GetPastDueAccounts()
+	for _, a := range pastDueAccounts {
+		if a.DaysSinceLastPayment > memberGracePeriod {
+			mailer.SendCommunication(mail.AccessRevokedLeadership, c.AdminEmail, a)
+			mailer.SendCommunication(mail.AccessRevokedMember, a.Email, a)
+			db.SetMemberLevel(a.MemberId, database.Inactive)
+		} else if a.DaysSinceLastPayment > membershipMonth {
+			if !mailer.IsThrottled(pendingRevokation, database.Member{ID: a.MemberId}) {
+				//TODO: [ML] Does it make sense to send this to leadership?  It might be like spam...
+				mailer.SendCommunication(mail.PendingRevokationLeadership, c.AdminEmail, a)
+				mailer.SendCommunication(mail.PendingRevokationMember, a.Email, a)
+			}
+		}
+	}
+}
+
+func checkResourceInit() {
 	resources := db.GetResources()
-	defer db.Release()
 
 	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
@@ -95,14 +112,7 @@ func checkResourceInit() {
 }
 
 func checkResourceTick() {
-	db, err := database.Setup()
-	if err != nil {
-		log.Errorf("error setting up db: %s", err)
-		return
-	}
-
 	resources := db.GetResources()
-	defer db.Release()
 
 	for _, r := range resources {
 		resourcemanager.CheckStatus(r)
