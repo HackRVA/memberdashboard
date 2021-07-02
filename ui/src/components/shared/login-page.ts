@@ -7,7 +7,7 @@ import {
   TemplateResult,
 } from "lit-element";
 
-// membership
+// memberdashboard
 import "./card-element";
 import "./login-form";
 import "./register-form";

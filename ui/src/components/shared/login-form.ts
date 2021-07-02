@@ -10,7 +10,7 @@ import {
 // material
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
 
-// membership
+// memberdashboard
 import { AuthService } from "../../service";
 import { LoginRequest, Jwt } from "./types";
 import { ToastMessage } from "./types";

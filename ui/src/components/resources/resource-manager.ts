@@ -8,7 +8,7 @@ import {
   property,
 } from "lit-element";
 
-// membership
+// memberdashboard
 import "../shared/card-element";
 import { ResourceService } from "../../service";
 import { showComponent } from "../../function";

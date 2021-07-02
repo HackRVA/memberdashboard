@@ -1,7 +1,7 @@
 // rxjs
 import { Observable } from "rxjs";
 
-// membership
+// memberdashboard
 import { HTTPService } from "./http.service";
 import { ENV } from "../env";
 import {

@@ -10,7 +10,7 @@ import {
 // material
 import { Snackbar } from "@material/mwc-snackbar";
 
-// membership
+// memberdashboard
 import { ToastMessage } from "./types";
 
 @customElement("toast-msg")

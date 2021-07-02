@@ -11,7 +11,7 @@ import {
 // vaadin
 import { Router } from "@vaadin/router";
 
-// membership
+// memberdashboard
 import { TabIndex } from "../../enums";
 import { AuthService } from "../../service";
 import { memberDashboardContentStyles } from "./styles";

@@ -11,7 +11,7 @@ import {
 import "@google-web-components/google-chart";
 import { GoogleChart } from "@google-web-components/google-chart";
 
-// membership
+// memberdashboard
 import { PaymentService } from "../../service/payment.service";
 import "../shared/card-element";
 import { PaymentChartResponse, ChartOptions } from "./types";

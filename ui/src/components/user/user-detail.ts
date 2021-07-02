@@ -11,7 +11,7 @@ import {
 // polymer
 import "@polymer/paper-card";
 
-// membership
+// memberdashboard
 import { userDetailStyles } from "./styles";
 import { coreStyles } from "./../shared/styles/core-styles";
 import { MemberResource, MemberResponse } from "../members/types";

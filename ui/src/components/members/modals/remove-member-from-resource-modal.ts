@@ -12,7 +12,7 @@ import { Dialog } from "@material/mwc-dialog";
 import { Select } from "@material/mwc-select";
 import { TextField } from "@material/mwc-textfield";
 
-// membership
+// memberdashboard
 import { ResourceService } from "../../../service";
 import { isEmpty, showComponent } from "../../../function";
 import { MemberResource } from "../types";

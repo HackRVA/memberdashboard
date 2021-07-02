@@ -1,7 +1,7 @@
 // rxjs
 import { Observable } from "rxjs";
 
-// membership
+// memberdashboard
 import { ENV } from "../env";
 import { HTTPService } from "./http.service";
 import { UserProfile } from "../components/user/types/user.interface";

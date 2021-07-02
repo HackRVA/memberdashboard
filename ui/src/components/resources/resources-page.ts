@@ -7,7 +7,7 @@ import {
   CSSResult,
 } from "lit-element";
 
-// membership
+// memberdashboard
 import "../shared/card-element";
 import "./resource-manager";
 import { ResourceResponse } from "./types/resource.interface";

@@ -12,7 +12,7 @@ import {
 import { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { Dialog } from "@material/mwc-dialog";
 
-// membership
+// memberdashboard
 import { MemberService } from "../../service";
 import { AssignRFIDRequest, CreateMemberRequest } from "../members/types";
 import { showComponent } from "../../function";
@@ -24,11 +24,11 @@ import { coreStyles, rfidModalStyles } from "./styles";
 export class RFIDModal extends LitElement {
   @property({ type: String })
   email: string = "";
-  
+
   @property({ type: Boolean })
   showNewMemberOption: boolean = false;
-  
-  @property({ type: Boolean})
+
+  @property({ type: Boolean })
   isThisSelf: boolean = false;
 
   memberService: MemberService = new MemberService();

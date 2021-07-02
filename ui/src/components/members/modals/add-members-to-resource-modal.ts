@@ -12,7 +12,7 @@ import {
 import { Dialog } from "@material/mwc-dialog";
 import { Select } from "@material/mwc-select";
 
-// membership
+// memberdashboard
 import { ResourceService } from "../../../service";
 import {
   BulkAddMembersToResourceRequest,

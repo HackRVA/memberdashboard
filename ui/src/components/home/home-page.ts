@@ -7,7 +7,7 @@ import {
   CSSResult,
 } from "lit-element";
 
-// membership
+// memberdashboard
 import { homePageStyles } from "./styles/home-page-styles";
 import "../shared/card-element";
 

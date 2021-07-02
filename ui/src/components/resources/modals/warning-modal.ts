@@ -10,7 +10,7 @@ import {
 // material
 import { Dialog } from "@material/mwc-dialog";
 
-// membership
+// memberdashboard
 import { ResourceService } from "../../../service";
 import { RemoveResourceRequest } from "../types";
 import { ToastMessage } from "../../shared/types";

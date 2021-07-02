@@ -7,7 +7,7 @@ import { Router, RouterLocation } from "@vaadin/router";
 // material
 import "./material-loader";
 
-// membership
+// memberdashboard
 import "./router";
 import { UserService } from "./service/user.service";
 import { UserProfile } from "./components/user/types";

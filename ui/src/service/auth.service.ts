@@ -2,7 +2,7 @@
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
-// membership
+// memberdashboard
 import { LoginRequest, RegisterRequest } from "../components/shared/types";
 import { ENV } from "../env";
 import { Jwt } from "../components/shared/types/auth.interface";

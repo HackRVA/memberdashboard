@@ -7,7 +7,7 @@ import {
   CSSResult,
 } from "lit-element";
 
-// membership
+// memberdashboard
 import { cardElementStyles } from "./styles";
 
 @customElement("card-element")

@@ -1,7 +1,7 @@
 // lit element
 import { LitElement, html, customElement, TemplateResult } from "lit-element";
 
-// membership
+// memberdashboard
 import "./payment-chart";
 import "../shared/card-element";
 

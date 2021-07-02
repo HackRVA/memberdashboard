@@ -1,7 +1,7 @@
 // vaadin
 import { Router, Route, Context, Commands } from "@vaadin/router";
 
-// membership
+// memberdashboard
 import { RoleGuard } from "./guard/role.guard";
 
 const roleGuard = new RoleGuard();

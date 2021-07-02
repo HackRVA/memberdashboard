@@ -10,7 +10,7 @@ import {
 // vaadin
 import { Router } from "@vaadin/router";
 
-// membership
+// memberdashboard
 import "./card-element";
 import { coreStyles, notFoundStyles } from "./styles";
 

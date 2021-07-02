@@ -1,7 +1,7 @@
 // lit element
 import { css, CSSResult } from "lit-element";
 
-// membership
+// memberdashboard
 import { primaryDarkGreen } from "./colors";
 
 export const registerFormStyles: CSSResult = css`

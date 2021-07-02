@@ -12,7 +12,7 @@ import { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { Dialog } from "@material/mwc-dialog";
 import { Checkbox } from "@material/mwc-checkbox";
 
-// membership
+// memberdashboard
 import { ResourceService } from "../../../service";
 import {
   RegisterResourceRequest,

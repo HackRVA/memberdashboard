@@ -7,7 +7,7 @@ import {
   CSSResult,
 } from "lit-element";
 
-// membership
+// memberdashboard
 import { MemberService } from "../../service";
 import "./member-list";
 import { MemberLevel, MemberResponse } from "./types";

@@ -8,7 +8,7 @@ import {
   property,
 } from "lit-element";
 
-// membership
+// memberdashboard
 import { UserProfile } from "./types";
 import { UserService } from "../../service";
 import { userPageStyles } from "./styles";

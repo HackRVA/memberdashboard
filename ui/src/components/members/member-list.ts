@@ -14,7 +14,7 @@ import { Checkbox } from "@material/mwc-checkbox";
 // polymer
 import "@polymer/paper-tooltip";
 
-// membership
+// memberdashboard
 import { MemberResource, MemberResponse } from "./types";
 import { showComponent } from "../../function";
 import { ResourceService, MemberService, PaymentService } from "../../service";
