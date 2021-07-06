@@ -27,13 +27,10 @@ func (c CommunicationTemplate) String() string {
 }
 
 type mailer struct {
-	db                                CommunicationDal
-	m                                 MailApi
-	config                            config.Config
-	generator                         templateGenerator
-	enableInfoEmails                  bool
-	enableNotificationEmailsToMembers bool
-	emailOverrideAddress              string
+	db        CommunicationDal
+	m         MailApi
+	config    config.Config
+	generator templateGenerator
 }
 
 type MailApi interface {
@@ -53,10 +50,7 @@ func NewMailer(db CommunicationDal, m MailApi, config config.Config) *mailer {
 		db,
 		m,
 		config,
-		fileTemplateGenerator{},
-		config.EnableInfoEmails,
-		config.EnableNotificationEmailsToMembers,
-		config.EmailOverrideAddress}
+		fileTemplateGenerator{}}
 	return &mailer
 }
 
@@ -69,6 +63,14 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 		} else {
 			return false, err
 		}
+	}
+
+	if memberExists && !m.config.EnableNotificationEmailsToMembers {
+		log.Printf("Communication %v not sent to %v because notifications to members is not enabled", communication.String(), recipient)
+		return false, nil
+	} else if !memberExists && !m.config.EnableInfoEmails {
+		log.Printf("Communication %v not sent to %v because info emails not enabled", communication.String(), recipient)
+		return false, nil
 	}
 
 	c, err := m.db.GetCommunication(communication.String())
@@ -88,8 +90,8 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 		return false, err
 	}
 
-	if len(m.emailOverrideAddress) > 0 {
-		recipient = m.emailOverrideAddress
+	if len(m.config.EmailOverrideAddress) > 0 {
+		recipient = m.config.EmailOverrideAddress
 	}
 
 	_, err = m.m.SendHtmlMail(recipient, c.Subject, content)
