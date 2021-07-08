@@ -13,6 +13,7 @@ func TestSendMessageToNonMemberWithoutLogging(t *testing.T) {
 	db := dbMock{}
 	m := mailApiMock{}
 	c, _ := config.Load()
+	c.EnableInfoEmails = true
 
 	mailer := NewMailer(&db, &m, c)
 	mailer.generator = generatorMock{}
@@ -36,6 +37,7 @@ func TestSendMessageToMemberShouldLog(t *testing.T) {
 	db := dbMock{}
 	m := mailApiMock{}
 	c, _ := config.Load()
+	c.EnableNotificationEmailsToMembers = true
 
 	mailer := NewMailer(&db, &m, c)
 	mailer.generator = generatorMock{}
@@ -55,8 +57,9 @@ func TestSendMessageToMemberShouldLog(t *testing.T) {
 
 func TestSendMessageToShouldThrottle(t *testing.T) {
 	db := dbMock{}
-	m := mailApiMock{}
 	c, _ := config.Load()
+	c.EnableNotificationEmailsToMembers = true
+	m := mailApiMock{}
 
 	mailer := NewMailer(&db, &m, c)
 	mailer.generator = generatorMock{}
