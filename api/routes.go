@@ -15,22 +15,10 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
-
-// swagger:response VersionResponse
-type versionResponse struct {
-	// Commit Hash
-	//
-	// Example: "ffff"
-	Commit string `json:"commit"`
-}
-
-// GitCommit is populated by a golang build arg
-var GitCommit string
 
 func registerRoutes(r *mux.Router, api API) *mux.Router {
 	rr := r.PathPrefix("/api/").Subrouter()
@@ -411,7 +399,6 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	rr.HandleFunc("/member/assignRFID", api.rbac(api.assignRFID, []UserRole{admin})).Methods(http.MethodPost)
 	// swagger:route GET /api/version version Version
 	//
-	// Version
 	//   Shows the current build's version information
 	//
 	//     Consumes:
@@ -423,17 +410,8 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Schemes: http, https
 	//
 	//     Responses:
-	//       200: VersionResponse
-	r.HandleFunc("/api/version", func(w http.ResponseWriter, r *http.Request) {
-		var version versionResponse
-
-		version.Commit = GitCommit
-
-		w.Header().Set("Content-Type", "application/json")
-
-		j, _ := json.Marshal(version)
-		w.Write(j)
-	}).Methods(http.MethodGet)
+	//       200: versionResponse
+	r.HandleFunc("/api/version", api.getVersion).Methods(http.MethodGet)
 	// swagger:route POST /api/auth/login auth loginRequest
 	//
 	// Login

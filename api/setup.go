@@ -11,9 +11,10 @@ import (
 
 // API endpoints
 type API struct {
-	db       *database.Database
-	config   config.Config
-	resource resourceAPI
+	db        *database.Database
+	config    config.Config
+	resource  resourceAPI
+	gitCommit string
 }
 
 type resourceAPI struct {
@@ -22,7 +23,7 @@ type resourceAPI struct {
 }
 
 // Setup - setup us up the routes
-func Setup(db *database.Database) *mux.Router {
+func Setup(db *database.Database, gitCommit string) *mux.Router {
 	c, _ := config.Load()
 
 	api := API{
@@ -32,13 +33,14 @@ func Setup(db *database.Database) *mux.Router {
 			db:     db,
 			config: c,
 		},
+		gitCommit: gitCommit,
 	}
 
 	r := mux.NewRouter()
 	restRouter := registerRoutes(r, api)
 	serveSwaggerUI(r)
-    //set up go guardian here
-    setupGoGuardian(c, db)
+	//set up go guardian here
+	setupGoGuardian(c, db)
 
 	spa := spaHandler{staticPath: "./ui/dist/", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)

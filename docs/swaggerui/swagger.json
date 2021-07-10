@@ -767,7 +767,7 @@
     },
     "/api/version": {
       "get": {
-        "description": "Version\nShows the current build's version information",
+        "description": "Shows the current build's version information",
         "consumes": [
           "application/json"
         ],
@@ -784,7 +784,7 @@
         "operationId": "Version",
         "responses": {
           "200": {
-            "$ref": "#/responses/VersionResponse"
+            "$ref": "#/responses/versionResponse"
           }
         }
       }
@@ -1204,19 +1204,21 @@
         }
       },
       "x-go-package": "memberserver/database"
+    },
+    "VersionResponse": {
+      "type": "object",
+      "properties": {
+        "commit": {
+          "description": "Commit Hash",
+          "type": "string",
+          "x-go-name": "Commit",
+          "example": "\"ffff\""
+        }
+      },
+      "x-go-package": "memberserver/api/models"
     }
   },
   "responses": {
-    "VersionResponse": {
-      "description": "",
-      "headers": {
-        "commit": {
-          "type": "string",
-          "example": "\"ffff\"",
-          "description": "Commit Hash"
-        }
-      }
-    },
     "addMemberToResourceResponse": {
       "description": "",
       "schema": {
@@ -1339,6 +1341,12 @@
       "description": "",
       "schema": {
         "$ref": "#/definitions/AssignRFIDRequest"
+      }
+    },
+    "versionResponse": {
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/VersionResponse"
       }
     }
   },
