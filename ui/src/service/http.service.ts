@@ -115,7 +115,7 @@ export class HTTPService {
     );
   }
 
-  formatResponse(response: Response): Promise<any> {
+  private formatResponse(response: Response): Promise<any> {
     const contentType: string = response.headers.get("content-type");
 
     if (contentType === "text/csv") {
@@ -125,7 +125,7 @@ export class HTTPService {
     return response.json();
   }
 
-  authHeader(options?: any): string {
+  private authHeader(options?: any): string {
     if (options?.email && options?.password) {
       return "Basic " + btoa(options.email + ":" + options.password);
     } else if (localStorage.getItem("jwt")) {

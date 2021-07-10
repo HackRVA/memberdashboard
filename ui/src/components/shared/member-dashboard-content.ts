@@ -13,20 +13,29 @@ import { Router } from "@vaadin/router";
 
 // memberdashboard
 import { TabIndex } from "../../enums";
-import { AuthService } from "../../service";
-import { memberDashboardContentStyles } from "./styles";
+import { AuthService, VersionService } from "../../service";
+import { memberDashboardContentStyles, coreStyles } from "./styles";
 import { isAdmin } from "./../../function";
+import { VersionResponse } from "./types";
 
 @customElement("member-dashboard-content")
 export class MemberDashboardContent extends LitElement {
   @property({ type: String })
   email: string;
 
+  version: string;
+
   authService: AuthService = new AuthService();
+  versionService: VersionService = new VersionService();
 
   static get styles(): CSSResult[] {
-    return [memberDashboardContentStyles];
+    return [memberDashboardContentStyles, coreStyles];
   }
+
+  firstUpdated(): void {
+    this.getVersion();
+  }
+
   goToHome(): void {
     Router.go("/home");
   }
@@ -69,6 +78,15 @@ export class MemberDashboardContent extends LitElement {
       next: (response: null) => {
         localStorage.removeItem("jwt");
         window.location.href = "/home";
+      },
+    });
+  }
+
+  getVersion(): void {
+    this.versionService.getVersion().subscribe({
+      next: (response: VersionResponse) => {
+        this.version = response.commit;
+        this.requestUpdate();
       },
     });
   }
@@ -127,6 +145,10 @@ export class MemberDashboardContent extends LitElement {
       </mwc-tab-bar>
 
       <slot> </slot>
+
+      <div class="version margin-r-24">
+        <p>Version ${this.version}</p>
+      </div>
     `;
   }
 }
