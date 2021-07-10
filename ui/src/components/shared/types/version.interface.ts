@@ -1,3 +1,6 @@
 export interface VersionResponse {
-  commit: string;
+  major: string;
+  minor: string;
+  hotfix: string;
+  build: string;
 }

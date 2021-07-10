@@ -23,7 +23,7 @@ export class MemberDashboardContent extends LitElement {
   @property({ type: String })
   email: string;
 
-  version: string;
+  version: VersionResponse;
 
   authService: AuthService = new AuthService();
   versionService: VersionService = new VersionService();
@@ -85,10 +85,20 @@ export class MemberDashboardContent extends LitElement {
   getVersion(): void {
     this.versionService.getVersion().subscribe({
       next: (response: VersionResponse) => {
-        this.version = response.commit;
+        this.version = response;
         this.requestUpdate();
       },
     });
+  }
+
+  generateVersionNumber(version: VersionResponse): TemplateResult {
+    return html`
+      <span>
+        ${version?.major}.${version?.minor}.${version?.hotfix}.<b
+          >${version?.build}</b
+        >
+      </span>
+    `;
   }
 
   displayLogout(): TemplateResult {
@@ -147,7 +157,7 @@ export class MemberDashboardContent extends LitElement {
       <slot> </slot>
 
       <div class="version margin-r-24">
-        <p>Version ${this.version}</p>
+        <p>Version ${this.generateVersionNumber(this.version)}</p>
       </div>
     `;
   }

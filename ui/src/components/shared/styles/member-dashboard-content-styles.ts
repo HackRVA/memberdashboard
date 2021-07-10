@@ -12,7 +12,6 @@ export const memberDashboardContentStyles: CSSResult = css`
 
   .version {
     float: right;
-    font-weight: 700;
     color: ${primaryDarkGray};
   }
 `;

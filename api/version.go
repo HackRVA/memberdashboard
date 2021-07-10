@@ -10,9 +10,12 @@ import (
 var GitCommit string
 
 func (a API) getVersion(w http.ResponseWriter, req *http.Request) {
-	var version models.VersionResponse
-
-	version.Commit = GitCommit
+	version := &models.VersionResponse{
+		Major:  "0",
+		Minor:  "0",
+		Hotfix: "0",
+		Build:  GitCommit,
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 

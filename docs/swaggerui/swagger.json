@@ -1208,11 +1208,21 @@
     "VersionResponse": {
       "type": "object",
       "properties": {
-        "commit": {
-          "description": "Commit Hash",
+        "build": {
           "type": "string",
-          "x-go-name": "Commit",
-          "example": "\"ffff\""
+          "x-go-name": "Build"
+        },
+        "hotfix": {
+          "type": "string",
+          "x-go-name": "Hotfix"
+        },
+        "major": {
+          "type": "string",
+          "x-go-name": "Major"
+        },
+        "minor": {
+          "type": "string",
+          "x-go-name": "Minor"
         }
       },
       "x-go-package": "memberserver/api/models"
