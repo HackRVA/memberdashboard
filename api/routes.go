@@ -411,7 +411,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: versionResponse
-	r.HandleFunc("/api/version", api.getVersion).Methods(http.MethodGet)
+	r.HandleFunc("/api/version", api.VersionHandler.ServeHTTP)
 	// swagger:route POST /api/auth/login auth loginRequest
 	//
 	// Login
