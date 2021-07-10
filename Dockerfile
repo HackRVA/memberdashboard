@@ -7,7 +7,7 @@ RUN go test -v ./...
 
 RUN go mod vendor
 
-ARG GIT_COMMIT=test
+ARG GIT_COMMIT=$(git rev-parse --short HEAD)
 RUN go build -o server -ldflags "-X memberserver/api.GitCommit=$GIT_COMMIT"
 
 # create a file named Dockerfile
