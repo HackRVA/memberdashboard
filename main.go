@@ -11,9 +11,6 @@ import (
 	"memberserver/scheduler"
 )
 
-// GitCommit must be in the main go file in order to get the commit hash
-var GitCommit string
-
 func init() {
 	log.SetLevel(log.DebugLevel)
 }
@@ -25,7 +22,7 @@ func main() {
 	}
 	defer db.Release()
 
-	router := api.Setup(db, GitCommit)
+	router := api.Setup(db)
 
 	srv := &http.Server{
 		Handler: router,

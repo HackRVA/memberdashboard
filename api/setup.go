@@ -11,10 +11,9 @@ import (
 
 // API endpoints
 type API struct {
-	db        *database.Database
-	config    config.Config
-	resource  resourceAPI
-	gitCommit string
+	db       *database.Database
+	config   config.Config
+	resource resourceAPI
 }
 
 type resourceAPI struct {
@@ -23,7 +22,7 @@ type resourceAPI struct {
 }
 
 // Setup - setup us up the routes
-func Setup(db *database.Database, gitCommit string) *mux.Router {
+func Setup(db *database.Database) *mux.Router {
 	c, _ := config.Load()
 
 	api := API{
@@ -33,7 +32,6 @@ func Setup(db *database.Database, gitCommit string) *mux.Router {
 			db:     db,
 			config: c,
 		},
-		gitCommit: gitCommit,
 	}
 
 	r := mux.NewRouter()
