@@ -7,8 +7,7 @@ RUN go test -v ./...
 
 RUN go mod vendor
 
-ARG GIT_COMMIT=$(git rev-parse --short HEAD)
-RUN go build -o server -ldflags "-X memberserver/api.GitCommit=$GIT_COMMIT"
+RUN go build -o server -ldflags "-X memberserver/api.GitCommit=$(git rev-parse --short HEAD)"
 
 # create a file named Dockerfile
 FROM node:latest as frontend-build
