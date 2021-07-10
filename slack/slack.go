@@ -1,6 +1,7 @@
 package slack
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -95,4 +96,31 @@ func FindNonMembers() []string {
 		}
 	}
 	return nonMembers
+}
+
+func PostWebHook(msg string) {
+	conf, _ := config.Load()
+
+	newMsg := fmt.Sprint("{\"text\":'```", msg, "```'}")
+	jsonStr := []byte(newMsg)
+	log.Debugf("attempting to post to slack %s", newMsg)
+
+	c := &http.Client{}
+	req, err := http.NewRequest("POST", conf.SlackAccessEvents, bytes.NewBuffer(jsonStr))
+
+	if err != nil {
+		log.Errorf("some error sending to slack hook: %s", err)
+		return
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := c.Do(req)
+
+	if err != nil {
+		log.Errorf("some error sending to slack hook: %s", err)
+		return
+	}
+
+	defer res.Body.Close()
 }
