@@ -1,12 +1,10 @@
 package resourcemanager
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"memberserver/config"
 	"memberserver/database"
-	"net/http"
+	"memberserver/slack"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	log "github.com/sirupsen/logrus"
@@ -62,30 +60,7 @@ var HealthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 
 // OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
 var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	conf, _ := config.Load()
-
-	newMsg := fmt.Sprint("{\"text\":'```", string(msg.Payload()), "```'}")
-	jsonStr := []byte(newMsg)
-	log.Debugf("attempting to post to slack %s", newMsg)
-
-	c := &http.Client{}
-	req, err := http.NewRequest("POST", conf.SlackAccessEvents, bytes.NewBuffer(jsonStr))
-
-	if err != nil {
-		log.Errorf("some error sending to slack hook: %s", err)
-		return
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-
-	res, err := c.Do(req)
-
-	if err != nil {
-		log.Errorf("some error sending to slack hook: %s", err)
-		return
-	}
-
-	defer res.Body.Close()
+	slack.PostWebHook(string(msg.Payload()))
 }
 
 type HeartBeat struct {
