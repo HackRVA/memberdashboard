@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"memberserver/api/models"
 	"memberserver/config"
 	"memberserver/database"
 	"testing"
@@ -166,7 +167,7 @@ func TestEnableInfoEmailsUnsetShouldNotSendInfoEmails(t *testing.T) {
 }
 
 type dbMock struct {
-	memberResult           database.Member
+	memberResult           models.Member
 	memberError            error
 	communicationResult    database.Communication
 	communicatonError      error
@@ -175,7 +176,7 @@ type dbMock struct {
 	logCommunicationCalled bool
 }
 
-func (m *dbMock) GetMemberByEmail(memberEmail string) (database.Member, error) {
+func (m *dbMock) GetMemberByEmail(memberEmail string) (models.Member, error) {
 	return m.memberResult, m.memberError
 }
 func (m *dbMock) GetCommunication(communication string) (database.Communication, error) {

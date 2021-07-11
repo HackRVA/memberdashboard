@@ -20,13 +20,13 @@ type getCurrentMemberRequest struct {
 // swagger:response getMembersResponse
 type getMembersResponse struct {
 	// in: body
-	Body []database.Member
+	Body []models.Member
 }
 
 // swagger:response getMemberResponse
 type getMemberResponse struct {
 	// in: body
-	Body database.Member
+	Body models.Member
 }
 
 // swagger:response getTierResponse
@@ -38,19 +38,19 @@ type getTierResponse struct {
 // swagger:response setRFIDResponse
 type setRFIDResponse struct {
 	// in: body
-	Body database.AssignRFIDRequest
+	Body models.AssignRFIDRequest
 }
 
 // swagger:parameters setRFIDRequest
 type setRFIDRequest struct {
 	// in: body
-	Body database.AssignRFIDRequest
+	Body models.AssignRFIDRequest
 }
 
 // swagger:parameters setSelfRFIDRequest
 type setSelfRFIDRequest struct {
 	// in: body
-	Body database.AssignRFIDRequest
+	Body models.AssignRFIDRequest
 }
 
 // swagger:response getPaymentRefreshResponse

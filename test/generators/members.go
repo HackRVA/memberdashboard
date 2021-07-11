@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"memberserver/api/models"
 	"memberserver/database"
 	"os"
 	"strconv"
@@ -29,7 +30,7 @@ func main() {
 	defer db.Release()
 	for i := 0; i < count; i++ {
 		member := fakeMember()
-		db.AddMembers([]database.Member{member})
+		db.AddMembers([]models.Member{member})
 		log.Printf("Added member %v", member.Name)
 		if member.Level > 1 {
 			member, _ = db.GetMemberByEmail(member.Email)
@@ -42,10 +43,10 @@ func main() {
 	}
 }
 
-func fakeMember() database.Member {
+func fakeMember() models.Member {
 	level, _ := strconv.Atoi(faker.Number().Between(1, 5))
-	resources := []database.MemberResource{}
-	return database.Member{
+	resources := []models.MemberResource{}
+	return models.Member{
 		Name:      faker.Name().Name(),
 		Email:     faker.Internet().Email(),
 		Level:     uint8(level),
@@ -54,7 +55,7 @@ func fakeMember() database.Member {
 	}
 }
 
-func fakePaymentHistory(member database.Member, lastPayment time.Time, numberOfPayments int) []database.Payment {
+func fakePaymentHistory(member models.Member, lastPayment time.Time, numberOfPayments int) []database.Payment {
 	payments := []database.Payment{}
 	for i := 0; i < numberOfPayments; i++ {
 		paymentDate := lastPayment.AddDate(0, -i, 0)
