@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/jackc/pgx/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -69,7 +70,7 @@ func (db *Database) UserSignin(email string, password string) error {
 	storedCreds := &Credentials{}
 
 	// Get the existing entry present in the database for the given user
-	row := db.getConn().QueryRow(context.Background(), userDbMethod.getUserPassword(), email).Scan(&storedCreds.Password)
+	row := db.getConn().QueryRow(context.Background(), userDbMethod.getUserPassword(), strings.ToLower(email)).Scan(&storedCreds.Password)
 	if row == pgx.ErrNoRows {
 		return fmt.Errorf("Unauthorized")
 	}
@@ -87,7 +88,7 @@ func (db *Database) UserSignin(email string, password string) error {
 func (db *Database) GetUser(email string) (UserResponse, error) {
 	var userResponse UserResponse
 
-	row := db.getConn().QueryRow(context.Background(), userDbMethod.getUser(), email).Scan(&userResponse.Email)
+	row := db.getConn().QueryRow(context.Background(), userDbMethod.getUser(), strings.ToLower(email)).Scan(&userResponse.Email)
 	if row == pgx.ErrNoRows {
 		return userResponse, fmt.Errorf("error getting user")
 	}
