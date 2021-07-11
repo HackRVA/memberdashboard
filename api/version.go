@@ -41,8 +41,6 @@ type VersionServer struct {
 }
 
 func (v *VersionServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	println(r.URL.Path)
-	println(strings.TrimPrefix(r.URL.Path, "version"))
 	version := strings.TrimPrefix(r.URL.Path, "version")
 	switch r.Method {
 	case http.MethodGet:
