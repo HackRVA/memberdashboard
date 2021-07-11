@@ -15,3 +15,8 @@ export interface Jwt {
 export interface JwtClaims {
   Groups: string[];
 }
+
+export interface AuthUserProfile {
+  login: boolean;
+  email: string;
+}

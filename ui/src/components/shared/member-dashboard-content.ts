@@ -17,6 +17,7 @@ import { AuthService, VersionService } from "../../service";
 import { memberDashboardContentStyles, coreStyles } from "./styles";
 import { isAdmin } from "./../../function";
 import { VersionResponse } from "./types";
+import { authUser } from "../../auth-user";
 
 @customElement("member-dashboard-content")
 export class MemberDashboardContent extends LitElement {
@@ -77,6 +78,7 @@ export class MemberDashboardContent extends LitElement {
     this.authService.logout().subscribe({
       next: (response: null) => {
         localStorage.removeItem("jwt");
+        authUser.next({ login: false, email: null });
         window.location.href = "/home";
       },
     });

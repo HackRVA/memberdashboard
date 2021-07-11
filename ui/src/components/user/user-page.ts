@@ -9,11 +9,11 @@ import {
 } from "lit-element";
 
 // memberdashboard
-import { UserProfile } from "./types";
 import { UserService } from "../../service";
 import { userPageStyles } from "./styles";
 import "../shared/card-element";
 import "./user-detail";
+import { authUser } from "../../auth-user";
 
 @customElement("user-page")
 export class UserPage extends LitElement {
@@ -27,17 +27,7 @@ export class UserPage extends LitElement {
   }
 
   firstUpdated(): void {
-    this.getUser();
-  }
-
-  getUser(): void {
-    this.userService.getUser().subscribe({
-      next: (result: UserProfile) => {
-        const { email } = result;
-        this.email = email;
-        this.requestUpdate();
-      },
-    });
+    this.email = authUser.getValue().email;
   }
 
   displayUserDetail(): TemplateResult | void {
