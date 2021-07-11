@@ -12,7 +12,7 @@ func TestVersion(t *testing.T) {
 	server := &VersionServer{NewInMemoryVersionStore()}
 
 	expectedVersion := models.VersionResponse{
-		Major:  "0",
+		Major:  "1",
 		Minor:  "0",
 		Hotfix: "0",
 		Build:  "test",
