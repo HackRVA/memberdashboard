@@ -20,7 +20,7 @@ type InMemoryVersionStore struct {
 
 func (i *InMemoryVersionStore) GetVersion() []byte {
 	version := models.VersionResponse{
-		Major:  "0",
+		Major:  "1",
 		Minor:  "0",
 		Hotfix: "0",
 		Build:  GitCommit,
