@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"io/ioutil"
+	"memberserver/api/models"
 	"memberserver/config"
 	"memberserver/database"
 	"memberserver/mail"
@@ -90,7 +91,7 @@ func checkMemberStatus() {
 			mailer.SendCommunication(mail.AccessRevokedMember, a.Email, a)
 			db.SetMemberLevel(a.MemberId, database.Inactive)
 		} else if a.DaysSinceLastPayment > membershipMonth {
-			if !mailer.IsThrottled(pendingRevokation, database.Member{ID: a.MemberId}) {
+			if !mailer.IsThrottled(pendingRevokation, models.Member{ID: a.MemberId}) {
 				//TODO: [ML] Does it make sense to send this to leadership?  It might be like spam...
 				mailer.SendCommunication(mail.PendingRevokationLeadership, c.AdminEmail, a)
 				mailer.SendCommunication(mail.PendingRevokationMember, a.Email, a)

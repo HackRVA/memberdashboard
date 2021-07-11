@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"memberserver/api/models"
 	"memberserver/config"
 	"memberserver/database"
 	"net/http"
@@ -73,9 +74,10 @@ func FindNonMembers() []string {
 		log.Errorf("error fetching slack users: %s", err)
 	}
 	db, _ := database.Setup()
+	memberStore := database.NewDBMemberStore(db)
 
-	members := db.GetMembers()
-	memberMap := make(map[string]database.Member)
+	members := memberStore.GetMembers()
+	memberMap := make(map[string]models.Member)
 
 	for _, m := range members {
 		memberMap[m.Email] = m

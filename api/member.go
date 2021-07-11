@@ -5,28 +5,26 @@ import (
 	"encoding/json"
 	"errors"
 	"memberserver/api/models"
-	"memberserver/database"
-	"memberserver/payments"
 	"memberserver/resourcemanager"
 	"memberserver/slack"
 	"net/http"
 	"strings"
-
-	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 )
 
-func (a API) getTiers(w http.ResponseWriter, req *http.Request) {
-	tiers := a.db.GetMemberTiers()
-
-	w.Header().Set("Content-Type", "application/json")
-
-	j, _ := json.Marshal(tiers)
-	w.Write(j)
+type MemberStore interface {
+	GetTiers() []models.Tier // update where this is
+	GetMembers() []models.Member
+	GetMemberByEmail(email string) (models.Member, error)
+	AssignRFID(email string, rfid string) (models.Member, error)
+	AddNewMember(newMember models.Member) (models.Member, error)
 }
 
-func (a API) getMembers(w http.ResponseWriter, req *http.Request) {
-	members := a.db.GetMembers()
+type MemberServer struct {
+	store MemberStore
+}
+
+func (m *MemberServer) GetMembersHandler(w http.ResponseWriter, r *http.Request) {
+	members := m.store.GetMembers()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -34,15 +32,18 @@ func (a API) getMembers(w http.ResponseWriter, req *http.Request) {
 	w.Write(j)
 }
 
-// getCurrentMember returns the logged in member details
-func (a API) getCurrentUserMemberInfo(w http.ResponseWriter, req *http.Request) {
-	_, user, _ := strategy.AuthenticateRequest(req)
+func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request) {
+	memberEmail := strings.TrimPrefix(r.URL.Path, "/api/member/email/")
 
-	member, err := a.db.GetMemberByEmail(user.GetUserName())
+	if len(memberEmail) == 0 {
+		http.Error(w, errors.New("error getting member by email").Error(), http.StatusNotFound)
+		return
+	}
+
+	member, err := m.store.GetMemberByEmail(memberEmail)
 
 	if err != nil {
-		log.Errorf("error getting member by email: %s", err)
-		http.Error(w, errors.New("error getting member by email").Error(), http.StatusBadRequest)
+		http.Error(w, "error getting member by email", http.StatusNotFound)
 		return
 	}
 
@@ -51,16 +52,13 @@ func (a API) getCurrentUserMemberInfo(w http.ResponseWriter, req *http.Request) 
 	w.Write(j)
 }
 
-func (a API) getMemberByEmail(w http.ResponseWriter, req *http.Request) {
-	routeVars := mux.Vars(req)
+func (m *MemberServer) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request) {
+	_, user, _ := strategy.AuthenticateRequest(r)
 
-	memberEmail := routeVars["email"]
-
-	member, err := a.db.GetMemberByEmail(memberEmail)
+	member, err := m.store.GetMemberByEmail(user.GetUserName())
 
 	if err != nil {
-		log.Errorf("error getting member by email: %s", err)
-		http.Error(w, errors.New("error getting member by email").Error(), http.StatusBadRequest)
+		http.Error(w, "error getting member by email", http.StatusNotFound)
 		return
 	}
 
@@ -69,20 +67,48 @@ func (a API) getMemberByEmail(w http.ResponseWriter, req *http.Request) {
 	w.Write(j)
 }
 
-// assignRFID to the current logged in user
-func (a API) assignRFIDSelf(w http.ResponseWriter, req *http.Request) {
-	var assignRFIDRequest database.AssignRFIDRequest
+func (m *MemberServer) AssignRFIDHandler(w http.ResponseWriter, r *http.Request) {
+	var assignRFIDRequest models.AssignRFIDRequest
 
-	err := json.NewDecoder(req.Body).Decode(&assignRFIDRequest)
+	err := json.NewDecoder(r.Body).Decode(&assignRFIDRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	_, user, _ := strategy.AuthenticateRequest(req)
 
-	r, err := a.db.SetRFIDTag(user.GetUserName(), assignRFIDRequest.RFID)
+	m.assignRFID(w, assignRFIDRequest.Email, assignRFIDRequest.RFID)
+}
+
+func (m *MemberServer) AssignRFIDSelfHandler(w http.ResponseWriter, r *http.Request) {
+	var assignRFIDRequest models.AssignRFIDRequest
+
+	err := json.NewDecoder(r.Body).Decode(&assignRFIDRequest)
 	if err != nil {
-		log.Errorf("error trying to assign rfid to member: %s", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	_, user, _ := strategy.AuthenticateRequest(r)
+
+	m.assignRFID(w, user.GetUserName(), assignRFIDRequest.RFID)
+}
+
+func (m *MemberServer) GetTiersHandler(w http.ResponseWriter, r *http.Request) {
+	tiers := m.store.GetTiers()
+
+	w.Header().Set("Content-Type", "application/json")
+
+	j, _ := json.Marshal(tiers)
+	w.Write(j)
+}
+
+func (m *MemberServer) assignRFID(w http.ResponseWriter, email, rfid string) {
+	if len(rfid) == 0 {
+		http.Error(w, errors.New("not a valid rfid").Error(), http.StatusBadRequest)
+		return
+	}
+	r, err := m.store.AssignRFID(email, rfid)
+	if err != nil {
 		http.Error(w, errors.New("unable to assign rfid").Error(), http.StatusBadRequest)
 		return
 	}
@@ -91,46 +117,10 @@ func (a API) assignRFIDSelf(w http.ResponseWriter, req *http.Request) {
 	j, _ := json.Marshal(r)
 	w.Write(j)
 
-	go resourcemanager.PushOne(database.Member{Email: assignRFIDRequest.Email})
+	go resourcemanager.PushOne(models.Member{Email: email})
 }
 
-func (a API) assignRFID(w http.ResponseWriter, req *http.Request) {
-	var assignRFIDRequest database.AssignRFIDRequest
-
-	err := json.NewDecoder(req.Body).Decode(&assignRFIDRequest)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	r, err := a.db.SetRFIDTag(assignRFIDRequest.Email, assignRFIDRequest.RFID)
-	if err != nil {
-		log.Errorf("error trying to assign rfid to member: %s", err.Error())
-		http.Error(w, errors.New("unable to assign rfid").Error(), http.StatusBadRequest)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(r)
-	w.Write(j)
-
-	go resourcemanager.PushOne(database.Member{Email: assignRFIDRequest.Email})
-}
-
-func (a API) refreshPayments(w http.ResponseWriter, req *http.Request) {
-	payments.GetPayments()
-
-	a.db.ApplyMemberCredits()
-	a.db.UpdateMemberTiers()
-
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(models.EndpointSuccess{
-		Ack: true,
-	})
-	w.Write(j)
-}
-
-func (a API) getNonMembersOnSlack(w http.ResponseWriter, req *http.Request) {
+func (m *MemberServer) GetNonMembersOnSlackHandler(w http.ResponseWriter, r *http.Request) {
 	nonMembers := slack.FindNonMembers()
 	buf := bytes.NewBufferString(strings.Join(nonMembers[:], "\n"))
 	w.Header().Set("Content-Type", "text/csv")
@@ -138,40 +128,26 @@ func (a API) getNonMembersOnSlack(w http.ResponseWriter, req *http.Request) {
 	w.Write(buf.Bytes())
 }
 
-func (a API) addNewMember(w http.ResponseWriter, req *http.Request) {
-	var newMember database.Member
+func (m *MemberServer) AddNewMemberHandler(w http.ResponseWriter, r *http.Request) {
+	var newMember models.Member
 
-	err := json.NewDecoder(req.Body).Decode(&newMember)
+	err := json.NewDecoder(r.Body).Decode(&newMember)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// granting standard membership for the day - if their paypal email address doesn't match
-	//  their membership will be revoked
-	newMember.Level = uint8(database.Standard)
-
-	err = a.db.AddMembers([]database.Member{newMember})
-
+	addedMember, err := m.store.AddNewMember(newMember)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "error getting member by email", http.StatusNotFound)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(models.EndpointSuccess{
-		Ack: true,
-	})
+	j, _ := json.Marshal(addedMember)
 	w.Write(j)
 
-	_, err = a.db.SetRFIDTag(newMember.Email, newMember.RFID)
+	m.store.AssignRFID(addedMember.Email, addedMember.RFID)
 
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	a.db.AddUserToDefaultResources(newMember.Email)
-
-	go resourcemanager.PushOne(newMember)
+	go resourcemanager.PushOne(addedMember)
 }

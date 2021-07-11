@@ -52,7 +52,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getMembersResponse
-	rr.HandleFunc("/member", api.rbac(api.getMembers, []UserRole{admin}))
+	rr.HandleFunc("/member", api.rbac(api.MemberServer.GetMembersHandler, []UserRole{admin}))
 	// swagger:route POST /api/member/new member addNewMemberRequest
 	//
 	// Add a new member
@@ -74,7 +74,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	rr.HandleFunc("/member/new", api.rbac(api.addNewMember, []UserRole{admin}))
+	rr.HandleFunc("/member/new", api.rbac(api.MemberServer.AddNewMemberHandler, []UserRole{admin}))
 	// swagger:route GET /api/member/self member getCurrentMemberRequest
 	//
 	// Returns current members information
@@ -89,7 +89,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getMemberResponse
-	rr.HandleFunc("/member/self", api.getCurrentUserMemberInfo)
+	rr.HandleFunc("/member/self", api.MemberServer.GetCurrentUserHandler)
 	// swagger:route GET /api/member/email/{email} member getMemberByEmailRequest
 	//
 	// Returns a member based on the email address.
@@ -104,7 +104,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getMemberResponse
-	rr.HandleFunc("/member/email/{email}", api.rbac(api.getMemberByEmail, []UserRole{admin}))
+	rr.HandleFunc("/member/email/{email}", api.rbac(api.MemberServer.GetByEmailHandler, []UserRole{admin}))
 	// swagger:route GET /api/member/slack/nonmembers member getSlackNonMemberList
 	//
 	// Returns a list slack users that are possibly not members.
@@ -121,7 +121,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: text/csv
-	rr.HandleFunc("/member/slack/nonmembers", api.rbac(api.getNonMembersOnSlack, []UserRole{admin}))
+	rr.HandleFunc("/member/slack/nonmembers", api.rbac(api.MemberServer.GetNonMembersOnSlackHandler, []UserRole{admin}))
 	// swagger:route GET /api/member/tier member getTiers
 	//
 	// Returns a list the member tiers.
@@ -136,30 +136,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getTierResponse
-	rr.HandleFunc("/member/tier", api.rbac(api.getTiers, []UserRole{admin}))
-	// swagger:route POST /api/payments/refresh payments getRefreshPayments
-	//
-	// Refresh payment information
-	//
-	// Submits a request to update member status information
-	//   This will reach out to paypal and pull down the latest
-	//   transaction information and then evaluate each member's
-	//   membership status
-	//
-	//  This should happen automatically every day, but if we decide we
-	//   want to manually update it.  This will give us the option to do so.
-	//
-	//     Produces:
-	//     - application/json
-	//
-	//     Schemes: http, https
-	//
-	//     Security:
-	//     - bearerAuth:
-	//
-	//     Responses:
-	//       200: getPaymentRefreshResponse
-	rr.HandleFunc("/payments/refresh", api.rbac(api.refreshPayments, []UserRole{admin}))
+	rr.HandleFunc("/member/tier", api.rbac(api.MemberServer.GetTiersHandler, []UserRole{admin}))
 	// swagger:route GET /api/payments/charts payments searchPaymentChartRequest
 	//
 	// Get Chart information of payments
@@ -376,7 +353,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: setRFIDResponse
-	rr.HandleFunc("/member/assignRFID/self", api.assignRFIDSelf).Methods(http.MethodPost)
+	rr.HandleFunc("/member/assignRFID/self", api.MemberServer.AssignRFIDSelfHandler).Methods(http.MethodPost)
 	// swagger:route POST /api/member/assignRFID member setSelfRFIDRequest
 	//
 	// Assigns an RFID tag to a member
@@ -396,7 +373,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: setRFIDResponse
-	rr.HandleFunc("/member/assignRFID", api.rbac(api.assignRFID, []UserRole{admin})).Methods(http.MethodPost)
+	rr.HandleFunc("/member/assignRFID", api.rbac(api.MemberServer.AssignRFIDHandler, []UserRole{admin})).Methods(http.MethodPost)
 	// swagger:route GET /api/version version Version
 	//
 	//   Shows the current build's version information
@@ -411,7 +388,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: versionResponse
-	r.HandleFunc("/api/version", api.VersionHandler.ServeHTTP)
+	r.HandleFunc("/api/version", api.VersionServer.ServeHTTP)
 	// swagger:route POST /api/auth/login auth loginRequest
 	//
 	// Login

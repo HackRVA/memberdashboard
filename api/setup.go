@@ -11,10 +11,11 @@ import (
 
 // API endpoints
 type API struct {
-	db             *database.Database
-	config         config.Config
-	resource       resourceAPI
-	VersionHandler http.Handler
+	db            *database.Database
+	config        config.Config
+	resource      resourceAPI
+	VersionServer *VersionServer
+	MemberServer  *MemberServer
 }
 
 type resourceAPI struct {
@@ -32,7 +33,8 @@ func Setup(db *database.Database) *mux.Router {
 			db:     db,
 			config: c,
 		},
-		VersionHandler: &VersionServer{NewInMemoryVersionStore()},
+		VersionServer: &VersionServer{NewInMemoryVersionStore()},
+		MemberServer:  &MemberServer{database.NewDBMemberStore(db)},
 	}
 
 	r := mux.NewRouter()

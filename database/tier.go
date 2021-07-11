@@ -1,11 +1,5 @@
 package database
 
-import (
-	"context"
-
-	log "github.com/sirupsen/logrus"
-)
-
 var tierDbMethod TierDatabaseMethod
 
 // MemberLevel enum
@@ -46,26 +40,4 @@ var MemberLevelToStr = map[MemberLevel]string{
 type Tier struct {
 	ID   uint8  `json:"id"`
 	Name string `json:"level"`
-}
-
-// GetMemberTiers - gets the member tiers from DB
-func (db *Database) GetMemberTiers() []Tier {
-	rows, err := db.getConn().Query(context.Background(), tierDbMethod.getMemberTiers())
-	if err != nil {
-		log.Errorf("conn.Query failed: %v", err)
-	}
-
-	defer rows.Close()
-
-	var tiers []Tier
-
-	for rows.Next() {
-		var t Tier
-		err = rows.Scan(&t.ID, &t.Name)
-		if err == nil {
-			tiers = append(tiers, t)
-		}
-	}
-
-	return tiers
 }

@@ -1,6 +1,7 @@
 package payments
 
 import (
+	"memberserver/api/models"
 	"memberserver/database"
 	"time"
 
@@ -51,14 +52,16 @@ func processPayments(payments []database.Payment) {
 	}
 	defer db.Release()
 
-	var membersToAdd []database.Member
+	memberStore := database.NewDBMemberStore(db)
+
+	var membersToAdd []models.Member
 
 	for _, p := range payments {
 		if p.Name == "" && p.Email == "" {
 			continue
 		}
 
-		newMember := database.Member{
+		newMember := models.Member{
 			Name:  p.Name,
 			Email: p.Email,
 		}
@@ -71,9 +74,9 @@ func processPayments(payments []database.Payment) {
 		log.Error(err)
 	}
 
-	members := db.GetMembers()
+	members := memberStore.GetMembers()
 
-	memberLookup := make(map[string]database.Member)
+	memberLookup := make(map[string]models.Member)
 
 	for _, m := range members {
 		memberLookup[m.Email] = m

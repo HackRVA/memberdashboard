@@ -2,6 +2,7 @@ package mail
 
 import (
 	"errors"
+	"memberserver/api/models"
 	"memberserver/config"
 	"memberserver/database"
 	"time"
@@ -39,7 +40,7 @@ type MailApi interface {
 }
 
 type CommunicationDal interface {
-	GetMemberByEmail(memberEmail string) (database.Member, error)
+	GetMemberByEmail(memberEmail string) (models.Member, error)
 	GetCommunication(communication string) (database.Communication, error)
 	LogCommunication(communicationId int, memberId string) error
 	GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error)
@@ -107,7 +108,7 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 	return true, nil
 }
 
-func (m *mailer) IsThrottled(c database.Communication, member database.Member) bool {
+func (m *mailer) IsThrottled(c database.Communication, member models.Member) bool {
 
 	if c.FrequencyThrottle > 0 {
 		last, err := m.db.GetMostRecentCommunicationToMember(member.ID, c.ID)

@@ -10,6 +10,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"memberserver/api/models"
 	"memberserver/database"
 )
 
@@ -114,7 +115,7 @@ func UpdateResources() {
 }
 
 // PushOne - update one user on the resources
-func PushOne(m database.Member) {
+func PushOne(m models.Member) {
 	db, err := database.Setup()
 	if err != nil {
 		log.Errorf("error setting up db: %s", err)

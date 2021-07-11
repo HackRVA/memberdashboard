@@ -3,6 +3,7 @@ package database
 import (
 	"errors"
 	"fmt"
+	"memberserver/api/models"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -252,7 +253,7 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 }
 
 // GetMemberResourceRelation retrieves a relation of a member and a resource
-func (db *Database) GetMemberResourceRelation(m Member, r Resource) (MemberResourceRelation, error) {
+func (db *Database) GetMemberResourceRelation(m models.Member, r Resource) (MemberResourceRelation, error) {
 	mr := MemberResourceRelation{}
 
 	row := db.getConn().QueryRow(db.ctx, resourceDbMethod.getMemberResource(), m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
@@ -315,8 +316,8 @@ func (db *Database) GetResourceACL(r Resource) ([]string, error) {
 }
 
 // GetResourceACLWithMemberInfo returns a list of members that have access to that Resource
-func (db *Database) GetResourceACLWithMemberInfo(r Resource) ([]Member, error) {
-	var accessList []Member
+func (db *Database) GetResourceACLWithMemberInfo(r Resource) ([]models.Member, error) {
+	var accessList []models.Member
 
 	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByResourceIDQueryWithMemberInfo(), r.ID)
 	if err != nil {
@@ -326,7 +327,7 @@ func (db *Database) GetResourceACLWithMemberInfo(r Resource) ([]Member, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var member Member
+		var member models.Member
 
 		rows.Scan(&member.ID, &member.Name, &member.RFID)
 
@@ -348,7 +349,7 @@ type MemberAccess struct {
 
 // GetMembersAccess returns a list of a specific members access
 //   this is used for sending a new rfid assigment to a resource
-func (db *Database) GetMembersAccess(m Member) ([]MemberAccess, error) {
+func (db *Database) GetMembersAccess(m models.Member) ([]MemberAccess, error) {
 	var memberAccess []MemberAccess
 
 	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByEmail(), m.Email)
