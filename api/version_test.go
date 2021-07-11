@@ -8,15 +8,36 @@ import (
 	"testing"
 )
 
+func NewStubVersionStore() *StubVersionStore {
+	return &StubVersionStore{}
+}
+
+var mockVersion = models.VersionResponse{
+	Major:  "apple",
+	Minor:  "banana",
+	Hotfix: "orange",
+	Build:  GitCommit,
+}
+
+func (i *StubVersionStore) GetVersion() []byte {
+	j, _ := json.Marshal(mockVersion)
+
+	return j
+}
+
+type StubVersionStore struct {
+}
+
 func TestVersion(t *testing.T) {
-	server := &VersionServer{NewInMemoryVersionStore()}
+	server := &VersionServer{NewStubVersionStore()}
 
 	expectedVersion := models.VersionResponse{
-		Major:  "1",
-		Minor:  "0",
-		Hotfix: "0",
+		Major:  mockVersion.Major,
+		Minor:  mockVersion.Minor,
+		Hotfix: mockVersion.Hotfix,
 		Build:  "test",
 	}
+
 	expectedVersionJSON, _ := json.Marshal(expectedVersion)
 
 	tests := []struct {
@@ -29,13 +50,7 @@ func TestVersion(t *testing.T) {
 		{
 			name: "should respond with the test version",
 			setup: func() {
-				GitCommit = `test`
-			},
-			version: models.VersionResponse{
-				Major:  "0",
-				Minor:  "0",
-				Hotfix: "0",
-				Build:  "test",
+				mockVersion = expectedVersion
 			},
 			expectedHTTPStatus: http.StatusOK,
 			expectedResponse:   string(expectedVersionJSON),
@@ -43,7 +58,10 @@ func TestVersion(t *testing.T) {
 		{
 			name: "should fail if we didn't capture the commit hash",
 			setup: func() {
-				GitCommit = ``
+				mockVersion.Major = ``
+				mockVersion.Minor = ``
+				mockVersion.Hotfix = ``
+				mockVersion.Build = ``
 			},
 			expectedHTTPStatus: http.StatusNotFound,
 			expectedResponse:   "some issue getting the version",
