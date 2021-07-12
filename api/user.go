@@ -60,7 +60,7 @@ func authMiddleware(next http.Handler) http.Handler {
 // getUser responds with the current logged in user
 func (a API) getUser(w http.ResponseWriter, r *http.Request) {
 	u := auth.User(r)
-	userProfile, err := a.db.GetUser(u.GetUserName())
+	userProfile, err := a.db.GetUser(strings.ToLower(u.GetUserName()))
 	if err != nil {
 		log.Error(err)
 		w.WriteHeader(http.StatusBadRequest)
