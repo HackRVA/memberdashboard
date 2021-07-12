@@ -89,7 +89,7 @@ func (a API) signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = a.db.RegisterUser(creds.Email, creds.Password)
+	err = a.db.RegisterUser(strings.ToLower(creds.Email), creds.Password)
 
 	if err != nil {
 		log.Error(err)
@@ -147,6 +147,7 @@ func getValidator(db *database.Database) basic.AuthenticateFunc {
 func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 	exp := jwt.SetExpDuration(time.Hour * JWTExpireInterval)
 	u := auth.User(r)
+	u.SetUserName(strings.ToLower(u.GetUserName()))
 	token, err := jwt.IssueAccessToken(u, keeper, exp)
 
 	if err != nil {
