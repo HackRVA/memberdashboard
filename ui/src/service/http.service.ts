@@ -23,9 +23,8 @@ export class HTTPService {
           });
         }
       }),
-      catchError((err) => {
+      catchError((err: Error) => {
         // Network or other error, handle appropriately
-        console.error(err);
         return throwError({ error: true, message: err.message });
       })
     );
@@ -51,9 +50,8 @@ export class HTTPService {
           });
         }
       }),
-      catchError((err) => {
+      catchError((err: Error) => {
         // Network or other error, handle appropriately
-        console.error(err);
         return throwError({ error: true, message: err.message });
       })
     );
@@ -79,9 +77,8 @@ export class HTTPService {
           });
         }
       }),
-      catchError((err) => {
+      catchError((err: Error) => {
         // Network or other error, handle appropriately
-        console.error(err);
         return throwError({ error: true, message: err.message });
       })
     );
@@ -107,9 +104,8 @@ export class HTTPService {
           });
         }
       }),
-      catchError((err) => {
+      catchError((err: Error) => {
         // Network or other error, handle appropriately
-        console.error(err);
         return throwError({ error: true, message: err.message });
       })
     );
