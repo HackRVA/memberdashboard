@@ -13,19 +13,6 @@ const (
 	user
 )
 
-func userRoleFromString(role string) UserRole {
-	urMap := map[string]UserRole{
-		"admin": admin,
-		"user":  user,
-	}
-
-	if _, ok := urMap[role]; !ok {
-		return user // default to User
-	}
-
-	return urMap[role]
-}
-
 func (ur UserRole) ToString() string {
 	switch ur {
 	case admin:

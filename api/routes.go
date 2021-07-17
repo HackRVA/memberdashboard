@@ -22,7 +22,7 @@ import (
 
 func registerRoutes(r *mux.Router, api API) *mux.Router {
 	rr := r.PathPrefix("/api/").Subrouter()
-	rr.Use(authMiddleware)
+	rr.Use(api.UserServer.authMiddleware)
 	// swagger:route GET /api/user user user
 	//
 	// Returns the current logged in user.
@@ -37,7 +37,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getUserResponse
-	rr.HandleFunc("/user", api.getUser)
+	rr.HandleFunc("/user", api.UserServer.getUser)
 	// swagger:route GET /api/member member getMemberListRequest
 	//
 	// Returns a list of the members in the system.
@@ -406,7 +406,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: loginResponse
-	rr.HandleFunc("/auth/login", api.authenticate).Methods(http.MethodPost)
+	rr.HandleFunc("/auth/login", api.UserServer.login).Methods(http.MethodPost)
 	// swagger:route POST /api/auth/logout auth logoutRequest
 	//
 	// Logout
@@ -421,7 +421,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200:
-	r.HandleFunc("/api/auth/logout", api.logout)
+	r.HandleFunc("/api/auth/logout", api.UserServer.logout)
 	// swagger:route POST /api/auth/register auth registerUserRequest
 	//
 	// Register a new user
@@ -436,6 +436,6 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	r.HandleFunc("/api/auth/register", api.signup)
+	r.HandleFunc("/api/auth/register", api.UserServer.registerUser)
 	return rr
 }

@@ -52,8 +52,6 @@ func processPayments(payments []database.Payment) {
 	}
 	defer db.Release()
 
-	memberStore := database.NewDBMemberStore(db)
-
 	var membersToAdd []models.Member
 
 	for _, p := range payments {
@@ -74,7 +72,7 @@ func processPayments(payments []database.Payment) {
 		log.Error(err)
 	}
 
-	members := memberStore.GetMembers()
+	members := db.GetMembers()
 
 	memberLookup := make(map[string]models.Member)
 

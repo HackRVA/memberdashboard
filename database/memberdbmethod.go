@@ -31,7 +31,7 @@ func (member *MemberDatabaseMethod) getMembersWithCredit() string {
 }
 
 func (member *MemberDatabaseMethod) getMemberByEmail() string {
-	const getMemberByEmailQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
+	const getMemberByEmailQuery = `SELECT id, name, LOWER(email), COALESCE(rfid,'notset'), member_tier_id,
 	ARRAY(
 	SELECT resource_id
 	FROM membership.member_resource
@@ -40,7 +40,7 @@ func (member *MemberDatabaseMethod) getMemberByEmail() string {
 	WHERE member_id = membership.members.id
 	) as resources
 	FROM membership.members
-	WHERE email = $1;`
+	WHERE LOWER(email) = LOWER($1);`
 
 	return getMemberByEmailQuery
 }

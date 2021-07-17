@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"memberserver/api/models"
 	"memberserver/config"
-	"memberserver/database"
 	"net/http"
 	"strings"
 	"time"
@@ -20,13 +19,28 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// get
+// register
+// login
+// logout
+
+type UserStore interface {
+	GetMemberByEmail(email string) (models.Member, error)
+	RegisterUser(models.Credentials) error
+	UserSignin(username, password string) error
+}
+
+type UserServer struct {
+	store UserStore
+}
+
 // JWTExpireInterval - how long the JWT will last in hours
 const JWTExpireInterval = 8
 
 var strategy union.Union
 var keeper jwt.SecretsKeeper
 
-func setupGoGuardian(config config.Config, db *database.Database) {
+func setupGoGuardian(config config.Config, userServer UserServer) {
 
 	keeper = jwt.StaticSecret{
 		ID:        "secret-id",
@@ -38,12 +52,12 @@ func setupGoGuardian(config config.Config, db *database.Database) {
 	cache.RegisterOnExpired(func(key, _ interface{}) {
 		cache.Peek(key)
 	})
-	basicStrategy := basic.NewCached(getValidator(db), cache)
+	basicStrategy := basic.NewCached(userServer.getValidator(), cache)
 	jwtStrategy := jwt.New(cache, keeper)
 	strategy = union.New(jwtStrategy, basicStrategy)
 }
 
-func authMiddleware(next http.Handler) http.Handler {
+func (us *UserServer) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, user, err := strategy.AuthenticateRequest(r)
 		if err != nil {
@@ -57,18 +71,25 @@ func authMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func NewUserServer(store UserStore, config config.Config) UserServer {
+	userServer := UserServer{
+		store: store,
+	}
+
+	return userServer
+}
+
 // getUser responds with the current logged in user
-func (a API) getUser(w http.ResponseWriter, r *http.Request) {
+func (us *UserServer) getUser(w http.ResponseWriter, r *http.Request) {
 	u := auth.User(r)
-	userProfile, err := a.db.GetUser(strings.ToLower(u.GetUserName()))
+	userProfile, err := us.store.GetMemberByEmail(u.GetUserName())
 	if err != nil {
-		log.Error(err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "user not found", http.StatusUnauthorized)
 		return
 	}
 
-	if userProfile == (database.UserResponse{}) {
-		log.Println("user not found")
+	if userProfile.Email == (models.UserResponse{}).Email {
+		http.Error(w, "user not found", http.StatusUnauthorized)
 		return
 	}
 
@@ -78,57 +99,19 @@ func (a API) getUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(j)
 }
 
-// Signup register a user to the db
-func (a API) signup(w http.ResponseWriter, r *http.Request) {
-	// Parse and decode the request body into a new `Credentials` instance
-	creds := &database.Credentials{}
-	err := json.NewDecoder(r.Body).Decode(creds)
-	if err != nil {
-		// If there is something wrong with the request body, return a 400 status
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	err = a.db.RegisterUser(strings.ToLower(creds.Email), creds.Password)
-
-	if err != nil {
-		log.Error(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	// We reach this point if the credentials we correctly stored in the database, and the default status of 200 is sent back
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(models.EndpointSuccess{
-		Ack: true,
-	})
-	w.Write(j)
-}
-
-// Logout endpoint for user signin
-func (a API) logout(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	j, _ := json.Marshal(struct{ Message string }{
-		Message: "user logged out!",
-	})
-	w.Write(j)
-	http.Redirect(w, r, "/", http.StatusFound)
-}
-
-func getValidator(db *database.Database) basic.AuthenticateFunc {
+func (us *UserServer) getValidator() basic.AuthenticateFunc {
 	validator := func(ctx context.Context, r *http.Request, userName, password string) (auth.Info, error) {
 		log.Errorf("signing in: %s", userName)
-		err := db.UserSignin(userName, password)
+		err := us.store.UserSignin(userName, password)
 		if err != nil {
 			log.Errorf("error signing in: %s", err)
-			return nil, fmt.Errorf("Invalid credentials")
+			return nil, fmt.Errorf("invalid credentials")
 		}
 		// If we reach this point, that means the users password was correct, and that they are authorized
 		// we could attach some of their privledges to this return val I think
 
 		// get the user's resources/roles from the db
-		user, _ := db.GetMemberByEmail(userName)
+		user, _ := us.store.GetMemberByEmail(userName)
 		var resources []string
 		for _, resource := range user.Resources {
 			resources = append(resources, resource.Name)
@@ -144,7 +127,42 @@ func getValidator(db *database.Database) basic.AuthenticateFunc {
 	return validator
 }
 
-func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
+// Signup register a user to the db
+func (us *UserServer) registerUser(w http.ResponseWriter, r *http.Request) {
+	// Parse and decode the request body into a new `Credentials` instance
+	creds := &models.Credentials{}
+	err := json.NewDecoder(r.Body).Decode(creds)
+	if err != nil {
+		// If there is something wrong with the request body, return a 400 status
+		http.Error(w, "error registering user", http.StatusBadRequest)
+		return
+	}
+
+	if len(creds.Password) < 3 {
+		http.Error(w, "password must be longer", http.StatusBadRequest)
+		return
+	}
+
+	err = us.store.RegisterUser(models.Credentials{
+		Email:    strings.ToLower(creds.Email),
+		Password: creds.Password,
+	})
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "error registering user", http.StatusBadRequest)
+		return
+	}
+
+	// We reach this point if the credentials we correctly stored in the database, and the default status of 200 is sent back
+	w.Header().Set("Content-Type", "application/json")
+	j, _ := json.Marshal(models.EndpointSuccess{
+		Ack: true,
+	})
+	w.Write(j)
+}
+
+func (us *UserServer) login(w http.ResponseWriter, r *http.Request) {
 	exp := jwt.SetExpDuration(time.Hour * JWTExpireInterval)
 	u := auth.User(r)
 	u.SetUserName(strings.ToLower(u.GetUserName()))
@@ -162,4 +180,15 @@ func (a API) authenticate(w http.ResponseWriter, r *http.Request) {
 
 	j, _ := json.Marshal(tokenJSON)
 	w.Write(j)
+}
+
+// Logout endpoint for user signin
+func (us *UserServer) logout(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	j, _ := json.Marshal(struct{ Message string }{
+		Message: "user logged out!",
+	})
+	w.Write(j)
+	http.Redirect(w, r, "/", http.StatusFound)
 }

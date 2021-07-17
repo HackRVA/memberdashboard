@@ -74,9 +74,8 @@ func FindNonMembers() []string {
 		log.Errorf("error fetching slack users: %s", err)
 	}
 	db, _ := database.Setup()
-	memberStore := database.NewDBMemberStore(db)
 
-	members := memberStore.GetMembers()
+	members := db.GetMembers()
 	memberMap := make(map[string]models.Member)
 
 	for _, m := range members {
