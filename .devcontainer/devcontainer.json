@@ -40,7 +40,8 @@
 		"premparihar.gotestexplorer",
 		"casualjim.gotemplate",
 		"dbaeumer.vscode-eslint",
-		"ckolkman.vscode-postgres"
+		"ckolkman.vscode-postgres",
+		"eamodio.gitlens"
 	],
 
 	"postCreateCommand": ["sh", "postCreateCommand.sh"],

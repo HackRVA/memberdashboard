@@ -95,12 +95,3 @@ func (resource *ResourceDatabaseMethod) removeMemberResource() string {
 	return `DELETE FROM membership.member_resource
 	WHERE member_id = $1 AND resource_id = $2;`
 }
-
-func (resource *ResourceDatabaseMethod) getAccessList() string {
-	// getAccessListQuery - get a list of rfid tags that belong to an active members
-	// that have access to a specified resource
-	return `SELECT rfid
-	FROM membership.member_resource
-	INNER JOIN membership.members on (member_resource.member_id = members.id)
-	WHERE resource_id = $1 AND member_tier_id > 1;`
-}

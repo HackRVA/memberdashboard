@@ -2,7 +2,6 @@ package api
 
 import (
 	"memberserver/api/models"
-	"memberserver/database"
 )
 
 // tokenResponseBody for json response of signin
@@ -15,17 +14,17 @@ type tokenResponseBody struct {
 // swagger:parameters loginRequest
 type loginRequest struct {
 	// in: body
-	Body database.Credentials
+	Body models.Credentials
 }
 
 // swagger:response getUserResponse
 type userResponseBody struct {
 	// in: body
-	Body database.UserResponse
+	Body models.UserResponse
 }
 
 // swagger:parameters registerUserRequest
 type userRegisterRequest struct {
 	// in: body
-	Body database.Credentials
+	Body models.Credentials
 }

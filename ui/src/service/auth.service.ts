@@ -12,12 +12,10 @@ export class AuthService extends HTTPService {
   private readonly authUrlSegment: string = ENV.api + "/auth";
 
   registerUser(request: RegisterRequest): Observable<void> {
-    request.email = request.email.toLowerCase()
     return this.post<void>(this.authUrlSegment + "/register", request);
   }
   
   login(request: LoginRequest): Observable<Jwt> {
-    request.email = request.email.toLowerCase()
     return this.post<Jwt>(this.authUrlSegment + "/login", request);
   }
 

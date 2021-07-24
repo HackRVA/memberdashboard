@@ -20,9 +20,9 @@ type DBMemberStore struct {
 	db *Database
 }
 
-func (m *DBMemberStore) GetMembers() []models.Member {
+func (db *Database) GetMembers() []models.Member {
 	var members []models.Member
-	rows, err := m.db.getConn().Query(m.db.ctx, memberDbMethod.getMember())
+	rows, err := db.getConn().Query(db.ctx, memberDbMethod.getMember())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -48,7 +48,7 @@ func (m *DBMemberStore) GetMembers() []models.Member {
 				continue
 			}
 
-			resource, err := m.db.GetResourceByID(rID)
+			resource, err := db.GetResourceByID(rID)
 			if err != nil {
 				log.Debugf("error getting resource by id in memberResource lookup: %s %s_\n", err.Error(), rID)
 				continue
@@ -66,21 +66,21 @@ func (m *DBMemberStore) GetMembers() []models.Member {
 	}
 
 	return members
-
-	return members
 }
 
+/*
 func (db *Database) GetMemberByEmail(memberEmail string) (models.Member, error) {
 	m := NewDBMemberStore(db)
 	return m.GetMemberByEmail(memberEmail)
 }
+*/
 
 // GetMemberByEmail - lookup a member by their email address
-func (m *DBMemberStore) GetMemberByEmail(memberEmail string) (models.Member, error) {
+func (db *Database) GetMemberByEmail(memberEmail string) (models.Member, error) {
 	var member models.Member
 	var rIDs []string
 
-	err := m.db.getConn().QueryRow(context.Background(), memberDbMethod.getMemberByEmail(), memberEmail).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
+	err := db.getConn().QueryRow(context.Background(), memberDbMethod.getMemberByEmail(), memberEmail).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
 	if err == pgx.ErrNoRows {
 		return member, err
 	}
@@ -99,7 +99,7 @@ func (m *DBMemberStore) GetMemberByEmail(memberEmail string) (models.Member, err
 			member.Resources = append(member.Resources, models.MemberResource{ResourceID: rID, Name: resourceMemo[rID].Name})
 			continue
 		}
-		resource, err := m.db.GetResourceByID(rID)
+		resource, err := db.GetResourceByID(rID)
 		if err != nil {
 			log.Debugf("error getting resource by id in memberResource lookup: %s %s\n", err.Error(), rID)
 		}
@@ -114,14 +114,14 @@ func (m *DBMemberStore) GetMemberByEmail(memberEmail string) (models.Member, err
 	return member, nil
 }
 
-func (m *DBMemberStore) AssignRFID(email string, rfid string) (models.Member, error) {
-	member, err := m.GetMemberByEmail(email)
+func (db *Database) AssignRFID(email string, rfid string) (models.Member, error) {
+	member, err := db.GetMemberByEmail(email)
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())
 		return member, err
 	}
 
-	err = m.db.getConn().QueryRow(context.Background(), memberDbMethod.setMemberRFIDTag(), email, encodeRFID(rfid)).Scan(&member.RFID)
+	err = db.getConn().QueryRow(context.Background(), memberDbMethod.setMemberRFIDTag(), email, encodeRFID(rfid)).Scan(&member.RFID)
 	if err != nil {
 		return member, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -129,8 +129,8 @@ func (m *DBMemberStore) AssignRFID(email string, rfid string) (models.Member, er
 	return member, err
 }
 
-func (m *DBMemberStore) AddNewMember(newMember models.Member) (models.Member, error) {
-	err := m.db.AddMembers([]models.Member{newMember})
+func (db *Database) AddNewMember(newMember models.Member) (models.Member, error) {
+	err := db.AddMembers([]models.Member{newMember})
 	if err != nil {
 		return models.Member{}, err
 	}
@@ -138,8 +138,8 @@ func (m *DBMemberStore) AddNewMember(newMember models.Member) (models.Member, er
 }
 
 // GetMemberTiers - gets the member tiers from DB
-func (m *DBMemberStore) GetTiers() []models.Tier {
-	rows, err := m.db.getConn().Query(context.Background(), tierDbMethod.getMemberTiers())
+func (db *Database) GetTiers() []models.Tier {
+	rows, err := db.getConn().Query(context.Background(), tierDbMethod.getMemberTiers())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}

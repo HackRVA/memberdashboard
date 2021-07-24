@@ -22,18 +22,6 @@ func (payment *PaymentDatabaseMethod) insertPayment() string {
 	return insertPaymentQuery
 }
 
-func (payment *PaymentDatabaseMethod) countPaymentsOfMemberSince() string {
-	const countPaymentsOfMemberSinceQuery = `
-	SELECT COUNT(*) as num_payments
-	FROM membership.payments
-	LEFT JOIN membership.members
-	ON membership.payments.member_id = membership.members.id
-	WHERE member_id = $1
-	AND date >= current_date - $2;`
-
-	return countPaymentsOfMemberSinceQuery
-}
-
 func (payment *PaymentDatabaseMethod) updateMembershipLevel() string {
 	const updateMembershipLevelQuery = `
 	UPDATE membership.members

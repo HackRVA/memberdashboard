@@ -289,7 +289,7 @@ func (db *Database) RemoveUserFromResource(email string, resourceID string) erro
 	}
 
 	if commandTag.RowsAffected() != 1 {
-		return errors.New("No row found to delete")
+		return errors.New("no row found to delete")
 	}
 
 	return nil

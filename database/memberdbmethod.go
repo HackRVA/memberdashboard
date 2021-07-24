@@ -31,7 +31,7 @@ func (member *MemberDatabaseMethod) getMembersWithCredit() string {
 }
 
 func (member *MemberDatabaseMethod) getMemberByEmail() string {
-	const getMemberByEmailQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
+	const getMemberByEmailQuery = `SELECT id, name, LOWER(email), COALESCE(rfid,'notset'), member_tier_id,
 	ARRAY(
 	SELECT resource_id
 	FROM membership.member_resource
@@ -40,24 +40,9 @@ func (member *MemberDatabaseMethod) getMemberByEmail() string {
 	WHERE member_id = membership.members.id
 	) as resources
 	FROM membership.members
-	WHERE email = $1;`
+	WHERE LOWER(email) = LOWER($1);`
 
 	return getMemberByEmailQuery
-}
-
-func (member *MemberDatabaseMethod) getMemberByID() string {
-	const getMemberByIDQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
-	ARRAY(
-	SELECT resource_id
-	FROM membership.member_resource
-	LEFT JOIN membership.resources 
-	ON membership.resources.id = membership.member_resource.resource_id
-	WHERE member_id = membership.members.id
-	) as resources
-	FROM membership.members
-	WHERE id = $1;`
-
-	return getMemberByIDQuery
 }
 
 func (member *MemberDatabaseMethod) setMemberRFIDTag() string {
@@ -67,13 +52,4 @@ func (member *MemberDatabaseMethod) setMemberRFIDTag() string {
 	RETURNING rfid;`
 
 	return setMemberRFIDTagQuery
-}
-
-func (member *MemberDatabaseMethod) insertMember() string {
-	const insertMemberQuery = `INSERT INTO membership.members(
-		name, email, rfid, member_tier_id)
-		VALUES ($1, $2, null, 1)
-	RETURNING id, name, email;`
-
-	return insertMemberQuery
 }
