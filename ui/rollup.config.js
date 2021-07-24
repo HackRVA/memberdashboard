@@ -1,7 +1,7 @@
 import filesize from 'rollup-plugin-filesize';
 import { terser } from 'rollup-plugin-terser';
-import resolve from 'rollup-plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 export default {
     input: 'build/index.js',
@@ -23,7 +23,7 @@ export default {
                 preventAssignment: true
             }
         ),
-        resolve(),
+        nodeResolve(),
         terser({
             module: true,
             warnings: true,
