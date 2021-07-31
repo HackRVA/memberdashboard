@@ -17,6 +17,8 @@ package api
 import (
 	"net/http"
 
+	"memberserver/payments/listener"
+
 	"github.com/gorilla/mux"
 )
 
@@ -437,5 +439,8 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: endpointSuccessResponse
 	r.HandleFunc("/api/auth/register", api.UserServer.registerUser)
+
+	webhook := listener.New(true)
+	r.HandleFunc("/api/paypal/subscription/new", webhook.WebhooksHandler(api.PaypalSubscriptionWebHookHandler))
 	return rr
 }
