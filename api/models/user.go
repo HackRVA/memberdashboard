@@ -1,8 +1,6 @@
 package models
 
-import (
-	"github.com/dgrijalva/jwt-go"
-)
+import "github.com/golang-jwt/jwt"
 
 // Claims -- auth claims
 type Claims struct {

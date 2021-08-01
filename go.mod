@@ -5,12 +5,12 @@ go 1.15
 require (
 	github.com/Rhymond/go-money v1.0.2
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/eclipse/paho.mqtt.golang v1.3.2
 	github.com/emirpasic/gods v1.12.0
 	github.com/go-openapi/loads v0.20.0 // indirect
 	github.com/go-swagger/go-swagger v0.25.0 // indirect
 	github.com/gojuno/minimock/v3 v3.0.8 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/mdns v1.0.3
 	github.com/jackc/pgtype v1.6.2
