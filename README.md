@@ -51,33 +51,6 @@ Now, go write code and implement features!
 
 ---
 
-## The Not-As-Easy Way
-
-You need to install at least:
-
-- [docker](https://docs.docker.com/get-docker/)
-- [docker-compose](https://docs.docker.com/compose/install/)
-- [go](https://golang.org/doc/install)
-- [node](https://nodejs.org/en/)
-- [migrate CLI](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
-
-Follow the [README](/ui/README.md) in the ui directory to install the npm modules
-
-maybe do this one separately
-
-```
-npm install --global rollup
-```
-
-### Start the app
-
-This project uses docker.
-A testing environment can be spun up by running the build script.
-
-```
-sh buildandrun.sh
-```
-
 ### Seed the DB with test data
 
 Create a membership database and grant rights to user test

@@ -61,6 +61,16 @@ var HealthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 // OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
 var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	slack.PostWebHook(string(msg.Payload()))
+
+	db, err := database.Setup()
+	if err != nil {
+		log.Errorf("error setting up db: %s", err)
+	}
+	err = db.AddLogMsg(msg.Payload())
+	if err != nil {
+		log.Errorf("error saving access event: %s %s", err, string(msg.Payload()))
+	}
+	db.Release()
 }
 
 type HeartBeat struct {

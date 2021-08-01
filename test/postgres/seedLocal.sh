@@ -9,7 +9,7 @@
 
 export PGUSER=test
 export PGPASSWORD=test
-export PGHOST=127.0.0.1
+export PGHOST=postgres
 export PGDB=membership
 
 psql -U $PGUSER -h $PGHOST -d $PGDB -f drop.sql
