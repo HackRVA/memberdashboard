@@ -14,6 +14,7 @@ export const resourceManagerStyles: CSSResult = css`
     display: grid;
     align-items: center;
     margin: 0px 16px;
+    animation: fadeIn 1s;
   }
 
   .resource-header {

@@ -94,13 +94,7 @@ export class MemberDashboardContent extends LitElement {
   }
 
   generateVersionNumber(version: VersionResponse): TemplateResult {
-    return html`
-      <span>
-        ${version?.major}.${version?.minor}.${version?.hotfix}.<b
-          >${version?.build}</b
-        >
-      </span>
-    `;
+    return html` <span> ${version?.major}.<b>${version?.build}</b> </span> `;
   }
 
   displayLogout(): TemplateResult {

@@ -13,10 +13,8 @@ func NewStubVersionStore() *StubVersionStore {
 }
 
 var mockVersion = models.VersionResponse{
-	Major:  "apple",
-	Minor:  "banana",
-	Hotfix: "orange",
-	Build:  GitCommit,
+	Major: "major",
+	Build: GitCommit,
 }
 
 func (i *StubVersionStore) GetVersion() []byte {
@@ -32,10 +30,8 @@ func TestVersion(t *testing.T) {
 	server := &VersionServer{NewStubVersionStore()}
 
 	expectedVersion := models.VersionResponse{
-		Major:  mockVersion.Major,
-		Minor:  mockVersion.Minor,
-		Hotfix: mockVersion.Hotfix,
-		Build:  "test",
+		Major: mockVersion.Major,
+		Build: "test",
 	}
 
 	expectedVersionJSON, _ := json.Marshal(expectedVersion)
@@ -59,8 +55,6 @@ func TestVersion(t *testing.T) {
 			name: "should fail if we didn't capture the commit hash",
 			setup: func() {
 				mockVersion.Major = ``
-				mockVersion.Minor = ``
-				mockVersion.Hotfix = ``
 				mockVersion.Build = ``
 			},
 			expectedHTTPStatus: http.StatusNotFound,

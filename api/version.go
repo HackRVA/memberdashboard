@@ -20,10 +20,8 @@ type InMemoryVersionStore struct {
 
 func (i *InMemoryVersionStore) GetVersion() []byte {
 	version := models.VersionResponse{
-		Major:  "1",
-		Minor:  "0",
-		Hotfix: "0",
-		Build:  GitCommit,
+		Major: "1",
+		Build: GitCommit,
 	}
 	j, _ := json.Marshal(version)
 
@@ -57,7 +55,7 @@ func (v *VersionServer) showVersion(w http.ResponseWriter, version string) {
 		return
 	}
 
-	if len(versionInfo.Hotfix) == 0 || len(versionInfo.Major) == 0 || len(versionInfo.Minor) == 0 || len(versionInfo.Build) == 0 {
+	if len(versionInfo.Major) == 0 || len(versionInfo.Build) == 0 {
 		w.WriteHeader(http.StatusNotFound)
 		w.Header().Set("Content-Type", "application/text")
 		w.Write([]byte("some issue getting the version"))

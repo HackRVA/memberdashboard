@@ -424,33 +424,6 @@
         }
       }
     },
-    "/api/payments/refresh": {
-      "post": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "description": "Submits a request to update member status information\nThis will reach out to paypal and pull down the latest\ntransaction information and then evaluate each member's\nmembership status\n\nThis should happen automatically every day, but if we decide we\nwant to manually update it.  This will give us the option to do so.",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "payments"
-        ],
-        "summary": "Refresh payment information",
-        "operationId": "getRefreshPayments",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/getPaymentRefreshResponse"
-          }
-        }
-      }
-    },
     "/api/resource": {
       "get": {
         "security": [
@@ -804,7 +777,7 @@
           "x-go-name": "RFID"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "ChartCol": {
       "description": "ChartCol -- chart col info",
@@ -866,7 +839,7 @@
           "example": "string"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "EndpointSuccess": {
       "description": "EndpointSuccess -- success response",
@@ -925,7 +898,7 @@
           "x-go-name": "RFID"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "MemberResource": {
       "description": "MemberResource a resource that a member belongs to",
@@ -940,7 +913,7 @@
           "x-go-name": "ResourceID"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "MemberResourceRelation": {
       "description": "MemberResourceRelation  - a relationship between resources and members",
@@ -1201,9 +1174,16 @@
           "type": "string",
           "x-go-name": "Email",
           "example": "string"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Resource"
+          },
+          "x-go-name": "Resources"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "VersionResponse": {
       "type": "object",
@@ -1212,17 +1192,9 @@
           "type": "string",
           "x-go-name": "Build"
         },
-        "hotfix": {
-          "type": "string",
-          "x-go-name": "Hotfix"
-        },
         "major": {
           "type": "string",
           "x-go-name": "Major"
-        },
-        "minor": {
-          "type": "string",
-          "x-go-name": "Minor"
         }
       },
       "x-go-package": "memberserver/api/models"
