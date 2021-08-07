@@ -47,3 +47,13 @@ type Resource struct {
 	IsDefault     bool      `json:"isDefault"`
 	LastHeartBeat time.Time `json:"lastHeartBeat"`
 }
+
+// MemberAccess represents that a member has access to a certain resource.
+//  this will get pushed to a device.
+type MemberAccess struct {
+	Email           string
+	ResourceAddress string
+	ResourceName    string
+	Name            string
+	RFID            string
+}

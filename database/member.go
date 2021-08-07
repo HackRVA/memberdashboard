@@ -214,7 +214,7 @@ VALUES `
 		return fmt.Errorf("add members query failed: %v", err)
 	}
 	for _, m := range members {
-		log.Println("Adding default resource")
+		log.Info("Adding default resource")
 		db.AddUserToDefaultResources(m.Email)
 	}
 

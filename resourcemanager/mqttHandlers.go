@@ -46,10 +46,10 @@ var HealthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 	if acl.Hash != hash(accessList) {
 		log.Debugf("[%s] is out of date - attempting to update with new data", r.Name)
 		// status = StatusOutOfDate
-		err = UpdateResourceACL(r)
-		if err != nil {
-			log.Errorf("error updating resource with acl: %s", err)
-		}
+		// err = UpdateResourceACL(r)
+		// if err != nil {
+		// 	log.Errorf("error updating resource with acl: %s", err)
+		// }
 	}
 
 	// TODO: check that the resource responds with a hash of the list
