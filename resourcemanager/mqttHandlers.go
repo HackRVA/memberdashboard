@@ -62,15 +62,18 @@ var HealthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	slack.PostWebHook(string(msg.Payload()))
 
-	db, err := database.Setup()
-	if err != nil {
-		log.Errorf("error setting up db: %s", err)
-	}
-	err = db.AddLogMsg(msg.Payload())
-	if err != nil {
-		log.Errorf("error saving access event: %s %s", err, string(msg.Payload()))
-	}
-	db.Release()
+	// Too many DB connections
+	// will refactor soon: - DF
+	//
+	// db, err := database.Setup()
+	// if err != nil {
+	// 	log.Errorf("error setting up db: %s", err)
+	// }
+	// err = db.AddLogMsg(msg.Payload())
+	// if err != nil {
+	// 	log.Errorf("error saving access event: %s %s", err, string(msg.Payload()))
+	// }
+	// db.Release()
 }
 
 type HeartBeat struct {
