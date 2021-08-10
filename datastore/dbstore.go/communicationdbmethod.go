@@ -1,7 +1,5 @@
 package dbstore
 
-var communicationDbMethod CommunicationDatabaseMethod
-
 type CommunicationDatabaseMethod struct{}
 
 func (CommunicationDatabaseMethod) getCommunications() string {

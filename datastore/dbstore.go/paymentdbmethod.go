@@ -1,7 +1,5 @@
 package dbstore
 
-var paymentDbMethod PaymentDatabaseMethod
-
 // PaymentDatabaseMethod -- method container that holds the extension methods to query the payments table
 type PaymentDatabaseMethod struct{}
 

@@ -8,6 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var communicationDbMethod CommunicationDatabaseMethod
+
 // GetCommunnications returns all communications from the database
 func (db *DatabaseStore) GetCommunications() []models.Communication {
 	rows, err := db.getConn().Query(context.Background(), communicationDbMethod.getCommunications())

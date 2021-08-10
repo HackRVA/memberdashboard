@@ -11,6 +11,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var paymentDbMethod PaymentDatabaseMethod
+
 // GetPayments - get list of payments that we have in the db
 func (db *DatabaseStore) GetPayments() ([]models.Payment, error) {
 	rows, err := db.getConn().Query(context.Background(), paymentDbMethod.getPayments())
