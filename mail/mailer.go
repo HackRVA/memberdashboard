@@ -4,7 +4,6 @@ import (
 	"errors"
 	"memberserver/api/models"
 	"memberserver/config"
-	"memberserver/database"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -41,7 +40,7 @@ type MailApi interface {
 
 type CommunicationDal interface {
 	GetMemberByEmail(memberEmail string) (models.Member, error)
-	GetCommunication(communication string) (database.Communication, error)
+	GetCommunication(communication string) (models.Communication, error)
 	LogCommunication(communicationId int, memberId string) error
 	GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error)
 }
@@ -108,7 +107,7 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 	return true, nil
 }
 
-func (m *mailer) IsThrottled(c database.Communication, member models.Member) bool {
+func (m *mailer) IsThrottled(c models.Communication, member models.Member) bool {
 
 	if c.FrequencyThrottle > 0 {
 		last, err := m.db.GetMostRecentCommunicationToMember(member.ID, c.ID)

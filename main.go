@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"memberserver/api"
-	"memberserver/database"
+	"memberserver/datastore/dbstore.go"
 	"memberserver/scheduler"
 )
 
@@ -16,7 +16,7 @@ func init() {
 }
 
 func main() {
-	db, err := database.Setup()
+	db, err := dbstore.Setup()
 	if err != nil {
 		log.Errorf("error setting up db: %s", err)
 	}

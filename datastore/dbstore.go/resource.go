@@ -1,4 +1,4 @@
-package database
+package dbstore
 
 import (
 	"errors"
@@ -13,82 +13,10 @@ import (
 
 var resourceDbMethod ResourceDatabaseMethod
 
-// Resource a resource that can accept an access control list
-type Resource struct {
-	// UniqueID of the Resource
-	// required: true
-	// example: string
-	ID string `json:"id"`
-	// Name of the Resource
-	// required: true
-	// example: string
-	Name string `json:"name"`
-	// Address of the Resource. i.e. where it can be found on the network
-	// required: true
-	// example: string
-	Address string `json:"address"`
-	// Default state of the Resource
-	// required: true
-	// example: true
-	IsDefault     bool      `json:"isDefault"`
-	LastHeartBeat time.Time `json:"lastHeartBeat"`
-}
-
-// ResourceDeleteRequest - request for deleting a resource
-type ResourceDeleteRequest struct {
-	// UniqueID of the Resource
-	// required: true
-	// example: string
-	ID string `json:"id"`
-}
-
-// ResourceRequest a resource that can accept an access control list
-type ResourceRequest struct {
-	// UniqueID of the Resource
-	// required: true
-	// example: string
-	ID string `json:"id"`
-	// Name of the Resource
-	// required: true
-	// example: string
-	Name string `json:"name"`
-	// Address of the Resource. i.e. where it can be found on the network
-	// required: true
-	// example: string
-	Address string `json:"address"`
-	// Default state of the Resource
-	// required: true
-	// example: true
-	IsDefault bool `json:"isDefault"`
-}
-
-// RegisterResourceRequest a resource that can accept an access control list
-type RegisterResourceRequest struct {
-	// Name of the Resource
-	// required: true
-	// example: string
-	Name string `json:"name"`
-	// Address of the Resource. i.e. where it can be found on the network
-	// required: true
-	// example: string
-	Address string `json:"address"`
-	// Default state of the Resource
-	// required: false
-	// example: true
-	IsDefault bool `json:"isDefault"`
-}
-
-// MemberResourceRelation  - a relationship between resources and members
-type MemberResourceRelation struct {
-	ID         string `json:"id"`
-	MemberID   string `json:"memberID"`
-	ResourceID string `json:"resourceID"`
-}
-
 var resourceHeartBeatCache map[string]time.Time
 
 // ResourceHeartbeat stores the most recent timestamp that a resource checked in
-func ResourceHeartbeat(r Resource) {
+func ResourceHeartbeat(r models.Resource) {
 	if resourceHeartBeatCache == nil {
 		resourceHeartBeatCache = make(map[string]time.Time)
 	}
@@ -96,12 +24,12 @@ func ResourceHeartbeat(r Resource) {
 }
 
 // GetLastHeartbeat get the last heart beat
-func GetLastHeartbeat(r Resource) time.Time {
+func GetLastHeartbeat(r models.Resource) time.Time {
 	return resourceHeartBeatCache[r.Name]
 }
 
 // GetResources - gets the status from DB
-func (db *Database) GetResources() []Resource {
+func (db *DatabaseStore) GetResources() []models.Resource {
 	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResource())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
@@ -109,10 +37,10 @@ func (db *Database) GetResources() []Resource {
 
 	defer rows.Close()
 
-	var resources []Resource
+	var resources []models.Resource
 
 	for rows.Next() {
-		var r Resource
+		var r models.Resource
 		_ = rows.Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 
 		r.LastHeartBeat = GetLastHeartbeat(r)
@@ -123,8 +51,8 @@ func (db *Database) GetResources() []Resource {
 }
 
 // GetResourceByID - lookup a resource by it's name
-func (db *Database) GetResourceByID(ID string) (Resource, error) {
-	var r Resource
+func (db *DatabaseStore) GetResourceByID(ID string) (models.Resource, error) {
+	var r models.Resource
 
 	err := db.getConn().QueryRow(db.ctx, resourceDbMethod.getResourceByID(), ID).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
@@ -135,8 +63,8 @@ func (db *Database) GetResourceByID(ID string) (Resource, error) {
 }
 
 // GetResourceByName - lookup a resource by it's name
-func (db *Database) GetResourceByName(resourceName string) (Resource, error) {
-	var r Resource
+func (db *DatabaseStore) GetResourceByName(resourceName string) (models.Resource, error) {
+	var r models.Resource
 
 	err := db.getConn().QueryRow(db.ctx, resourceDbMethod.getResourceByName(), resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
@@ -147,8 +75,8 @@ func (db *Database) GetResourceByName(resourceName string) (Resource, error) {
 }
 
 // RegisterResource - stores a new resource in the db
-func (db *Database) RegisterResource(name string, address string, isDefault bool) (*Resource, error) {
-	r := &Resource{}
+func (db *DatabaseStore) RegisterResource(name string, address string, isDefault bool) (models.Resource, error) {
+	r := &models.Resource{}
 
 	r.Name = name
 	r.Address = address
@@ -156,15 +84,15 @@ func (db *Database) RegisterResource(name string, address string, isDefault bool
 
 	_, err := db.getConn().Exec(db.ctx, resourceDbMethod.insertResource(), r.Name, r.Address, r.IsDefault)
 	if err != nil {
-		return r, fmt.Errorf("error inserting resource: %s", err.Error())
+		return *r, fmt.Errorf("error inserting resource: %s", err.Error())
 	}
 
-	return r, nil
+	return *r, nil
 }
 
 // UpdateResource - updates a resource in the db
-func (db *Database) UpdateResource(id string, name string, address string, isDefault bool) (*Resource, error) {
-	r := &Resource{}
+func (db *DatabaseStore) UpdateResource(id string, name string, address string, isDefault bool) (*models.Resource, error) {
+	r := &models.Resource{}
 
 	// if the resource doesn't already exist let's register it
 	if id == "" {
@@ -182,7 +110,7 @@ func (db *Database) UpdateResource(id string, name string, address string, isDef
 }
 
 // DeleteResource - delete a resource from the db
-func (db *Database) DeleteResource(id string) error {
+func (db *DatabaseStore) DeleteResource(id string) error {
 	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.deleteResource(), id)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
@@ -194,9 +122,9 @@ func (db *Database) DeleteResource(id string) error {
 }
 
 // AddMultipleMembersToResource grant multiple members access to a resource
-func (db *Database) AddMultipleMembersToResource(emails []string, resourceID string) ([]MemberResourceRelation, error) {
+func (db *DatabaseStore) AddMultipleMembersToResource(emails []string, resourceID string) ([]models.MemberResourceRelation, error) {
 
-	var membersResource []MemberResourceRelation
+	var membersResource []models.MemberResourceRelation
 
 	resource, err := db.GetResourceByID(resourceID)
 
@@ -211,7 +139,7 @@ func (db *Database) AddMultipleMembersToResource(emails []string, resourceID str
 			return membersResource, err
 		}
 
-		var memberResource MemberResourceRelation
+		var memberResource models.MemberResourceRelation
 		memberResource.MemberID = member.ID
 		memberResource.ResourceID = resource.ID
 
@@ -229,10 +157,10 @@ func (db *Database) AddMultipleMembersToResource(emails []string, resourceID str
 }
 
 // AddUserToDefaultResources - grants a user access to default resources - untested
-func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRelation, error) {
+func (db *DatabaseStore) AddUserToDefaultResources(email string) ([]models.MemberResourceRelation, error) {
 	m, err := db.GetMemberByEmail(email)
 	if err != nil {
-		return []MemberResourceRelation{}, err
+		return []models.MemberResourceRelation{}, err
 	}
 
 	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.insertMemberDefaultResource(), m.ID)
@@ -242,10 +170,10 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 
 	defer rows.Close()
 
-	var memberResources []MemberResourceRelation
+	var memberResources []models.MemberResourceRelation
 
 	for rows.Next() {
-		var r MemberResourceRelation
+		var r models.MemberResourceRelation
 		_ = rows.Scan(&r.ID, &r.MemberID, &r.ResourceID)
 		memberResources = append(memberResources, r)
 	}
@@ -253,8 +181,8 @@ func (db *Database) AddUserToDefaultResources(email string) ([]MemberResourceRel
 }
 
 // GetMemberResourceRelation retrieves a relation of a member and a resource
-func (db *Database) GetMemberResourceRelation(m models.Member, r Resource) (MemberResourceRelation, error) {
-	mr := MemberResourceRelation{}
+func (db *DatabaseStore) GetMemberResourceRelation(m models.Member, r models.Resource) (models.MemberResourceRelation, error) {
+	mr := models.MemberResourceRelation{}
 
 	row := db.getConn().QueryRow(db.ctx, resourceDbMethod.getMemberResource(), m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
 	if row == pgx.ErrNoRows {
@@ -265,8 +193,8 @@ func (db *Database) GetMemberResourceRelation(m models.Member, r Resource) (Memb
 }
 
 // RemoveUserFromResource - removes a users access to a resource
-func (db *Database) RemoveUserFromResource(email string, resourceID string) error {
-	memberResource := MemberResourceRelation{}
+func (db *DatabaseStore) RemoveUserFromResource(email string, resourceID string) error {
+	memberResource := models.MemberResourceRelation{}
 
 	r, err := db.GetResourceByID(resourceID)
 	if err != nil {
@@ -296,7 +224,7 @@ func (db *Database) RemoveUserFromResource(email string, resourceID string) erro
 }
 
 // GetResourceACL returns a list of members that have access to that Resource
-func (db *Database) GetResourceACL(r Resource) ([]string, error) {
+func (db *DatabaseStore) GetResourceACL(r models.Resource) ([]string, error) {
 	var accessList []string
 
 	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByResourceID(), r.ID)
@@ -316,7 +244,7 @@ func (db *Database) GetResourceACL(r Resource) ([]string, error) {
 }
 
 // GetResourceACLWithMemberInfo returns a list of members that have access to that Resource
-func (db *Database) GetResourceACLWithMemberInfo(r Resource) ([]models.Member, error) {
+func (db *DatabaseStore) GetResourceACLWithMemberInfo(r models.Resource) ([]models.Member, error) {
 	var accessList []models.Member
 
 	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByResourceIDQueryWithMemberInfo(), r.ID)
@@ -337,20 +265,10 @@ func (db *Database) GetResourceACLWithMemberInfo(r Resource) ([]models.Member, e
 	return accessList, nil
 }
 
-// MemberAccess represents that a member has access to a certain resource.
-//  this will get pushed to a device.
-type MemberAccess struct {
-	Email           string
-	ResourceAddress string
-	ResourceName    string
-	Name            string
-	RFID            string
-}
-
 // GetMembersAccess returns a list of a specific members access
 //   this is used for sending a new rfid assigment to a resource
-func (db *Database) GetMembersAccess(m models.Member) ([]MemberAccess, error) {
-	var memberAccess []MemberAccess
+func (db *DatabaseStore) GetMembersAccess(m models.Member) ([]models.MemberAccess, error) {
+	var memberAccess []models.MemberAccess
 
 	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByEmail(), m.Email)
 	if err != nil {
@@ -360,7 +278,7 @@ func (db *Database) GetMembersAccess(m models.Member) ([]MemberAccess, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var resourceUpdate MemberAccess
+		var resourceUpdate models.MemberAccess
 
 		rows.Scan(&resourceUpdate.Email, &resourceUpdate.ResourceAddress, &resourceUpdate.ResourceName, &resourceUpdate.Name, &resourceUpdate.RFID)
 

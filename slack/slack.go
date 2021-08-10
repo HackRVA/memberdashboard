@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"memberserver/api/models"
 	"memberserver/config"
-	"memberserver/database"
+	"memberserver/datastore/dbstore.go"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -73,7 +73,7 @@ func FindNonMembers() []string {
 	if err != nil {
 		log.Errorf("error fetching slack users: %s", err)
 	}
-	db, _ := database.Setup()
+	db, _ := dbstore.Setup()
 
 	members := db.GetMembers()
 	memberMap := make(map[string]models.Member)

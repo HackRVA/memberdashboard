@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"memberserver/api/models"
-	"memberserver/database"
+
 	"memberserver/payments/listener"
 	"net/http"
 
@@ -13,18 +13,18 @@ import (
 
 // countMemberLevels take in a list of payments and return
 //   formatted data to be used in payment charts
-func countMemberLevels(payments []int64) map[database.MemberLevel]uint8 {
-	counts := make(map[database.MemberLevel]uint8)
+func countMemberLevels(payments []int64) map[models.MemberLevel]uint8 {
+	counts := make(map[models.MemberLevel]uint8)
 
 	// set counts to 0
 	//  kind of cheating here by setting them directly
-	counts[database.Inactive] = 0
-	counts[database.Classic] = 0
-	counts[database.Standard] = 0
-	counts[database.Premium] = 0
+	counts[models.Inactive] = 0
+	counts[models.Classic] = 0
+	counts[models.Standard] = 0
+	counts[models.Premium] = 0
 
 	for _, p := range payments {
-		if v, found := database.MemberLevelFromAmount[p]; found {
+		if v, found := models.MemberLevelFromAmount[p]; found {
 			counts[v]++
 		}
 	}
@@ -115,7 +115,7 @@ func makeMemberDistributionChart(payments linkedhashmap.Map, paymentCharts []mod
 
 		for level, count := range levels {
 			var row []interface{}
-			row = append(row, (string)(database.MemberLevelToStr[level]))
+			row = append(row, (string)(models.MemberLevelToStr[level]))
 			row = append(row, int(count))
 			pc.Rows = append(pc.Rows, row)
 		}

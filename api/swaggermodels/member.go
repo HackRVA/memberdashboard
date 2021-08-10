@@ -2,7 +2,6 @@ package api
 
 import (
 	"memberserver/api/models"
-	"memberserver/database"
 )
 
 // swagger:parameters getMemberByEmailRequest
@@ -32,7 +31,7 @@ type getMemberResponse struct {
 // swagger:response getTierResponse
 type getTierResponse struct {
 	// in: body
-	Body []database.Tier
+	Body []models.Tier
 }
 
 // swagger:response setRFIDResponse

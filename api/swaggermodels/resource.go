@@ -2,26 +2,25 @@ package api
 
 import (
 	"memberserver/api/models"
-	"memberserver/database"
 	"time"
 )
 
 // swagger:parameters updateResourceRequest
 type updateResourceRequest struct {
 	// in: body
-	Body database.ResourceRequest
+	Body models.ResourceRequest
 }
 
 // swagger:parameters registerResourceRequest
 type registerResourceRequest struct {
 	// in: body
-	Body database.RegisterResourceRequest
+	Body models.RegisterResourceRequest
 }
 
 // swagger:parameters deleteResourceRequest
 type deleteResourceRequest struct {
 	// in: body
-	Body database.ResourceDeleteRequest
+	Body models.ResourceDeleteRequest
 }
 
 // swagger:parameters resourceAddMemberRequest
@@ -39,25 +38,25 @@ type resourceBulkMemberRequest struct {
 // swagger:response getResourceResponse
 type getResourceResponse struct {
 	// in: body
-	Body database.Resource
+	Body models.Resource
 }
 
 // swagger:response postResourceResponse
 type postResourceResponse struct {
 	// in: body
-	Body database.Resource
+	Body models.Resource
 }
 
 // swagger:response addMemberToResourceResponse
 type addMemberToResourceResponse struct {
 	// in: body
-	Body database.MemberResourceRelation
+	Body models.MemberResourceRelation
 }
 
 // swagger:response addMulitpleMembersToResourceResponse
 type addMulitpleMembersToResourceResponse struct {
 	// in: body
-	Body []database.MemberResourceRelation
+	Body []models.MemberResourceRelation
 }
 
 // swagger:response getResourceStatusResponse

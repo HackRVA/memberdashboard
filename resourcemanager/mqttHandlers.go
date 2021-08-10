@@ -3,7 +3,8 @@ package resourcemanager
 import (
 	"encoding/json"
 	"fmt"
-	"memberserver/database"
+	"memberserver/api/models"
+	"memberserver/datastore/dbstore.go"
 	"memberserver/slack"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -17,16 +18,10 @@ import (
 //  to the resource
 var HealthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("MSG: %s\n", msg.Payload())
-	// status := StatusOffline
 
-	db, err := database.Setup()
-	if err != nil {
-		log.Errorf("error setting up db: %s", err)
-	}
+	var acl models.ACLResponse
 
-	var acl ACLResponse
-
-	err = json.Unmarshal(msg.Payload(), &acl)
+	err := json.Unmarshal(msg.Payload(), &acl)
 	if err != nil {
 		log.Errorf("error unmarshalling mqtt payload: %s", err)
 		return
@@ -54,23 +49,16 @@ var HealthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 
 	// TODO: check that the resource responds with a hash of the list
 	// status = StatusGood
-
-	db.Release()
 }
 
 // OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
 var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	slack.PostWebHook(string(msg.Payload()))
 
-	db, err := database.Setup()
-	if err != nil {
-		log.Errorf("error setting up db: %s", err)
-	}
-	err = db.AddLogMsg(msg.Payload())
+	err := db.AddLogMsg(msg.Payload())
 	if err != nil {
 		log.Errorf("error saving access event: %s %s", err, string(msg.Payload()))
 	}
-	db.Release()
 }
 
 type HeartBeat struct {
@@ -86,7 +74,7 @@ var OnHeartBeat mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 		return
 	}
 
-	database.ResourceHeartbeat(database.Resource{
+	dbstore.ResourceHeartbeat(models.Resource{
 		Name: hb.ResourceName,
 	})
 }

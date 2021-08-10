@@ -2,7 +2,8 @@ package payments
 
 import (
 	"memberserver/api/models"
-	"memberserver/database"
+	"memberserver/datastore"
+	"memberserver/datastore/dbstore.go"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -13,16 +14,20 @@ type paypalAuth struct {
 	TokenType   string `json:"token_type"`
 }
 
-// GetPayments reach out the payment providers and download
-// payments
-func GetPayments() {
-	db, err := database.Setup()
+var db datastore.DataStore
+
+func init() {
+	var err error
+	db, err = dbstore.Setup()
 	if err != nil {
 		log.Errorf("error setting up db: %s", err)
 	}
-	defer db.Release()
+}
 
-	err = getLastMonthsPayments()
+// GetPayments reach out the payment providers and download
+// payments
+func GetPayments() {
+	err := getLastMonthsPayments()
 	if err != nil {
 		log.Errorf("error getting payments: %s", err.Error())
 	}
@@ -45,13 +50,7 @@ func getLastMonthsPayments() error {
 	return err
 }
 
-func processPayments(payments []database.Payment) {
-	db, err := database.Setup()
-	if err != nil {
-		log.Errorf("error setting up db: %s", err)
-	}
-	defer db.Release()
-
+func processPayments(payments []models.Payment) {
 	var membersToAdd []models.Member
 
 	for _, p := range payments {
@@ -67,7 +66,7 @@ func processPayments(payments []database.Payment) {
 		membersToAdd = append(membersToAdd, newMember)
 	}
 
-	err = db.AddMembers(membersToAdd)
+	err := db.AddMembers(membersToAdd)
 	if err != nil {
 		log.Error(err)
 	}
@@ -80,7 +79,7 @@ func processPayments(payments []database.Payment) {
 		memberLookup[m.Email] = m
 	}
 
-	var paymentsWithMemberID []database.Payment
+	var paymentsWithMemberID []models.Payment
 	for _, p := range payments {
 		payment := p
 		payment.MemberID = memberLookup[p.Email].ID

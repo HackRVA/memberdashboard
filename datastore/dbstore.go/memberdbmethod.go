@@ -1,4 +1,4 @@
-package database
+package dbstore
 
 // MemberDatabaseMethod -- method container that holds the extension methods to query the members, credit, and resource tables
 type MemberDatabaseMethod struct{}

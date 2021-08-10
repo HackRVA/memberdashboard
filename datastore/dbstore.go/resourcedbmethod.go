@@ -1,4 +1,4 @@
-package database
+package dbstore
 
 // ResourceDatabaseMethod -- method container that holds the extension methods to query the resources table
 type ResourceDatabaseMethod struct{}

@@ -1,4 +1,4 @@
-package database
+package dbstore
 
 func (member *MemberDatabaseMethod) insertEvent() string {
 	return `INSERT INTO membership.event_log(

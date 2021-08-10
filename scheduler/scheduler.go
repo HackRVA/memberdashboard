@@ -4,10 +4,13 @@ import (
 	"io/ioutil"
 	"memberserver/api/models"
 	"memberserver/config"
-	"memberserver/database"
+	"memberserver/datastore"
+	"memberserver/datastore/dbstore.go"
+	"memberserver/datastore/in_memory"
 	"memberserver/mail"
 	"memberserver/payments"
 	"memberserver/resourcemanager"
+	"memberserver/resourcemanager/mqttserver"
 	"net/http"
 	"os"
 	"strings"
@@ -32,20 +35,22 @@ const checkIPInterval = 24
 
 var c config.Config
 var mailApi mail.MailApi
-var db *database.Database
+var db datastore.DataStore
+var rm *resourcemanager.ResourceManager
 
 // Setup Scheduler
 //  We want certain tasks to happen on a regular basis
 //  The scheduler will make sure that happens
-func Setup(d *database.Database) {
+func Setup(d datastore.DataStore) {
 	mailApi, _ = mail.Setup()
 	c, _ = config.Load()
 	db = d
+	rm = resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
 
 	scheduleTask(checkPaymentsInterval*time.Hour, payments.GetPayments, payments.GetPayments)
 	scheduleTask(evaluateMemberStatusInterval*time.Hour, checkMemberStatus, checkMemberStatus)
 	scheduleTask(resourceStatusCheckInterval*time.Hour, checkResourceInit, checkResourceTick)
-	scheduleTask(resourceUpdateInterval*time.Hour, resourcemanager.UpdateResources, resourcemanager.UpdateResources)
+	scheduleTask(resourceUpdateInterval*time.Hour, rm.UpdateResources, rm.UpdateResources)
 	scheduleTask(checkIPInterval*time.Hour, checkIPAddressTick, checkIPAddressTick)
 }
 
@@ -89,7 +94,7 @@ func checkMemberStatus() {
 		if a.DaysSinceLastPayment > memberGracePeriod {
 			mailer.SendCommunication(mail.AccessRevokedLeadership, c.AdminEmail, a)
 			mailer.SendCommunication(mail.AccessRevokedMember, a.Email, a)
-			db.SetMemberLevel(a.MemberId, database.Inactive)
+			db.SetMemberLevel(a.MemberId, models.Inactive)
 		} else if a.DaysSinceLastPayment > membershipMonth {
 			if !mailer.IsThrottled(pendingRevokation, models.Member{ID: a.MemberId}) {
 				//TODO: [ML] Does it make sense to send this to leadership?  It might be like spam...
@@ -105,10 +110,10 @@ func checkResourceInit() {
 
 	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
-		resourcemanager.Subscribe(r.Name+"/send", resourcemanager.OnAccessEvent)
-		resourcemanager.Subscribe(r.Name+"/result", resourcemanager.HealthCheck)
-		resourcemanager.Subscribe(r.Name+"/sync", resourcemanager.OnHeartBeat)
-		resourcemanager.CheckStatus(r)
+		rm.MQTTServer.Subscribe(r.Name+"/send", resourcemanager.OnAccessEvent)
+		rm.MQTTServer.Subscribe(r.Name+"/result", resourcemanager.HealthCheck)
+		rm.MQTTServer.Subscribe(r.Name+"/sync", resourcemanager.OnHeartBeat)
+		rm.CheckStatus(r)
 	}
 }
 
@@ -116,7 +121,7 @@ func checkResourceTick() {
 	resources := db.GetResources()
 
 	for _, r := range resources {
-		resourcemanager.CheckStatus(r)
+		rm.CheckStatus(r)
 	}
 }
 
@@ -172,7 +177,7 @@ func checkIPAddressTick() {
 		return
 	}
 
-	db, err := database.Setup()
+	db, err := dbstore.Setup()
 	if err != nil {
 		log.Printf("Err: %v", err)
 	}

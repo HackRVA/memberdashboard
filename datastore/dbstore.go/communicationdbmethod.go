@@ -1,4 +1,6 @@
-package database
+package dbstore
+
+var communicationDbMethod CommunicationDatabaseMethod
 
 type CommunicationDatabaseMethod struct{}
 

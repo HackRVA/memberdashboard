@@ -1,23 +1,15 @@
-package database
+package dbstore
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"memberserver/api/models"
 	"time"
 )
 
-type LogMessage struct {
-	Type      string `json:"type"`
-	EventTime int64  `json:"time"`
-	IsKnown   string `json:"isKnown"`
-	Username  string `json:"username"`
-	RFID      string `json:"uid"`
-	Door      string `json:"door"`
-}
-
-func (db *Database) AddLogMsg(logByte []byte) error {
-	var logMsg LogMessage
+func (db *DatabaseStore) AddLogMsg(logByte []byte) error {
+	var logMsg models.LogMessage
 
 	err := json.Unmarshal(logByte, &logMsg)
 	if err != nil {

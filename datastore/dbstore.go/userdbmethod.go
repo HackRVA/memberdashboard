@@ -1,4 +1,6 @@
-package database
+package dbstore
+
+var userDbMethod UserDatabaseMethod
 
 // UserDatabaseMethod -- method container that holds the extension methods to query the user table
 type UserDatabaseMethod struct{}

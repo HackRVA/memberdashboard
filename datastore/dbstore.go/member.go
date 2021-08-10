@@ -1,4 +1,4 @@
-package database
+package dbstore
 
 import (
 	"context"
@@ -10,17 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func NewDBMemberStore(db *Database) *DBMemberStore {
-	return &DBMemberStore{
-		db: db,
-	}
-}
-
-type DBMemberStore struct {
-	db *Database
-}
-
-func (db *Database) GetMembers() []models.Member {
+func (db *DatabaseStore) GetMembers() []models.Member {
 	var members []models.Member
 	rows, err := db.getConn().Query(db.ctx, memberDbMethod.getMember())
 	if err != nil {
@@ -68,15 +58,8 @@ func (db *Database) GetMembers() []models.Member {
 	return members
 }
 
-/*
-func (db *Database) GetMemberByEmail(memberEmail string) (models.Member, error) {
-	m := NewDBMemberStore(db)
-	return m.GetMemberByEmail(memberEmail)
-}
-*/
-
 // GetMemberByEmail - lookup a member by their email address
-func (db *Database) GetMemberByEmail(memberEmail string) (models.Member, error) {
+func (db *DatabaseStore) GetMemberByEmail(memberEmail string) (models.Member, error) {
 	var member models.Member
 	var rIDs []string
 
@@ -114,7 +97,7 @@ func (db *Database) GetMemberByEmail(memberEmail string) (models.Member, error) 
 	return member, nil
 }
 
-func (db *Database) AssignRFID(email string, rfid string) (models.Member, error) {
+func (db *DatabaseStore) AssignRFID(email string, rfid string) (models.Member, error) {
 	member, err := db.GetMemberByEmail(email)
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())
@@ -129,7 +112,7 @@ func (db *Database) AssignRFID(email string, rfid string) (models.Member, error)
 	return member, err
 }
 
-func (db *Database) AddNewMember(newMember models.Member) (models.Member, error) {
+func (db *DatabaseStore) AddNewMember(newMember models.Member) (models.Member, error) {
 	err := db.AddMembers([]models.Member{newMember})
 	if err != nil {
 		return models.Member{}, err
@@ -138,7 +121,7 @@ func (db *Database) AddNewMember(newMember models.Member) (models.Member, error)
 }
 
 // GetMemberTiers - gets the member tiers from DB
-func (db *Database) GetTiers() []models.Tier {
+func (db *DatabaseStore) GetTiers() []models.Tier {
 	rows, err := db.getConn().Query(context.Background(), tierDbMethod.getMemberTiers())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
@@ -164,7 +147,7 @@ var memberDbMethod MemberDatabaseMethod
 // GetMembersWithCredit - gets members that have been credited a membership
 //  if a member exists in the member_credits table
 //  they are credited a membership
-func (db *Database) GetMembersWithCredit() []models.Member {
+func (db *DatabaseStore) GetMembersWithCredit() []models.Member {
 	rows, err := db.getConn().Query(db.ctx, memberDbMethod.getMembersWithCredit())
 	if err != nil {
 		log.Errorf("error getting credited members: %v", err)
@@ -187,8 +170,8 @@ func (db *Database) GetMembersWithCredit() []models.Member {
 	return members
 }
 
-// AddMembers adds multiple members to the database
-func (db *Database) AddMembers(members []models.Member) error {
+// AddMembers adds multiple members to the DatabaseStore
+func (db *DatabaseStore) AddMembers(members []models.Member) error {
 	sqlStr := `INSERT INTO membership.members(
 name, email, member_tier_id)
 VALUES `
@@ -201,7 +184,7 @@ VALUES `
 		// if member level isn't set them to inactive,
 		//   otherwise, use the level they already have.
 		if m.Level == 0 {
-			m.Level = uint8(Inactive)
+			m.Level = uint8(models.Inactive)
 		}
 
 		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d)", memberName, m.Email, m.Level))

@@ -1,4 +1,4 @@
-package database
+package dbstore
 
 import (
 	"context"
@@ -10,10 +10,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var userDbMethod UserDatabaseMethod
-
 // RegisterUser register a user in the db
-func (db *Database) RegisterUser(creds models.Credentials) error {
+func (db *DatabaseStore) RegisterUser(creds models.Credentials) error {
 	if len(creds.Password) == 0 {
 		return fmt.Errorf("not a valid password")
 	}
@@ -47,7 +45,7 @@ func (db *Database) RegisterUser(creds models.Credentials) error {
 }
 
 // UserSignin - user login
-func (db *Database) UserSignin(email string, password string) error {
+func (db *DatabaseStore) UserSignin(email string, password string) error {
 	// We create another instance of `Credentials` to store the credentials we get from the database
 	storedCreds := &models.Credentials{}
 
@@ -67,7 +65,7 @@ func (db *Database) UserSignin(email string, password string) error {
 }
 
 // GetUser returns the currently logged in user
-func (db *Database) GetUser(email string) (models.UserResponse, error) {
+func (db *DatabaseStore) GetUser(email string) (models.UserResponse, error) {
 	var userResponse models.UserResponse
 
 	row := db.getConn().QueryRow(context.Background(), userDbMethod.getUser(), strings.ToLower(email)).Scan(&userResponse.Email)

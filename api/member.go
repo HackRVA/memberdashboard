@@ -20,7 +20,8 @@ type MemberStore interface {
 }
 
 type MemberServer struct {
-	store MemberStore
+	store           MemberStore
+	ResourceManager *resourcemanager.ResourceManager
 }
 
 func (m *MemberServer) GetMembersHandler(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +118,7 @@ func (m *MemberServer) assignRFID(w http.ResponseWriter, email, rfid string) {
 	j, _ := json.Marshal(r)
 	w.Write(j)
 
-	go resourcemanager.PushOne(models.Member{Email: email})
+	go m.ResourceManager.PushOne(models.Member{Email: email})
 }
 
 func (m *MemberServer) GetNonMembersOnSlackHandler(w http.ResponseWriter, r *http.Request) {
@@ -149,5 +150,5 @@ func (m *MemberServer) AddNewMemberHandler(w http.ResponseWriter, r *http.Reques
 
 	m.store.AssignRFID(addedMember.Email, addedMember.RFID)
 
-	go resourcemanager.PushOne(addedMember)
+	go m.ResourceManager.PushOne(addedMember)
 }

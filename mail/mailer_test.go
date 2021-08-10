@@ -3,7 +3,6 @@ package mail
 import (
 	"memberserver/api/models"
 	"memberserver/config"
-	"memberserver/database"
 	"testing"
 	"time"
 
@@ -169,7 +168,7 @@ func TestEnableInfoEmailsUnsetShouldNotSendInfoEmails(t *testing.T) {
 type dbMock struct {
 	memberResult           models.Member
 	memberError            error
-	communicationResult    database.Communication
+	communicationResult    models.Communication
 	communicatonError      error
 	mostRecentCommResult   time.Time
 	mostRecentCommError    error
@@ -179,7 +178,7 @@ type dbMock struct {
 func (m *dbMock) GetMemberByEmail(memberEmail string) (models.Member, error) {
 	return m.memberResult, m.memberError
 }
-func (m *dbMock) GetCommunication(communication string) (database.Communication, error) {
+func (m *dbMock) GetCommunication(communication string) (models.Communication, error) {
 	return m.communicationResult, m.communicatonError
 }
 func (m *dbMock) LogCommunication(communicationId int, memberId string) error {

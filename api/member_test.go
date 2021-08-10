@@ -5,13 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"memberserver/api/models"
+	"memberserver/datastore/in_memory"
+	"memberserver/resourcemanager"
+	"memberserver/resourcemanager/mqttserver"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestGetMember(t *testing.T) {
-	server := &MemberServer{&testMemberStore}
+	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(memberMapToSlice(testMemberStore.members))
@@ -54,7 +57,7 @@ func TestGetMember(t *testing.T) {
 }
 
 func TestGetMemberByEmail(t *testing.T) {
-	server := &MemberServer{&testMemberStore}
+	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.members["test@test.com"])
@@ -107,7 +110,7 @@ func TestGetMemberByEmail(t *testing.T) {
 }
 
 func TestAssignRFID(t *testing.T) {
-	server := &MemberServer{&testMemberStore}
+	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})}
 
 	tests := []struct {
 		TestName           string
@@ -157,7 +160,7 @@ func TestAssignRFID(t *testing.T) {
 }
 
 func TestGetTiers(t *testing.T) {
-	server := &MemberServer{&testMemberStore}
+	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.tiers)
@@ -190,7 +193,7 @@ func TestGetTiers(t *testing.T) {
 }
 
 func TestNewMember(t *testing.T) {
-	server := &MemberServer{&testMemberStore}
+	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})}
 
 	newMember := models.Member{
 		Email: "test1@test.com",

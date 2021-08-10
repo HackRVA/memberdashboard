@@ -4,39 +4,24 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
+	"memberserver/api/models"
+	"memberserver/datastore"
+	"memberserver/resourcemanager/mqttserver"
 	"time"
 
 	"strings"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	log "github.com/sirupsen/logrus"
-
-	"memberserver/api/models"
-	"memberserver/database"
 )
+
+var db datastore.DataStore
 
 // Resource manager keeps the resources up to date by
 //  pushing new updates and checking in on their health
 
-type MQTTServer interface {
-	Publish(topic string, payload interface{})
-	Subscribe(topic string, handler mqtt.MessageHandler)
-}
-
-// RMStore is where the resourcemanager gets the data from.
-//  in prod this is the database
-//  but we can make something up for testing
-type RMStore interface {
-	GetResources() []models.Resource
-	//GetResourceACL returns a csv of rfid tags that have access to the resource
-	GetResourceACL(models.Resource) ([]string, error)
-	GetResourceACLWithMemberInfo(models.Resource) ([]models.Member, error)
-	GetMembersAccess(models.Member) ([]models.MemberAccess, error)
-}
-
 type ResourceManager struct {
-	mqttServer MQTTServer
-	store      RMStore
+	MQTTServer mqttserver.MQTTServer
+	store      datastore.ResourceStore
 }
 
 const (
@@ -48,7 +33,8 @@ const (
 	StatusOffline
 )
 
-func NewResourceManager(ms MQTTServer, store RMStore) *ResourceManager {
+func NewResourceManager(ms mqttserver.MQTTServer, store datastore.DataStore) *ResourceManager {
+	db = store
 	return &ResourceManager{ms, store}
 }
 
@@ -61,7 +47,7 @@ func (rm *ResourceManager) UpdateResourceACL(r models.Resource) error {
 		return err
 	}
 
-	updateRequest := &ACLUpdateRequest{}
+	updateRequest := &models.ACLUpdateRequest{}
 	updateRequest.ACL = accessList
 
 	j, err := json.Marshal(updateRequest)
@@ -71,7 +57,7 @@ func (rm *ResourceManager) UpdateResourceACL(r models.Resource) error {
 	log.Debugf("access list: %s", j)
 
 	// publish the update to mqtt broker
-	rm.mqttServer.Publish(r.Name+"/update", j)
+	rm.MQTTServer.Publish(r.Name+"/update", j)
 
 	return nil
 }
@@ -83,7 +69,7 @@ func (rm *ResourceManager) UpdateResources() {
 	for _, r := range resources {
 		members, _ := rm.store.GetResourceACLWithMemberInfo(r)
 		for _, m := range members {
-			b, _ := json.Marshal(&AddMemberRequest{
+			b, _ := json.Marshal(&models.AddMemberRequest{
 				ResourceAddress: r.Address,
 				Command:         "adduser",
 				UserName:        m.Name,
@@ -91,7 +77,7 @@ func (rm *ResourceManager) UpdateResources() {
 				AccessType:      1,
 				ValidUntil:      -86400,
 			})
-			rm.mqttServer.Publish(r.Name, string(b))
+			rm.MQTTServer.Publish(r.Name, string(b))
 
 			time.Sleep(2 * time.Second)
 		}
@@ -102,7 +88,7 @@ func (rm *ResourceManager) UpdateResources() {
 func (rm *ResourceManager) PushOne(m models.Member) {
 	memberAccess, _ := rm.store.GetMembersAccess(m)
 	for _, m := range memberAccess {
-		b, _ := json.Marshal(&AddMemberRequest{
+		b, _ := json.Marshal(&models.AddMemberRequest{
 			ResourceAddress: m.ResourceAddress,
 			Command:         "adduser",
 			UserName:        m.Name,
@@ -110,7 +96,7 @@ func (rm *ResourceManager) PushOne(m models.Member) {
 			AccessType:      1,
 			ValidUntil:      -86400,
 		})
-		rm.mqttServer.Publish(m.ResourceName, string(b))
+		rm.MQTTServer.Publish(m.ResourceName, string(b))
 	}
 }
 
@@ -118,11 +104,11 @@ func (rm *ResourceManager) DeleteResourceACL() {
 	resources := rm.store.GetResources()
 
 	for _, r := range resources {
-		b, _ := json.Marshal(&DeleteMemberRequest{
+		b, _ := json.Marshal(&models.DeleteMemberRequest{
 			ResourceAddress: r.Address,
 			Command:         "deletusers", // not a type-o this is how the command is defined in the rfid reader
 		})
-		rm.mqttServer.Publish(r.Name, string(b))
+		rm.MQTTServer.Publish(r.Name, string(b))
 	}
 }
 
@@ -130,8 +116,8 @@ func (rm *ResourceManager) DeleteResourceACL() {
 //   the resource has the correct and up to date access list
 //   It will do this by hashing the list retrieved from the DB and comparing it
 //   with the hash that the resource reports
-func (rm *ResourceManager) CheckStatus(r database.Resource) {
-	rm.mqttServer.Publish(r.Name+"/cmd", "aclhash")
+func (rm *ResourceManager) CheckStatus(r models.Resource) {
+	rm.MQTTServer.Publish(r.Name+"/cmd", "aclhash")
 }
 
 func hash(accessList []string) string {

@@ -1,20 +1,18 @@
-package database
+package dbstore
 
 import (
 	"context"
-	"sync"
-
-	log "github.com/sirupsen/logrus"
-
+	"log"
 	"memberserver/config"
+	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-// Database - connection pool to communicate to the db
+// DatabaseStore - connection pool to communicate to the db
 //  in a concurrently safe manner
-type Database struct {
+type DatabaseStore struct {
 	pool *pgxpool.Pool
 	ctx  context.Context
 	mu   sync.Mutex
@@ -22,8 +20,8 @@ type Database struct {
 
 // Setup - sets up connection pool so that we can connect to the db in a
 //   concurrently safe manner
-func Setup() (*Database, error) {
-	db := &Database{
+func Setup() (*DatabaseStore, error) {
+	db := &DatabaseStore{
 		ctx:  context.Background(),
 		pool: getDBConnection(context.Background()),
 	}
@@ -32,7 +30,7 @@ func Setup() (*Database, error) {
 }
 
 // Close - close connection to the db
-func (db *Database) Release() error {
+func (db *DatabaseStore) Release() error {
 	ctx := context.Background()
 	conn, err := db.pool.Acquire(ctx)
 	if err != nil {
@@ -42,7 +40,7 @@ func (db *Database) Release() error {
 	return nil
 }
 
-func (db *Database) getConn() *pgxpool.Pool {
+func (db *DatabaseStore) getConn() *pgxpool.Pool {
 
 	db.mu.Lock()
 	conn, _ := db.pool.Acquire(context.Background())
@@ -56,7 +54,7 @@ func (db *Database) getConn() *pgxpool.Pool {
 	return db.pool
 }
 
-func (db *Database) PrintStat() {
+func (db *DatabaseStore) PrintStat() {
 	stat := db.pool.Stat()
 	log.Printf("Pool Stat:\tAquired\tConst\tIdle\tMax\tTotal")
 	log.Printf("\t\t%v\t%v\t%v\t%v\t%v", stat.AcquiredConns(), stat.ConstructingConns(), stat.IdleConns(), stat.MaxConns(), stat.TotalConns())

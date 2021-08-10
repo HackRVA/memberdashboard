@@ -3,10 +3,7 @@ package api
 import (
 	"encoding/json"
 	"memberserver/api/models"
-	"memberserver/database"
 	"net/http"
-
-	"memberserver/resourcemanager"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -36,7 +33,7 @@ func (rs resourceAPI) get(w http.ResponseWriter, req *http.Request) {
 }
 
 func (rs resourceAPI) update(w http.ResponseWriter, req *http.Request) {
-	var updateResourceReq database.Resource
+	var updateResourceReq models.Resource
 
 	err := json.NewDecoder(req.Body).Decode(&updateResourceReq)
 	if err != nil {
@@ -56,7 +53,7 @@ func (rs resourceAPI) update(w http.ResponseWriter, req *http.Request) {
 }
 
 func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
-	var deleteResourceReq database.ResourceDeleteRequest
+	var deleteResourceReq models.ResourceDeleteRequest
 
 	err := json.NewDecoder(req.Body).Decode(&deleteResourceReq)
 	if err != nil {
@@ -101,7 +98,7 @@ func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *h
 }
 
 func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
-	var update models.MemberResourceRelation
+	var update models.MemberResourceRelationUpdateRequest
 
 	err := json.NewDecoder(req.Body).Decode(&update)
 	if err != nil {
@@ -126,12 +123,12 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 		log.Errorf("error getting resource to update when removing a member: %s", err)
 	}
 
-	resourcemanager.UpdateResourceACL(resource)
-	resourcemanager.UpdateResources()
+	rs.resourcemanager.UpdateResourceACL(resource)
+	rs.resourcemanager.UpdateResources()
 }
 
 func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
-	var register database.RegisterResourceRequest
+	var register models.RegisterResourceRequest
 
 	err := json.NewDecoder(req.Body).Decode(&register)
 	if err != nil {
@@ -155,10 +152,10 @@ func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 	// statusMap := make(map[string]uint8)
 
 	for _, r := range resources {
-		if r == (database.Resource{}) {
+		if r == (models.Resource{}) {
 			continue
 		}
-		resourcemanager.CheckStatus(r)
+		rs.resourcemanager.CheckStatus(r)
 		// if err != nil {
 		// 	log.Errorf("error getting resource status: %s", err.Error())
 		// 	statusMap[r.Name] = resourcemanager.StatusOffline
@@ -177,7 +174,7 @@ func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 }
 
 func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request) {
-	resourcemanager.UpdateResources()
+	rs.resourcemanager.UpdateResources()
 
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(models.EndpointSuccess{
@@ -187,7 +184,7 @@ func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request
 }
 
 func (rs resourceAPI) deleteResourceACL(w http.ResponseWriter, req *http.Request) {
-	resourcemanager.DeleteResourceACL()
+	rs.resourcemanager.DeleteResourceACL()
 
 	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(models.EndpointSuccess{

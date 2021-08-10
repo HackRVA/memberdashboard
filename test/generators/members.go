@@ -3,7 +3,7 @@ package main
 import (
 	"math/rand"
 	"memberserver/api/models"
-	"memberserver/database"
+	"memberserver/datastore/dbstore.go"
 	"os"
 	"strconv"
 	"time"
@@ -26,7 +26,7 @@ func main() {
 	}
 
 	rand.Seed(time.Now().UnixNano())
-	db, _ := database.Setup()
+	db, _ := dbstore.Setup()
 	defer db.Release()
 	for i := 0; i < count; i++ {
 		member := fakeMember()
@@ -55,11 +55,11 @@ func fakeMember() models.Member {
 	}
 }
 
-func fakePaymentHistory(member models.Member, lastPayment time.Time, numberOfPayments int) []database.Payment {
-	payments := []database.Payment{}
+func fakePaymentHistory(member models.Member, lastPayment time.Time, numberOfPayments int) []models.Payment {
+	payments := []models.Payment{}
 	for i := 0; i < numberOfPayments; i++ {
 		paymentDate := lastPayment.AddDate(0, -i, 0)
-		payments = append(payments, database.Payment{
+		payments = append(payments, models.Payment{
 			ID:       faker.Number().Number(8),
 			Date:     paymentDate,
 			Amount:   *money.New(tiers[member.Level]*100, "USD"),
