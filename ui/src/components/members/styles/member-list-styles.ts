@@ -14,6 +14,7 @@ export const memberListStyles: CSSResult = css`
     align-items: center;
     text-align: center;
     margin: 0px 16px;
+    animation: fadeIn 1s;
   }
 
   .member-header {
