@@ -3,7 +3,7 @@ package main
 import (
 	"math/rand"
 	"memberserver/api/models"
-	"memberserver/datastore/dbstore.go"
+	"memberserver/datastore/dbstore"
 	"os"
 	"strconv"
 	"time"

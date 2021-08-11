@@ -3,7 +3,7 @@ package payments
 import (
 	"memberserver/api/models"
 	"memberserver/datastore"
-	"memberserver/datastore/dbstore.go"
+	"memberserver/datastore/dbstore"
 	"time"
 
 	log "github.com/sirupsen/logrus"

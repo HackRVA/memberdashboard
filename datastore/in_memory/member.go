@@ -1,6 +1,9 @@
 package in_memory
 
-import "memberserver/api/models"
+import (
+	"errors"
+	"memberserver/api/models"
+)
 
 var Members = map[string]models.Member{}
 
@@ -11,7 +14,12 @@ func (i In_memory) GetMembers() []models.Member {
 	return []models.Member{}
 }
 func (i In_memory) GetMemberByEmail(email string) (models.Member, error) {
-	return models.Member{}, nil
+	for _, k := range testUsers {
+		if k.Email == email {
+			return k, nil
+		}
+	}
+	return models.Member{}, errors.New("error getting user: not found")
 }
 func (i In_memory) AssignRFID(email string, rfid string) (models.Member, error) {
 	return models.Member{}, nil

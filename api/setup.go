@@ -6,14 +6,14 @@ import (
 	"github.com/gorilla/mux"
 
 	"memberserver/config"
-	"memberserver/datastore/dbstore.go"
+	"memberserver/datastore"
 	"memberserver/resourcemanager"
 	"memberserver/resourcemanager/mqttserver"
 )
 
 // API endpoints
 type API struct {
-	db            *dbstore.DatabaseStore
+	db            datastore.DataStore
 	resource      resourceAPI
 	VersionServer *VersionServer
 	MemberServer  *MemberServer
@@ -21,26 +21,26 @@ type API struct {
 }
 
 type resourceAPI struct {
-	db              *dbstore.DatabaseStore
+	db              datastore.DataStore
 	config          config.Config
 	resourcemanager resourcemanager.ResourceManager
 }
 
 // Setup - setup us up the routes
-func Setup(db *dbstore.DatabaseStore) *mux.Router {
+func Setup(store datastore.DataStore) *mux.Router {
 	c, _ := config.Load()
 
-	userServer := NewUserServer(db, c)
-	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), db)
+	userServer := NewUserServer(store, c)
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), store)
 
 	api := API{
-		db: db,
+		db: store,
 		resource: resourceAPI{
-			db:     db,
+			db:     store,
 			config: c,
 		},
 		VersionServer: &VersionServer{NewInMemoryVersionStore()},
-		MemberServer:  &MemberServer{db, rm},
+		MemberServer:  &MemberServer{store, rm},
 		UserServer:    &userServer,
 	}
 

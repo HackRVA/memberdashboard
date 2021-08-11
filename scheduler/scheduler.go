@@ -5,7 +5,7 @@ import (
 	"memberserver/api/models"
 	"memberserver/config"
 	"memberserver/datastore"
-	"memberserver/datastore/dbstore.go"
+	"memberserver/datastore/dbstore"
 	"memberserver/datastore/in_memory"
 	"memberserver/mail"
 	"memberserver/payments"

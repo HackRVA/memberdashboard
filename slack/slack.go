@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"memberserver/api/models"
 	"memberserver/config"
-	"memberserver/datastore/dbstore.go"
+	"memberserver/datastore/dbstore"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"

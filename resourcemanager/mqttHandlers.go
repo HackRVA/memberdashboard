@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"memberserver/api/models"
-	"memberserver/datastore/dbstore.go"
+	"memberserver/datastore/dbstore"
 	"memberserver/slack"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"

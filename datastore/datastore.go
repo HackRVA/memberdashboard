@@ -11,6 +11,7 @@ type DataStore interface {
 	ResourceStore
 	PaymentStore
 	CommunicationStore
+	UserStore
 }
 
 type Event interface {
@@ -58,4 +59,10 @@ type CommunicationStore interface {
 	GetCommunication(name string) (models.Communication, error)
 	GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error)
 	LogCommunication(communicationId int, memberId string) error
+}
+
+type UserStore interface {
+	GetUser(email string) (models.UserResponse, error)
+	UserSignin(email string, password string) error
+	RegisterUser(creds models.Credentials) error
 }

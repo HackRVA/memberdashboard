@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"memberserver/api/models"
 	"memberserver/config"
+	"memberserver/datastore"
 	"net/http"
 	"strings"
 	"time"
@@ -31,7 +32,7 @@ type UserStore interface {
 }
 
 type UserServer struct {
-	store UserStore
+	store datastore.DataStore
 }
 
 // JWTExpireInterval - how long the JWT will last in hours
@@ -71,7 +72,7 @@ func (us *UserServer) authMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func NewUserServer(store UserStore, config config.Config) UserServer {
+func NewUserServer(store datastore.DataStore, config config.Config) UserServer {
 	userServer := UserServer{
 		store: store,
 	}

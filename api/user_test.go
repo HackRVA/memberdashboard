@@ -3,50 +3,18 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"memberserver/api/models"
 	"memberserver/config"
+	"memberserver/datastore/in_memory"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/shaj13/go-guardian/v2/auth"
 )
 
-type stubUserStore struct{}
-
-func (stub *stubUserStore) GetMemberByEmail(email string) (models.Member, error) {
-	if val, ok := testUsers[strings.ToLower(email)]; !ok {
-		return val, errors.New("not a valid member email")
-	}
-
-	return testUsers[email], nil
-}
-
-func (stub *stubUserStore) RegisterUser(creds models.Credentials) error {
-	if _, ok := testUsers[creds.Email]; ok {
-		return errors.New("error registering user")
-	}
-	return nil
-}
-
-func (stub *stubUserStore) GetAuthedUser(email string) (models.Member, error) {
-	return models.Member{}, nil
-}
-
-func (stub *stubUserStore) UserSignin(email, password string) error {
-	return nil
-}
-
-var testUsers = map[string]models.Member{
-	"test": {
-		Email: "test",
-	},
-}
-
 func TestGetUser(t *testing.T) {
-	store := stubUserStore{}
+	store := in_memory.In_memory{}
 	c, _ := config.Load()
 	server := NewUserServer(&store, c)
 
@@ -86,7 +54,7 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestRegisterUser(t *testing.T) {
-	store := stubUserStore{}
+	store := in_memory.In_memory{}
 	c, _ := config.Load()
 	server := NewUserServer(&store, c)
 

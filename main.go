@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"memberserver/api"
-	"memberserver/datastore/dbstore.go"
+	"memberserver/datastore/dbstore"
 	"memberserver/scheduler"
 )
 
