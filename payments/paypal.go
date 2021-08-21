@@ -67,7 +67,7 @@ type subscriptionResponse struct {
 
 var accessToken = ""
 
-func getPaypalPayments(startDate string, endDate string) ([]models.Payment, error) {
+func (p PaymentProvider) getPaypalPayments(startDate string, endDate string) ([]models.Payment, error) {
 	var payments []models.Payment
 	c, err := config.Load()
 	if err != nil {
@@ -76,7 +76,7 @@ func getPaypalPayments(startDate string, endDate string) ([]models.Payment, erro
 	}
 
 	url := fmt.Sprintf("%s/v1/reporting/transactions?start_date=%s&end_date=%s&fields=transaction_info,payer_info", c.PaypalURL, startDate, endDate)
-	token, err := requestPaypalAccessToken()
+	token, err := p.requestPaypalAccessToken()
 	if err != nil {
 		log.Errorf("error getting paypal access token %s\n", err.Error())
 		return payments, err
@@ -142,7 +142,7 @@ func getPaypalPayments(startDate string, endDate string) ([]models.Payment, erro
 }
 
 // requestPaypalAccessToken - requests a BEARER access token to communicate with the api
-func requestPaypalAccessToken() (string, error) {
+func (p PaymentProvider) requestPaypalAccessToken() (string, error) {
 	var token string
 	c, err := config.Load()
 
@@ -190,7 +190,7 @@ func requestPaypalAccessToken() (string, error) {
 	return newAccessToken.AccessToken, err
 }
 
-func GetSubscription(subscriptionID string) (models.Member, error) {
+func (p PaymentProvider) GetSubscription(subscriptionID string) (models.Member, error) {
 	var m models.Member
 	var s subscriptionResponse
 
@@ -200,7 +200,7 @@ func GetSubscription(subscriptionID string) (models.Member, error) {
 		return m, err
 	}
 	url := fmt.Sprintf("%s/v1/billing/subscriptions/%s", c.PaypalURL, subscriptionID)
-	token, err := requestPaypalAccessToken()
+	token, err := p.requestPaypalAccessToken()
 	if err != nil {
 		log.Errorf("error getting paypal access token %s\n", err.Error())
 		return m, err

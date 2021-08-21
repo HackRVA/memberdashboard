@@ -3,7 +3,6 @@ package payments
 import (
 	"memberserver/api/models"
 	"memberserver/datastore"
-	"memberserver/datastore/dbstore"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -14,20 +13,20 @@ type paypalAuth struct {
 	TokenType   string `json:"token_type"`
 }
 
-var db datastore.DataStore
+type PaymentProvider struct {
+	db datastore.DataStore
+}
 
-func init() {
-	var err error
-	db, err = dbstore.Setup()
-	if err != nil {
-		log.Errorf("error setting up db: %s", err)
+func Setup(database datastore.DataStore) PaymentProvider {
+	return PaymentProvider{
+		db: database,
 	}
 }
 
 // GetPayments reach out the payment providers and download
 // payments
-func GetPayments() {
-	err := getLastMonthsPayments()
+func (p PaymentProvider) GetPayments() {
+	err := p.getLastMonthsPayments()
 	if err != nil {
 		log.Errorf("error getting payments: %s", err.Error())
 	}
@@ -36,21 +35,21 @@ func GetPayments() {
 
 // getLastMonthsPayments fetches payments from paypal
 //  to see if members have paid their dues
-func getLastMonthsPayments() error {
+func (p PaymentProvider) getLastMonthsPayments() error {
 	startDate := time.Now().AddDate(0, 0, -15).Format(time.RFC3339) // subtract one month
 	endDate := time.Now().AddDate(0, 0, 1).Format(time.RFC3339)     // add a day
 
-	p, err := getPaypalPayments(startDate, endDate)
+	payment, err := p.getPaypalPayments(startDate, endDate)
 	if err != nil {
 		log.Errorf("error getting payments %s", err.Error())
 		return err
 	}
 
-	processPayments(p)
+	p.processPayments(payment)
 	return err
 }
 
-func processPayments(payments []models.Payment) {
+func (p PaymentProvider) processPayments(payments []models.Payment) {
 	var membersToAdd []models.Member
 
 	for _, p := range payments {
@@ -66,12 +65,12 @@ func processPayments(payments []models.Payment) {
 		membersToAdd = append(membersToAdd, newMember)
 	}
 
-	err := db.AddMembers(membersToAdd)
+	err := p.db.AddMembers(membersToAdd)
 	if err != nil {
 		log.Error(err)
 	}
 
-	members := db.GetMembers()
+	members := p.db.GetMembers()
 
 	memberLookup := make(map[string]models.Member)
 
@@ -86,5 +85,5 @@ func processPayments(payments []models.Payment) {
 		paymentsWithMemberID = append(paymentsWithMemberID, payment)
 	}
 
-	db.AddPayments(paymentsWithMemberID)
+	p.db.AddPayments(paymentsWithMemberID)
 }

@@ -5,7 +5,6 @@ import (
 	"memberserver/api/models"
 	"memberserver/config"
 	"memberserver/datastore"
-	"memberserver/datastore/dbstore"
 	"memberserver/datastore/in_memory"
 	"memberserver/mail"
 	"memberserver/payments"
@@ -47,7 +46,9 @@ func Setup(d datastore.DataStore) {
 	db = d
 	rm = resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
 
-	scheduleTask(checkPaymentsInterval*time.Hour, payments.GetPayments, payments.GetPayments)
+	paymentProvider := payments.Setup(d)
+
+	scheduleTask(checkPaymentsInterval*time.Hour, paymentProvider.GetPayments, paymentProvider.GetPayments)
 	scheduleTask(evaluateMemberStatusInterval*time.Hour, checkMemberStatus, checkMemberStatus)
 	scheduleTask(resourceStatusCheckInterval*time.Hour, checkResourceInit, checkResourceTick)
 	scheduleTask(resourceUpdateInterval*time.Hour, rm.UpdateResources, rm.UpdateResources)
@@ -175,11 +176,6 @@ func checkIPAddressTick() {
 	previousIp := strings.TrimSpace(string(b))
 	if previousIp == "" || previousIp == currentIp {
 		return
-	}
-
-	db, err := dbstore.Setup()
-	if err != nil {
-		log.Printf("Err: %v", err)
 	}
 
 	ipModel := struct {

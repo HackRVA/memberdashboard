@@ -144,7 +144,10 @@ func (api *API) PaypalSubscriptionWebHookHandler(err error, n *listener.PaypalNo
 	if n.EventType != "BILLING.SUBSCRIPTION.CREATED" {
 		return
 	}
-	newMember, err := payments.GetSubscription(n.ID)
+
+	paymentProvider := payments.Setup(api.db)
+
+	newMember, err := paymentProvider.GetSubscription(n.ID)
 	if err != nil {
 		log.Errorf("error parsing member from webhook: %v", err)
 	}
