@@ -5,22 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"memberserver/api/models"
+	"memberserver/datastore"
 	"memberserver/resourcemanager"
 	"memberserver/slack"
 	"net/http"
 	"strings"
 )
 
-type MemberStore interface {
-	GetTiers() []models.Tier // update where this is
-	GetMembers() []models.Member
-	GetMemberByEmail(email string) (models.Member, error)
-	AssignRFID(email string, rfid string) (models.Member, error)
-	AddNewMember(newMember models.Member) (models.Member, error)
-}
-
 type MemberServer struct {
-	store           MemberStore
+	store           datastore.MemberStore
 	ResourceManager *resourcemanager.ResourceManager
 }
 
@@ -122,7 +115,7 @@ func (m *MemberServer) assignRFID(w http.ResponseWriter, email, rfid string) {
 }
 
 func (m *MemberServer) GetNonMembersOnSlackHandler(w http.ResponseWriter, r *http.Request) {
-	nonMembers := slack.FindNonMembers()
+	nonMembers := slack.FindNonMembers(m.store)
 	buf := bytes.NewBufferString(strings.Join(nonMembers[:], "\n"))
 	w.Header().Set("Content-Type", "text/csv")
 	w.Header().Set("Content-Disposition", "attachment; filename=nonmembersOnSlack.csv")
