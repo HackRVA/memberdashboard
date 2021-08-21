@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"memberserver/api/models"
+	"memberserver/payments"
 
 	"memberserver/payments/listener"
 	"net/http"
@@ -143,10 +144,10 @@ func (api *API) PaypalSubscriptionWebHookHandler(err error, n *listener.PaypalNo
 	if n.EventType != "BILLING.SUBSCRIPTION.CREATED" {
 		return
 	}
-
-	newMember := models.Member{
-		Email: n.Resource.Subscriber.Email,
-		Name:  n.Resource.Subscriber.Name.GivenName + " " + n.Resource.Subscriber.Name.SurName}
+	newMember, err := payments.GetSubscription(n.ID)
+	if err != nil {
+		log.Errorf("error parsing member from webhook: %v", err)
+	}
 
 	api.db.AddMembers([]models.Member{newMember})
 }

@@ -52,6 +52,19 @@ type transactionAmount struct {
 	Value        float64 `json:"value,string"`
 }
 
+type subscriptionResponse struct {
+	Subscriber struct {
+		ID        string `json:"id"`
+		Summary   string `json:"summary"`
+		EventType string `json:"event_type"`
+		Name      struct {
+			GivenName string `json:"given_name"`
+			SurName   string `json:"surname"`
+		} `json:"name"`
+		Email string `json:"email_address"`
+	} `json:"subscriber"`
+}
+
 var accessToken = ""
 
 func getPaypalPayments(startDate string, endDate string) ([]models.Payment, error) {
@@ -175,4 +188,45 @@ func requestPaypalAccessToken() (string, error) {
 	token = newAccessToken.AccessToken
 
 	return newAccessToken.AccessToken, err
+}
+
+func GetSubscription(subscriptionID string) (models.Member, error) {
+	var m models.Member
+	var s subscriptionResponse
+
+	c, err := config.Load()
+	if err != nil {
+		fmt.Printf("error with config: %s", err)
+		return m, err
+	}
+	url := fmt.Sprintf("%s/v1/billing/subscriptions/%s", c.PaypalURL, subscriptionID)
+	token, err := requestPaypalAccessToken()
+	if err != nil {
+		log.Errorf("error getting paypal access token %s\n", err.Error())
+		return m, err
+	}
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return m, err
+	}
+	req.Header.Add("Authorization", "Bearer "+token)
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return m, err
+	}
+	defer res.Body.Close()
+
+	err = json.NewDecoder(res.Body).Decode(&s)
+	if err != nil {
+		return m, err
+	}
+
+	m.Email = s.Subscriber.Email
+	m.Name = s.Subscriber.Name.GivenName + " " + s.Subscriber.Name.SurName
+
+	return m, nil
 }
