@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"memberserver/api/models"
 	"memberserver/config"
-	"memberserver/datastore/dbstore"
+	"memberserver/datastore"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -66,14 +66,13 @@ func GetSlackUsers() ([]SlackUser, error) {
 	return slackUsers, err
 }
 
-func FindNonMembers() []string {
+func FindNonMembers(db datastore.MemberStore) []string {
 	var nonMembers []string
 
 	users, err := GetSlackUsers()
 	if err != nil {
 		log.Errorf("error fetching slack users: %s", err)
 	}
-	db, _ := dbstore.Setup()
 
 	members := db.GetMembers()
 	memberMap := make(map[string]models.Member)

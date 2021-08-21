@@ -85,6 +85,13 @@ func (s *StubMemberStore) AddNewMember(newMember models.Member) (models.Member, 
 	s.members[newMember.Email] = newMember
 	return s.members[newMember.Email], nil
 }
+func (s *StubMemberStore) AddMembers(newMembers []models.Member) error {
+	return nil
+}
+
+func (s *StubMemberStore) GetMembersWithCredit() []models.Member {
+	return []models.Member{}
+}
 
 func memberMapToSlice(m map[string]models.Member) []models.Member {
 	var members []models.Member
