@@ -13,11 +13,48 @@ import (
 	"testing"
 )
 
+var testMemberStore = in_memory.In_memory{
+	Members: map[string]models.Member{
+		"test@test.com": {
+			ID:        "0",
+			Name:      "testuser",
+			Email:     "test@test.com",
+			RFID:      "rfid1",
+			Level:     0,
+			Resources: []models.MemberResource{},
+		},
+		"test1@test.com": {
+			ID:        "1",
+			Name:      "testuser1",
+			Email:     "test1@test.com",
+			RFID:      "rfid2",
+			Level:     0,
+			Resources: []models.MemberResource{},
+		},
+		"test": {
+			ID:        "",
+			Name:      "",
+			Email:     "test",
+			RFID:      "",
+			Level:     0,
+			Resources: []models.MemberResource{},
+		},
+	},
+	Tiers: []models.Tier{
+		{ID: 0,
+			Name: "fake-inactive"},
+		{ID: 1,
+			Name: "fake-active"},
+		{ID: 2,
+			Name: "fake-premium"},
+	},
+}
+
 func TestGetMember(t *testing.T) {
 	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})}
 
 	// convert all members from the store to a json byte array
-	jsonByte, _ := json.Marshal(memberMapToSlice(testMemberStore.members))
+	jsonByte, _ := json.Marshal(in_memory.MemberMapToSlice(testMemberStore.Members))
 
 	tests := []struct {
 		TestName           string
@@ -37,7 +74,6 @@ func TestGetMember(t *testing.T) {
 			Email:              "test@test.com",
 			RFID:               "rfid1",
 			Level:              0,
-			Resources:          []models.MemberResource{},
 			expectedHTTPStatus: http.StatusOK,
 			expectedResponse:   string(jsonByte),
 		},
@@ -60,7 +96,7 @@ func TestGetMemberByEmail(t *testing.T) {
 	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})}
 
 	// convert all members from the store to a json byte array
-	jsonByte, _ := json.Marshal(testMemberStore.members["test@test.com"])
+	jsonByte, _ := json.Marshal(testMemberStore.Members["test@test.com"])
 
 	tests := []struct {
 		TestName           string
@@ -126,7 +162,7 @@ func TestAssignRFID(t *testing.T) {
 			RFID:               "newrfid",
 			Resources:          []models.MemberResource{},
 			expectedHTTPStatus: http.StatusOK,
-			expectedResponse:   "{\"id\":\"0\",\"name\":\"testuser\",\"email\":\"test@test.com\",\"rfid\":\"newrfid\",\"memberLevel\":0,\"resources\":[]}",
+			expectedResponse:   "{\"id\":\"0\",\"name\":\"testuser\",\"email\":\"test@test.com\",\"rfid\":\"rfid1\",\"memberLevel\":0,\"resources\":[]}",
 		},
 		{
 			TestName:           "should return bad request if we don't send a valid email",
@@ -163,7 +199,7 @@ func TestGetTiers(t *testing.T) {
 	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})}
 
 	// convert all members from the store to a json byte array
-	jsonByte, _ := json.Marshal(testMemberStore.tiers)
+	jsonByte, _ := json.Marshal(testMemberStore.Tiers)
 
 	tests := []struct {
 		TestName           string
