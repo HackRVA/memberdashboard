@@ -57,7 +57,6 @@ func MemberMapToSlice(m map[string]models.Member) []models.Member {
 
 	sort.Sort(ByID(members))
 
-	println(members)
 	return members
 }
 
