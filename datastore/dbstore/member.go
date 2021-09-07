@@ -219,17 +219,17 @@ func (db *DatabaseStore) ProcessMember(newMember models.Member) error {
 
 	if member.Name == "" {
 		log.Print("attempting to update member name")
-		return db.updateMemberName(newMember)
+		return db.updateMemberName(member.ID, newMember)
 	}
 
 	return nil
 }
 
-func (db *DatabaseStore) updateMemberName(newMember models.Member) error {
+func (db *DatabaseStore) updateMemberName(memberID string, newMember models.Member) error {
 	var member models.Member
 
 	// if the member already exists, we might want to update their name.
-	err := db.getConn().QueryRow(context.Background(), memberDbMethod.updateMemberName(), newMember.Name, newMember.ID).Scan(&member.Name)
+	err := db.getConn().QueryRow(context.Background(), memberDbMethod.updateMemberName(), newMember.Name, memberID).Scan(&member.Name)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
