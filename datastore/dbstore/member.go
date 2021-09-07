@@ -211,7 +211,7 @@ func (db *DatabaseStore) ProcessMember(newMember models.Member) error {
 		log.Errorf("error looking up member: %s", err)
 		return err
 	}
-	log.Print("processing member: %v", member)
+	log.Printf("processing member: %v", member)
 
 	if member.ID == "" {
 		return db.AddMembers([]models.Member{newMember})
