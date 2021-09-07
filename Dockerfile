@@ -20,7 +20,7 @@ COPY ui/package.json /app
 # we have to do this in the dockerfile because the ui filesystem is mounted
 #   i.e. file changes get written back to the repo and the tsbuildinfo file will conflict with itself
 RUN if [ -f tsconfig.tsbuildinfo ]; then rm tsconfig.tsbuildinfo 2> /dev/null; fi
-RUN npm install
+RUN npm ci
 
 
 COPY ./ui /app
