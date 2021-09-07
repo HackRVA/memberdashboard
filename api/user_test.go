@@ -14,9 +14,8 @@ import (
 )
 
 func TestGetUser(t *testing.T) {
-	store := in_memory.In_memory{}
 	c, _ := config.Load()
-	server := NewUserServer(&store, c)
+	server := NewUserServer(&testMemberStore, c)
 
 	tests := []struct {
 		TestName            string
@@ -29,7 +28,7 @@ func TestGetUser(t *testing.T) {
 			TestName:            "should return currently logged in user",
 			userName:            "test",
 			expectedHTTPStastub: http.StatusOK,
-			expectedResponse:    "{\"id\":\"\",\"name\":\"\",\"email\":\"test\",\"rfid\":\"\",\"memberLevel\":0,\"resources\":null}",
+			expectedResponse:    "{\"id\":\"\",\"name\":\"\",\"email\":\"test\",\"rfid\":\"\",\"memberLevel\":0,\"resources\":[]}",
 		},
 		{
 			TestName:            "should return unauthorized if email doesn't exist",

@@ -918,10 +918,6 @@
     "MemberResourceRelation": {
       "description": "MemberResourceRelation  - a relationship between resources and members",
       "type": "object",
-      "required": [
-        "resourceID",
-        "email"
-      ],
       "properties": {
         "id": {
           "type": "string",
@@ -932,13 +928,11 @@
           "x-go-name": "MemberID"
         },
         "resourceID": {
-          "description": "ID of the Resource",
           "type": "string",
-          "x-go-name": "ResourceID",
-          "example": "string"
+          "x-go-name": "ResourceID"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "MembersResourceRelation": {
       "description": "MembersResourceRelation -- update or delete a resource for multiple members",
@@ -1039,7 +1033,7 @@
           "example": "string"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "Resource": {
       "description": "Resource a resource that can accept an access control list",
@@ -1081,7 +1075,7 @@
           "example": "string"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "ResourceDeleteRequest": {
       "description": "ResourceDeleteRequest - request for deleting a resource",
@@ -1097,7 +1091,7 @@
           "example": "string"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "ResourceRequest": {
       "description": "ResourceRequest a resource that can accept an access control list",
@@ -1134,7 +1128,7 @@
           "example": "string"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "Tier": {
       "description": "Tier - level of membership",
@@ -1150,7 +1144,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "memberserver/database"
+      "x-go-package": "memberserver/api/models"
     },
     "TokenResponse": {
       "description": "TokenResponse -- for json response of signin",

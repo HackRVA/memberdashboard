@@ -203,3 +203,41 @@ VALUES `
 
 	return err
 }
+
+func isMemberNil(member models.Member) bool {
+	return member.Email == ""
+}
+
+// ProcessMember - add them member if they don't already exist.  Otherwise, make sure we have their name
+func (db *DatabaseStore) ProcessMember(newMember models.Member) error {
+	member, err := db.GetMemberByEmail(newMember.Email)
+	if err != nil {
+		log.Errorf("error looking up member: %s", err)
+		return err
+	}
+
+	// if email is blank, we didn't retrieve a member from the DB
+	// let's add the member to the db
+	if isMemberNil(member) {
+		return db.AddMembers([]models.Member{newMember})
+	}
+
+	// if we already have a their name, exit
+	if member.Name == "" {
+		return db.updateMemberName(newMember)
+	}
+
+	return nil
+}
+
+func (db *DatabaseStore) updateMemberName(newMember models.Member) error {
+	var member models.Member
+
+	// if the member already exists, we might want to update their name.
+	err := db.getConn().QueryRow(context.Background(), memberDbMethod.updateMemberName(), newMember.Name, newMember.Email).Scan(&member.Name)
+	if err != nil {
+		return fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	return nil
+}

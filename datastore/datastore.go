@@ -26,6 +26,7 @@ type MemberStore interface {
 	AddNewMember(newMember models.Member) (models.Member, error)
 	AddMembers(members []models.Member) error
 	GetMembersWithCredit() []models.Member
+	ProcessMember(newMember models.Member) error
 }
 
 type ResourceStore interface {
