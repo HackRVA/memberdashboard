@@ -204,10 +204,6 @@ VALUES `
 	return err
 }
 
-func isMemberNil(member models.Member) bool {
-	return member.Email == ""
-}
-
 // ProcessMember - add them member if they don't already exist.  Otherwise, make sure we have their name
 func (db *DatabaseStore) ProcessMember(newMember models.Member) error {
 	member, err := db.GetMemberByEmail(newMember.Email)
@@ -216,13 +212,10 @@ func (db *DatabaseStore) ProcessMember(newMember models.Member) error {
 		return err
 	}
 
-	// if email is blank, we didn't retrieve a member from the DB
-	// let's add the member to the db
-	if isMemberNil(member) {
+	if member.ID == "" {
 		return db.AddMembers([]models.Member{newMember})
 	}
 
-	// if we already have a their name, exit
 	if member.Name == "" {
 		return db.updateMemberName(newMember)
 	}
