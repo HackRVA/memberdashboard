@@ -57,6 +57,6 @@ func (member *MemberDatabaseMethod) setMemberRFIDTag() string {
 func (member *MemberDatabaseMethod) updateMemberName() string {
 	return `UPDATE membership.members
 	SET name=$2
-	WHERE email=$1
+	WHERE id=$1
 	RETURNING name;`
 }
