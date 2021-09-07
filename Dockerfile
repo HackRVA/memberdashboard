@@ -10,7 +10,7 @@ RUN go mod vendor
 RUN go build -o server -ldflags "-X memberserver/api.GitCommit=$(git rev-parse --short HEAD)"
 
 # create a file named Dockerfile
-FROM node:latest as frontend-build
+FROM node:14.17.6 as frontend-build
 
 WORKDIR /app
 
@@ -28,7 +28,7 @@ COPY ./ui /app
 RUN npm run rollup
 
 # copy from build environments
-FROM node:latest
+FROM node:14.17.6
 
 WORKDIR /app
 
