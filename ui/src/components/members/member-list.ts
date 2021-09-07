@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 
 // material
-import { Checkbox } from "@material/mwc-checkbox";
+import { CheckboxBase } from "@material/mwc-checkbox/mwc-checkbox-base";
 
 // polymer
 import "@polymer/paper-tooltip";
@@ -41,8 +41,8 @@ export class MemberList extends LitElement {
   memberEmails: string[] = [];
   toastMsg: ToastMessage;
 
-  membersCheckBoxTemplate: NodeListOf<Checkbox>;
-  allMembersCheckBoxTemplate: Checkbox;
+  membersCheckBoxTemplate: NodeListOf<CheckboxBase>;
+  allMembersCheckBoxTemplate: CheckboxBase;
 
   memberService: MemberService = new MemberService();
   resourceService: ResourceService = new ResourceService();
@@ -183,7 +183,7 @@ export class MemberList extends LitElement {
   }
 
   setAllCheckbox(checked: boolean): void {
-    this.membersCheckBoxTemplate.forEach((x: Checkbox) => {
+    this.membersCheckBoxTemplate.forEach((x: CheckboxBase) => {
       x.checked = checked;
     });
   }
