@@ -53,8 +53,9 @@ export class MemberList extends LitElement {
   }
 
   firstUpdated(): void {
-    this.allMembersCheckBoxTemplate =
-      this.shadowRoot.querySelector("#all-members");
+    this.allMembersCheckBoxTemplate = this.shadowRoot.querySelector(
+      "#all-members"
+    ) as CheckboxBase;
   }
 
   updated(): void {
