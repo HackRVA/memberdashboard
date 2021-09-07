@@ -229,7 +229,7 @@ func (db *DatabaseStore) updateMemberName(memberID string, newMember models.Memb
 	var member models.Member
 
 	// if the member already exists, we might want to update their name.
-	err := db.getConn().QueryRow(context.Background(), memberDbMethod.updateMemberName(), newMember.Name, memberID).Scan(&member.Name)
+	err := db.getConn().QueryRow(context.Background(), memberDbMethod.updateMemberName(), memberID, newMember.Name).Scan(&member.Name)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
