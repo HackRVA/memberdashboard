@@ -48,6 +48,7 @@ type PaypalNotification struct {
 	EventType    string `json:"event_type"`
 	Summary      string `json:"summary"`
 	Resource     struct {
+		ID         string `json:"id"`
 		Subscriber struct {
 			ID        string `json:"id"`
 			Summary   string `json:"summary"`
