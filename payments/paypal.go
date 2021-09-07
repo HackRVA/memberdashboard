@@ -225,6 +225,7 @@ func (p PaymentProvider) GetSubscription(subscriptionID string) (models.Member, 
 		return m, err
 	}
 
+	log.Printf("member subscription response: %v", s)
 	m.Email = s.Subscriber.Email
 	m.Name = s.Subscriber.Name.GivenName + " " + s.Subscriber.Name.SurName
 

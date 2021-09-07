@@ -152,5 +152,7 @@ func (api *API) PaypalSubscriptionWebHookHandler(err error, n *listener.PaypalNo
 		log.Errorf("error parsing member from webhook: %v", err)
 	}
 
+	log.Printf("member: %v", newMember)
+
 	api.db.ProcessMember(newMember)
 }
