@@ -53,7 +53,7 @@ var HealthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 
 // {"cmd":"log","type":"access","time":1631240207,"isKnown":"true","access":"Always","username":"Stanley Hash","uid":"f3ec6234","door":"frontdoor"}
 type EventLogPayload struct {
-	Time     string `json:"time"`
+	Time     int    `json:"time"`
 	Username string `json:"username"`
 	RFID     string `json:"uid"`
 	Door     string `json:"door"`
