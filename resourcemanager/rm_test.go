@@ -25,7 +25,7 @@ func (mqtt *stubMQTTServer) Subscribe(topic string, handler mqtt.MessageHandler)
 }
 
 // TestUpdateResourceACL we just want to test that the mqtt message looks reasonable
-func TestUpdateResourceACL(t *testing.T) {
+func testUpdateResourceACL(t *testing.T) {
 	resourceManager := NewResourceManager(&stubMQTTServer{}, &in_memory.In_memory{})
 	resource := models.Resource{
 		ID:   "0",
@@ -43,7 +43,7 @@ func TestUpdateResourceACL(t *testing.T) {
 }
 
 // TestUpdateResources we just want to test that the mqtt message looks reasonable
-func TestUpdateResources(t *testing.T) {
+func testUpdateResources(t *testing.T) {
 	resourceManager := NewResourceManager(&stubMQTTServer{}, &in_memory.In_memory{})
 	resources := []models.Resource{
 		{
