@@ -47,7 +47,7 @@
 	"postCreateCommand": ["sh", "postCreateCommand.sh"],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3000],
+	"forwardPorts": [3000, 8000],
 
 	"remoteUser": "vscode"
 }

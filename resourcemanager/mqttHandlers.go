@@ -51,11 +51,32 @@ var HealthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 	// status = StatusGood
 }
 
+// {"cmd":"log","type":"access","time":1631240207,"isKnown":"true","access":"Always","username":"Stanley Hash","uid":"f3ec6234","door":"frontdoor"}
+type EventLogPayload struct {
+	Time     string `json:"time"`
+	Username string `json:"username"`
+	RFID     string `json:"uid"`
+	Door     string `json:"door"`
+}
+
 // OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
 var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	slack.PostWebHook(string(msg.Payload()))
+	var payload EventLogPayload
 
-	err := db.AddLogMsg(msg.Payload())
+	err := json.Unmarshal(msg.Payload(), &payload)
+	if err != nil {
+		log.Errorf("error unmarshalling mqtt payload: %s", err)
+		return
+	}
+
+	member, err := db.GetMemberByRFID(payload.RFID)
+	if err != nil {
+		log.Errorf("error looking up members name: %s %s", err, string(msg.Payload()))
+	}
+
+	slack.PostWebHook(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %s", member.Name, payload.RFID, payload.Door, payload.Time))
+
+	err = db.AddLogMsg(msg.Payload())
 	if err != nil {
 		log.Errorf("error saving access event: %s %s", err, string(msg.Payload()))
 	}

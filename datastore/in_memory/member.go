@@ -22,6 +22,11 @@ func (i In_memory) GetMemberByEmail(email string) (models.Member, error) {
 	}
 	return models.Member{}, errors.New("error getting user: not found")
 }
+
+func (i In_memory) GetMemberByRFID(rfid string) (models.Member, error) {
+	return models.Member{}, nil
+}
+
 func (i In_memory) AssignRFID(email string, rfid string) (models.Member, error) {
 	if len(rfid) == 0 {
 		return models.Member{}, errors.New("not a valid rfid")
