@@ -97,6 +97,22 @@ func (db *DatabaseStore) GetMemberByEmail(memberEmail string) (models.Member, er
 	return member, nil
 }
 
+func (db *DatabaseStore) GetMemberByRFID(rfid string) (models.Member, error) {
+	var member models.Member
+	var rIDs []string
+
+	err := db.getConn().QueryRow(context.Background(), memberDbMethod.getMemberByRFID(), rfid).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
+	if err == pgx.ErrNoRows {
+		return member, err
+	}
+	if err != nil {
+		log.Errorf("error getting member by email: %v", rfid)
+		return member, fmt.Errorf("conn.Query failed: %w", err)
+	}
+
+	return member, nil
+}
+
 func (db *DatabaseStore) AssignRFID(email string, rfid string) (models.Member, error) {
 	member, err := db.GetMemberByEmail(email)
 	if err != nil {
