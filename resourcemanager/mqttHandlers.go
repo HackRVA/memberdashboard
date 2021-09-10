@@ -74,7 +74,7 @@ var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Messag
 		log.Errorf("error looking up members name: %s %s", err, string(msg.Payload()))
 	}
 
-	slack.PostWebHook(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %s", member.Name, payload.RFID, payload.Door, payload.Time))
+	slack.PostWebHook(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", member.Name, payload.RFID, payload.Door, payload.Time))
 
 	err = db.AddLogMsg(msg.Payload())
 	if err != nil {
