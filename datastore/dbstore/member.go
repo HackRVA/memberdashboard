@@ -208,17 +208,13 @@ VALUES `
 func (db *DatabaseStore) ProcessMember(newMember models.Member) error {
 	member, err := db.GetMemberByEmail(newMember.Email)
 	if err != nil {
-		log.Errorf("error looking up member: %s", err)
+		if err == pgx.ErrNoRows {
+			return db.AddMembers([]models.Member{newMember})
+		}
 		return err
-	}
-	log.Printf("processing member: %v", member)
-
-	if member.ID == "" {
-		return db.AddMembers([]models.Member{newMember})
 	}
 
 	if member.Name == "" {
-		log.Print("attempting to update member name")
 		return db.updateMemberName(member.ID, newMember)
 	}
 
