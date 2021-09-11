@@ -8,6 +8,7 @@ import (
 
 	"github.com/Rhymond/go-money"
 	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -15,7 +16,13 @@ var paymentDbMethod PaymentDatabaseMethod
 
 // GetPayments - get list of payments that we have in the db
 func (db *DatabaseStore) GetPayments() ([]models.Payment, error) {
-	rows, err := db.getConn().Query(context.Background(), paymentDbMethod.getPayments())
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	rows, err := dbPool.Query(context.Background(), paymentDbMethod.getPayments())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -42,10 +49,16 @@ func (db *DatabaseStore) GetPayments() ([]models.Payment, error) {
 
 // AddPayment adds a member to the database
 func (db *DatabaseStore) AddPayment(payment models.Payment) error {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var p models.Payment
 	var amount int64
 
-	err := db.getConn().QueryRow(context.Background(), paymentDbMethod.insertPayment(), payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
+	err = dbPool.QueryRow(context.Background(), paymentDbMethod.insertPayment(), payment.Date, payment.Amount.AsMajorUnits(), payment.MemberID).Scan(&p.ID, &p.Date, &amount, &p.MemberID)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -57,6 +70,12 @@ func (db *DatabaseStore) AddPayment(payment models.Payment) error {
 
 // AddPayments adds multiple payments to the database
 func (db *DatabaseStore) AddPayments(payments []models.Payment) error {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var valStr []string
 
 	sqlStr := `INSERT INTO membership.payments(
@@ -72,7 +91,7 @@ VALUES `
 
 	str := strings.Join(valStr, ",")
 
-	_, err := db.getConn().Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	_, err = dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
 	if err != nil {
 		return fmt.Errorf("conn.Exec failed: %v", err)
 	}
@@ -82,7 +101,13 @@ VALUES `
 
 // SetMemberLevel sets a member's membership tier
 func (db *DatabaseStore) SetMemberLevel(memberId string, level models.MemberLevel) error {
-	rows, err := db.getConn().Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberId, level)
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	rows, err := dbPool.Query(context.Background(), paymentDbMethod.updateMembershipLevel(), memberId, level)
 	if err != nil {
 		log.Errorf("Set member level failed: %v", err)
 		return err
@@ -105,13 +130,25 @@ func (db *DatabaseStore) ApplyMemberCredits() {
 
 // UpdateMemberTiers updates member tiers based on the most recent payment amount
 func (db *DatabaseStore) UpdateMemberTiers() {
-	db.getConn().Exec(context.Background(), paymentDbMethod.updateMemberTiers())
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	dbPool.Exec(context.Background(), paymentDbMethod.updateMemberTiers())
 }
 
 // GetPastDueAccounts retrieves all active members without a payment in the last month
 func (db *DatabaseStore) GetPastDueAccounts() []models.PastDueAccount {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var pastDueAccounts []models.PastDueAccount
-	rows, err := db.getConn().Query(context.Background(), paymentDbMethod.pastDuePayments())
+	rows, err := dbPool.Query(context.Background(), paymentDbMethod.pastDuePayments())
 
 	if err == pgx.ErrNoRows {
 		return pastDueAccounts

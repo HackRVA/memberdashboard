@@ -5,6 +5,7 @@ import (
 	"memberserver/api/models"
 	"time"
 
+	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -12,7 +13,13 @@ var communicationDbMethod CommunicationDatabaseMethod
 
 // GetCommunnications returns all communications from the database
 func (db *DatabaseStore) GetCommunications() []models.Communication {
-	rows, err := db.getConn().Query(context.Background(), communicationDbMethod.getCommunications())
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	rows, err := dbPool.Query(context.Background(), communicationDbMethod.getCommunications())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -33,8 +40,14 @@ func (db *DatabaseStore) GetCommunications() []models.Communication {
 
 // GetCommunnication returns all the requested communication from the database
 func (db *DatabaseStore) GetCommunication(name string) (models.Communication, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var c models.Communication
-	err := db.getConn().QueryRow(context.Background(), communicationDbMethod.getCommunication(), name).
+	err = dbPool.QueryRow(context.Background(), communicationDbMethod.getCommunication(), name).
 		Scan(&c.ID, &c.Name, &c.Subject, &c.FrequencyThrottle, &c.Template)
 	if err != nil {
 		return c, err
@@ -43,8 +56,14 @@ func (db *DatabaseStore) GetCommunication(name string) (models.Communication, er
 }
 
 func (db *DatabaseStore) GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var d time.Time
-	err := db.getConn().QueryRow(context.Background(), communicationDbMethod.getLastCommunication(), memberId, commId).Scan(&d)
+	err = dbPool.QueryRow(context.Background(), communicationDbMethod.getLastCommunication(), memberId, commId).Scan(&d)
 	if err != nil {
 		return d, err
 	}
@@ -52,7 +71,13 @@ func (db *DatabaseStore) GetMostRecentCommunicationToMember(memberId string, com
 }
 
 func (db *DatabaseStore) LogCommunication(communicationId int, memberId string) error {
-	_, err := db.getConn().Exec(context.Background(), communicationDbMethod.insertCommunicationLog(), memberId, communicationId)
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	_, err = dbPool.Exec(context.Background(), communicationDbMethod.insertCommunicationLog(), memberId, communicationId)
 	if err != nil {
 		return err
 	}

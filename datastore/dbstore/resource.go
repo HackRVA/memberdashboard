@@ -9,6 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 var resourceDbMethod ResourceDatabaseMethod
@@ -30,7 +31,13 @@ func GetLastHeartbeat(r models.Resource) time.Time {
 
 // GetResources - gets the status from DB
 func (db *DatabaseStore) GetResources() []models.Resource {
-	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResource())
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	rows, err := dbPool.Query(db.ctx, resourceDbMethod.getResource())
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -52,9 +59,15 @@ func (db *DatabaseStore) GetResources() []models.Resource {
 
 // GetResourceByID - lookup a resource by it's name
 func (db *DatabaseStore) GetResourceByID(ID string) (models.Resource, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var r models.Resource
 
-	err := db.getConn().QueryRow(db.ctx, resourceDbMethod.getResourceByID(), ID).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	err = dbPool.QueryRow(db.ctx, resourceDbMethod.getResourceByID(), ID).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -64,9 +77,15 @@ func (db *DatabaseStore) GetResourceByID(ID string) (models.Resource, error) {
 
 // GetResourceByName - lookup a resource by it's name
 func (db *DatabaseStore) GetResourceByName(resourceName string) (models.Resource, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var r models.Resource
 
-	err := db.getConn().QueryRow(db.ctx, resourceDbMethod.getResourceByName(), resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	err = dbPool.QueryRow(db.ctx, resourceDbMethod.getResourceByName(), resourceName).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if err != nil {
 		return r, fmt.Errorf("getResourceByName failed: %v", err)
 	}
@@ -76,13 +95,19 @@ func (db *DatabaseStore) GetResourceByName(resourceName string) (models.Resource
 
 // RegisterResource - stores a new resource in the db
 func (db *DatabaseStore) RegisterResource(name string, address string, isDefault bool) (models.Resource, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	r := &models.Resource{}
 
 	r.Name = name
 	r.Address = address
 	r.IsDefault = isDefault
 
-	_, err := db.getConn().Exec(db.ctx, resourceDbMethod.insertResource(), r.Name, r.Address, r.IsDefault)
+	_, err = dbPool.Exec(db.ctx, resourceDbMethod.insertResource(), r.Name, r.Address, r.IsDefault)
 	if err != nil {
 		return *r, fmt.Errorf("error inserting resource: %s", err.Error())
 	}
@@ -92,6 +117,12 @@ func (db *DatabaseStore) RegisterResource(name string, address string, isDefault
 
 // UpdateResource - updates a resource in the db
 func (db *DatabaseStore) UpdateResource(id string, name string, address string, isDefault bool) (*models.Resource, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	r := &models.Resource{}
 
 	// if the resource doesn't already exist let's register it
@@ -100,7 +131,7 @@ func (db *DatabaseStore) UpdateResource(id string, name string, address string, 
 		return r, errors.New("invalid resourseID of 0")
 	}
 
-	row := db.getConn().QueryRow(db.ctx, resourceDbMethod.updateResource(), id, name, address, isDefault).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	row := dbPool.QueryRow(db.ctx, resourceDbMethod.updateResource(), id, name, address, isDefault).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if row == pgx.ErrNoRows {
 		log.Printf("no rows affected %s", row.Error())
 		return r, errors.New("no rows affected")
@@ -111,7 +142,13 @@ func (db *DatabaseStore) UpdateResource(id string, name string, address string, 
 
 // DeleteResource - delete a resource from the db
 func (db *DatabaseStore) DeleteResource(id string) error {
-	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.deleteResource(), id)
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	rows, err := dbPool.Query(db.ctx, resourceDbMethod.deleteResource(), id)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -123,6 +160,11 @@ func (db *DatabaseStore) DeleteResource(id string) error {
 
 // AddMultipleMembersToResource grant multiple members access to a resource
 func (db *DatabaseStore) AddMultipleMembersToResource(emails []string, resourceID string) ([]models.MemberResourceRelation, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
 
 	var membersResource []models.MemberResourceRelation
 
@@ -143,7 +185,7 @@ func (db *DatabaseStore) AddMultipleMembersToResource(emails []string, resourceI
 		memberResource.MemberID = member.ID
 		memberResource.ResourceID = resource.ID
 
-		row := db.getConn().QueryRow(db.ctx, resourceDbMethod.insertMemberResource(), memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID)
+		row := dbPool.QueryRow(db.ctx, resourceDbMethod.insertMemberResource(), memberResource.MemberID, memberResource.ResourceID).Scan(&memberResource.ID, &memberResource.MemberID, &memberResource.ResourceID)
 		if row == pgx.ErrNoRows {
 			return membersResource, errors.New("no rows affected")
 		}
@@ -158,12 +200,18 @@ func (db *DatabaseStore) AddMultipleMembersToResource(emails []string, resourceI
 
 // AddUserToDefaultResources - grants a user access to default resources - untested
 func (db *DatabaseStore) AddUserToDefaultResources(email string) ([]models.MemberResourceRelation, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	m, err := db.GetMemberByEmail(email)
 	if err != nil {
 		return []models.MemberResourceRelation{}, err
 	}
 
-	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.insertMemberDefaultResource(), m.ID)
+	rows, err := dbPool.Query(db.ctx, resourceDbMethod.insertMemberDefaultResource(), m.ID)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -182,9 +230,15 @@ func (db *DatabaseStore) AddUserToDefaultResources(email string) ([]models.Membe
 
 // GetMemberResourceRelation retrieves a relation of a member and a resource
 func (db *DatabaseStore) GetMemberResourceRelation(m models.Member, r models.Resource) (models.MemberResourceRelation, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	mr := models.MemberResourceRelation{}
 
-	row := db.getConn().QueryRow(db.ctx, resourceDbMethod.getMemberResource(), m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
+	row := dbPool.QueryRow(db.ctx, resourceDbMethod.getMemberResource(), m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
 	if row == pgx.ErrNoRows {
 		return mr, errors.New("no rows affected")
 	}
@@ -194,6 +248,12 @@ func (db *DatabaseStore) GetMemberResourceRelation(m models.Member, r models.Res
 
 // RemoveUserFromResource - removes a users access to a resource
 func (db *DatabaseStore) RemoveUserFromResource(email string, resourceID string) error {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	memberResource := models.MemberResourceRelation{}
 
 	r, err := db.GetResourceByID(resourceID)
@@ -211,7 +271,7 @@ func (db *DatabaseStore) RemoveUserFromResource(email string, resourceID string)
 		return err
 	}
 
-	commandTag, err := db.getConn().Exec(db.ctx, resourceDbMethod.removeMemberResource(), memberResource.MemberID, memberResource.ResourceID)
+	commandTag, err := dbPool.Exec(db.ctx, resourceDbMethod.removeMemberResource(), memberResource.MemberID, memberResource.ResourceID)
 	if err != nil {
 		return err
 	}
@@ -225,9 +285,15 @@ func (db *DatabaseStore) RemoveUserFromResource(email string, resourceID string)
 
 // GetResourceACL returns a list of members that have access to that Resource
 func (db *DatabaseStore) GetResourceACL(r models.Resource) ([]string, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var accessList []string
 
-	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByResourceID(), r.ID)
+	rows, err := dbPool.Query(db.ctx, resourceDbMethod.getResourceACLByResourceID(), r.ID)
 	if err != nil {
 		return accessList, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -245,9 +311,15 @@ func (db *DatabaseStore) GetResourceACL(r models.Resource) ([]string, error) {
 
 // GetResourceACLWithMemberInfo returns a list of members that have access to that Resource
 func (db *DatabaseStore) GetResourceACLWithMemberInfo(r models.Resource) ([]models.Member, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var accessList []models.Member
 
-	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByResourceIDQueryWithMemberInfo(), r.ID)
+	rows, err := dbPool.Query(db.ctx, resourceDbMethod.getResourceACLByResourceIDQueryWithMemberInfo(), r.ID)
 	if err != nil {
 		return accessList, fmt.Errorf("conn.Query failed: %v", err)
 	}
@@ -268,9 +340,15 @@ func (db *DatabaseStore) GetResourceACLWithMemberInfo(r models.Resource) ([]mode
 // GetMembersAccess returns a list of a specific members access
 //   this is used for sending a new rfid assigment to a resource
 func (db *DatabaseStore) GetMembersAccess(m models.Member) ([]models.MemberAccess, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var memberAccess []models.MemberAccess
 
-	rows, err := db.getConn().Query(db.ctx, resourceDbMethod.getResourceACLByEmail(), m.Email)
+	rows, err := dbPool.Query(db.ctx, resourceDbMethod.getResourceACLByEmail(), m.Email)
 	if err != nil {
 		return memberAccess, fmt.Errorf("error getting members access info: %s", err)
 	}

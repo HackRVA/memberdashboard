@@ -7,11 +7,19 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // RegisterUser register a user in the db
 func (db *DatabaseStore) RegisterUser(creds models.Credentials) error {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	if len(creds.Password) == 0 {
 		return fmt.Errorf("not a valid password")
 	}
@@ -21,7 +29,7 @@ func (db *DatabaseStore) RegisterUser(creds models.Credentials) error {
 	}
 
 	// require the user to be a member
-	_, err := db.GetMemberByEmail(creds.Email)
+	_, err = db.GetMemberByEmail(creds.Email)
 	if err != nil {
 		return err
 	}
@@ -34,7 +42,7 @@ func (db *DatabaseStore) RegisterUser(creds models.Credentials) error {
 	}
 
 	// Next, insert the email, along with the hashed password into the database
-	rows, err := db.getConn().Query(context.Background(), userDbMethod.registerUser(), creds.Email, string(hashedPassword))
+	rows, err := dbPool.Query(context.Background(), userDbMethod.registerUser(), creds.Email, string(hashedPassword))
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %s", err)
 	}
@@ -46,11 +54,17 @@ func (db *DatabaseStore) RegisterUser(creds models.Credentials) error {
 
 // UserSignin - user login
 func (db *DatabaseStore) UserSignin(email string, password string) error {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	// We create another instance of `Credentials` to store the credentials we get from the database
 	storedCreds := &models.Credentials{}
 
 	// Get the existing entry present in the database for the given user
-	row := db.getConn().QueryRow(context.Background(), userDbMethod.getUserPassword(), strings.ToLower(email)).Scan(&storedCreds.Password)
+	row := dbPool.QueryRow(context.Background(), userDbMethod.getUserPassword(), strings.ToLower(email)).Scan(&storedCreds.Password)
 	if row == pgx.ErrNoRows {
 		return fmt.Errorf("Unauthorized")
 	}
@@ -66,9 +80,15 @@ func (db *DatabaseStore) UserSignin(email string, password string) error {
 
 // GetUser returns the currently logged in user
 func (db *DatabaseStore) GetUser(email string) (models.UserResponse, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
 	var userResponse models.UserResponse
 
-	row := db.getConn().QueryRow(context.Background(), userDbMethod.getUser(), strings.ToLower(email)).Scan(&userResponse.Email)
+	row := dbPool.QueryRow(context.Background(), userDbMethod.getUser(), strings.ToLower(email)).Scan(&userResponse.Email)
 	if row == pgx.ErrNoRows {
 		return userResponse, fmt.Errorf("error getting user")
 	}

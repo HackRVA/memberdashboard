@@ -20,7 +20,6 @@ func main() {
 	if err != nil {
 		log.Errorf("error setting up db: %s", err)
 	}
-	defer db.Release()
 
 	router := api.Setup(db)
 

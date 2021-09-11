@@ -27,7 +27,7 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 	db, _ := dbstore.Setup()
-	defer db.Release()
+
 	for i := 0; i < count; i++ {
 		member := fakeMember()
 		db.AddMembers([]models.Member{member})
