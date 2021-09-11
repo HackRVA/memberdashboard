@@ -23,7 +23,7 @@ type API struct {
 type resourceAPI struct {
 	db              datastore.DataStore
 	config          config.Config
-	resourcemanager resourcemanager.ResourceManager
+	resourcemanager *resourcemanager.ResourceManager
 }
 
 // Setup - setup us up the routes
@@ -36,8 +36,9 @@ func Setup(store datastore.DataStore) *mux.Router {
 	api := API{
 		db: store,
 		resource: resourceAPI{
-			db:     store,
-			config: c,
+			db:              store,
+			config:          c,
+			resourcemanager: rm,
 		},
 		VersionServer: &VersionServer{NewInMemoryVersionStore()},
 		MemberServer:  &MemberServer{store, rm},
