@@ -69,6 +69,11 @@ var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Messag
 		return
 	}
 
+	db, err := dbstore.Setup()
+	if err != nil {
+		log.Errorf("error initializing db: %s", err)
+	}
+
 	member, err := db.GetMemberByRFID(payload.RFID)
 	if err != nil {
 		log.Errorf("error looking up members name: %s %s", err, string(msg.Payload()))
