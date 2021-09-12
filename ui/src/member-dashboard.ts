@@ -28,9 +28,9 @@ export class MemberDashboard extends LitElement {
   }
 
   onBeforeEnter(location: RouterLocation): void {
-    // if (location.pathname === '/') {
-    //   this.goToHome();
-    // }
+    if (location.pathname === '/') {
+      this.goToHome();
+    }
   }
 
   goToHome(): void {

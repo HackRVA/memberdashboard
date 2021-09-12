@@ -8,6 +8,7 @@ import { authUser$ } from '../../../auth/auth-user';
 import { memberDashboardContentStyle } from './member-dashboard-content.style';
 import { customElement, property } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+import { TabIndex } from '../../types/custom/tab-index';
 
 @customElement('member-dashboard-content')
 export class MemberDashboardContent extends LitElement {
@@ -28,10 +29,12 @@ export class MemberDashboardContent extends LitElement {
   }
 
   goToHome(): void {
+    console.log('hi 2');
     Router.go('/home');
   }
 
   goToUser(): void {
+    console.log('hi');
     Router.go('/user');
   }
 
@@ -47,22 +50,22 @@ export class MemberDashboardContent extends LitElement {
     Router.go('/resources');
   }
 
-  // getTabIndex(pathName: string): number {
-  //   switch (pathName) {
-  //     case "/home":
-  //       return TabIndex.home;
-  //     case "/user":
-  //       return TabIndex.user;
-  //     case "/reports":
-  //       return TabIndex.reports;
-  //     case "/members":
-  //       return TabIndex.members;
-  //     case "/resources":
-  //       return TabIndex.resources;
-  //     default:
-  //       return -1;
-  //   }
-  // }
+  getTabIndex(pathName: string): number {
+    switch (pathName) {
+      case '/home':
+        return TabIndex.home;
+      case '/user':
+        return TabIndex.user;
+      case '/reports':
+        return TabIndex.reports;
+      case '/members':
+        return TabIndex.members;
+      case '/resources':
+        return TabIndex.resources;
+      default:
+        return -1;
+    }
+  }
 
   handleLogout(): void {
     this.authService.logout().subscribe({
@@ -130,9 +133,13 @@ export class MemberDashboardContent extends LitElement {
         <div slot="actionItems">${this.email}</div>
         ${this.displayLogout()}
       </mwc-top-app-bar-fixed>
-      <mwc-tab-bar>
+      <mwc-tab-bar activeIndex=${this.getTabIndex(window.location.pathname)}>
         <mwc-tab label="Home" icon="home" @click=${this.goToHome}></mwc-tab>
-        <mwc-tab label="User" icon="account_circle"></mwc-tab>
+        <mwc-tab
+          label="User"
+          icon="account_circle"
+          @click=${this.goToUser}
+        ></mwc-tab>
       </mwc-tab-bar>
       <slot> </slot>
     `;
