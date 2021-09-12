@@ -1,6 +1,6 @@
 import { mdCardStyle } from './md-card.style';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators';
+import { customElement } from 'lit/decorators.js';
 
 @customElement('md-card')
 export class CardElement extends LitElement {

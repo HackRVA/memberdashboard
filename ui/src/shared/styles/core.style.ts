@@ -1,7 +1,7 @@
 import { css, CSSResult } from 'lit';
 import { primaryBlue, primaryRed } from './colors';
 
-export const coreStyles: CSSResult = css`
+export const coreStyle: CSSResult = css`
   .center-text {
     text-align: center;
   }

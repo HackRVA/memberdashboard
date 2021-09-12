@@ -9,7 +9,7 @@ import {
   primaryDarkGray,
 } from '../../../shared/styles/colors';
 
-export const loginPageStyles: CSSResult = css`
+export const loginPageStyle: CSSResult = css`
   mwc-top-app-bar-fixed {
     --mdc-theme-primary: ${primaryWhite};
     --mdc-theme-on-primary: ${primaryBlue};

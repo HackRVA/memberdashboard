@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { fixture, expect } from '@open-wc/testing';
 
-import { MemberDashboard } from '../src/member-dashboard';
+import { MemberDashboard } from '../src/';
 import '../src/member-dashboard.js';
 
 describe('MemberDashboard', () => {

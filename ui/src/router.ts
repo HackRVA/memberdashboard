@@ -1,5 +1,5 @@
 // vaadin
-import { Router, Route } from '@vaadin/router';
+import { Router, Route, Context, Commands } from '@vaadin/router';
 
 const routes: Route[] = [
   {
@@ -8,6 +8,22 @@ const routes: Route[] = [
     action: async () => {
       await import('./index');
     },
+    children: [
+      {
+        path: '/home',
+        component: 'home-page',
+        action: async () => {
+          await import('./home/components/home-page');
+        },
+      },
+      {
+        path: '(.*)',
+        component: 'not-found',
+        action: async () => {
+          await import('./shared/components/not-found');
+        },
+      },
+    ],
   },
 ];
 const outlet = document.getElementById('outlet');

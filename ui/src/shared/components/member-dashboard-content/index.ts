@@ -1,1 +1,1 @@
-export * from './member-dashboard-content';
+export * from './member-dashboard-content.component';

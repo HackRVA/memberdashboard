@@ -1,25 +1,18 @@
-// lit element
-import {
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  TemplateResult,
-} from 'lit-element';
-import { coreStyles } from '../../../shared/styles';
+import { coreStyle } from '../../../shared/styles';
 
 // memberdashboard
-import './card-element';
-import './login-form';
-import { loginPageStyles } from './login-page.style';
-import './register-form';
+import '../login-form';
+import { loginPageStyle } from './login-page.style';
+import '../register-form';
+import { customElement, property } from 'lit/decorators.js';
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 @customElement('login-page')
 export class LoginPage extends LitElement {
   isRegister: boolean = false;
 
   static get styles(): CSSResult[] {
-    return [loginPageStyles, coreStyles];
+    return [loginPageStyle, coreStyle];
   }
 
   handleSwitch(): void {
