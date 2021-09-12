@@ -5,13 +5,13 @@ import { Router } from '@vaadin/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { coreStyle } from '../../styles/core.style';
 import { authUser$ } from '../../../auth/auth-user';
-import { memberDashboardContentStyle } from './member-dashboard-content.style';
+import { mdContentStyle } from './md-content.style';
 import { customElement, property } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { TabIndex } from '../../types/custom/tab-index';
 
-@customElement('member-dashboard-content')
-export class MemberDashboardContent extends LitElement {
+@customElement('md-content')
+export class MDContent extends LitElement {
   @property({ type: String })
   email: string;
 
@@ -21,7 +21,7 @@ export class MemberDashboardContent extends LitElement {
   // versionService: VersionService = new VersionService();
 
   static get styles(): CSSResult[] {
-    return [memberDashboardContentStyle, coreStyle];
+    return [mdContentStyle, coreStyle];
   }
 
   firstUpdated(): void {
@@ -29,12 +29,10 @@ export class MemberDashboardContent extends LitElement {
   }
 
   goToHome(): void {
-    console.log('hi 2');
     Router.go('/home');
   }
 
   goToUser(): void {
-    console.log('hi');
     Router.go('/user');
   }
 

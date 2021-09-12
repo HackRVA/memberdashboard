@@ -2,7 +2,7 @@
 
 // memberdashboard
 import './../../../shared/components/md-card';
-import { customElement, property } from 'lit/decorators';
+import { customElement, property } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { authUser$ } from '../../../auth/auth-user';
 import { UserService } from '../../services/user.service';
@@ -26,6 +26,7 @@ export class UserPage extends LitElement {
     if (this.email) {
       return html`HI `;
     }
+    return html`HELLOW`;
   }
 
   render(): TemplateResult {

@@ -10,7 +10,7 @@ import './material-loader';
 // memberdashboard
 import './router';
 import './auth/components/login-page';
-import './components/shared/member-dashboard-content';
+import './shared/components/md-content';
 import { UserService } from './user/services/user.service';
 import { authUser$ } from './auth/auth-user';
 import { customElement } from 'lit/decorators.js';
@@ -55,9 +55,9 @@ export class MemberDashboard extends LitElement {
   displayAppContent(): TemplateResult {
     if (this.isUserLogin()) {
       return html`
-      <member-dashboard-content .email=${this.email}>
+      <md-content .email=${this.email}>
         <slot></slot>
-      </member-dashboard-content`;
+      </md-content`;
     } else {
       return html`<login-page></login-page>`;
     }

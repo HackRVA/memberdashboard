@@ -4,7 +4,7 @@ import { plainWhite, primaryDarkGray } from '../../styles';
 
 // memberdashboard
 
-export const memberDashboardContentStyle: CSSResult = css`
+export const mdContentStyle: CSSResult = css`
   .logout {
     margin-left: 24px;
     --mdc-theme-primary: ${plainWhite};

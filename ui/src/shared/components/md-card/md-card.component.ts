@@ -3,7 +3,7 @@ import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 @customElement('md-card')
-export class CardElement extends LitElement {
+export class MDCard extends LitElement {
   static get styles(): CSSResult[] {
     return [mdCardStyle];
   }

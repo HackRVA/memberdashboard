@@ -22,8 +22,10 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
   /** Compile JS for older browsers. Requires @web/dev-server-esbuild plugin */
   // esbuildTarget: 'auto'
 
-  /** Set appIndex to enable SPA routing */
-  // appIndex: 'demo/index.html',
+  /** Set appIndex to enable SPA routing 
+   * THIS NEEDS TO BE ENABLED TO USE VAADIN ROUTER!!!!!
+  */
+  appIndex: './index.html',
 
   plugins: [
     /** Use Hot Module Replacement by uncommenting. Requires @open-wc/dev-server-hmr plugin */
