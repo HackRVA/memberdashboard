@@ -6,11 +6,11 @@ import '../../../shared/components/toast-msg';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { registerFormStyles } from './register-form.style';
 import { AuthService } from '../../services/auth.service';
-import { showComponent } from '../../../shared/functions/show-component';
 import { RegisterRequest } from '../../types/api/register-request';
 
-import { customElement, property } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+import { showComponent } from '../../../shared/functions';
 
 @customElement('register-form')
 export class RegisterForm extends LitElement {

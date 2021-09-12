@@ -37,15 +37,15 @@ export class MDContent extends LitElement {
   }
 
   goToReports(): void {
-    Router.go('/reports');
+    Router.go('/report');
   }
 
   goToMembers(): void {
-    Router.go('/members');
+    Router.go('/member');
   }
 
   goToResources(): void {
-    Router.go('/resources');
+    Router.go('/resource');
   }
 
   getTabIndex(pathName: string): number {
@@ -54,11 +54,11 @@ export class MDContent extends LitElement {
         return TabIndex.home;
       case '/user':
         return TabIndex.user;
-      case '/reports':
+      case '/report':
         return TabIndex.reports;
-      case '/members':
+      case '/member':
         return TabIndex.members;
-      case '/resources':
+      case '/resource':
         return TabIndex.resources;
       default:
         return -1;
@@ -100,29 +100,27 @@ export class MDContent extends LitElement {
     `;
   }
 
-  // renderAdminTabs(): TemplateResult | void {
-  //   if (isAdmin()) {
-  //     return html`
-  //       <mwc-tab
-  //         label="Reports"
-  //         icon="show_chart"
-  //         @click=${this.goToReports}
-  //       ></mwc-tab>
-  //       <mwc-tab
-  //         label="Members"
-  //         icon="people"
-  //         @click=${this.goToMembers}
-  //       ></mwc-tab>
-  //       <mwc-tab
-  //         label="Resources"
-  //         icon="devices"
-  //         @click=${this.goToResources}
-  //       ></mwc-tab>
-  //     `;
-  //   }
-
-  //   return html``;
-  // }
+  renderAdminTabs(): TemplateResult | void {
+    if (true) {
+      return html`
+        <mwc-tab
+          label="Reports"
+          icon="show_chart"
+          @click=${this.goToReports}
+        ></mwc-tab>
+        <mwc-tab
+          label="Members"
+          icon="people"
+          @click=${this.goToMembers}
+        ></mwc-tab>
+        <mwc-tab
+          label="Resources"
+          icon="devices"
+          @click=${this.goToResources}
+        ></mwc-tab>
+      `;
+    }
+  }
 
   render(): TemplateResult {
     return html`
@@ -138,6 +136,7 @@ export class MDContent extends LitElement {
           icon="account_circle"
           @click=${this.goToUser}
         ></mwc-tab>
+        ${this.renderAdminTabs()}
       </mwc-tab-bar>
       <slot> </slot>
     `;

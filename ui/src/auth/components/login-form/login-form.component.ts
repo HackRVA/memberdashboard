@@ -9,10 +9,10 @@ import '../../../shared/components/toast-msg';
 import { loginFormStyle } from './login-form.style';
 import { LoginRequest } from '../../types/api/login-request';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
-import { showComponent } from '../../../shared/functions/show-component';
 import { AuthService } from '../../services/auth.service';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { showComponent } from '../../../shared/functions';
 
 @customElement('login-form')
 export class LoginForm extends LitElement {

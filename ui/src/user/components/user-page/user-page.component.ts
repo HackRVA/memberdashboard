@@ -6,6 +6,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { authUser$ } from '../../../auth/auth-user';
 import { UserService } from '../../services/user.service';
+import '../user-detail';
 
 @customElement('user-page')
 export class UserPage extends LitElement {
@@ -24,9 +25,8 @@ export class UserPage extends LitElement {
 
   displayUserDetail(): TemplateResult | void {
     if (this.email) {
-      return html`HI `;
+      return html` <user-detail .email=${this.email}> </user-detail> `;
     }
-    return html`HELLOW`;
   }
 
   render(): TemplateResult {

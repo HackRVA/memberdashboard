@@ -24,6 +24,20 @@ const routes: Route[] = [
         },
       },
       {
+        path: 'report',
+        component: 'report-page',
+        action: async () => {
+          await import('./report/components/report-page');
+        },
+      },
+      {
+        path: 'member',
+        component: 'member-page',
+        action: async () => {
+          await import('./member/components/member-page');
+        },
+      },
+      {
         path: '(.*)',
         component: 'not-found',
         action: async () => {

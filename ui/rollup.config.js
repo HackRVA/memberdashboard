@@ -5,6 +5,7 @@ import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
 import { terser } from 'rollup-plugin-terser';
 import { generateSW } from 'rollup-plugin-workbox';
 import path from 'path';
+import replace from '@rollup/plugin-replace';
 
 export default {
   input: 'index.html',
@@ -23,6 +24,9 @@ export default {
       minify: true,
       injectServiceWorker: true,
       serviceWorkerPath: 'dist/sw.js',
+    }),
+    replace({
+      process: JSON.stringify({ env: { API: '/api' } }),
     }),
     /** Resolve bare module imports */
     nodeResolve(),

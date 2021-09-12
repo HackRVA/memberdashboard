@@ -4,7 +4,7 @@ import { coreStyle } from '../../../shared/styles';
 import '../login-form';
 import { loginPageStyle } from './login-page.style';
 import '../register-form';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 @customElement('login-page')

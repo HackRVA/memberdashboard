@@ -24,7 +24,7 @@ export class MemberDashboard extends LitElement {
   constructor() {
     super();
     // initialize user profile before the app fully loads
-    // this.getUser();
+    this.getUser();
   }
 
   onBeforeEnter(location: RouterLocation): void {
@@ -49,15 +49,14 @@ export class MemberDashboard extends LitElement {
   }
 
   isUserLogin(): boolean {
-    return true;
+    return authUser$.getValue().login;
   }
 
   displayAppContent(): TemplateResult {
     if (this.isUserLogin()) {
-      return html`
-      <md-content .email=${this.email}>
+      return html` <md-content .email=${this.email}>
         <slot></slot>
-      </md-content`;
+      </md-content>`;
     } else {
       return html`<login-page></login-page>`;
     }

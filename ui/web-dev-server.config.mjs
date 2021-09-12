@@ -14,7 +14,7 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
   port: 8000,
   middlewares: [
     proxy('/edge', {
-      target: 'http://localhost:8000',
+      target: 'http://localhost:3000',
       rewrite: path => path.replace(/\/edge/, '')
     }),
   ],
