@@ -17,7 +17,11 @@ export class AuthService extends HTTPService {
   }
 
   login(request: LoginRequest): Observable<AuthResponse> {
-    return this.post<AuthResponse>(this.authUrlSegment + '/login', request);
+    return this.post<AuthResponse>(
+      this.authUrlSegment + '/login',
+      request,
+      'Basic'
+    );
   }
 
   logout(): Observable<null> {

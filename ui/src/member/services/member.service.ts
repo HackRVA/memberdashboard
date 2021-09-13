@@ -36,6 +36,6 @@ export class MemberService extends HTTPService {
   }
 
   downloadNonMembersCSV(): Observable<Blob> {
-    return this.get<Blob>(`${this.memberUrlSegment}/slack/nonmembers`);
+    return this.get<Blob>(`${this.memberUrlSegment}/slack/nonmembers`, 'blob');
   }
 }
