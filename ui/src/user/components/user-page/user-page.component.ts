@@ -1,9 +1,9 @@
 // lit element
+import { customElement, property } from 'lit/decorators.js';
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // memberdashboard
 import './../../../shared/components/md-card';
-import { customElement, property } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { authUser$ } from '../../../auth/auth-user';
 import { UserService } from '../../services/user.service';
 import '../user-detail';

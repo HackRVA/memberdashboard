@@ -1,3 +1,7 @@
+// lit element
+import { customElement } from 'lit/decorators.js';
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+
 // material
 import { TextField } from '@material/mwc-textfield/mwc-textfield';
 
@@ -7,9 +11,6 @@ import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { registerFormStyles } from './register-form.style';
 import { AuthService } from '../../services/auth.service';
 import { RegisterRequest } from '../../types/api/register-request';
-
-import { customElement } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { showComponent } from '../../../shared/functions';
 
 @customElement('register-form')

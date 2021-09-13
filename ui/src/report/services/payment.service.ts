@@ -1,10 +1,10 @@
 // rxjs
 import { Observable } from 'rxjs';
+
+// memberdashboard
 import { ENV } from '../../env';
 import { HTTPService } from '../../shared/services/http.service';
 import { PaymentChartResponse } from '../types/api/payment-chart-response';
-
-// memberdashboard
 
 export class PaymentService extends HTTPService {
   private readonly paymentsUrlSegment: string = ENV.api + '/payments';

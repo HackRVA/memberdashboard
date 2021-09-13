@@ -1,8 +1,8 @@
 // lit element
 import { css, CSSResult } from 'lit';
-import { plainWhite, primaryDarkGray } from '../../styles';
 
 // memberdashboard
+import { plainWhite, primaryDarkGray } from '../../styles';
 
 export const mdContentStyle: CSSResult = css`
   .logout {

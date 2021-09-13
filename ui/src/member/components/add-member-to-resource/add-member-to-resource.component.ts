@@ -1,18 +1,18 @@
 // lit element
+import { customElement, property } from 'lit/decorators.js';
+import { html, LitElement, TemplateResult } from 'lit';
 
 // material
 import { TextField } from '@material/mwc-textfield/mwc-textfield';
 import { Dialog } from '@material/mwc-dialog';
 import { Select } from '@material/mwc-select';
-import { customElement, property } from 'lit/decorators.js';
-import { html, LitElement, TemplateResult } from 'lit';
+
+// memberdashboard
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { ResourceService } from '../../../resource/services/resource.service';
 import { ResourceResponse } from '../../../resource/types/api/resource-response';
 import { BulkAddMembersToResourceRequest } from '../../../resource/types/api/bulk-add-members-to-resource-request';
 import { isEmpty, showComponent } from '../../../shared/functions';
-
-// memberdashboard
 
 @customElement('add-member-to-resource')
 export class AddMemberToResourceModal extends LitElement {

@@ -1,13 +1,12 @@
 // lit element
 import { css, CSSResult } from 'lit';
+
+// memberdashboard
 import {
   primaryLightGray,
   primaryLightGreen,
   primaryRed,
-  primaryYellow,
 } from '../../../shared/styles/colors';
-
-// memberdashboard
 
 export const resourceManagerStyle: CSSResult = css`
   .resource-container {

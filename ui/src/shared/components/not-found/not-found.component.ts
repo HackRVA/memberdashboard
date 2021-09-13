@@ -1,11 +1,13 @@
-// vaadin
-import { Router } from '@vaadin/router';
+// lit element
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { coreStyle } from '../../styles';
+
+// vaadin
+import { Router } from '@vaadin/router';
 
 // memberdashboard
 import { notFoundStyle } from './not-found.style';
+import { coreStyle } from '../../styles';
 
 @customElement('not-found')
 export class NotFound extends LitElement {

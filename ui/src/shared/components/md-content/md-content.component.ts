@@ -1,3 +1,7 @@
+// lit element
+import { customElement, property } from 'lit/decorators.js';
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+
 // vaadin
 import { Router } from '@vaadin/router';
 
@@ -6,8 +10,6 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { coreStyle } from '../../styles/core.style';
 import { authUser$ } from '../../../auth/auth-user';
 import { mdContentStyle } from './md-content.style';
-import { customElement, property } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { TabIndex } from '../../types/custom/tab-index';
 import { VersionResponse } from '../../types/api/version-response';
 import { VersionService } from '../../services/version.service';

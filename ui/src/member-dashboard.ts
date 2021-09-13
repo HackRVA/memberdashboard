@@ -1,20 +1,18 @@
-import { UserResponse } from './user/types/api/user-response';
 // lit element
+import { customElement } from 'lit/decorators.js';
+import { html, LitElement, TemplateResult } from 'lit';
 
 // vaadin
 import { Router, RouterLocation } from '@vaadin/router';
-
-// material
-import './material-loader';
 
 // memberdashboard
 import './router';
 import './auth/components/login-page';
 import './shared/components/md-content';
+import './material-loader';
+import { UserResponse } from './user/types/api/user-response';
 import { UserService } from './user/services/user.service';
 import { authUser$ } from './auth/auth-user';
-import { customElement } from 'lit/decorators.js';
-import { html, LitElement, TemplateResult } from 'lit';
 
 @customElement('member-dashboard')
 export class MemberDashboard extends LitElement {

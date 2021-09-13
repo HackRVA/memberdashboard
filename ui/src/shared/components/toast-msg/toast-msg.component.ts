@@ -1,17 +1,12 @@
 // lit element
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from 'lit-element';
+import { html, LitElement, TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 // material
 import { Snackbar } from '@material/mwc-snackbar';
-import { ToastMessage } from '../../types/custom/toast-msg';
 
 // memberdashboard;
+import { ToastMessage } from '../../types/custom/toast-msg';
 
 @customElement('toast-msg')
 export class ToastMsg extends LitElement {

@@ -1,17 +1,18 @@
-import { AuthResponse } from './../../types/api/auth-response';
+// lit element
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
 // material
 import { TextField } from '@material/mwc-textfield/mwc-textfield';
 
 // memberdashboard
-import { coreStyle } from '../../../shared/styles';
 import '../../../shared/components/toast-msg';
+import { AuthResponse } from './../../types/api/auth-response';
+import { coreStyle } from '../../../shared/styles';
 import { loginFormStyle } from './login-form.style';
 import { LoginRequest } from '../../types/api/login-request';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { AuthService } from '../../services/auth.service';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
 import { showComponent } from '../../../shared/functions';
 
 @customElement('login-form')

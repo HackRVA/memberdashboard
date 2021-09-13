@@ -1,15 +1,15 @@
 // rxjs
 import { Observable } from 'rxjs';
-import { ENV } from '../../env';
-import { HTTPService } from '../../shared/services/http.service';
-import { BulkAddMembersToResourceRequest } from '../types/api/bulk-add-members-to-resource-request';
-import { RegisterResourceRequest } from '../types/api/register-resource-request';
-import { RemoveMemberResourceRequest } from '../types/api/remove-member-resource-request';
-import { RemoveResourceRequest } from '../types/api/remove-resource-request';
-import { ResourceResponse } from '../types/api/resource-response';
-import { UpdateResourceRequest } from '../types/api/update-resource-request';
 
 // memberdashboard
+import { ENV } from '../../env';
+import { UpdateResourceRequest } from '../types/api/update-resource-request';
+import { ResourceResponse } from '../types/api/resource-response';
+import { RemoveResourceRequest } from '../types/api/remove-resource-request';
+import { RemoveMemberResourceRequest } from '../types/api/remove-member-resource-request';
+import { RegisterResourceRequest } from '../types/api/register-resource-request';
+import { HTTPService } from '../../shared/services/http.service';
+import { BulkAddMembersToResourceRequest } from '../types/api/bulk-add-members-to-resource-request';
 
 export class ResourceService extends HTTPService {
   private readonly resourceUrlSegment: string = ENV.api + '/resource';

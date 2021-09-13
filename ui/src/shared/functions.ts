@@ -1,9 +1,9 @@
 // jwt-decode
 import jwt_decode from 'jwt-decode';
-import { JwtClaims } from '../auth/types/custom/jwt-claims';
-import { Roles } from '../auth/types/custom/roles';
 
 // memberdashboard
+import { JwtClaims } from '../auth/types/custom/jwt-claims';
+import { Roles } from '../auth/types/custom/roles';
 
 /**
  *

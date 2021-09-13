@@ -1,12 +1,12 @@
 // lit element
+import { customElement } from 'lit/decorators.js';
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // google
 import '@google-web-components/google-chart';
 import { GoogleChart } from '@google-web-components/google-chart';
 
 // memberdashboard
-import { customElement } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import {
   primaryBlue,
   primaryDarkGray,

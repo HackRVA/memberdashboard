@@ -1,11 +1,12 @@
-import { coreStyle } from '../../../shared/styles';
+// lit element
+import { customElement } from 'lit/decorators.js';
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // memberdashboard
 import '../login-form';
-import { loginPageStyle } from './login-page.style';
 import '../register-form';
-import { customElement } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+import { coreStyle } from '../../../shared/styles';
+import { loginPageStyle } from './login-page.style';
 
 @customElement('login-page')
 export class LoginPage extends LitElement {

@@ -1,8 +1,10 @@
-import { HTTPRequest } from './../types/api/http-request';
 // rxjs
 import { Observable, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { switchMap, catchError } from 'rxjs/operators';
+
+// memberdashboard
+import { HTTPRequest } from './../types/api/http-request';
 
 export class HTTPService {
   get<T>(

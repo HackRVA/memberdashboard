@@ -1,11 +1,13 @@
 // lit element
+import { customElement, property } from 'lit/decorators.js';
+import { html, LitElement, TemplateResult } from 'lit';
 
 // material
 import { TextField } from '@material/mwc-textfield/mwc-textfield';
 import { Dialog } from '@material/mwc-dialog';
 import { Checkbox } from '@material/mwc-checkbox';
-import { customElement, property } from 'lit/decorators.js';
-import { html, LitElement, TemplateResult } from 'lit';
+
+// memberdashboard
 import { ResourceModalData } from '../../types/custom/resource-modal-data';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { ResourceService } from '../../services/resource.service';

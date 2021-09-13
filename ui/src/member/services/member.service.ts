@@ -1,12 +1,12 @@
 // rxjs
 import { Observable } from 'rxjs';
-import { ENV } from '../../env';
-import { HTTPService } from '../../shared/services/http.service';
-import { AssignRFIDRequest } from '../types/api/assign-rfid-request';
-import { CreateMemberRequest } from '../types/api/create-member-request';
-import { MemberResponse } from '../types/api/member-response';
 
 // memberdashboard
+import { MemberResponse } from '../types/api/member-response';
+import { CreateMemberRequest } from '../types/api/create-member-request';
+import { AssignRFIDRequest } from '../types/api/assign-rfid-request';
+import { HTTPService } from '../../shared/services/http.service';
+import { ENV } from '../../env';
 
 export class MemberService extends HTTPService {
   private readonly memberUrlSegment: string = ENV.api + '/member';

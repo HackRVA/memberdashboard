@@ -1,4 +1,7 @@
+// lit element
 import { css, CSSResult } from 'lit';
+
+// memberdashboard
 import { primaryBlue, primaryRed } from './colors';
 
 export const coreStyle: CSSResult = css`

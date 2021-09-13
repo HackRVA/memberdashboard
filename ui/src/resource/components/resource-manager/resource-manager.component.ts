@@ -1,4 +1,11 @@
 // lit element
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+
+// polymer
+import '@polymer/paper-tooltip';
+
+// memberdashboard
 import '../resource-info';
 import '../resource-warning';
 import { showComponent } from '../../../shared/functions';
@@ -8,11 +15,6 @@ import { ResourceService } from '../../services/resource.service';
 import { ResourceResponse } from '../../types/api/resource-response';
 import { ResourceModalData } from '../../types/custom/resource-modal-data';
 import { resourceManagerStyle } from './resource-manager.style';
-import { customElement, property } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
-import '@polymer/paper-tooltip';
-
-// memberdashboard
 
 @customElement('resource-manager')
 export class ResourceManager extends LitElement {

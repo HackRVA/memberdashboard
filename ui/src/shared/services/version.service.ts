@@ -1,10 +1,10 @@
 // rxjs
 import { Observable } from 'rxjs';
-import { ENV } from '../../env';
-import { VersionResponse } from '../types/api/version-response';
 
 // memberdashboard
 import { HTTPService } from './http.service';
+import { ENV } from '../../env';
+import { VersionResponse } from '../types/api/version-response';
 
 export class VersionService extends HTTPService {
   private readonly versionUrlSegment: string = ENV.api + '/version';

@@ -1,15 +1,15 @@
 // lit element
+import { html, LitElement, TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 // material
 import { Dialog } from '@material/mwc-dialog';
-import { html, LitElement, TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+
+// memberdashboard
 import { showComponent } from '../../../shared/functions';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { ResourceService } from '../../services/resource.service';
 import { RemoveResourceRequest } from '../../types/api/remove-resource-request';
-
-// memberdashboard
 
 @customElement('resource-warning')
 export class ResourceWarning extends LitElement {

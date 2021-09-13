@@ -1,4 +1,6 @@
 // lit element
+import { customElement, property } from 'lit/decorators.js';
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // material
 import { CheckboxBase } from '@material/mwc-checkbox/mwc-checkbox-base';
@@ -11,8 +13,6 @@ import '../../../shared/components/rfid-modal';
 import '../add-member-to-resource';
 import '../add-members-to-resource';
 import '../remove-member-from-resource';
-import { customElement, property } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import {
   MemberResource,
   MemberResponse,

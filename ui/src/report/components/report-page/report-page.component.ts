@@ -1,10 +1,10 @@
 // lit element
+import { customElement } from 'lit/decorators.js';
+import { html, LitElement, TemplateResult } from 'lit';
 
 // memberdashboard
 import '../payment-chart';
 import '../../../shared/components/md-card';
-import { customElement } from 'lit/decorators.js';
-import { html, LitElement, TemplateResult } from 'lit';
 
 @customElement('report-page')
 export class ReportPage extends LitElement {

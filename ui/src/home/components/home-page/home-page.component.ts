@@ -1,7 +1,9 @@
-// memberdashboard
-import '../../../shared/components/md-card';
+// lit element
 import { customElement } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+
+// memberdashboard
+import '../../../shared/components/md-card';
 import { homePageStyle } from './home-page.style';
 
 @customElement('home-page')

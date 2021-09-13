@@ -1,5 +1,4 @@
 // lit element
-
 import { css, CSSResult } from 'lit';
 
 /* primary*/

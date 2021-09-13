@@ -1,11 +1,11 @@
 // lit element
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 // polymer
 import '@polymer/paper-card';
 
 // memberdashboard
-import { customElement, property } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { coreStyle } from '../../../shared/styles';
 import { userDetailStyle } from './user-detail.style';
 import {

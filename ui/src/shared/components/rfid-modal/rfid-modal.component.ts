@@ -1,4 +1,6 @@
 // lit element
+import { customElement, property } from 'lit/decorators.js';
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // material
 import { TextField } from '@material/mwc-textfield/mwc-textfield';
@@ -6,8 +8,6 @@ import { Dialog } from '@material/mwc-dialog';
 
 // memberdashboard
 import '../toast-msg';
-import { customElement, property } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { MemberService } from '../../../member/services/member.service';
 import { ToastMessage } from '../../types/custom/toast-msg';
 import { coreStyle } from '../../styles/core.style';

@@ -1,11 +1,11 @@
 // lit element
+import { customElement } from 'lit/decorators.js';
+import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // memberdashboard
 import '../../../shared/components/md-card';
 import '../resource-manager';
 import '../../../shared/components/loading-content';
-import { customElement } from 'lit/decorators.js';
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { coreStyle } from '../../../shared/styles';
 import { ResourceService } from '../../services/resource.service';
 import { ResourceResponse } from '../../types/api/resource-response';

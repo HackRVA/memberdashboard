@@ -1,18 +1,18 @@
 // lit element
+import { html, LitElement, TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 // material
 import { Dialog } from '@material/mwc-dialog';
 import { Select } from '@material/mwc-select';
 import { TextField } from '@material/mwc-textfield';
-import { html, LitElement, TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+
+// memberdashboard
 import { ResourceService } from '../../../resource/services/resource.service';
 import { RemoveMemberResourceRequest } from '../../../resource/types/api/remove-member-resource-request';
 import { isEmpty, showComponent } from '../../../shared/functions';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { MemberResource } from '../../types/api/member-response';
-
-// memberdashboard
 
 @customElement('remove-member-from-resource')
 export class RemoveMemberFromResourceModal extends LitElement {

@@ -1,9 +1,9 @@
-import { AuthResponse } from './../types/api/auth-response';
 // rxjs
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 // memberdashboard
+import { AuthResponse } from './../types/api/auth-response';
 import { HTTPService } from '../../shared/services/http.service';
 import { RegisterRequest } from '../types/api/register-request';
 import { LoginRequest } from '../types/api/login-request';
