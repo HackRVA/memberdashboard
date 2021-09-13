@@ -1,5 +1,7 @@
 // jwt-decode
 import jwt_decode from 'jwt-decode';
+import { JwtClaims } from '../auth/types/custom/jwt-claims';
+import { Roles } from '../auth/types/custom/roles';
 
 // memberdashboard
 
@@ -26,4 +28,22 @@ export const showComponent = (
       show: Function;
     }
   ).show();
+};
+
+/**
+ *
+ * @description check if the user is an Admin
+ */
+export const isAdmin = (): boolean => {
+  const jwt: string = localStorage.getItem('jwt');
+
+  if (jwt) {
+    const jwtClaims: JwtClaims = jwt_decode(jwt);
+
+    const roles = new Set(jwtClaims.Groups);
+
+    return roles.has(Roles.admin);
+  }
+
+  return false;
 };

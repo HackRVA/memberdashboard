@@ -9,23 +9,26 @@ import { mdContentStyle } from './md-content.style';
 import { customElement, property } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 import { TabIndex } from '../../types/custom/tab-index';
+import { VersionResponse } from '../../types/api/version-response';
+import { VersionService } from '../../services/version.service';
+import { isAdmin } from '../../functions';
 
 @customElement('md-content')
 export class MDContent extends LitElement {
   @property({ type: String })
   email: string;
 
-  // version: VersionResponse;
+  version: VersionResponse;
 
   authService: AuthService = new AuthService();
-  // versionService: VersionService = new VersionService();
+  versionService: VersionService = new VersionService();
 
   static get styles(): CSSResult[] {
     return [mdContentStyle, coreStyle];
   }
 
   firstUpdated(): void {
-    // this.getVersion();
+    this.getVersion();
   }
 
   goToHome(): void {
@@ -36,15 +39,15 @@ export class MDContent extends LitElement {
     Router.go('/user');
   }
 
-  goToReports(): void {
+  goToReport(): void {
     Router.go('/report');
   }
 
-  goToMembers(): void {
+  goToMember(): void {
     Router.go('/member');
   }
 
-  goToResources(): void {
+  goToResource(): void {
     Router.go('/resource');
   }
 
@@ -75,18 +78,18 @@ export class MDContent extends LitElement {
     });
   }
 
-  // getVersion(): void {
-  //   this.versionService.getVersion().subscribe({
-  //     next: (response: VersionResponse) => {
-  //       this.version = response;
-  //       this.requestUpdate();
-  //     },
-  //   });
-  // }
+  getVersion(): void {
+    this.versionService.getVersion().subscribe({
+      next: (response: VersionResponse) => {
+        this.version = response;
+        this.requestUpdate();
+      },
+    });
+  }
 
-  // generateVersionNumber(version: VersionResponse): TemplateResult {
-  //   return html` <span> ${version?.major}.<b>${version?.build}</b> </span> `;
-  // }
+  generateVersionNumber(version: VersionResponse): TemplateResult {
+    return html` <span> ${version?.major}.<b>${version?.build}</b> </span> `;
+  }
 
   displayLogout(): TemplateResult {
     return html`
@@ -101,25 +104,27 @@ export class MDContent extends LitElement {
   }
 
   renderAdminTabs(): TemplateResult | void {
-    if (true) {
+    if (isAdmin()) {
       return html`
         <mwc-tab
           label="Reports"
           icon="show_chart"
-          @click=${this.goToReports}
+          @click=${this.goToReport}
         ></mwc-tab>
         <mwc-tab
           label="Members"
           icon="people"
-          @click=${this.goToMembers}
+          @click=${this.goToMember}
         ></mwc-tab>
         <mwc-tab
           label="Resources"
           icon="devices"
-          @click=${this.goToResources}
+          @click=${this.goToResource}
         ></mwc-tab>
       `;
     }
+
+    return html``;
   }
 
   render(): TemplateResult {
@@ -139,6 +144,9 @@ export class MDContent extends LitElement {
         ${this.renderAdminTabs()}
       </mwc-tab-bar>
       <slot> </slot>
+      <div class="version margin-r-24">
+        <p>Version ${this.generateVersionNumber(this.version)}</p>
+      </div>
     `;
   }
 }

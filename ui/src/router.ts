@@ -1,5 +1,6 @@
 // vaadin
 import { Router, Route, Context, Commands } from '@vaadin/router';
+import { RoleGuard } from './auth/guard/role.guard';
 
 const routes: Route[] = [
   {
@@ -26,15 +27,25 @@ const routes: Route[] = [
       {
         path: 'report',
         component: 'report-page',
-        action: async () => {
+        action: async (context: Context, commands: Commands) => {
           await import('./report/components/report-page');
+          return await new RoleGuard().canActivate(context, commands);
         },
       },
       {
         path: 'member',
         component: 'member-page',
-        action: async () => {
+        action: async (context: Context, commands: Commands) => {
           await import('./member/components/member-page');
+          return await new RoleGuard().canActivate(context, commands);
+        },
+      },
+      {
+        path: 'resource',
+        component: 'resource-page',
+        action: async (context: Context, commands: Commands) => {
+          await import('./resource/components/resource-page');
+          return await new RoleGuard().canActivate(context, commands);
         },
       },
       {
