@@ -15,7 +15,7 @@ type DataStore interface {
 }
 
 type Event interface {
-	AddLogMsg([]byte) error
+	AddLogMsg(event models.LogMessage) error
 }
 
 type MemberStore interface {

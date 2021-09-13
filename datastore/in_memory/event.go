@@ -1,5 +1,7 @@
 package in_memory
 
-func (store *In_memory) AddLogMsg(logByte []byte) error {
+import "memberserver/api/models"
+
+func (store *In_memory) AddLogMsg(event models.LogMessage) error {
 	return nil
 }

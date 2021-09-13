@@ -61,7 +61,7 @@ type EventLogPayload struct {
 
 // OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
 var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	var payload EventLogPayload
+	var payload models.LogMessage
 
 	err := json.Unmarshal(msg.Payload(), &payload)
 	if err != nil {
@@ -73,15 +73,16 @@ var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Messag
 	if err != nil {
 		log.Errorf("error initializing db: %s", err)
 	}
+	log.Println(string(msg.Payload()))
 
 	member, err := db.GetMemberByRFID(payload.RFID)
 	if err != nil {
 		log.Errorf("error looking up members name: %s %s", err, string(msg.Payload()))
 	}
 
-	slack.PostWebHook(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", member.Name, payload.RFID, payload.Door, payload.Time))
+	slack.PostWebHook(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", member.Name, payload.RFID, payload.Door, payload.EventTime))
 
-	err = db.AddLogMsg(msg.Payload())
+	err = db.AddLogMsg(payload)
 	if err != nil {
 		log.Errorf("error saving access event: %s %s", err, string(msg.Payload()))
 	}
