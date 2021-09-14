@@ -27,6 +27,7 @@ export default {
     }),
     replace({
       process: JSON.stringify({ env: { API: '/api' } }),
+      preventAssignment: true
     }),
     /** Resolve bare module imports */
     nodeResolve(),
