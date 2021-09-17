@@ -1,67 +1,65 @@
 // vaadin
-import { Router, Route, Context, Commands } from "@vaadin/router";
+import { Router, Route, Context, Commands } from '@vaadin/router';
 
 // memberdashboard
-import { RoleGuard } from "./guard/role.guard";
-
-const roleGuard = new RoleGuard();
+import { RoleGuard } from './auth/guard/role.guard';
 
 const routes: Route[] = [
   {
-    path: "/",
-    component: "member-dashboard",
+    path: '/',
+    component: 'member-dashboard',
     action: async () => {
-      await import("./index");
+      await import('./index');
     },
     children: [
       {
-        path: "home",
-        component: "home-page",
+        path: 'home',
+        component: 'home-page',
         action: async () => {
-          await import("./components/home/home-page");
+          await import('./home/components/home-page');
         },
       },
       {
-        path: "user",
-        component: "user-page",
+        path: 'user',
+        component: 'user-page',
         action: async () => {
-          await import("./components/user/user-page");
+          await import('./user/components/user-page');
         },
       },
       {
-        path: "members",
-        component: "members-page",
+        path: 'report',
+        component: 'report-page',
         action: async (context: Context, commands: Commands) => {
-          await import("./components/members/members-page");
-          return await roleGuard.canActivate(context, commands);
+          await import('./report/components/report-page');
+          return await new RoleGuard().canActivate(context, commands);
         },
       },
       {
-        path: "resources",
-        component: "resources-page",
+        path: 'member',
+        component: 'member-page',
         action: async (context: Context, commands: Commands) => {
-          await import("./components/resources/resources-page");
-          return await roleGuard.canActivate(context, commands);
+          await import('./member/components/member-page');
+          return await new RoleGuard().canActivate(context, commands);
         },
       },
       {
-        path: "reports",
-        component: "payments-page",
+        path: 'resource',
+        component: 'resource-page',
         action: async (context: Context, commands: Commands) => {
-          await import("./components/payments/payments-page");
-          return await roleGuard.canActivate(context, commands);
+          await import('./resource/components/resource-page');
+          return await new RoleGuard().canActivate(context, commands);
         },
       },
       {
-        path: "(.*)",
-        component: "not-found",
+        path: '(.*)',
+        component: 'not-found',
         action: async () => {
-          await import("./components/shared/not-found");
+          await import('./shared/components/not-found');
         },
       },
     ],
   },
 ];
-const outlet = document.getElementById("outlet");
+const outlet = document.getElementById('outlet');
 export const router = new Router(outlet);
 router.setRoutes(routes);

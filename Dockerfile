@@ -16,16 +16,12 @@ WORKDIR /app
 
 COPY ui/package.json /app
 
-# get rid of the ts buildinfo file
-# we have to do this in the dockerfile because the ui filesystem is mounted
-#   i.e. file changes get written back to the repo and the tsbuildinfo file will conflict with itself
-RUN if [ -f tsconfig.tsbuildinfo ]; then rm tsconfig.tsbuildinfo 2> /dev/null; fi
 RUN npm i
 
 
 COPY ./ui /app
 # compile and bundle typescript
-RUN npm run rollup
+RUN npm run build
 
 # copy from build environments
 FROM node:14.17.6

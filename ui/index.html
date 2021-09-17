@@ -1,27 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="Description" content="Put your description here.">
+  <link rel="icon" type="image/png" href="./assets/favicon.ico"/>
+  <!-- Add support for Web Components to older browsers. -->
+  <script src="./node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    
-    <title>Member Dashboard</title>
-    <style>
-        body {
-            background-color: #e1e1e1;
-            margin: 0;
-        }
-    </style>
+  <!-- Your application must load the Roboto and Material Icons fonts. -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
+  <base href="/">
+
+  <title>Member Dashboard</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #e1e1e1;
+    }
+  </style>
 </head>
 
 <body>
-    <div id="outlet"></div>
-    <script type="module" src="./build/index.js"></script>
-
+  <div id="outlet"></div>
+  <script type="module" src="./out-tsc/src/index.js"></script>
 </body>
 
 </html>
