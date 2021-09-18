@@ -9,6 +9,7 @@ import { Router, RouterLocation } from '@vaadin/router';
 import './router';
 import './auth/components/login-page';
 import './shared/components/md-content';
+import './shared/components/loading-content';
 import './material-loader';
 import { UserResponse } from './user/types/api/user-response';
 import { UserService } from './user/services/user.service';
@@ -18,6 +19,7 @@ import { authUser$ } from './auth/auth-user';
 export class MemberDashboard extends LitElement {
   email: string;
   userService: UserService = new UserService();
+  finishedLoading: boolean = false;
 
   constructor() {
     super();
@@ -41,6 +43,7 @@ export class MemberDashboard extends LitElement {
         const { email } = result;
         authUser$.next({ login: true, email: email });
         this.email = email;
+        this.finishedLoading = true;
         this.requestUpdate();
       },
     });
@@ -52,9 +55,13 @@ export class MemberDashboard extends LitElement {
 
   displayAppContent(): TemplateResult {
     if (this.isUserLogin()) {
-      return html` <md-content .email=${this.email}>
-        <slot></slot>
-      </md-content>`;
+      return html`
+        <loading-content .finishedLoading=${this.finishedLoading}>
+          <md-content .email=${this.email}>
+            <slot></slot>
+          </md-content>
+        </loading-content>
+      `;
     } else {
       return html`<login-page></login-page>`;
     }

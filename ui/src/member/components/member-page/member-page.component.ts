@@ -49,7 +49,7 @@ export class MemberPage extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <md-card class="center-text">
+      <md-card>
         <loading-content .finishedLoading=${this.finishedLoading}>
           <member-manager
             .members=${this.members}

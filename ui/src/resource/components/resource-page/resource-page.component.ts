@@ -41,7 +41,7 @@ export class ResourcePage extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <md-card class="center-text">
+      <md-card>
         <loading-content .finishedLoading=${this.finishedLoading}>
           <resource-manager
             .resources=${this.resources}
