@@ -28,9 +28,7 @@ export const loginPageStyle: CSSResult = css`
     border-radius: 8px;
     border: 1px solid silver;
   }
-  .text-center {
-    text-align: center;
-  }
+
   .toggle-form-text {
     margin-top: 16px;
     padding: 12px;

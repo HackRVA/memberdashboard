@@ -22,11 +22,9 @@ export class NotFound extends LitElement {
   render(): TemplateResult {
     return html` 
         <div class="not-found-container center-text">
-          <div>
-            <strong>404</strong>
-          </div>
-          <div class="sad-freshmon">${'(っ- ‸ – ς)'}</div>
-          <div class="page-not-found">Page not found</div>
+          <h2> <b>404</b> </h2>
+          <p class="sad-freshmon">${'(っ- ‸ – ς)'}</p>
+          <p class="page-not-found">Page not found</p>
           <mwc-button label="Go back to the home page" dense unelevated @click=${
             this.goBackToHomePage
           }> </mvc-button>

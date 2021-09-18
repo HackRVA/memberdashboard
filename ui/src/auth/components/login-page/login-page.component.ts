@@ -55,7 +55,7 @@ export class LoginPage extends LitElement {
       <mwc-top-app-bar-fixed centerTitle>
         <div slot="title">Member Dashboard</div>
       </mwc-top-app-bar-fixed>
-      <h1 class="text-center">${this.displayLoginHeaderText()}</h1>
+      <h1 class="center-text">${this.displayLoginHeaderText()}</h1>
       <div class="login-container">
         ${this.displayRegisterLoginForm()}
         <div class="toggle-form-text text-center">${this.toggleInfoText()}</div>
