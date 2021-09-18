@@ -48,7 +48,7 @@
       }
     },
     "/api/auth/logout": {
-      "post": {
+      "delete": {
         "description": "Logout does not require a request body",
         "produces": [
           "application/json"

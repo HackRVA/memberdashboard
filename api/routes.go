@@ -409,7 +409,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: loginResponse
 	rr.HandleFunc("/auth/login", api.UserServer.login).Methods(http.MethodPost)
-	// swagger:route POST /api/auth/logout auth logoutRequest
+	// swagger:route DELETE /api/auth/logout auth logoutRequest
 	//
 	// Logout
 	//
@@ -423,7 +423,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200:
-	r.HandleFunc("/api/auth/logout", api.UserServer.logout)
+	r.HandleFunc("/api/auth/logout", api.UserServer.logout).Methods(http.MethodDelete)
 	// swagger:route POST /api/auth/register auth registerUserRequest
 	//
 	// Register a new user

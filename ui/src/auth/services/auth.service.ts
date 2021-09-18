@@ -25,7 +25,7 @@ export class AuthService extends HTTPService {
   }
 
   logout(): Observable<null> {
-    return this.post<null>(this.authUrlSegment + '/logout').pipe(
+    return this.delete<null>(this.authUrlSegment + '/logout').pipe(
       map(() => null)
     );
   }
