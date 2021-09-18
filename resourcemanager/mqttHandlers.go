@@ -69,23 +69,8 @@ var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Messag
 		return
 	}
 
-	db, err := dbstore.Setup()
-	if err != nil {
-		log.Errorf("error initializing db: %s", err)
-	}
 	log.Println(string(msg.Payload()))
-
-	member, err := db.GetMemberByRFID(payload.RFID)
-	if err != nil {
-		log.Errorf("error looking up members name: %s %s", err, string(msg.Payload()))
-	}
-
-	slack.PostWebHook(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", member.Name, payload.RFID, payload.Door, payload.EventTime))
-
-	err = db.AddLogMsg(payload)
-	if err != nil {
-		log.Errorf("error saving access event: %s %s", err, string(msg.Payload()))
-	}
+	slack.PostWebHook(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", payload.Username, payload.RFID, payload.Door, payload.EventTime))
 }
 
 type HeartBeat struct {
