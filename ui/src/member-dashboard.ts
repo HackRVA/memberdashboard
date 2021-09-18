@@ -46,6 +46,9 @@ export class MemberDashboard extends LitElement {
         this.finishedLoading = true;
         this.requestUpdate();
       },
+      error: () => {
+        this.finishedLoading = true;
+      },
     });
   }
 
@@ -53,14 +56,20 @@ export class MemberDashboard extends LitElement {
     return authUser$.getValue().login;
   }
 
+  loadingAppContent(): TemplateResult {
+    return html`
+      <loading-content .finishedLoading=${this.finishedLoading}>
+        ${this.displayAppContent()}
+      </loading-content>
+    `;
+  }
+
   displayAppContent(): TemplateResult {
     if (this.isUserLogin()) {
       return html`
-        <loading-content .finishedLoading=${this.finishedLoading}>
-          <md-content .email=${this.email}>
-            <slot></slot>
-          </md-content>
-        </loading-content>
+        <md-content .email=${this.email}>
+          <slot></slot>
+        </md-content>
       `;
     } else {
       return html`<login-page></login-page>`;
@@ -68,6 +77,6 @@ export class MemberDashboard extends LitElement {
   }
 
   render(): TemplateResult {
-    return html`${this.displayAppContent()}`;
+    return html`${this.loadingAppContent()}`;
   }
 }
