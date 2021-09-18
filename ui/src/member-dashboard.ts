@@ -48,6 +48,7 @@ export class MemberDashboard extends LitElement {
       },
       error: () => {
         this.finishedLoading = true;
+        this.requestUpdate();
       },
     });
   }
