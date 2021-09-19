@@ -20,10 +20,7 @@ type MemberServer struct {
 func (m *MemberServer) GetMembersHandler(w http.ResponseWriter, r *http.Request) {
 	members := m.store.GetMembers()
 
-	w.Header().Set("Content-Type", "application/json")
-
-	j, _ := json.Marshal(members)
-	w.Write(j)
+	ok(w, members)
 }
 
 func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,9 +38,7 @@ func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(member)
-	w.Write(j)
+	ok(w, member)
 }
 
 func (m *MemberServer) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -56,9 +51,7 @@ func (m *MemberServer) GetCurrentUserHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(member)
-	w.Write(j)
+	ok(w, member)
 }
 
 func (m *MemberServer) AssignRFIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,10 +83,7 @@ func (m *MemberServer) AssignRFIDSelfHandler(w http.ResponseWriter, r *http.Requ
 func (m *MemberServer) GetTiersHandler(w http.ResponseWriter, r *http.Request) {
 	tiers := m.store.GetTiers()
 
-	w.Header().Set("Content-Type", "application/json")
-
-	j, _ := json.Marshal(tiers)
-	w.Write(j)
+	ok(w, tiers)
 }
 
 func (m *MemberServer) assignRFID(w http.ResponseWriter, email, rfid string) {
@@ -107,9 +97,7 @@ func (m *MemberServer) assignRFID(w http.ResponseWriter, email, rfid string) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(r)
-	w.Write(j)
+	ok(w, r)
 
 	go m.ResourceManager.PushOne(models.Member{Email: email})
 }
@@ -137,9 +125,7 @@ func (m *MemberServer) AddNewMemberHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(addedMember)
-	w.Write(j)
+	ok(w, addedMember)
 
 	m.store.AssignRFID(addedMember.Email, addedMember.RFID)
 

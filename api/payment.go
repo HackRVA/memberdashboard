@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"memberserver/api/models"
 	"memberserver/payments"
 
@@ -94,10 +93,7 @@ func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
 		paymentCharts = makeMemberDistributionChart(*paymentMapByDate, paymentCharts)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	j, _ := json.Marshal(paymentCharts)
-	w.Write(j)
+	ok(w, paymentCharts)
 }
 
 func makeMemberDistributionChart(payments linkedhashmap.Map, paymentCharts []models.PaymentChart) []models.PaymentChart {

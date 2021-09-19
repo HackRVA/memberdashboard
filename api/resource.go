@@ -24,12 +24,8 @@ func (rs resourceAPI) Resource(w http.ResponseWriter, req *http.Request) {
 }
 
 func (rs resourceAPI) get(w http.ResponseWriter, req *http.Request) {
-	resourceList := rs.db.GetResources()
-
-	w.Header().Set("Content-Type", "application/json")
-
-	j, _ := json.Marshal(resourceList)
-	w.Write(j)
+	resources := rs.db.GetResources()
+	ok(w, resources)
 }
 
 func (rs resourceAPI) update(w http.ResponseWriter, req *http.Request) {
@@ -47,9 +43,7 @@ func (rs resourceAPI) update(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(r)
-	w.Write(j)
+	ok(w, r)
 }
 
 func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
@@ -68,11 +62,9 @@ func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(models.EndpointSuccess{
+	ok(w, models.EndpointSuccess{
 		Ack: true,
 	})
-	w.Write(j)
 }
 
 func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *http.Request) {
@@ -92,9 +84,7 @@ func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *h
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(resource)
-	w.Write(j)
+	ok(w, resource)
 }
 
 func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
@@ -112,11 +102,9 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(models.EndpointSuccess{
+	ok(w, models.EndpointSuccess{
 		Ack: true,
 	})
-	w.Write(j)
 
 	resource, err := rs.db.GetResourceByID(update.ID)
 	if err != nil {
@@ -142,9 +130,7 @@ func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(r)
-	w.Write(j)
+	ok(w, r)
 }
 
 func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
@@ -176,19 +162,15 @@ func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request) {
 	rs.resourcemanager.UpdateResources()
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(models.EndpointSuccess{
+	ok(w, models.EndpointSuccess{
 		Ack: true,
 	})
-	w.Write(j)
 }
 
 func (rs resourceAPI) deleteResourceACL(w http.ResponseWriter, req *http.Request) {
 	rs.resourcemanager.DeleteResourceACL()
 
-	w.Header().Set("Content-Type", "application/json")
-	j, _ := json.Marshal(models.EndpointSuccess{
+	ok(w, models.EndpointSuccess{
 		Ack: true,
 	})
-	w.Write(j)
 }
