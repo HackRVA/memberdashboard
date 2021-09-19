@@ -1,22 +1,33 @@
+// lit-element
 import { html } from 'lit';
-import { fixture, expect } from '@open-wc/testing';
 
+// testing
+import { fixture, expect, assert } from '@open-wc/testing';
+
+// memberdashboard
 import { MemberDashboard } from '../src/';
-import '../src/member-dashboard.js';
+import '../src/member-dashboard';
+import { UserService } from '../src/user/services/user.service';
 
 describe('MemberDashboard', () => {
   let element: MemberDashboard;
   beforeEach(async () => {
     element = await fixture(html`<member-dashboard></member-dashboard>`);
+    element.userService = new UserService();
   });
 
-  it('renders a h1', () => {
-    const h1 = element.shadowRoot!.querySelector('h1')!;
-    expect(h1).to.exist;
-    expect(h1.textContent).to.equal('My app');
+  it('is defined', () => {
+    assert.instanceOf(element, MemberDashboard);
   });
 
-  it('passes the a11y audit', async () => {
-    await expect(element).shadowDom.to.be.accessible();
+  it('should not be signed in', () => {
+    // ARRANGE
+    const loadingContent = element.shadowRoot.querySelector('loading-content');
+    const loginPage = loadingContent.querySelector('login-page');
+    const header = loginPage.shadowRoot.querySelector('h1');
+
+    // ASSERT
+    expect(loginPage).not.be.null;
+    expect(header.innerText).equal('Login');
   });
 });
