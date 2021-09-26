@@ -58,7 +58,7 @@ export class LoginPage extends LitElement {
       <h1 class="center-text">${this.displayLoginHeaderText()}</h1>
       <div class="login-container">
         ${this.displayRegisterLoginForm()}
-        <div class="toggle-form-text text-center">${this.toggleInfoText()}</div>
+        <div class="toggle-form-text center-text">${this.toggleInfoText()}</div>
       </div>
     `;
   }

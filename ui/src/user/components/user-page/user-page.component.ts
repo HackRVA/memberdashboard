@@ -10,7 +10,7 @@ import '../user-detail';
 
 @customElement('user-page')
 export class UserPage extends LitElement {
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   email: string = '';
 
   userService: UserService = new UserService();
