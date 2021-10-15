@@ -69,7 +69,7 @@ func (rm *ResourceManager) UpdateResources() {
 	for _, r := range resources {
 		members, _ := rm.store.GetResourceACLWithMemberInfo(r)
 		for _, m := range members {
-			b, _ := json.Marshal(&models.AddMemberRequest{
+			b, _ := json.Marshal(&models.MemberRequest{
 				ResourceAddress: r.Address,
 				Command:         "adduser",
 				UserName:        m.Name,
@@ -99,7 +99,7 @@ func (rm *ResourceManager) RemovedInvalidUIDs() {
 			}
 
 			/* We will just try to remove all invalid members even if they are already removed */
-			b, _ := json.Marshal(&models.AddMemberRequest{
+			b, _ := json.Marshal(&models.MemberRequest{
 				ResourceAddress: r.Address,
 				Command:         "deletuid",
 				RFID:            m.RFID,
@@ -115,7 +115,7 @@ func (rm *ResourceManager) RemovedInvalidUIDs() {
 func (rm *ResourceManager) PushOne(m models.Member) {
 	memberAccess, _ := rm.store.GetMembersAccess(m)
 	for _, m := range memberAccess {
-		b, _ := json.Marshal(&models.AddMemberRequest{
+		b, _ := json.Marshal(&models.MemberRequest{
 			ResourceAddress: m.ResourceAddress,
 			Command:         "adduser",
 			UserName:        m.Name,

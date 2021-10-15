@@ -51,7 +51,7 @@ type ACLResponse struct {
 	Name string `json:"name"`
 }
 
-type AddMemberRequest struct {
+type MemberRequest struct {
 	ResourceAddress string `json:"doorip"`
 	Command         string `json:"cmd"`
 	UserName        string `json:"user"`
