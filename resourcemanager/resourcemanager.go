@@ -16,12 +16,17 @@ import (
 
 var db datastore.DataStore
 
+const (
+	commandDeleteUID = "deletuid"
+	commandAddUser   = "adduser"
+)
+
 // Resource manager keeps the resources up to date by
 //  pushing new updates and checking in on their health
 
 type ResourceManager struct {
 	MQTTServer mqttserver.MQTTServer
-	store      datastore.ResourceStore
+	store      datastore.DataStore
 }
 
 const (
@@ -69,9 +74,9 @@ func (rm *ResourceManager) UpdateResources() {
 	for _, r := range resources {
 		members, _ := rm.store.GetResourceACLWithMemberInfo(r)
 		for _, m := range members {
-			b, _ := json.Marshal(&models.AddMemberRequest{
+			b, _ := json.Marshal(&models.MemberRequest{
 				ResourceAddress: r.Address,
-				Command:         "adduser",
+				Command:         commandAddUser,
 				UserName:        m.Name,
 				RFID:            m.RFID,
 				AccessType:      1,
@@ -84,13 +89,40 @@ func (rm *ResourceManager) UpdateResources() {
 	}
 }
 
+func (rm *ResourceManager) RemovedInvalidUIDs() {
+	resources := rm.store.GetResources()
+
+	for _, r := range resources {
+		members := rm.store.GetMembers()
+		for _, m := range members {
+			if m.Level != uint8(models.Inactive) {
+				return
+			}
+
+			if len(m.RFID) == 0 {
+				return
+			}
+
+			/* We will just try to remove all invalid members even if they are already removed */
+			b, _ := json.Marshal(&models.MemberRequest{
+				ResourceAddress: r.Address,
+				Command:         commandDeleteUID,
+				RFID:            m.RFID,
+			})
+			rm.MQTTServer.Publish(r.Name, string(b))
+
+			time.Sleep(2 * time.Second)
+		}
+	}
+}
+
 // PushOne - update one user on the resources
 func (rm *ResourceManager) PushOne(m models.Member) {
 	memberAccess, _ := rm.store.GetMembersAccess(m)
 	for _, m := range memberAccess {
-		b, _ := json.Marshal(&models.AddMemberRequest{
+		b, _ := json.Marshal(&models.MemberRequest{
 			ResourceAddress: m.ResourceAddress,
-			Command:         "adduser",
+			Command:         commandAddUser,
 			UserName:        m.Name,
 			RFID:            m.RFID,
 			AccessType:      1,
