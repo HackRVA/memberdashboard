@@ -114,6 +114,7 @@ func checkResourceInit() {
 		rm.MQTTServer.Subscribe(r.Name+"/send", resourcemanager.OnAccessEvent)
 		rm.MQTTServer.Subscribe(r.Name+"/result", resourcemanager.HealthCheck)
 		rm.MQTTServer.Subscribe(r.Name+"/sync", resourcemanager.OnHeartBeat)
+		rm.MQTTServer.Subscribe(r.Name+"/cleanup", resourcemanager.OnRemoveInvalidRequest)
 		rm.CheckStatus(r)
 	}
 }

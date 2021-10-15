@@ -21,7 +21,7 @@ var db datastore.DataStore
 
 type ResourceManager struct {
 	MQTTServer mqttserver.MQTTServer
-	store      datastore.ResourceStore
+	store      datastore.DataStore
 }
 
 const (
@@ -76,6 +76,29 @@ func (rm *ResourceManager) UpdateResources() {
 				RFID:            m.RFID,
 				AccessType:      1,
 				ValidUntil:      -86400,
+			})
+			rm.MQTTServer.Publish(r.Name, string(b))
+
+			time.Sleep(2 * time.Second)
+		}
+	}
+}
+
+func (rm *ResourceManager) RemovedInvalidUIDs() {
+	resources := rm.store.GetResources()
+
+	for _, r := range resources {
+		members := rm.store.GetMembers()
+		for _, m := range members {
+			if m.Level != uint8(models.Inactive) {
+				return
+			}
+
+			/* We will just try to remove all invalid members even if they are already removed */
+			b, _ := json.Marshal(&models.AddMemberRequest{
+				ResourceAddress: r.Address,
+				Command:         "deletuid",
+				RFID:            m.RFID,
 			})
 			rm.MQTTServer.Publish(r.Name, string(b))
 

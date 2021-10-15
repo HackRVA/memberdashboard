@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"memberserver/api/models"
 	"memberserver/datastore/dbstore"
+	"memberserver/datastore/in_memory"
+	"memberserver/resourcemanager/mqttserver"
 	"memberserver/slack"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -89,4 +91,11 @@ var OnHeartBeat mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 	dbstore.ResourceHeartbeat(models.Resource{
 		Name: hb.ResourceName,
 	})
+}
+
+// go through and remove members rfid fobs that are listed as invalid
+var OnRemoveInvalidRequest mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
+	rm := NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+
+	rm.RemovedInvalidUIDs()
 }
