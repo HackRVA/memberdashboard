@@ -16,6 +16,11 @@ import (
 
 var db datastore.DataStore
 
+const (
+	commandDeleteUID = "deletuid"
+	commandAddUser   = "adduser"
+)
+
 // Resource manager keeps the resources up to date by
 //  pushing new updates and checking in on their health
 
@@ -71,7 +76,7 @@ func (rm *ResourceManager) UpdateResources() {
 		for _, m := range members {
 			b, _ := json.Marshal(&models.MemberRequest{
 				ResourceAddress: r.Address,
-				Command:         "adduser",
+				Command:         commandAddUser,
 				UserName:        m.Name,
 				RFID:            m.RFID,
 				AccessType:      1,
@@ -101,7 +106,7 @@ func (rm *ResourceManager) RemovedInvalidUIDs() {
 			/* We will just try to remove all invalid members even if they are already removed */
 			b, _ := json.Marshal(&models.MemberRequest{
 				ResourceAddress: r.Address,
-				Command:         "deletuid",
+				Command:         commandDeleteUID,
 				RFID:            m.RFID,
 			})
 			rm.MQTTServer.Publish(r.Name, string(b))
@@ -117,7 +122,7 @@ func (rm *ResourceManager) PushOne(m models.Member) {
 	for _, m := range memberAccess {
 		b, _ := json.Marshal(&models.MemberRequest{
 			ResourceAddress: m.ResourceAddress,
-			Command:         "adduser",
+			Command:         commandAddUser,
 			UserName:        m.Name,
 			RFID:            m.RFID,
 			AccessType:      1,
