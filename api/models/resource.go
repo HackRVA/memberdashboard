@@ -60,6 +60,10 @@ type MemberRequest struct {
 	ValidUntil      int    `json:"validuntil"`
 }
 
+type MQTTRequest struct {
+	Command string `json:"cmd"`
+}
+
 type DeleteMemberRequest struct {
 	ResourceAddress string `json:"doorip"`
 	Command         string `json:"cmd"`

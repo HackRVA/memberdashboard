@@ -19,6 +19,7 @@ var db datastore.DataStore
 const (
 	commandDeleteUID = "deletuid"
 	commandAddUser   = "adduser"
+	commandOpenDoor  = "opendoor"
 )
 
 // Resource manager keeps the resources up to date by
@@ -114,6 +115,14 @@ func (rm *ResourceManager) RemovedInvalidUIDs() {
 			time.Sleep(2 * time.Second)
 		}
 	}
+}
+
+func (rm *ResourceManager) Open(resource models.Resource) {
+	b, _ := json.Marshal(models.MQTTRequest{
+		Command: commandOpenDoor,
+	})
+
+	rm.MQTTServer.Publish(resource.Name, string(b))
 }
 
 // PushOne - update one user on the resources

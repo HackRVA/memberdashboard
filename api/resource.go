@@ -5,6 +5,7 @@ import (
 	"memberserver/api/models"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -161,6 +162,23 @@ func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 
 func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request) {
 	rs.resourcemanager.UpdateResources()
+
+	ok(w, models.EndpointSuccess{
+		Ack: true,
+	})
+}
+
+func (rs resourceAPI) open(w http.ResponseWriter, req *http.Request) {
+	params := mux.Vars(req)
+	name := params["name"]
+
+	resource, err := rs.db.GetResourceByName(name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	rs.resourcemanager.Open(resource)
 
 	ok(w, models.EndpointSuccess{
 		Ack: true,

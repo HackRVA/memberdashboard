@@ -301,6 +301,21 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: endpointSuccessResponse
 	rr.HandleFunc("/resource/updateacls", api.rbac(api.resource.updateResourceACL, []UserRole{admin})).Methods(http.MethodPost)
+	// swagger:route GET /api/resource/open/{name} resource resourceOpenRequest
+	//
+	// sends an MQTT message to open a resource
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: endpointSuccessResponse
+	rr.HandleFunc("/resource/open/{name}", api.rbac(api.resource.open, []UserRole{admin})).Methods(http.MethodGet)
 	// swagger:route DELETE /api/resource/member resource resourceRemoveMemberRequest
 	//
 	// Removes a member from a resource.
