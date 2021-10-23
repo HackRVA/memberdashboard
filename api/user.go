@@ -41,7 +41,7 @@ const JWTExpireInterval = 8
 var strategy union.Union
 var keeper jwt.SecretsKeeper
 
-func setupGoGuardian(config config.Config, userServer UserServer) {
+func setupAuth(config config.Config, userServer UserServer) {
 
 	keeper = jwt.StaticSecret{
 		ID:        "secret-id",
@@ -61,7 +61,7 @@ func setupGoGuardian(config config.Config, userServer UserServer) {
 func (us *UserServer) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, user, err := strategy.AuthenticateRequest(r)
-		if err != nil {
+		if err != nil && !us.isValidBearer(r) {
 			log.Println(err)
 			code := http.StatusUnauthorized
 			http.Error(w, http.StatusText(code), code)
@@ -94,10 +94,7 @@ func (us *UserServer) getUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	j, _ := json.Marshal(userProfile)
-	w.Write(j)
+	ok(w, userProfile)
 }
 
 func (us *UserServer) getValidator() basic.AuthenticateFunc {
@@ -156,11 +153,11 @@ func (us *UserServer) registerUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// We reach this point if the credentials we correctly stored in the database, and the default status of 200 is sent back
-	w.Header().Set("Content-Type", "application/json")
 	j, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,
 	})
-	w.Write(j)
+
+	ok(w, j)
 }
 
 func (us *UserServer) login(w http.ResponseWriter, r *http.Request) {
@@ -174,22 +171,74 @@ func (us *UserServer) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenJSON := &models.TokenResponse{}
-	tokenJSON.Token = token
+	tokenJSON := &models.TokenResponse{
+		Token: token,
+	}
 
-	w.Header().Set("Content-Type", "application/json")
+	us.setAuthCookie(w, tokenJSON.Token)
 
-	j, _ := json.Marshal(tokenJSON)
-	w.Write(j)
+	ok(w, tokenJSON)
 }
 
 // Logout endpoint for user signin
 func (us *UserServer) logout(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	j, _ := json.Marshal(struct{ Message string }{
 		Message: "user logged out!",
 	})
-	w.Write(j)
+
+	us.removeAuthCookie(w)
+
+	ok(w, j)
+
 	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func (us *UserServer) getAuthCookie(request http.Request) string {
+	cookie, err := request.Cookie("memberserver")
+
+	if err != nil {
+		return ""
+	}
+
+	return cookie.Value
+}
+
+func (us *UserServer) setAuthCookie(writer http.ResponseWriter, jwt string) {
+	http.SetCookie(writer, &http.Cookie{
+		Name:     "memberserver",
+		Value:    jwt,
+		Expires:  time.Now().Add(JWTExpireInterval * time.Hour),
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
+	})
+}
+
+func (us *UserServer) removeAuthCookie(writer http.ResponseWriter) {
+	http.SetCookie(writer, &http.Cookie{
+		Name:     "memberserver",
+		Value:    "",
+		MaxAge:   -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
+	})
+}
+
+func (us *UserServer) isValidBearer(request *http.Request) bool {
+	requestToken := request.Header.Get("Authorization")
+
+	// if there is no authorization then the user hasn't signed in yet
+	if len(requestToken) == 0 {
+		return false
+	}
+
+	bearerToken := strings.Split(requestToken, "Bearer ")[1]
+
+	// this is probably a basic auth if it's empty
+	if len(bearerToken) == 0 {
+		return true
+	}
+
+	return us.getAuthCookie(*request) == bearerToken
 }
