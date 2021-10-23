@@ -153,11 +153,7 @@ func (us *UserServer) registerUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// We reach this point if the credentials we correctly stored in the database, and the default status of 200 is sent back
-	j, _ := json.Marshal(models.EndpointSuccess{
-		Ack: true,
-	})
-
-	ok(w, j)
+	ok(w, models.EndpointSuccess{Ack: true})
 }
 
 func (us *UserServer) login(w http.ResponseWriter, r *http.Request) {
