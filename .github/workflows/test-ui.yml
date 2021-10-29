@@ -8,8 +8,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,8 +22,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Test
-      working-directory: ./ui
+    - run: |
+        cd ui
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
