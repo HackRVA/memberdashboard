@@ -167,6 +167,28 @@ func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request
 	})
 }
 
+func (rs resourceAPI) open(w http.ResponseWriter, req *http.Request) {
+	var openResourceRequest models.OpenResourceRequest
+
+	err := json.NewDecoder(req.Body).Decode(&openResourceRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	resource, err := rs.db.GetResourceByName(openResourceRequest.Name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	rs.resourcemanager.Open(resource)
+
+	ok(w, models.EndpointSuccess{
+		Ack: true,
+	})
+}
+
 func (rs resourceAPI) deleteResourceACL(w http.ResponseWriter, req *http.Request) {
 	rs.resourcemanager.DeleteResourceACL()
 

@@ -60,6 +60,10 @@ type MemberRequest struct {
 	ValidUntil      int    `json:"validuntil"`
 }
 
+type MQTTRequest struct {
+	Command string `json:"cmd"`
+}
+
 type DeleteMemberRequest struct {
 	ResourceAddress string `json:"doorip"`
 	Command         string `json:"cmd"`
@@ -135,4 +139,9 @@ type MemberResourceRelation struct {
 	ID         string `json:"id"`
 	MemberID   string `json:"memberID"`
 	ResourceID string `json:"resourceID"`
+}
+
+// OpenResourceRequest -- request to associate an rfid to a member
+type OpenResourceRequest struct {
+	Name string `json:"name"`
 }
