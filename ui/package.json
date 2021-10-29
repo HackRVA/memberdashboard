@@ -55,6 +55,7 @@
     "@web/rollup-plugin-html": "^1.10.1",
     "@web/rollup-plugin-import-meta-assets": "^1.0.7",
     "@web/test-runner": "next",
+    "@web/test-runner-playwright": "^0.8.8",
     "babel-plugin-template-html-minifier": "^4.1.0",
     "concurrently": "^5.3.0",
     "deepmerge": "^4.2.2",
