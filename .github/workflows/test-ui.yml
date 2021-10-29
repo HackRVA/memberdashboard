@@ -15,11 +15,11 @@ jobs:
       matrix:
         node-version: [14.x, 16.x]
 jobs:
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Setup
-      working-directory: ui
-      run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    with:
+      node-version: ${{ matrix.node-version }}
+      cache: 'npm'
+  - name: Setup
+    working-directory: ui
+    run: npm ci
+  - run: npm run build --if-present
+  - run: npm test
