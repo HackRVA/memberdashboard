@@ -27,7 +27,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         cache-dependency-path: ./ui/package-lock.json
-      working-directory: ./ui
+        working-directory: ./ui
     - run: |
         npm ci
         npm run build --if-present
