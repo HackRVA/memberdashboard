@@ -4,14 +4,11 @@
 name: Test UI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -21,6 +18,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - run: |
+        cd ui
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
