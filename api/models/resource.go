@@ -140,3 +140,8 @@ type MemberResourceRelation struct {
 	MemberID   string `json:"memberID"`
 	ResourceID string `json:"resourceID"`
 }
+
+// OpenResourceRequest -- request to associate an rfid to a member
+type OpenResourceRequest struct {
+	Name string `json:"name"`
+}

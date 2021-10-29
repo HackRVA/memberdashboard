@@ -5,7 +5,6 @@ import (
 	"memberserver/api/models"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -169,10 +168,15 @@ func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request
 }
 
 func (rs resourceAPI) open(w http.ResponseWriter, req *http.Request) {
-	params := mux.Vars(req)
-	name := params["name"]
+	var openResourceRequest models.OpenResourceRequest
 
-	resource, err := rs.db.GetResourceByName(name)
+	err := json.NewDecoder(req.Body).Decode(&openResourceRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	resource, err := rs.db.GetResourceByName(openResourceRequest.Name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
