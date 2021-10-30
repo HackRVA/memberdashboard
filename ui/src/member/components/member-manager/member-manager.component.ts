@@ -23,8 +23,7 @@ import { showComponent } from '../../../shared/functions';
 import { displayMemberStatus } from '../../functions';
 import { memberManagerStyle } from './member-manager.style';
 import { MemberService } from '../../services/member.service';
-import { PaymentService } from '../../../report/services/payment.service';
-import { ResourceService } from '../../../resource/services/resource.service';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('member-manager')
 export class MemberManager extends LitElement {
@@ -34,6 +33,9 @@ export class MemberManager extends LitElement {
   @property({ type: Number })
   memberCount: number = 0;
 
+  @Inject('member')
+  private memberService: MemberService;
+
   memberResources: Array<MemberResource> = [];
   email: string = '';
 
@@ -42,10 +44,6 @@ export class MemberManager extends LitElement {
 
   membersCheckBoxTemplate: NodeListOf<CheckboxBase>;
   allMembersCheckBoxTemplate: CheckboxBase;
-
-  memberService: MemberService = new MemberService();
-  resourceService: ResourceService = new ResourceService();
-  paymentsService: PaymentService = new PaymentService();
 
   static get styles(): CSSResult[] {
     return [memberManagerStyle, coreStyle];

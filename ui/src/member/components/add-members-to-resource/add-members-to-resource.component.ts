@@ -13,6 +13,7 @@ import { ResourceResponse } from '../../../resource/types/api/resource-response'
 import { isEmpty, showComponent } from '../../../shared/functions';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { addMembersToResourceModalStyle } from './add-members-to-resource.style';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('add-members-to-resource')
 export class AddMembersToResourceModal extends LitElement {
@@ -22,7 +23,9 @@ export class AddMembersToResourceModal extends LitElement {
   addResourceToMembersModalTemplate: Dialog;
   resourceSelectTemplate: Select;
 
-  resourceService: ResourceService = new ResourceService();
+  @Inject('resource')
+  private resourceService: ResourceService;
+
   resources: ResourceResponse[] = [];
   toastMsg: ToastMessage;
 

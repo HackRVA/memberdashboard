@@ -8,7 +8,9 @@ import { HTTPService } from '../../shared/services/http.service';
 import { RegisterRequest } from '../types/api/register-request';
 import { LoginRequest } from '../types/api/login-request';
 import { ENV } from '../../env';
+import { Injectable } from '../../shared/di';
 
+@Injectable('auth')
 export class AuthService extends HTTPService {
   private readonly authUrlSegment: string = ENV.api + '/auth';
 

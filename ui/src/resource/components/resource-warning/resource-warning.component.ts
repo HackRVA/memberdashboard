@@ -10,6 +10,7 @@ import { showComponent } from '../../../shared/functions';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { ResourceService } from '../../services/resource.service';
 import { RemoveResourceRequest } from '../../types/api/remove-resource-request';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('resource-warning')
 export class ResourceWarning extends LitElement {
@@ -19,11 +20,11 @@ export class ResourceWarning extends LitElement {
   @property({ type: String })
   resourceId: string;
 
+  @Inject('resource')
+  private resourceService: ResourceService;
+
   toastMsg: ToastMessage;
-
   resourceWarningModalTemplate: Dialog;
-
-  resourceService: ResourceService = new ResourceService();
 
   firstUpdated(): void {
     this.resourceWarningModalTemplate =

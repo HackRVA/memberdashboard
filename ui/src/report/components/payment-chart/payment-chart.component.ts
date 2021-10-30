@@ -20,10 +20,12 @@ import {
   ChartOptions,
   PaymentChartResponse,
 } from '../../types/api/payment-chart-response';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('payment-chart')
 export class PaymentChart extends LitElement {
-  paymentService: PaymentService = new PaymentService();
+  @Inject('payment')
+  private paymentService: PaymentService;
 
   paymentCharts: Array<PaymentChartResponse> = [];
   membershipTrendsData: PaymentChartResponse;

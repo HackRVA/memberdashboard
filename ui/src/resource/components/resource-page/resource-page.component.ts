@@ -9,10 +9,13 @@ import '../../../shared/components/loading-content';
 import { coreStyle } from '../../../shared/styles';
 import { ResourceService } from '../../services/resource.service';
 import { ResourceResponse } from '../../types/api/resource-response';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('resource-page')
 export class ResourcePage extends LitElement {
-  resourceService: ResourceService = new ResourceService();
+  @Inject('resource')
+  private resourceService: ResourceService;
+
   resources: ResourceResponse[];
   resourceCount: number;
   finishedLoading: boolean = false;

@@ -16,6 +16,7 @@ import { MemberService } from '../../../member/services/member.service';
 import { displayMemberStatus } from '../../../member/functions';
 import { showComponent } from '../../../shared/functions';
 import './../../../shared/components/rfid-modal';
+import { Inject } from '../../../shared/di';
 
 @customElement('user-detail')
 export class UserDetail extends LitElement {
@@ -23,7 +24,8 @@ export class UserDetail extends LitElement {
   email: string = '';
   memberUser: MemberResponse;
 
-  memberService: MemberService = new MemberService();
+  @Inject('member')
+  private memberService: MemberService;
 
   static get styles(): CSSResult[] {
     return [userDetailStyle, coreStyle];

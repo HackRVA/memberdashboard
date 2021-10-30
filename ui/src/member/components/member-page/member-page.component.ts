@@ -10,6 +10,7 @@ import { coreStyle } from '../../../shared/styles';
 import { MemberService } from '../../services/member.service';
 import { MemberResponse } from '../../types/api/member-response';
 import { MemberLevel } from '../../types/custom/member-level';
+import { Inject } from '../../../shared/di';
 
 @customElement('member-page')
 export class MemberPage extends LitElement {
@@ -17,7 +18,8 @@ export class MemberPage extends LitElement {
   memberCount: number;
   finishedLoading: boolean = false;
 
-  memberService: MemberService = new MemberService();
+  @Inject('member')
+  private memberService: MemberService;
 
   static get styles(): CSSResult[] {
     return [coreStyle];

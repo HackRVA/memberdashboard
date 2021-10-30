@@ -14,6 +14,7 @@ import { LoginRequest } from '../../types/api/login-request';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { AuthService } from '../../services/auth.service';
 import { showComponent } from '../../../shared/functions';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('login-form')
 export class LoginForm extends LitElement {
@@ -21,7 +22,8 @@ export class LoginForm extends LitElement {
   emailFieldTemplate: TextField;
   passwordFieldTemplate: TextField;
 
-  authService: AuthService = new AuthService();
+  @Inject('auth')
+  private authService: AuthService;
 
   toastMsg: ToastMessage;
 

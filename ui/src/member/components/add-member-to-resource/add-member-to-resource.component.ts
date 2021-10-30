@@ -13,16 +13,18 @@ import { ResourceService } from '../../../resource/services/resource.service';
 import { ResourceResponse } from '../../../resource/types/api/resource-response';
 import { BulkAddMembersToResourceRequest } from '../../../resource/types/api/bulk-add-members-to-resource-request';
 import { isEmpty, showComponent } from '../../../shared/functions';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('add-member-to-resource')
 export class AddMemberToResourceModal extends LitElement {
   @property({ type: String })
   email: string = '';
 
-  toastMsg: ToastMessage;
+  @Inject('resource')
+  private resourceService: ResourceService;
 
-  resourceService: ResourceService = new ResourceService();
   resources: ResourceResponse[] = [];
+  toastMsg: ToastMessage;
 
   addResourceToMemberModalTemplate: Dialog;
   emailFieldTemplate: TextField;

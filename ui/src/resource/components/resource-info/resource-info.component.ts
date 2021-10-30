@@ -14,11 +14,15 @@ import { ResourceService } from '../../services/resource.service';
 import { RegisterResourceRequest } from '../../types/api/register-resource-request';
 import { UpdateResourceRequest } from '../../types/api/update-resource-request';
 import { showComponent } from '../../../shared/functions';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('resource-info')
 export class ResourceInfo extends LitElement {
   @property({ type: Object })
   resourceModalData: ResourceModalData;
+
+  @Inject('resource')
+  private resourceService: ResourceService;
 
   toastMsg: ToastMessage;
 
@@ -26,8 +30,6 @@ export class ResourceInfo extends LitElement {
   resourceNameFieldTemplate: TextField;
   resourceAddressFieldTemplate: TextField;
   defaultResourceTemplate: Checkbox;
-
-  resourceService: ResourceService = new ResourceService();
 
   firstUpdated(): void {
     this.resourceModalTemplate = this.shadowRoot.querySelector('mwc-dialog');
