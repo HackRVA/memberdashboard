@@ -14,16 +14,20 @@ import { TabIndex } from '../../types/custom/tab-index';
 import { VersionResponse } from '../../types/api/version-response';
 import { VersionService } from '../../services/version.service';
 import { isAdmin } from '../../functions';
+import { Inject } from '../../di';
 
 @customElement('md-content')
 export class MDContent extends LitElement {
   @property({ type: String })
   email: string;
 
-  version: VersionResponse;
+  @Inject('auth')
+  private authService: AuthService;
 
-  authService: AuthService = new AuthService();
-  versionService: VersionService = new VersionService();
+  @Inject('version')
+  private versionService: VersionService;
+
+  version: VersionResponse;
 
   static get styles(): CSSResult[] {
     return [mdContentStyle, coreStyle];

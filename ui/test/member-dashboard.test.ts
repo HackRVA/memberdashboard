@@ -7,13 +7,11 @@ import { fixture, expect, assert } from '@open-wc/testing';
 // memberdashboard
 import { MemberDashboard } from '../src/';
 import '../src/member-dashboard';
-import { UserService } from '../src/user/services/user.service';
 
 describe('MemberDashboard', () => {
   let element: MemberDashboard;
   beforeEach(async () => {
     element = await fixture(html`<member-dashboard></member-dashboard>`);
-    element.userService = new UserService();
   });
 
   it('is defined', () => {

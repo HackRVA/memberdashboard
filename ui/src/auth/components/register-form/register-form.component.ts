@@ -12,10 +12,12 @@ import { registerFormStyles } from './register-form.style';
 import { AuthService } from '../../services/auth.service';
 import { RegisterRequest } from '../../types/api/register-request';
 import { showComponent } from '../../../shared/functions';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('register-form')
 export class RegisterForm extends LitElement {
-  authService: AuthService = new AuthService();
+  @Inject('auth')
+  private authService: AuthService;
 
   // form template
   emailFieldTemplate: TextField;

@@ -10,7 +10,9 @@ import { RemoveMemberResourceRequest } from '../types/api/remove-member-resource
 import { RegisterResourceRequest } from '../types/api/register-resource-request';
 import { HTTPService } from '../../shared/services/http.service';
 import { BulkAddMembersToResourceRequest } from '../types/api/bulk-add-members-to-resource-request';
+import { Injectable } from '../../shared/di';
 
+@Injectable('resource')
 export class ResourceService extends HTTPService {
   private readonly resourceUrlSegment: string = ENV.api + '/resource';
 

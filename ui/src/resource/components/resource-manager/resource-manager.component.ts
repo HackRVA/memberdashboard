@@ -15,6 +15,7 @@ import { ResourceService } from '../../services/resource.service';
 import { ResourceResponse } from '../../types/api/resource-response';
 import { ResourceModalData } from '../../types/custom/resource-modal-data';
 import { resourceManagerStyle } from './resource-manager.style';
+import { Inject } from '../../../shared/di/inject';
 
 @customElement('resource-manager')
 export class ResourceManager extends LitElement {
@@ -24,7 +25,8 @@ export class ResourceManager extends LitElement {
   @property({ type: Number })
   resourceCount: number = 0;
 
-  resourceService: ResourceService = new ResourceService();
+  @Inject('resource')
+  private resourceService: ResourceService;
 
   resourceModalData: ResourceModalData;
 

@@ -15,6 +15,7 @@ import { AssignRFIDRequest } from '../../../member/types/api/assign-rfid-request
 import { CreateMemberRequest } from '../../../member/types/api/create-member-request';
 import { showComponent } from '../../functions';
 import { rfidModalStyle } from './rfid-modal.style';
+import { Inject } from '../../di';
 
 @customElement('rfid-modal')
 export class RFIDModal extends LitElement {
@@ -27,7 +28,8 @@ export class RFIDModal extends LitElement {
   @property({ type: Boolean })
   isThisSelf: boolean = false;
 
-  memberService: MemberService = new MemberService();
+  @Inject('member')
+  private memberService: MemberService;
 
   rfidModalTemplate: Dialog;
   emailFieldTemplate: TextField;

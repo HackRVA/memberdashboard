@@ -13,6 +13,7 @@ import { RemoveMemberResourceRequest } from '../../../resource/types/api/remove-
 import { isEmpty, showComponent } from '../../../shared/functions';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { MemberResource } from '../../types/api/member-response';
+import { Inject } from '../../../shared/di';
 
 @customElement('remove-member-from-resource')
 export class RemoveMemberFromResourceModal extends LitElement {
@@ -24,7 +25,8 @@ export class RemoveMemberFromResourceModal extends LitElement {
 
   toastMsg: ToastMessage;
 
-  resourceService: ResourceService = new ResourceService();
+  @Inject('resource')
+  private resourceService: ResourceService;
 
   removeResourceFromMemberModalTemplate: Dialog;
   emailFieldTemplate: TextField;

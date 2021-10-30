@@ -14,11 +14,15 @@ import './material-loader';
 import { UserResponse } from './user/types/api/user-response';
 import { UserService } from './user/services/user.service';
 import { authUser$ } from './auth/auth-user';
+import { Inject } from './shared/di';
 
 @customElement('member-dashboard')
 export class MemberDashboard extends LitElement {
   email: string;
-  userService: UserService = new UserService();
+
+  @Inject('user')
+  private userService: UserService;
+
   finishedLoading: boolean = false;
 
   constructor() {
