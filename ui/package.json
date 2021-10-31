@@ -14,7 +14,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@google-web-components/google-chart": "^4.0.2",
+    "@google-web-components/google-chart": "^5.0.0",
     "@material/mwc-button": "^0.25.1",
     "@material/mwc-checkbox": "^0.25.1",
     "@material/mwc-circular-progress": "^0.25.1",
