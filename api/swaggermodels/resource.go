@@ -35,6 +35,12 @@ type resourceBulkMemberRequest struct {
 	Body models.MembersResourceRelation
 }
 
+// swagger:parameters openResourceRequest
+type openResourceRequest struct {
+	// in: body
+	Body models.OpenResourceRequest
+}
+
 // swagger:response getResourceResponse
 type getResourceResponse struct {
 	// in: body

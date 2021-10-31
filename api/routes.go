@@ -301,7 +301,7 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//     Responses:
 	//       200: endpointSuccessResponse
 	rr.HandleFunc("/resource/updateacls", api.rbac(api.resource.updateResourceACL, []UserRole{admin})).Methods(http.MethodPost)
-	// swagger:route POST /api/resource/open resource resourceOpenRequest
+	// swagger:route POST /api/resource/open resource openResourceRequest
 	//
 	// sends an MQTT message to open a resource
 	//

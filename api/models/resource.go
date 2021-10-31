@@ -143,5 +143,8 @@ type MemberResourceRelation struct {
 
 // OpenResourceRequest -- request to associate an rfid to a member
 type OpenResourceRequest struct {
+	// Name of the Resource
+	// required: true
+	// example: string
 	Name string `json:"name"`
 }

@@ -618,6 +618,41 @@
         }
       }
     },
+    "/api/resource/open": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "sends an MQTT message to open a resource",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "operationId": "openResourceRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/OpenResourceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/endpointSuccessResponse"
+          }
+        }
+      }
+    },
     "/api/resource/register": {
       "post": {
         "security": [
@@ -971,6 +1006,22 @@
         "rfid": {
           "type": "string",
           "x-go-name": "RFID"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
+    },
+    "OpenResourceRequest": {
+      "description": "OpenResourceRequest -- request to associate an rfid to a member",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "description": "Name of the Resource",
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "string"
         }
       },
       "x-go-package": "memberserver/api/models"
