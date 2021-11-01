@@ -1,10 +1,11 @@
 // memberdashboard
+import { DIProviders } from './../types/custom/di-providers';
 import { ContainerProvider } from '../types/custom/container-provider';
 
 export class DIContainer {
-  private _providers: { [key: string]: any } = {};
+  private _providers: DIProviders = {};
 
-  get providers(): { [key: string]: any } {
+  get providers(): DIProviders {
     return this._providers;
   }
 
@@ -22,14 +23,8 @@ export class DIContainer {
     this._providers[provider.token] = provider.useValue;
   }
 
-  private findProvider(token: string): any | null {
-    for (const [key, value] of Object.entries(this._providers)) {
-      if (key === token) {
-        return value;
-      }
-    }
-
-    return null;
+  private findProvider(token: string): any | undefined {
+    return this.providers[token];
   }
 }
 
