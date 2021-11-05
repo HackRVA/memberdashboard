@@ -61,7 +61,7 @@ func setupAuth(config config.Config, userServer UserServer) {
 func (us *UserServer) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, user, err := strategy.AuthenticateRequest(r)
-		if err != nil && !us.isValidBearer(r) {
+		if err != nil || !us.isValidBearer(r) {
 			log.Println(err)
 			code := http.StatusUnauthorized
 			http.Error(w, http.StatusText(code), code)
@@ -229,12 +229,14 @@ func (us *UserServer) isValidBearer(request *http.Request) bool {
 		return false
 	}
 
-	bearerToken := strings.Split(requestToken, "Bearer ")[1]
+	bearerAuth := strings.Split(requestToken, "Bearer ")
 
-	// this is probably a basic auth if it's empty
-	if len(bearerToken) == 0 {
+	// this is probably a basic auth if it didn't split
+	if len(bearerAuth) != 2 {
 		return true
 	}
+
+	bearerToken := bearerAuth[1]
 
 	return us.getAuthCookie(*request) == bearerToken
 }
