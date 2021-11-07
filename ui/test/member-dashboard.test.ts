@@ -1,4 +1,4 @@
-// lit-element
+// lit element
 import { html } from 'lit';
 
 // testing

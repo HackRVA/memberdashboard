@@ -2,10 +2,11 @@
 import { css, CSSResult } from 'lit';
 
 /* primary*/
-export const primaryBlue: CSSResult = css`#6200ee`;
+export const primaryBlue: CSSResult = css`#6200ee`; // mwc blue
 export const primaryRed: CSSResult = css`#e9437a`;
 export const primaryWhite: CSSResult = css`#f5f5f5`;
 export const primaryYellow: CSSResult = css`#fdefbb`;
+export const primaryGreen: CSSResult = css`#018786`; // mwc green
 
 /* primary light */
 export const primaryLightGray: CSSResult = css`#e1e1e1`;
