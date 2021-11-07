@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 // memberdashboard
 import { ENV } from '../../env';
 import { UpdateResourceRequest } from '../types/api/update-resource-request';
+import { OpenResourceRequest } from './../types/api/open-resource-request';
 import { ResourceResponse } from '../types/api/resource-response';
 import { RemoveResourceRequest } from '../types/api/remove-resource-request';
 import { RemoveMemberResourceRequest } from '../types/api/remove-member-resource-request';
@@ -50,5 +51,9 @@ export class ResourceService extends HTTPService {
 
   updateResource(request: UpdateResourceRequest): Observable<void> {
     return this.put<void>(this.resourceUrlSegment, request);
+  }
+
+  openResource(request: OpenResourceRequest): Observable<void> {
+    return this.post<void>(this.resourceUrlSegment + '/open', request);
   }
 }
