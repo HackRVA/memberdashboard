@@ -33,6 +33,9 @@ export class MemberManager extends LitElement {
   @property({ type: Number })
   memberCount: number = 0;
 
+  @property({ type: Number })
+  totalMemberCount: number = 0;
+
   @Inject('member')
   private memberService: MemberService;
 
@@ -240,7 +243,10 @@ export class MemberManager extends LitElement {
     return html`
       <div class="member-container">
         <div class="member-header">
-          <h3>Number of active members: ${this.memberCount}</h3>
+          <h3>
+            Number of active members: ${this.memberCount} /
+            ${this.totalMemberCount}
+          </h3>
           <div>
             <mwc-button
               id="slack-clean-up"

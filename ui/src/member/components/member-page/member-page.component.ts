@@ -15,7 +15,8 @@ import { Inject } from '../../../shared/di';
 @customElement('member-page')
 export class MemberPage extends LitElement {
   members: MemberResponse[];
-  memberCount: number;
+  memberCount: number = 0;
+  totalMemberCount: number = 0;
   finishedLoading: boolean = false;
 
   @Inject('member')
@@ -34,6 +35,7 @@ export class MemberPage extends LitElement {
       next: (result: MemberResponse[]) => {
         this.finishedLoading = true;
         this.members = result;
+        this.totalMemberCount = result.length;
         this.memberCount = this.getActiveMembers().length;
         this.requestUpdate();
       },
@@ -56,6 +58,7 @@ export class MemberPage extends LitElement {
           <member-manager
             .members=${this.members}
             .memberCount=${this.memberCount}
+            .totalMemberCount=${this.totalMemberCount}
           ></member-manager>
         </loading-content>
       </md-card>
