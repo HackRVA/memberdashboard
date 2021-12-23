@@ -55,6 +55,11 @@ func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http
 		return
 	}
 
+	if len(request.FullName) == 0 {
+		preconditionFailed(w, "fullName is required")
+		return
+	}
+
 	_, err = m.store.GetMemberByEmail(memberEmail)
 
 	if err != nil {
