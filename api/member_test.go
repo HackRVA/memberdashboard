@@ -121,7 +121,7 @@ func TestGetMemberByEmail(t *testing.T) {
 			Email:              "",
 			Resources:          []models.MemberResource{},
 			expectedHTTPStatus: http.StatusPreconditionFailed,
-			expectedResponse:   "email is required\n",
+			expectedResponse:   "invalid email\n",
 		},
 		{
 			TestName:           "should show not found if email is not in the store",
