@@ -3,18 +3,29 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"memberserver/api/models"
 	"memberserver/datastore"
 	"memberserver/resourcemanager"
 	"memberserver/slack"
 	"net/http"
 	"strings"
+
+	"github.com/asaskevich/govalidator"
 )
 
 type MemberServer struct {
 	store           datastore.MemberStore
 	ResourceManager *resourcemanager.ResourceManager
+}
+
+func (m *MemberServer) MemberEmailHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		m.GetByEmailHandler(w, r)
+	}
+
+	if r.Method == http.MethodPut {
+		m.UpdateMemberByEmailHandler(w, r)
+	}
 }
 
 func (m *MemberServer) GetMembersHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,18 +34,59 @@ func (m *MemberServer) GetMembersHandler(w http.ResponseWriter, r *http.Request)
 	ok(w, members)
 }
 
+func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http.Request) {
+	memberEmail := strings.TrimPrefix(r.URL.Path, "/api/member/email/")
+
+	var request models.UpdateMemberRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+
+	if len(memberEmail) == 0 {
+		preconditionFailed(w, "email is required")
+		return
+	}
+
+	if !govalidator.IsEmail(memberEmail) {
+		preconditionFailed(w, "not a valid email")
+		return
+	}
+
+	if err != nil {
+		badRequest(w, err.Error())
+		return
+	}
+
+	_, err = m.store.GetMemberByEmail(memberEmail)
+
+	if err != nil {
+		notFound(w, "error getting member by email")
+		return
+	}
+
+	err = m.store.UpdateMemberByEmail(request.FullName, memberEmail)
+
+	ok(w, models.EndpointSuccess{
+		Ack: true,
+	})
+
+}
+
 func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request) {
 	memberEmail := strings.TrimPrefix(r.URL.Path, "/api/member/email/")
 
 	if len(memberEmail) == 0 {
-		http.Error(w, errors.New("error getting member by email").Error(), http.StatusNotFound)
+		preconditionFailed(w, "email is required")
+		return
+	}
+
+	if !govalidator.IsEmail(memberEmail) {
+		preconditionFailed(w, "not a valid email")
 		return
 	}
 
 	member, err := m.store.GetMemberByEmail(memberEmail)
 
 	if err != nil {
-		http.Error(w, "error getting member by email", http.StatusNotFound)
+		notFound(w, "error getting member by email")
 		return
 	}
 
@@ -47,7 +99,7 @@ func (m *MemberServer) GetCurrentUserHandler(w http.ResponseWriter, r *http.Requ
 	member, err := m.store.GetMemberByEmail(user.GetUserName())
 
 	if err != nil {
-		http.Error(w, "error getting member by email", http.StatusNotFound)
+		notFound(w, "error getting member by email")
 		return
 	}
 
@@ -59,7 +111,7 @@ func (m *MemberServer) AssignRFIDHandler(w http.ResponseWriter, r *http.Request)
 
 	err := json.NewDecoder(r.Body).Decode(&assignRFIDRequest)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		badRequest(w, err.Error())
 		return
 	}
 
@@ -88,12 +140,12 @@ func (m *MemberServer) GetTiersHandler(w http.ResponseWriter, r *http.Request) {
 
 func (m *MemberServer) assignRFID(w http.ResponseWriter, email, rfid string) {
 	if len(rfid) == 0 {
-		http.Error(w, errors.New("not a valid rfid").Error(), http.StatusBadRequest)
+		preconditionFailed(w, "not a valid rfid")
 		return
 	}
 	r, err := m.store.AssignRFID(email, rfid)
 	if err != nil {
-		http.Error(w, errors.New("unable to assign rfid").Error(), http.StatusBadRequest)
+		notFound(w, "unable to assign rfid")
 		return
 	}
 
@@ -115,7 +167,7 @@ func (m *MemberServer) AddNewMemberHandler(w http.ResponseWriter, r *http.Reques
 
 	err := json.NewDecoder(r.Body).Decode(&newMember)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		badRequest(w, err.Error())
 		return
 	}
 

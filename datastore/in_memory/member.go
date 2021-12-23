@@ -40,6 +40,18 @@ func (i In_memory) AssignRFID(email string, rfid string) (models.Member, error) 
 	}
 	return models.Member{}, errors.New("user not found")
 }
+
+func (i In_memory) UpdateMemberByEmail(fullName string, email string) error {
+	if len(fullName) == 0 {
+		return errors.New("fullname is required")
+	}
+
+	if len(email) == 0 {
+		return errors.New("Email is required")
+	}
+
+	return nil
+}
 func (i In_memory) AddNewMember(newMember models.Member) (models.Member, error) {
 	return newMember, nil
 }

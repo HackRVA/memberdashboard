@@ -28,6 +28,15 @@ type getMemberResponse struct {
 	Body models.Member
 }
 
+// swagger:parameters updateMemberRequest
+type updateMemberRequest struct {
+	// in:path
+	Email string `json:"email"`
+
+	// in: body
+	Body models.UpdateMemberRequest
+}
+
 // swagger:response getTierResponse
 type getTierResponse struct {
 	// in: body

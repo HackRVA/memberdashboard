@@ -153,6 +153,29 @@ func (db *DatabaseStore) AssignRFID(email string, rfid string) (models.Member, e
 	return member, err
 }
 
+func (db *DatabaseStore) UpdateMemberByEmail(fullName string, email string) error {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	_, err = db.GetMemberByEmail(email)
+
+	if err != nil {
+		log.Errorf("error retrieving a member with that email address %s", err.Error())
+		return err
+	}
+
+	_, err = dbPool.Exec(context.Background(), memberDbMethod.updateMemberByEmail(), fullName, email)
+
+	if err != nil {
+		return fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	return nil
+}
+
 func (db *DatabaseStore) AddNewMember(newMember models.Member) (models.Member, error) {
 	err := db.AddMembers([]models.Member{newMember})
 	if err != nil {

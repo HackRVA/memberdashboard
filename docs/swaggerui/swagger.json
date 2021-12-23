@@ -264,6 +264,49 @@
             "$ref": "#/responses/getMemberResponse"
           }
         }
+      },
+      "put": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Updates a member.",
+        "operationId": "updateMemberRequest",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Email",
+            "name": "email",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UpdateMemberRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/endpointSuccessResponse"
+          }
+        }
       }
     },
     "/api/member/new": {
@@ -1206,6 +1249,17 @@
           "type": "string",
           "x-go-name": "Token",
           "example": "\u003cTOKEN_STRING\u003e"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
+    },
+    "UpdateMemberRequest": {
+      "description": "UpdateMemberRequest -- request to update a member",
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "x-go-name": "FullName"
         }
       },
       "x-go-package": "memberserver/api/models"

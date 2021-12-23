@@ -27,3 +27,8 @@ type AssignRFIDRequest struct {
 	Email string `json:"email"`
 	RFID  string `json:"rfid"`
 }
+
+// UpdateMemberRequest -- request to update a member
+type UpdateMemberRequest struct {
+	FullName string `json:"fullName"`
+}

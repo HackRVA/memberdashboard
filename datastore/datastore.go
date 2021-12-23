@@ -28,6 +28,7 @@ type MemberStore interface {
 	GetMembersWithCredit() []models.Member
 	ProcessMember(newMember models.Member) error
 	GetMemberByRFID(rfid string) (models.Member, error)
+	UpdateMemberByEmail(fullName string, email string) error
 }
 
 type ResourceStore interface {
