@@ -1,7 +1,7 @@
 // lit element
 import { css, CSSResult } from 'lit';
 
-export const addMembersToResourceModalStyle: CSSResult = css`
+export const addMembersToResourceStyle: CSSResult = css`
   .emails {
     text-align: center;
     margin-bottom: 16px;

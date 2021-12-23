@@ -10,9 +10,9 @@ import '@polymer/paper-tooltip';
 
 // memberdashboard
 import '../../../shared/components/rfid-modal';
-import '../add-member-to-resource';
 import '../add-members-to-resource';
 import '../remove-member-from-resource';
+import '../edit-member';
 import {
   MemberResource,
   MemberResponse,
@@ -41,6 +41,7 @@ export class MemberManager extends LitElement {
 
   memberResources: Array<MemberResource> = [];
   email: string = '';
+  fullName: string = '';
 
   memberEmails: string[] = [];
   toastMsg: ToastMessage;
@@ -76,9 +77,9 @@ export class MemberManager extends LitElement {
   }
 
   openAddMemberToResourceModal(email: string): void {
-    this.email = email;
+    this.memberEmails = [email];
     this.requestUpdate();
-    showComponent('#add-member-to-resource-modal', this.shadowRoot);
+    showComponent('#add-members-to-resource-modal', this.shadowRoot);
   }
 
   openAddMembersToResourceModal(): void {
@@ -106,6 +107,14 @@ export class MemberManager extends LitElement {
     this.requestUpdate();
 
     showComponent('#rfid-modal', this.shadowRoot);
+  }
+
+  openEditMemberModal(email: string, fullName: string): void {
+    this.email = email;
+    this.fullName = fullName;
+
+    this.requestUpdate();
+    showComponent('#edit-member-modal', this.shadowRoot);
   }
 
   handleEmail(event: Event, email: string): void {
@@ -146,7 +155,12 @@ export class MemberManager extends LitElement {
         <div class="more-actions-container">
           <mwc-menu id=${'more-actions-' + member.id} x="-50" y="-50">
             <mwc-list-item @click=${() =>
-              this.openRFIDModal(member.email)}> Assign RFID </mwc-list-item>
+              this.openRFIDModal(member.email)}> Assign RFID 
+            </mwc-list-item>
+            <mwc-list-item @click=${() =>
+              this.openEditMemberModal(member.email, member.name)}> 
+              Edit Member
+            </mwc-list-item>
             <mwc-list-item @click=${() =>
               this.openAddMemberToResourceModal(member.email)}> 
               <span class="add-resources"> Add resource <span> 
@@ -304,12 +318,11 @@ export class MemberManager extends LitElement {
         @updated=${this.refreshMemberList}
       >
       </add-members-to-resource>
-      <add-member-to-resource
-        id="add-member-to-resource-modal"
+      <edit-member
+        id="edit-member-modal"
         .email=${this.email}
-        @updated=${this.refreshMemberList}
-      >
-      </add-member-to-resource>
+        .currentFullName=${this.fullName}
+      ></edit-member>
       <remove-member-from-resource
         id="remove-member-from-resource-modal"
         .email=${this.email}

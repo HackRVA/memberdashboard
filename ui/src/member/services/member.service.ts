@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 // memberdashboard
 import { MemberResponse } from '../types/api/member-response';
 import { CreateMemberRequest } from '../types/api/create-member-request';
+import { UpdateMemberRequest } from './../types/api/update-member-request';
+import { AckResponse } from './../../shared/types/api/ack-response';
 import { AssignRFIDRequest } from '../types/api/assign-rfid-request';
 import { HTTPService } from '../../shared/services/http.service';
 import { ENV } from '../../env';
@@ -15,6 +17,16 @@ export class MemberService extends HTTPService {
 
   getMembers(): Observable<MemberResponse[]> {
     return this.get<MemberResponse[]>(this.memberUrlSegment);
+  }
+
+  updateMemberByEmail(
+    email: string,
+    request: UpdateMemberRequest
+  ): Observable<AckResponse> {
+    return this.put<AckResponse>(
+      `${this.memberUrlSegment}/email/${email}`,
+      request
+    );
   }
 
   assignRFID(request: AssignRFIDRequest): Observable<void> {
