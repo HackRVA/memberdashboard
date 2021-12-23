@@ -14,9 +14,13 @@ import { isEmpty, showComponent } from '../../../shared/functions';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { MemberResource } from '../../types/api/member-response';
 import { Inject } from '../../../shared/di';
+import { IPopup } from './../../../shared/types/custom/ipop-up';
 
 @customElement('remove-member-from-resource')
-export class RemoveMemberFromResourceModal extends LitElement {
+export class RemoveMemberFromResourceModal
+  extends LitElement
+  implements IPopup
+{
   @property({ type: String })
   email: string = '';
 
@@ -40,11 +44,11 @@ export class RemoveMemberFromResourceModal extends LitElement {
       this.shadowRoot.querySelector('mwc-select');
   }
 
-  show(): void {
+  public show(): void {
     this.removeResourceFromMemberModalTemplate.show();
   }
 
-  handleSubmit(): void {
+  private handleSubmit(): void {
     if (this.isValid()) {
       this.tryToRemoveMemberFromResource();
       this.emptyFormField();
@@ -54,7 +58,7 @@ export class RemoveMemberFromResourceModal extends LitElement {
     }
   }
 
-  tryToRemoveMemberFromResource(): void {
+  private tryToRemoveMemberFromResource(): void {
     const request: RemoveMemberResourceRequest = {
       email: this.emailFieldTemplate.value,
       resourceID: this.memberResourceSelectTemplate.value,
@@ -63,7 +67,7 @@ export class RemoveMemberFromResourceModal extends LitElement {
     this.removeMemberFromResource(request);
   }
 
-  removeMemberFromResource(request: RemoveMemberResourceRequest): void {
+  private removeMemberFromResource(request: RemoveMemberResourceRequest): void {
     this.resourceService.removeMemberFromResource(request).subscribe({
       complete: () => {
         this.fireUpdatedEvent();
@@ -71,12 +75,12 @@ export class RemoveMemberFromResourceModal extends LitElement {
     });
   }
 
-  fireUpdatedEvent(): void {
+  private fireUpdatedEvent(): void {
     const updatedEvent = new CustomEvent('updated');
     this.dispatchEvent(updatedEvent);
   }
 
-  handleClosed(event: CustomEvent): void {
+  private handleClosed(event: CustomEvent): void {
     // temp hack to stop mwc-select from bubbling to mwc-dialog
     const tagName: string = (event.target as EventTarget & { tagName: string })
       .tagName;
@@ -87,18 +91,18 @@ export class RemoveMemberFromResourceModal extends LitElement {
     }
   }
 
-  emptyFormField(): void {
+  private emptyFormField(): void {
     this.memberResourceSelectTemplate.select(-1);
   }
 
-  isValid(): boolean {
+  private isValid(): boolean {
     return (
       !isEmpty(this.emailFieldTemplate.value) &&
       !isEmpty(this.memberResourceSelectTemplate.value)
     );
   }
 
-  displayToastMsg(message: string): void {
+  private displayToastMsg(message: string): void {
     this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
     this.requestUpdate();
     showComponent('#toast-msg', this.shadowRoot);
