@@ -40,13 +40,8 @@ func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http
 	var request models.UpdateMemberRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 
-	if len(memberEmail) == 0 {
-		preconditionFailed(w, "email is required")
-		return
-	}
-
-	if !govalidator.IsEmail(memberEmail) {
-		preconditionFailed(w, "not a valid email")
+	if len(memberEmail) == 0 || !govalidator.IsEmail(memberEmail) {
+		preconditionFailed(w, "invalid email")
 		return
 	}
 
@@ -78,13 +73,8 @@ func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http
 func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request) {
 	memberEmail := strings.TrimPrefix(r.URL.Path, "/api/member/email/")
 
-	if len(memberEmail) == 0 {
-		preconditionFailed(w, "email is required")
-		return
-	}
-
-	if !govalidator.IsEmail(memberEmail) {
-		preconditionFailed(w, "not a valid email")
+	if len(memberEmail) == 0 || !govalidator.IsEmail(memberEmail) {
+		preconditionFailed(w, "invalid email")
 		return
 	}
 
