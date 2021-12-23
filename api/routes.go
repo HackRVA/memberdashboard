@@ -106,7 +106,25 @@ func registerRoutes(r *mux.Router, api API) *mux.Router {
 	//
 	//     Responses:
 	//       200: getMemberResponse
-	rr.HandleFunc("/member/email/{email}", api.rbac(api.MemberServer.GetByEmailHandler, []UserRole{admin}))
+
+	// swagger:route PUT /api/member/email/{email} member updateMemberRequest
+	//
+	// Updates a member.
+	//
+	//     Consumes:
+	//     - application/json
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
+	//
+	//     Responses:
+	//       200: endpointSuccessResponse
+	rr.HandleFunc("/member/email/{email}", api.rbac(api.MemberServer.MemberEmailHandler, []UserRole{admin})).Methods(http.MethodGet, http.MethodPut)
 	// swagger:route GET /api/member/slack/nonmembers member getSlackNonMemberList
 	//
 	// Returns a list slack users that are possibly not members.
