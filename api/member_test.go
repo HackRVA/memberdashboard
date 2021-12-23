@@ -120,8 +120,8 @@ func TestGetMemberByEmail(t *testing.T) {
 			TestName:           "should show not found if email is empty",
 			Email:              "",
 			Resources:          []models.MemberResource{},
-			expectedHTTPStatus: http.StatusNotFound,
-			expectedResponse:   "error getting member by email\n",
+			expectedHTTPStatus: http.StatusPreconditionFailed,
+			expectedResponse:   "email is required\n",
 		},
 		{
 			TestName:           "should show not found if email is not in the store",
@@ -169,7 +169,7 @@ func TestAssignRFID(t *testing.T) {
 			Email:              "",
 			RFID:               "newrfid",
 			Resources:          []models.MemberResource{},
-			expectedHTTPStatus: http.StatusBadRequest,
+			expectedHTTPStatus: http.StatusNotFound,
 			expectedResponse:   "unable to assign rfid\n",
 		},
 		{
@@ -177,7 +177,7 @@ func TestAssignRFID(t *testing.T) {
 			Email:              "test@test.com",
 			RFID:               "",
 			Resources:          []models.MemberResource{},
-			expectedHTTPStatus: http.StatusBadRequest,
+			expectedHTTPStatus: http.StatusPreconditionFailed,
 			expectedResponse:   "not a valid rfid\n",
 		},
 	}
