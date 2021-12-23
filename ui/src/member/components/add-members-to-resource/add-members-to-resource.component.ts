@@ -12,7 +12,7 @@ import { BulkAddMembersToResourceRequest } from '../../../resource/types/api/bul
 import { ResourceResponse } from '../../../resource/types/api/resource-response';
 import { isEmpty, showComponent } from '../../../shared/functions';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
-import { addMembersToResourceModalStyle } from './add-members-to-resource.style';
+import { addMembersToResourceStyle } from './add-members-to-resource.style';
 import { Inject } from '../../../shared/di/inject';
 
 @customElement('add-members-to-resource')
@@ -30,7 +30,7 @@ export class AddMembersToResourceModal extends LitElement {
   toastMsg: ToastMessage;
 
   static get styles(): CSSResult[] {
-    return [addMembersToResourceModalStyle];
+    return [addMembersToResourceStyle];
   }
 
   firstUpdated(): void {
