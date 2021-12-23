@@ -322,6 +322,7 @@ export class MemberManager extends LitElement {
         id="edit-member-modal"
         .email=${this.email}
         .currentFullName=${this.fullName}
+        @updated=${this.refreshMemberList}
       ></edit-member>
       <remove-member-from-resource
         id="remove-member-from-resource-modal"

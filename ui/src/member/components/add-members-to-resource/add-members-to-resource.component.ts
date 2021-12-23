@@ -14,9 +14,10 @@ import { isEmpty, showComponent } from '../../../shared/functions';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { addMembersToResourceStyle } from './add-members-to-resource.style';
 import { Inject } from '../../../shared/di/inject';
+import { IPopup } from './../../../shared/types/custom/ipop-up';
 
 @customElement('add-members-to-resource')
-export class AddMembersToResourceModal extends LitElement {
+export class AddMembersToResourceModal extends LitElement implements IPopup {
   @property({ type: Array })
   emails: string[] = [];
 
@@ -41,7 +42,7 @@ export class AddMembersToResourceModal extends LitElement {
     this.getResources();
   }
 
-  getResources(): void {
+  private getResources(): void {
     this.resourceService.getResources().subscribe({
       next: (result: ResourceResponse[]) => {
         this.resources = result;
@@ -53,13 +54,13 @@ export class AddMembersToResourceModal extends LitElement {
     });
   }
 
-  displayToastMsg(message: string): void {
+  private displayToastMsg(message: string): void {
     this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
     this.requestUpdate();
     showComponent('#toast-msg', this.shadowRoot);
   }
 
-  tryToAddMembersToResource(): void {
+  private tryToAddMembersToResource(): void {
     const request: BulkAddMembersToResourceRequest = {
       emails: this.emails,
       resourceID: this.resourceSelectTemplate.value,
@@ -68,7 +69,9 @@ export class AddMembersToResourceModal extends LitElement {
     this.bulkAddMembersToResource(request);
   }
 
-  bulkAddMembersToResource(request: BulkAddMembersToResourceRequest): void {
+  private bulkAddMembersToResource(
+    request: BulkAddMembersToResourceRequest
+  ): void {
     this.resourceService.bulkAddMembersToResource(request).subscribe({
       complete: () => {
         this.fireUpdatedEvent();
@@ -76,12 +79,12 @@ export class AddMembersToResourceModal extends LitElement {
     });
   }
 
-  fireUpdatedEvent(): void {
+  private fireUpdatedEvent(): void {
     const updatedEvent = new CustomEvent('updated');
     this.dispatchEvent(updatedEvent);
   }
 
-  handleSubmit(): void {
+  private handleSubmit(): void {
     if (this.isValid()) {
       this.tryToAddMembersToResource();
       this.emptyFormField();
@@ -91,7 +94,7 @@ export class AddMembersToResourceModal extends LitElement {
     }
   }
 
-  handleClosed(event: CustomEvent): void {
+  private handleClosed(event: CustomEvent): void {
     // temp hack to stop mwc-select from bubbling to mwc-dialog
     const tagName: string = (event.target as EventTarget & { tagName: string })
       .tagName;
@@ -102,15 +105,15 @@ export class AddMembersToResourceModal extends LitElement {
     }
   }
 
-  isValid(): boolean {
+  private isValid(): boolean {
     return !isEmpty(this.emails) && !isEmpty(this.resourceSelectTemplate.value);
   }
 
-  emptyFormField(): void {
+  private emptyFormField(): void {
     this.resourceSelectTemplate.select(-1);
   }
 
-  show(): void {
+  public show(): void {
     this.addResourceToMembersModalTemplate?.show();
   }
 
