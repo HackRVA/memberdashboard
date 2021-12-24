@@ -1,4 +1,4 @@
-// required method for any custom modal to display
+// required method for any custom modal/snackbar to display
 export interface IPopup {
   show(): void;
 }

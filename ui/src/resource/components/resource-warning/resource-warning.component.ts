@@ -11,9 +11,10 @@ import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { ResourceService } from '../../services/resource.service';
 import { RemoveResourceRequest } from '../../types/api/remove-resource-request';
 import { Inject } from '../../../shared/di/inject';
+import { IPopup } from './../../../shared/types/custom/ipop-up';
 
 @customElement('resource-warning')
-export class ResourceWarning extends LitElement {
+export class ResourceWarning extends LitElement implements IPopup {
   @property({ type: String })
   resourceName: string;
 
@@ -31,7 +32,7 @@ export class ResourceWarning extends LitElement {
       this.shadowRoot.querySelector('mwc-dialog');
   }
 
-  show(): void {
+  public show(): void {
     this.resourceWarningModalTemplate.show();
   }
 

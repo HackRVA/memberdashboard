@@ -15,9 +15,10 @@ import { RegisterResourceRequest } from '../../types/api/register-resource-reque
 import { UpdateResourceRequest } from '../../types/api/update-resource-request';
 import { showComponent } from '../../../shared/functions';
 import { Inject } from '../../../shared/di/inject';
+import { IPopup } from './../../../shared/types/custom/ipop-up';
 
 @customElement('resource-info')
-export class ResourceInfo extends LitElement {
+export class ResourceInfo extends LitElement implements IPopup {
   @property({ type: Object })
   resourceModalData: ResourceModalData;
 
@@ -51,7 +52,7 @@ export class ResourceInfo extends LitElement {
     }
   }
 
-  show(): void {
+  public show(): void {
     this.resourceModalTemplate.show();
   }
 
