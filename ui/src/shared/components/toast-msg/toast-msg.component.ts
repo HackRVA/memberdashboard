@@ -7,9 +7,10 @@ import { Snackbar } from '@material/mwc-snackbar';
 
 // memberdashboard;
 import { ToastMessage } from '../../types/custom/toast-msg';
+import { IPopup } from './../../types/custom/ipop-up';
 
 @customElement('toast-msg')
-export class ToastMsg extends LitElement {
+export class ToastMsg extends LitElement implements IPopup {
   @property({ type: Object })
   toastMsg: ToastMessage;
 
@@ -26,7 +27,7 @@ export class ToastMsg extends LitElement {
     }
   }
 
-  show(): void {
+  public show(): void {
     this.toastMsgSnackBarTemplate.show();
   }
 

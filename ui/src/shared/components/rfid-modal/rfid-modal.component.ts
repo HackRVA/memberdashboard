@@ -16,9 +16,10 @@ import { CreateMemberRequest } from '../../../member/types/api/create-member-req
 import { showComponent } from '../../functions';
 import { rfidModalStyle } from './rfid-modal.style';
 import { Inject } from '../../di';
+import { IPopup } from './../../types/custom/ipop-up';
 
 @customElement('rfid-modal')
-export class RFIDModal extends LitElement {
+export class RFIDModal extends LitElement implements IPopup {
   @property({ type: String })
   email: string = '';
 
@@ -57,11 +58,11 @@ export class RFIDModal extends LitElement {
     }
   }
 
-  show(): void {
+  public show(): void {
     this.rfidModalTemplate?.show();
   }
 
-  tryToAssigningMemberToRFID(): void {
+  private tryToAssigningMemberToRFID(): void {
     const request: AssignRFIDRequest | CreateMemberRequest = {
       email: this.emailFieldTemplate.value.trim(),
       rfid: this.rfidFieldTemplate.value.trim(),
@@ -74,7 +75,7 @@ export class RFIDModal extends LitElement {
     this.assignMemberToRFID(request);
   }
 
-  tryToAssigningSelfToRFID(): void {
+  private tryToAssigningSelfToRFID(): void {
     const request: AssignRFIDRequest = {
       email: this.emailFieldTemplate.value.trim(),
       rfid: this.rfidFieldTemplate.value.trim(),
@@ -83,7 +84,7 @@ export class RFIDModal extends LitElement {
     this.assignRFIDToSelf(request);
   }
 
-  assignNewMemberToRFID(request: CreateMemberRequest): void {
+  private assignNewMemberToRFID(request: CreateMemberRequest): void {
     this.memberService.assignNewMemberRFID(request).subscribe({
       complete: () => {
         this.displayToastMsg('Success');
@@ -97,7 +98,7 @@ export class RFIDModal extends LitElement {
     });
   }
 
-  assignMemberToRFID(request: AssignRFIDRequest): void {
+  private assignMemberToRFID(request: AssignRFIDRequest): void {
     this.memberService.assignRFID(request).subscribe({
       complete: () => {
         this.displayToastMsg('Success');
@@ -111,7 +112,7 @@ export class RFIDModal extends LitElement {
     });
   }
 
-  assignRFIDToSelf(request: AssignRFIDRequest): void {
+  private assignRFIDToSelf(request: AssignRFIDRequest): void {
     this.memberService.assignRFIDToSelf(request).subscribe({
       complete: () => {
         this.displayToastMsg('Success');
@@ -124,11 +125,11 @@ export class RFIDModal extends LitElement {
     });
   }
 
-  handleNewMember(): void {
+  private handleNewMember(): void {
     this.isNewMember = !this.isNewMember;
   }
 
-  handleSubmit(): void {
+  private handleSubmit(): void {
     if (this.isValid()) {
       if (this.isThisSelf) {
         this.tryToAssigningSelfToRFID();
@@ -142,12 +143,12 @@ export class RFIDModal extends LitElement {
     }
   }
 
-  fireUpdatedEvent(): void {
+  private fireUpdatedEvent(): void {
     const updatedEvent = new CustomEvent('updated');
     this.dispatchEvent(updatedEvent);
   }
 
-  emptyFormField(): void {
+  private emptyFormField(): void {
     // fields are readonly
     if (!this.email) {
       this.emailFieldTemplate.value = '';
@@ -155,24 +156,24 @@ export class RFIDModal extends LitElement {
     this.rfidFieldTemplate.value = '';
   }
 
-  isValid(): boolean {
+  private isValid(): boolean {
     return (
       this.emailFieldTemplate.validity.valid &&
       this.rfidFieldTemplate.validity.valid
     );
   }
 
-  handleClosed(): void {
+  private handleClosed(): void {
     this.emptyFormField();
   }
 
-  displayToastMsg(message: string): void {
+  private displayToastMsg(message: string): void {
     this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
     this.requestUpdate();
     showComponent('#toast-msg', this.shadowRoot);
   }
 
-  displayNewMemberCheckBox(): TemplateResult {
+  private displayNewMemberCheckBox(): TemplateResult {
     if (!this.showNewMemberOption) return html``;
 
     return html`
