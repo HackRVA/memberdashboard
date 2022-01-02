@@ -1,4 +1,4 @@
-FROM golang:1.15 as backend-build
+FROM golang:1.17 as backend-build
 
 WORKDIR /membership
 COPY . .
