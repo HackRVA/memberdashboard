@@ -14,12 +14,13 @@ type MemberResource struct {
 
 // Member -- a member of the makerspace
 type Member struct {
-	ID        string           `json:"id"`
-	Name      string           `json:"name"`
-	Email     string           `json:"email"`
-	RFID      string           `json:"rfid"`
-	Level     uint8            `json:"memberLevel"`
-	Resources []MemberResource `json:"resources"`
+	ID             string           `json:"id"`
+	Name           string           `json:"name"`
+	Email          string           `json:"email"`
+	RFID           string           `json:"rfid"`
+	Level          uint8            `json:"memberLevel"`
+	Resources      []MemberResource `json:"resources"`
+	SubscriptionID string           `json:"subscriptionID"`
 }
 
 // AssignRFIDRequest -- request to associate an rfid to a member
