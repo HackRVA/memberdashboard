@@ -75,6 +75,10 @@ func (rm *ResourceManager) UpdateResources() {
 	for _, r := range resources {
 		members, _ := rm.store.GetResourceACLWithMemberInfo(r)
 		for _, m := range members {
+			if m.Level == uint8(models.Inactive) {
+				continue
+			}
+
 			b, _ := json.Marshal(&models.MemberRequest{
 				ResourceAddress: r.Address,
 				Command:         commandAddUser,
