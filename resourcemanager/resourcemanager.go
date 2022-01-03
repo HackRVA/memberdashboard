@@ -105,7 +105,7 @@ func (rm *ResourceManager) RemovedInvalidUIDs() {
 
 	for _, m := range inactiveMembers {
 		if len(m.RFID) == 0 {
-			return
+			continue
 		}
 
 		/* We will just try to remove all invalid members even if they are already removed */
