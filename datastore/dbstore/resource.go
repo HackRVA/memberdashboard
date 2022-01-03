@@ -365,3 +365,30 @@ func (db *DatabaseStore) GetMembersAccess(m models.Member) ([]models.MemberAcces
 
 	return memberAccess, nil
 }
+
+func (db *DatabaseStore) GetInactiveMembersByResource() ([]models.MemberAccess, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	var memberAccess []models.MemberAccess
+
+	rows, err := dbPool.Query(db.ctx, resourceDbMethod.getInactiveMembersResourceACL())
+	if err != nil {
+		return memberAccess, fmt.Errorf("error getting members access info: %s", err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var resourceUpdate models.MemberAccess
+
+		rows.Scan(&resourceUpdate.Email, &resourceUpdate.ResourceAddress, &resourceUpdate.ResourceName, &resourceUpdate.Name, &resourceUpdate.RFID)
+
+		memberAccess = append(memberAccess, resourceUpdate)
+	}
+
+	return memberAccess, nil
+}

@@ -71,6 +71,16 @@ func (resource *ResourceDatabaseMethod) getResourceACLByEmail() string {
 	WHERE rfid is not NULL and email = $1;`
 }
 
+func (resource *ResourceDatabaseMethod) getInactiveMembersResourceACL() string {
+	return `SELECT email, device_identifier, description, name, rfid
+	FROM membership.member_resource
+ 	LEFT JOIN membership.members
+ 	ON membership.member_resource.member_id = membership.members.id
+	LEFT JOIN membership.resources
+	ON membership.resources.id = membership.member_resource.resource_id
+	WHERE member_tier_id = 1`
+}
+
 func (resource *ResourceDatabaseMethod) getMemberResource() string {
 	const getMemberResourceQuery = `SELECT id, member_id, resource_id
 	FROM membership.member_resource
