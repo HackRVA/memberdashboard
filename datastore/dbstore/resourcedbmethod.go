@@ -78,7 +78,8 @@ func (resource *ResourceDatabaseMethod) getInactiveMembersResourceACL() string {
  	ON membership.member_resource.member_id = membership.members.id
 	LEFT JOIN membership.resources
 	ON membership.resources.id = membership.member_resource.resource_id
-	WHERE member_tier_id = 1`
+	WHERE member_tier_id = 1
+	AND rfid is not null;`
 }
 
 func (resource *ResourceDatabaseMethod) getMemberResource() string {
