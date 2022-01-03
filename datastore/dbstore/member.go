@@ -255,7 +255,7 @@ func (db *DatabaseStore) AddMembers(members []models.Member) error {
 	defer dbPool.Close()
 
 	sqlStr := `INSERT INTO membership.members(
-name, email, member_tier_id)
+name, email, member_tier_id, subscription_id)
 VALUES `
 
 	var valStr []string
@@ -269,7 +269,7 @@ VALUES `
 			m.Level = uint8(models.Inactive)
 		}
 
-		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d)", memberName, m.Email, m.Level))
+		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d, %s)", memberName, m.Email, m.Level, m.SubscriptionID))
 	}
 
 	str := strings.Join(valStr, ",")
