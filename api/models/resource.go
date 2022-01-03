@@ -61,6 +61,7 @@ type MemberRequest struct {
 }
 
 type MQTTRequest struct {
+	Door    string `json:"door"`
 	Command string `json:"cmd"`
 }
 
