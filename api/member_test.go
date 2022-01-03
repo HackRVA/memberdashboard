@@ -162,7 +162,7 @@ func TestAssignRFID(t *testing.T) {
 			RFID:               "newrfid",
 			Resources:          []models.MemberResource{},
 			expectedHTTPStatus: http.StatusOK,
-			expectedResponse:   "{\"id\":\"0\",\"name\":\"testuser\",\"email\":\"test@test.com\",\"rfid\":\"rfid1\",\"memberLevel\":0,\"resources\":[]}",
+			expectedResponse:   "{\"id\":\"0\",\"name\":\"testuser\",\"email\":\"test@test.com\",\"rfid\":\"rfid1\",\"memberLevel\":0,\"resources\":[],\"subscriptionID\":\"\"}",
 		},
 		{
 			TestName:           "should return bad request if we don't send a valid email",

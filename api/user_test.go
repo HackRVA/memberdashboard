@@ -28,7 +28,7 @@ func TestGetUser(t *testing.T) {
 			TestName:            "should return currently logged in user",
 			userName:            "test",
 			expectedHTTPStastub: http.StatusOK,
-			expectedResponse:    "{\"id\":\"\",\"name\":\"\",\"email\":\"test\",\"rfid\":\"\",\"memberLevel\":0,\"resources\":[]}",
+			expectedResponse:    "{\"id\":\"\",\"name\":\"\",\"email\":\"test\",\"rfid\":\"\",\"memberLevel\":0,\"resources\":[],\"subscriptionID\":\"\"}",
 		},
 		{
 			TestName:            "should return unauthorized if email doesn't exist",
