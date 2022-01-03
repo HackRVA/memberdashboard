@@ -5,7 +5,6 @@ import (
 	"memberserver/api/models"
 	"memberserver/config"
 	"memberserver/datastore"
-	"memberserver/datastore/in_memory"
 	"memberserver/mail"
 	"memberserver/payments"
 	"memberserver/resourcemanager"
@@ -44,7 +43,7 @@ func Setup(d datastore.DataStore) {
 	mailApi, _ = mail.Setup()
 	c, _ = config.Load()
 	db = d
-	rm = resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	rm = resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), db)
 
 	paymentProvider := payments.Setup(d)
 
@@ -104,7 +103,7 @@ func checkMemberStatus() {
 			}
 		}
 	}
-	rm.RemovedInvalidUIDs()
+	resourceManager.RemovedInvalidUIDs()
 }
 
 func checkResourceInit() {

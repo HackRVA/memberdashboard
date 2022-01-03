@@ -93,6 +93,8 @@ func (rm *ResourceManager) UpdateResources() {
 func (rm *ResourceManager) RemovedInvalidUIDs() {
 	resources := rm.store.GetResources()
 
+	log.Debug("looking for members to remove")
+
 	for _, r := range resources {
 		members := rm.store.GetMembers()
 		for _, m := range members {
@@ -111,6 +113,7 @@ func (rm *ResourceManager) RemovedInvalidUIDs() {
 				RFID:            m.RFID,
 			})
 			rm.MQTTServer.Publish(r.Name, string(b))
+			log.Debugf("attempting to remove member %s from rfid device %s", m.Email, r.Address)
 
 			time.Sleep(2 * time.Second)
 		}
@@ -119,6 +122,7 @@ func (rm *ResourceManager) RemovedInvalidUIDs() {
 
 func (rm *ResourceManager) Open(resource models.Resource) {
 	b, _ := json.Marshal(models.MQTTRequest{
+		Door:    resource.Name,
 		Command: commandOpenDoor,
 	})
 
