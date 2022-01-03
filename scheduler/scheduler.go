@@ -104,6 +104,7 @@ func checkMemberStatus() {
 			}
 		}
 	}
+	rm.RemovedInvalidUIDs()
 }
 
 func checkResourceInit() {
