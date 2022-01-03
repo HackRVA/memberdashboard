@@ -104,10 +104,6 @@ func (rm *ResourceManager) RemovedInvalidUIDs() {
 	log.Debug("looking for members to remove")
 
 	for _, m := range inactiveMembers {
-		if len(m.RFID) == 0 {
-			continue
-		}
-
 		/* We will just try to remove all invalid members even if they are already removed */
 		b, _ := json.Marshal(&models.MemberRequest{
 			ResourceAddress: m.ResourceAddress,
