@@ -77,7 +77,7 @@ func checkMemberStatus() {
 	db.ApplyMemberCredits()
 	db.UpdateMemberTiers()
 	rm = resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), db)
-	rm.RemovedInvalidUIDs()
+	go rm.RemovedInvalidUIDs()
 
 	const memberGracePeriod = 46
 	const membershipMonth = 31
