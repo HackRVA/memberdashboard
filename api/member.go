@@ -89,6 +89,10 @@ func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (m *MemberServer) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request) {
+	if isFakeUser() {
+		ok(w, getFakeUserProfile())
+		return
+	}
 	_, user, _ := strategy.AuthenticateRequest(r)
 
 	member, err := m.store.GetMemberByEmail(user.GetUserName())

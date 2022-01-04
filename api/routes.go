@@ -24,7 +24,9 @@ import (
 
 func registerRoutes(r *mux.Router, api API) *mux.Router {
 	rr := r.PathPrefix("/api/").Subrouter()
-	rr.Use(api.UserServer.authMiddleware)
+	if !isFakeUser() {
+		rr.Use(api.UserServer.authMiddleware)
+	}
 	// swagger:route GET /api/user user user
 	//
 	// Returns the current logged in user.

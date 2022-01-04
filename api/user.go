@@ -82,6 +82,10 @@ func NewUserServer(store datastore.DataStore, config config.Config) UserServer {
 
 // getUser responds with the current logged in user
 func (us *UserServer) getUser(w http.ResponseWriter, r *http.Request) {
+	if isFakeUser() {
+		ok(w, getFakeUserProfile())
+		return
+	}
 	u := auth.User(r)
 	userProfile, err := us.store.GetMemberByEmail(u.GetUserName())
 	if err != nil {
