@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/Rhymond/go-money"
-	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 )
@@ -137,36 +136,4 @@ func (db *DatabaseStore) UpdateMemberTiers() {
 	defer dbPool.Close()
 
 	dbPool.Exec(context.Background(), paymentDbMethod.updateMemberTiers())
-}
-
-// GetPastDueAccounts retrieves all active members without a payment in the last month
-func (db *DatabaseStore) GetPastDueAccounts() []models.PastDueAccount {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	var pastDueAccounts []models.PastDueAccount
-	rows, err := dbPool.Query(context.Background(), paymentDbMethod.pastDuePayments())
-
-	if err == pgx.ErrNoRows {
-		return pastDueAccounts
-	}
-
-	if err != nil {
-		log.Errorf("conn.Query failed: %v", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var p models.PastDueAccount
-		err = rows.Scan(&p.MemberId, &p.Name, &p.Email, &p.LastPaymentDate, &p.DaysSinceLastPayment)
-		if err != nil {
-			log.Errorf("error scanning row: %s", err)
-		}
-		pastDueAccounts = append(pastDueAccounts, p)
-	}
-
-	return pastDueAccounts
 }

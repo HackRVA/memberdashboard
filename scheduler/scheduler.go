@@ -59,7 +59,6 @@ func (s *Scheduler) Setup(db datastore.DataStore) {
 	s.paymentProvider = payments.Setup(db)
 
 	tasks := []Task{
-		// {interval: checkPaymentsInterval * time.Hour, initFunc: s.paymentProvider.GetPayments, tickFunc: s.paymentProvider.GetPayments},
 		{interval: checkPaymentsInterval * time.Hour, initFunc: s.checkMemberSubscriptions, tickFunc: s.checkMemberSubscriptions},
 		{interval: evaluateMemberStatusInterval * time.Hour, initFunc: s.resourceManager.RemovedInvalidUIDs, tickFunc: s.resourceManager.RemovedInvalidUIDs},
 		// {interval: evaluateMemberStatusInterval * time.Hour, initFunc: s.checkMemberStatus, tickFunc: s.checkMemberStatus},
@@ -120,43 +119,15 @@ func (s *Scheduler) checkMemberSubscriptions() {
 				s.dataStore.SetMemberLevel(member.ID, models.Premium)
 				continue
 			}
+			if int64(lastPayment) == models.MemberLevelToAmount[models.Classic] {
+				s.dataStore.SetMemberLevel(member.ID, models.Classic)
+				continue
+			}
 			s.dataStore.SetMemberLevel(member.ID, models.Standard)
 		} else if status == "CANCELLED" {
 			s.dataStore.SetMemberLevel(member.ID, models.Inactive)
 		} else if status == "SUSPENDED" {
 			s.dataStore.SetMemberLevel(member.ID, models.Inactive)
-		}
-	}
-}
-
-func (s *Scheduler) checkMemberStatus() {
-	s.dataStore.ApplyMemberCredits()
-	s.dataStore.UpdateMemberTiers()
-
-	const memberGracePeriod = 46
-	const membershipMonth = 31
-
-	mailer := mail.NewMailer(s.dataStore, s.mailAPI, s.config)
-
-	pendingRevokation, err := s.dataStore.GetCommunication(mail.PendingRevokationMember.String())
-
-	if err != nil {
-		log.Errorf("Unable to get communication %v. Err: %v", mail.PendingRevokationMember, err)
-		return
-	}
-
-	pastDueAccounts := s.dataStore.GetPastDueAccounts()
-	for _, a := range pastDueAccounts {
-		if a.DaysSinceLastPayment > memberGracePeriod {
-			mailer.SendCommunication(mail.AccessRevokedLeadership, s.config.AdminEmail, a)
-			mailer.SendCommunication(mail.AccessRevokedMember, a.Email, a)
-			s.dataStore.SetMemberLevel(a.MemberId, models.Inactive)
-		} else if a.DaysSinceLastPayment > membershipMonth {
-			if !mailer.IsThrottled(pendingRevokation, models.Member{ID: a.MemberId}) {
-				//TODO: [ML] Does it make sense to send this to leadership?  It might be like spam...
-				mailer.SendCommunication(mail.PendingRevokationLeadership, s.config.AdminEmail, a)
-				mailer.SendCommunication(mail.PendingRevokationMember, a.Email, a)
-			}
 		}
 	}
 }

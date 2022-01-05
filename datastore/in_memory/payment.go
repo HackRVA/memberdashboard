@@ -16,6 +16,3 @@ func (i In_memory) SetMemberLevel(memberId string, level models.MemberLevel) err
 }
 func (i In_memory) ApplyMemberCredits() {}
 func (i In_memory) UpdateMemberTiers()  {}
-func (i In_memory) GetPastDueAccounts() []models.PastDueAccount {
-	return []models.PastDueAccount{}
-}
