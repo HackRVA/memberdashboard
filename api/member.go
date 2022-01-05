@@ -11,10 +11,11 @@ import (
 	"strings"
 
 	"github.com/asaskevich/govalidator"
+	log "github.com/sirupsen/logrus"
 )
 
 type MemberServer struct {
-	store           datastore.MemberStore
+	store           datastore.DataStore
 	ResourceManager *resourcemanager.ResourceManager
 }
 
@@ -138,6 +139,9 @@ func (m *MemberServer) assignRFID(w http.ResponseWriter, email, rfid string) {
 		preconditionFailed(w, "not a valid rfid")
 		return
 	}
+
+	m.removeMembersRFID(email)
+
 	r, err := m.store.AssignRFID(email, rfid)
 	if err != nil {
 		notFound(w, "unable to assign rfid")
@@ -147,6 +151,35 @@ func (m *MemberServer) assignRFID(w http.ResponseWriter, email, rfid string) {
 	ok(w, r)
 
 	go m.ResourceManager.PushOne(models.Member{Email: email})
+}
+
+func (m *MemberServer) removeMembersRFID(email string) {
+	member, err := m.store.GetMemberByEmail(email)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	if member.RFID == "notset" || len(member.RFID) > 0 {
+		return
+	}
+
+	for _, r := range member.Resources {
+		resource, err := m.store.GetResourceByID(r.ResourceID)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+
+		m.ResourceManager.RemoveMember(models.MemberAccess{
+			Email:           member.Email,
+			ResourceAddress: resource.Address,
+			ResourceName:    resource.Name,
+			Name:            member.Name,
+			RFID:            member.RFID,
+		})
+
+	}
 }
 
 func (m *MemberServer) GetNonMembersOnSlackHandler(w http.ResponseWriter, r *http.Request) {

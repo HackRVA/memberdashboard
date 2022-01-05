@@ -105,16 +105,19 @@ func (rm *ResourceManager) RemovedInvalidUIDs() {
 
 	for _, m := range inactiveMembers {
 		/* We will just try to remove all invalid members even if they are already removed */
-		b, _ := json.Marshal(&models.MemberRequest{
-			ResourceAddress: m.ResourceAddress,
-			Command:         commandDeleteUID,
-			RFID:            m.RFID,
-		})
-		rm.MQTTServer.Publish(m.ResourceName, string(b))
-		log.Debugf("attempting to remove member %s from rfid device %s : %s", m.Email, m.ResourceName, m.ResourceAddress)
-
+		rm.RemoveMember(m)
 		time.Sleep(2 * time.Second)
 	}
+}
+
+func (rm *ResourceManager) RemoveMember(memberAccess models.MemberAccess) {
+	b, _ := json.Marshal(&models.MemberRequest{
+		ResourceAddress: memberAccess.ResourceAddress,
+		Command:         commandDeleteUID,
+		RFID:            memberAccess.RFID,
+	})
+	rm.MQTTServer.Publish(memberAccess.ResourceName, string(b))
+	log.Debugf("attempting to remove member %s from rfid device %s : %s", memberAccess.Email, memberAccess.ResourceName, memberAccess.ResourceAddress)
 }
 
 func (rm *ResourceManager) Open(resource models.Resource) {
