@@ -8,13 +8,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type paypalAuth struct {
-	AccessToken string `json:"access_token"`
-	TokenType   string `json:"token_type"`
-}
-
 type PaymentProvider struct {
-	db datastore.DataStore
+	db          datastore.DataStore
+	accessToken string
 }
 
 func Setup(database datastore.DataStore) PaymentProvider {

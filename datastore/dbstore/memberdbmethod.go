@@ -11,7 +11,7 @@ func (member *MemberDatabaseMethod) getMember() string {
 	LEFT JOIN membership.resources 
 	ON membership.resources.id = membership.member_resource.resource_id
 	WHERE member_id = membership.members.id
-	) as resources
+	) as resources, COALESCE(subscription_id,'none')
 	FROM membership.members
 	ORDER BY name;
 	`

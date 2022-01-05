@@ -11,51 +11,70 @@ import (
 	"memberserver/resourcemanager/mqttserver"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
-// checkPaymentsInterval - check the resources every 24 hours
-const checkPaymentsInterval = 24
+const (
+	// checkPaymentsInterval - check the resources every 24 hours
+	checkPaymentsInterval = 24
 
-// evaluateMemberStatusInterval - check the resources every 25 hours
-const evaluateMemberStatusInterval = 25
+	// evaluateMemberStatusInterval - check the resources every 25 hours
+	evaluateMemberStatusInterval = 25
 
-// resourceStatusCheckInterval - check the resources every hour
-const resourceStatusCheckInterval = 1
+	// resourceStatusCheckInterval - check the resources every hour
+	resourceStatusCheckInterval = 1
 
-const resourceUpdateInterval = 4
+	resourceUpdateInterval = 4
 
-// checkIPInterval - check the IP Address daily
-const checkIPInterval = 24
+	// checkIPInterval - check the IP Address daily
+	checkIPInterval = 24
+)
 
-var c config.Config
-var mailApi mail.MailApi
-var db datastore.DataStore
-var rm *resourcemanager.ResourceManager
+type Scheduler struct {
+	config          config.Config
+	dataStore       datastore.DataStore
+	mailAPI         mail.MailApi
+	resourceManager *resourcemanager.ResourceManager
+	paymentProvider payments.PaymentProvider
+}
+
+type Task struct {
+	interval time.Duration
+	initFunc func()
+	tickFunc func()
+}
 
 // Setup Scheduler
 //  We want certain tasks to happen on a regular basis
 //  The scheduler will make sure that happens
-func Setup(d datastore.DataStore) {
-	mailApi, _ = mail.Setup()
-	c, _ = config.Load()
-	db = d
-	rm = resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), db)
+func (s *Scheduler) Setup(db datastore.DataStore) {
+	s.config, _ = config.Load()
+	s.mailAPI, _ = mail.Setup()
+	s.dataStore = db
+	s.resourceManager = resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), db)
+	s.paymentProvider = payments.Setup(db)
 
-	paymentProvider := payments.Setup(d)
+	tasks := []Task{
+		// {interval: checkPaymentsInterval * time.Hour, initFunc: s.paymentProvider.GetPayments, tickFunc: s.paymentProvider.GetPayments},
+		{interval: checkPaymentsInterval * time.Hour, initFunc: s.checkMemberSubscriptions, tickFunc: s.checkMemberSubscriptions},
+		{interval: evaluateMemberStatusInterval * time.Hour, initFunc: s.resourceManager.RemovedInvalidUIDs, tickFunc: s.resourceManager.RemovedInvalidUIDs},
+		// {interval: evaluateMemberStatusInterval * time.Hour, initFunc: s.checkMemberStatus, tickFunc: s.checkMemberStatus},
+		{interval: resourceStatusCheckInterval * time.Hour, initFunc: s.checkResourceInit, tickFunc: s.checkResourceTick},
+		{interval: resourceUpdateInterval * time.Hour, initFunc: s.resourceManager.UpdateResources, tickFunc: s.resourceManager.UpdateResources},
+		{interval: checkIPInterval * time.Hour, initFunc: s.checkIPAddressTick, tickFunc: s.checkIPAddressTick},
+	}
 
-	scheduleTask(checkPaymentsInterval*time.Hour, paymentProvider.GetPayments, paymentProvider.GetPayments)
-	scheduleTask(evaluateMemberStatusInterval*time.Hour, checkMemberStatus, checkMemberStatus)
-	scheduleTask(resourceStatusCheckInterval*time.Hour, checkResourceInit, checkResourceTick)
-	scheduleTask(resourceUpdateInterval*time.Hour, rm.UpdateResources, rm.UpdateResources)
-	scheduleTask(checkIPInterval*time.Hour, checkIPAddressTick, checkIPAddressTick)
+	for _, task := range tasks {
+		s.scheduleTask(task.interval, task.initFunc, task.tickFunc)
+	}
 }
 
-func scheduleTask(interval time.Duration, initFunc func(), tickFunc func()) {
-	initFunc()
+func (s *Scheduler) scheduleTask(interval time.Duration, initFunc func(), tickFunc func()) {
+	go initFunc()
 
 	// quietly check the resource status on an interval
 	ticker := time.NewTicker(interval)
@@ -64,7 +83,7 @@ func scheduleTask(interval time.Duration, initFunc func(), tickFunc func()) {
 		for {
 			select {
 			case <-ticker.C:
-				tickFunc()
+				go tickFunc()
 			case <-quit:
 				ticker.Stop()
 				return
@@ -73,64 +92,99 @@ func scheduleTask(interval time.Duration, initFunc func(), tickFunc func()) {
 	}()
 }
 
-func checkMemberStatus() {
-	db.ApplyMemberCredits()
-	db.UpdateMemberTiers()
-	rm = resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), db)
-	go rm.RemovedInvalidUIDs()
+func (s *Scheduler) checkMemberSubscriptions() {
+	members := s.dataStore.GetMembers()
+
+	for _, member := range members {
+		if member.Level == uint8(models.Credited) {
+			// do nothing to credited members
+			continue
+		}
+		if member.SubscriptionID == "none" || len(member.SubscriptionID) == 0 {
+			// we might need to figure out why they don't have a subscriptionID
+			log.Printf("no subscriptionID for: %s", member.Name)
+			continue
+		}
+
+		status, value, err := s.paymentProvider.GetSubscription(member.SubscriptionID)
+		if err != nil {
+			log.Error(err)
+		}
+		lastPayment, err := strconv.ParseFloat(value, 32)
+		if err != nil {
+			log.Error(err)
+		}
+
+		if status == "ACTIVE" {
+			if int64(lastPayment) == models.MemberLevelToAmount[models.Premium] {
+				s.dataStore.SetMemberLevel(member.ID, models.Premium)
+				continue
+			}
+			s.dataStore.SetMemberLevel(member.ID, models.Standard)
+		} else if status == "CANCELLED" {
+			s.dataStore.SetMemberLevel(member.ID, models.Inactive)
+		} else if status == "SUSPENDED" {
+			s.dataStore.SetMemberLevel(member.ID, models.Inactive)
+		}
+	}
+}
+
+func (s *Scheduler) checkMemberStatus() {
+	s.dataStore.ApplyMemberCredits()
+	s.dataStore.UpdateMemberTiers()
 
 	const memberGracePeriod = 46
 	const membershipMonth = 31
 
-	mailer := mail.NewMailer(db, mailApi, c)
+	mailer := mail.NewMailer(s.dataStore, s.mailAPI, s.config)
 
-	pendingRevokation, err := db.GetCommunication(mail.PendingRevokationMember.String())
+	pendingRevokation, err := s.dataStore.GetCommunication(mail.PendingRevokationMember.String())
 
 	if err != nil {
 		log.Errorf("Unable to get communication %v. Err: %v", mail.PendingRevokationMember, err)
 		return
 	}
 
-	pastDueAccounts := db.GetPastDueAccounts()
+	pastDueAccounts := s.dataStore.GetPastDueAccounts()
 	for _, a := range pastDueAccounts {
 		if a.DaysSinceLastPayment > memberGracePeriod {
-			mailer.SendCommunication(mail.AccessRevokedLeadership, c.AdminEmail, a)
+			mailer.SendCommunication(mail.AccessRevokedLeadership, s.config.AdminEmail, a)
 			mailer.SendCommunication(mail.AccessRevokedMember, a.Email, a)
-			db.SetMemberLevel(a.MemberId, models.Inactive)
+			s.dataStore.SetMemberLevel(a.MemberId, models.Inactive)
 		} else if a.DaysSinceLastPayment > membershipMonth {
 			if !mailer.IsThrottled(pendingRevokation, models.Member{ID: a.MemberId}) {
 				//TODO: [ML] Does it make sense to send this to leadership?  It might be like spam...
-				mailer.SendCommunication(mail.PendingRevokationLeadership, c.AdminEmail, a)
+				mailer.SendCommunication(mail.PendingRevokationLeadership, s.config.AdminEmail, a)
 				mailer.SendCommunication(mail.PendingRevokationMember, a.Email, a)
 			}
 		}
 	}
 }
 
-func checkResourceInit() {
-	resources := db.GetResources()
+func (s *Scheduler) checkResourceInit() {
+	resources := s.dataStore.GetResources()
 
 	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
-		rm.MQTTServer.Subscribe(r.Name+"/send", resourcemanager.OnAccessEvent)
-		rm.MQTTServer.Subscribe(r.Name+"/result", resourcemanager.HealthCheck)
-		rm.MQTTServer.Subscribe(r.Name+"/sync", resourcemanager.OnHeartBeat)
-		rm.MQTTServer.Subscribe(r.Name+"/cleanup", resourcemanager.OnRemoveInvalidRequest)
-		rm.CheckStatus(r)
+		s.resourceManager.MQTTServer.Subscribe(r.Name+"/send", resourcemanager.OnAccessEvent)
+		s.resourceManager.MQTTServer.Subscribe(r.Name+"/result", resourcemanager.HealthCheck)
+		s.resourceManager.MQTTServer.Subscribe(r.Name+"/sync", resourcemanager.OnHeartBeat)
+		s.resourceManager.MQTTServer.Subscribe(r.Name+"/cleanup", resourcemanager.OnRemoveInvalidRequest)
+		s.resourceManager.CheckStatus(r)
 	}
 }
 
-func checkResourceTick() {
-	resources := db.GetResources()
+func (s *Scheduler) checkResourceTick() {
+	resources := s.dataStore.GetResources()
 
 	for _, r := range resources {
-		rm.CheckStatus(r)
+		s.resourceManager.CheckStatus(r)
 	}
 }
 
 var IPAddressCache string
 
-func checkIPAddressTick() {
+func (s *Scheduler) checkIPAddressTick() {
 	resp, err := http.Get("https://icanhazip.com/")
 	if err != nil {
 		log.Errorf("can't get IP address: %s", err)
@@ -186,6 +240,6 @@ func checkIPAddressTick() {
 		IpAddress: currentIp,
 	}
 
-	mailer := mail.NewMailer(db, mailApi, c)
-	mailer.SendCommunication(mail.IpChanged, c.AdminEmail, ipModel)
+	mailer := mail.NewMailer(s.dataStore, s.mailAPI, s.config)
+	mailer.SendCommunication(mail.IpChanged, s.config.AdminEmail, ipModel)
 }

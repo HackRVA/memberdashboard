@@ -52,7 +52,7 @@ type transactionAmount struct {
 	Value        float64 `json:"value,string"`
 }
 
-type subscriptionResponse struct {
+type Subscriber struct {
 	Subscriber struct {
 		ID        string `json:"id"`
 		Summary   string `json:"summary"`
@@ -65,7 +65,17 @@ type subscriptionResponse struct {
 	} `json:"subscriber"`
 }
 
-var accessToken = ""
+type subscriptionResponse struct {
+	Status      string `json:"status"`
+	BillingInfo struct {
+		LastPayment struct {
+			Amount struct {
+				CurrencyCode string `json:"currency_code"`
+				Value        string `json:"value"`
+			} `json:"amount"`
+		} `json:"last_payment"`
+	} `json:"billing_info"`
+}
 
 func (p PaymentProvider) getPaypalPayments(startDate string, endDate string) ([]models.Payment, error) {
 	var payments []models.Payment
@@ -185,14 +195,12 @@ func (p PaymentProvider) requestPaypalAccessToken() (string, error) {
 		return token, err
 	}
 
-	token = newAccessToken.AccessToken
-
 	return newAccessToken.AccessToken, err
 }
 
-func (p PaymentProvider) GetSubscription(subscriptionID string) (models.Member, error) {
+func (p PaymentProvider) GetMemberFromSubscription(subscriptionID string) (models.Member, error) {
 	var m models.Member
-	var s subscriptionResponse
+	var s Subscriber
 
 	c, err := config.Load()
 	if err != nil {
@@ -231,4 +239,48 @@ func (p PaymentProvider) GetSubscription(subscriptionID string) (models.Member, 
 	m.SubscriptionID = subscriptionID
 
 	return m, nil
+}
+
+func (p *PaymentProvider) GetSubscription(subscriptionID string) (string, string, error) {
+	c, err := config.Load()
+	if err != nil {
+		fmt.Printf("error with config: %s", err)
+		return "", "", err
+	}
+
+	if len(p.accessToken) == 0 {
+		p.accessToken, err = p.requestPaypalAccessToken()
+		if err != nil {
+			log.Errorf("error getting paypal access token %s\n", err.Error())
+			return "", "", err
+		}
+	}
+
+	url := fmt.Sprintf("%s/v1/billing/subscriptions/%s", c.PaypalURL, subscriptionID)
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+
+	if err != nil {
+		fmt.Println(err)
+		return "", "", err
+	}
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", p.accessToken))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return "", "", err
+	}
+	defer res.Body.Close()
+
+	var status subscriptionResponse
+
+	err = json.NewDecoder(res.Body).Decode(&status)
+	if err != nil {
+		log.Error(err)
+		return "", "", err
+	}
+
+	return status.Status, status.BillingInfo.LastPayment.Amount.Value, nil
 }

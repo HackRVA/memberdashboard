@@ -143,7 +143,7 @@ func (api *API) PaypalSubscriptionWebHookHandler(err error, n *listener.PaypalNo
 
 	paymentProvider := payments.Setup(api.db)
 
-	newMember, err := paymentProvider.GetSubscription(n.Resource.ID)
+	newMember, err := paymentProvider.GetMemberFromSubscription(n.Resource.ID)
 	if err != nil {
 		log.Errorf("error parsing member from webhook: %v", err)
 	}
