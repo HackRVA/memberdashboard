@@ -37,7 +37,10 @@ var HealthCheck mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message)
 		return
 	}
 	accessList, err := db.GetResourceACL(r)
-
+	if err != nil {
+		log.Error(err)
+		return
+	}
 	// log.Debugf("body= %s json=%s accessListHash=%s name=%s", string(msg.Payload()), acl.Hash, hash(accessList), acl.Name)
 
 	if acl.Hash != hash(accessList) {
