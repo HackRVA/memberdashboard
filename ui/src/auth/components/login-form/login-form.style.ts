@@ -14,7 +14,4 @@ export const loginFormStyle: CSSResult = css`
     width: 100%;
     --mdc-theme-primary: ${primaryDarkGreen};
   }
-  a {
-    float: right;
-  }
 `;
