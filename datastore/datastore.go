@@ -55,7 +55,6 @@ type PaymentStore interface {
 	SetMemberLevel(memberId string, level models.MemberLevel) error
 	ApplyMemberCredits()
 	UpdateMemberTiers()
-	GetPastDueAccounts() []models.PastDueAccount
 }
 
 type CommunicationStore interface {

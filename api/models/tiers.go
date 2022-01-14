@@ -31,6 +31,15 @@ var MemberLevelFromAmount = map[int64]MemberLevel{
 	50: Premium,
 }
 
+// MemberLeveltoAmount convert MemberLevel to amount
+var MemberLevelToAmount = map[MemberLevel]int64{
+	Inactive: 0,
+	Credited: 1,
+	Classic:  30,
+	Standard: 35,
+	Premium:  50,
+}
+
 // MemberLevelToStr convert MemberLevel to string
 var MemberLevelToStr = map[MemberLevel]string{
 	Inactive: "Inactive",

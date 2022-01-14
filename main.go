@@ -31,7 +31,9 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	go scheduler.Setup(db)
+	schedule := scheduler.Scheduler{}
+
+	go schedule.Setup(db)
 
 	log.Debug("Server listening on http://localhost:3000/")
 	log.Fatal(srv.ListenAndServe())
