@@ -113,21 +113,28 @@ func (s *Scheduler) checkMemberSubscriptions() {
 			log.Error(err)
 		}
 
-		if status == "ACTIVE" {
-			if int64(lastPayment) == models.MemberLevelToAmount[models.Premium] {
-				s.dataStore.SetMemberLevel(member.ID, models.Premium)
-				continue
-			}
-			if int64(lastPayment) == models.MemberLevelToAmount[models.Classic] {
-				s.dataStore.SetMemberLevel(member.ID, models.Classic)
-				continue
-			}
-			s.dataStore.SetMemberLevel(member.ID, models.Standard)
-		} else if status == "CANCELLED" {
-			s.dataStore.SetMemberLevel(member.ID, models.Inactive)
-		} else if status == "SUSPENDED" {
-			s.dataStore.SetMemberLevel(member.ID, models.Inactive)
+		s.setMemberLevelBasedOnPaypalSubscriptionStatus(status, lastPayment, member)
+	}
+}
+
+func (s *Scheduler) setMemberLevelBasedOnPaypalSubscriptionStatus(status string, lastPayment float64, member models.Member) {
+	switch status {
+	case payments.Active:
+		if int64(lastPayment) == models.MemberLevelToAmount[models.Premium] {
+			s.dataStore.SetMemberLevel(member.ID, models.Premium)
+			return
 		}
+		if int64(lastPayment) == models.MemberLevelToAmount[models.Classic] {
+			s.dataStore.SetMemberLevel(member.ID, models.Classic)
+			return
+		}
+		s.dataStore.SetMemberLevel(member.ID, models.Standard)
+	case payments.Canceled:
+		s.dataStore.SetMemberLevel(member.ID, models.Inactive)
+	case payments.Suspended:
+		s.dataStore.SetMemberLevel(member.ID, models.Inactive)
+	default:
+		return
 	}
 }
 

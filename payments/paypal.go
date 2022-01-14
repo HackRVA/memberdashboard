@@ -77,6 +77,12 @@ type subscriptionResponse struct {
 	} `json:"billing_info"`
 }
 
+const (
+	Active    = "ACTIVE"
+	Canceled  = "CANCELLED"
+	Suspended = "SUSPENDED"
+)
+
 func (p PaymentProvider) getPaypalPayments(startDate string, endDate string) ([]models.Payment, error) {
 	var payments []models.Payment
 	c, err := config.Load()
@@ -244,7 +250,7 @@ func (p PaymentProvider) GetMemberFromSubscription(subscriptionID string) (model
 func (p *PaymentProvider) GetSubscription(subscriptionID string) (string, string, error) {
 	c, err := config.Load()
 	if err != nil {
-		fmt.Printf("error with config: %s", err)
+		log.Errorf("error with config: %s", err)
 		return "", "", err
 	}
 
@@ -259,7 +265,7 @@ func (p *PaymentProvider) GetSubscription(subscriptionID string) (string, string
 	url := fmt.Sprintf("%s/v1/billing/subscriptions/%s", c.PaypalURL, subscriptionID)
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 
 	if err != nil {
 		fmt.Println(err)
@@ -274,13 +280,13 @@ func (p *PaymentProvider) GetSubscription(subscriptionID string) (string, string
 	}
 	defer res.Body.Close()
 
-	var status subscriptionResponse
+	var subscriptionStatus subscriptionResponse
 
-	err = json.NewDecoder(res.Body).Decode(&status)
+	err = json.NewDecoder(res.Body).Decode(&subscriptionStatus)
 	if err != nil {
 		log.Error(err)
 		return "", "", err
 	}
 
-	return status.Status, status.BillingInfo.LastPayment.Amount.Value, nil
+	return subscriptionStatus.Status, subscriptionStatus.BillingInfo.LastPayment.Amount.Value, nil
 }
