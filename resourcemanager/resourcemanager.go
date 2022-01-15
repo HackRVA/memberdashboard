@@ -124,6 +124,7 @@ func (rm *ResourceManager) Open(resource models.Resource) {
 	b, _ := json.Marshal(models.MQTTRequest{
 		Door:    resource.Name,
 		Command: commandOpenDoor,
+		Address: resource.Address,
 	})
 
 	rm.MQTTServer.Publish(resource.Name, string(b))
