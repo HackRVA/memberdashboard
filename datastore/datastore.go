@@ -46,6 +46,7 @@ type ResourceStore interface {
 	GetResourceACLWithMemberInfo(r models.Resource) ([]models.Member, error)
 	GetMembersAccess(m models.Member) ([]models.MemberAccess, error)
 	GetInactiveMembersByResource() ([]models.MemberAccess, error)
+	GetActiveMembersByResource() ([]models.MemberAccess, error)
 }
 
 type PaymentStore interface {

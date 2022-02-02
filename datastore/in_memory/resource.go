@@ -29,6 +29,9 @@ func (store *In_memory) GetMembersAccess(models.Member) ([]models.MemberAccess, 
 func (store *In_memory) GetInactiveMembersByResource() ([]models.MemberAccess, error) {
 	return []models.MemberAccess{}, nil
 }
+func (store *In_memory) GetActiveMembersByResource() ([]models.MemberAccess, error) {
+	return []models.MemberAccess{}, nil
+}
 
 func (store *In_memory) RegisterResource(name string, address string, isDefault bool) (models.Resource, error) {
 	Resources[name] = models.Resource{

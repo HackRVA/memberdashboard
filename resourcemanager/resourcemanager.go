@@ -94,6 +94,22 @@ func (rm *ResourceManager) UpdateResources() {
 	}
 }
 
+func (rm *ResourceManager) EnableValidUIDs() {
+	activeMembers, err := rm.store.GetActiveMembersByResource()
+	if err != nil {
+		log.Errorf("error getting active members %s", err.Error())
+		return
+	}
+
+	for _, m := range activeMembers {
+		rm.PushOne(models.Member{
+			Name: m.Name,
+			RFID: m.RFID,
+		})
+		time.Sleep(2 * time.Second)
+	}
+}
+
 func (rm *ResourceManager) RemovedInvalidUIDs() {
 	inactiveMembers, err := rm.store.GetInactiveMembersByResource()
 	if err != nil {

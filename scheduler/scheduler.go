@@ -61,6 +61,7 @@ func (s *Scheduler) Setup(db datastore.DataStore) {
 	tasks := []Task{
 		{interval: checkPaymentsInterval * time.Hour, initFunc: s.checkMemberSubscriptions, tickFunc: s.checkMemberSubscriptions},
 		{interval: evaluateMemberStatusInterval * time.Hour, initFunc: s.resourceManager.RemovedInvalidUIDs, tickFunc: s.resourceManager.RemovedInvalidUIDs},
+		{interval: evaluateMemberStatusInterval * time.Hour, initFunc: s.resourceManager.EnableValidUIDs, tickFunc: s.resourceManager.EnableValidUIDs},
 		{interval: resourceStatusCheckInterval * time.Hour, initFunc: s.checkResourceInit, tickFunc: s.checkResourceTick},
 		{interval: resourceUpdateInterval * time.Hour, initFunc: s.resourceManager.UpdateResources, tickFunc: s.resourceManager.UpdateResources},
 		{interval: checkIPInterval * time.Hour, initFunc: s.checkIPAddressTick, tickFunc: s.checkIPAddressTick},
