@@ -107,10 +107,12 @@ func (s *Scheduler) checkMemberSubscriptions() {
 		status, value, err := s.paymentProvider.GetSubscription(member.SubscriptionID)
 		if err != nil {
 			log.Error(err)
+			continue
 		}
 		lastPayment, err := strconv.ParseFloat(value, 32)
 		if err != nil {
 			log.Error(err)
+			continue
 		}
 
 		s.setMemberLevelBasedOnPaypalSubscriptionStatus(status, lastPayment, member)
