@@ -61,7 +61,6 @@ func (r *Router) RegisterRoutes(auth *auth.AuthController) *mux.Router {
 	r.setupResourceRoutes(r.api.ResourceServer, accessControl)
 	r.setupPaymentRoutes(r.api, accessControl)
 	r.setupVersionRoutes(r.api.VersionServer)
-	r.setupInfoRoutes(r.api)
 
 	spa := spaHandler{staticPath: "./ui/dist/", indexPath: "index.html"}
 	r.UnAuthedRouter.PathPrefix("/").Handler(spa)

@@ -11,10 +11,6 @@ import (
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 )
 
-// type Router interface {
-// 	RegisterRoutes(r *mux.Router, api API, authStrategy union.Union) *mux.Router
-// }
-
 // API endpoints
 type API struct {
 	db             datastore.DataStore
