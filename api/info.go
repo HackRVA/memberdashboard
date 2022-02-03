@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-// Info - a simple hello world
-func (a API) Info(w http.ResponseWriter, req *http.Request) {
+// GetInfo - a simple hello world
+func (a API) GetInfo(w http.ResponseWriter, req *http.Request) {
 	ok(w, models.InfoResponse{
 		Message: "hello, world!",
 	})

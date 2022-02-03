@@ -1,21 +1,37 @@
-package api
+package rbac
 
 import (
 	"memberserver/config"
 	"net/http"
 	"strings"
+
+	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 )
 
 type UserRole uint
 
 const (
-	admin UserRole = iota + 1
-	user
+	Admin UserRole = iota + 1
+	User
 )
+
+type AccessControl interface {
+	Restrict(next http.HandlerFunc, allowedRoles []UserRole) http.HandlerFunc
+}
+
+type RBAC struct {
+	strategy union.Union
+}
+
+func New(strategy union.Union) RBAC {
+	return RBAC{
+		strategy: strategy,
+	}
+}
 
 func (ur UserRole) ToString() string {
 	switch ur {
-	case admin:
+	case Admin:
 		return "admin"
 	default:
 		return "user"
@@ -33,7 +49,7 @@ func contains(slice []string, item string) bool {
 }
 
 // rbac is middleware that will restrict access based on the roles you pass in
-func (api API) rbac(next http.HandlerFunc, allowedRoles []UserRole) http.HandlerFunc {
+func (rb RBAC) Restrict(next http.HandlerFunc, allowedRoles []UserRole) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		conf, _ := config.Load()
 		if strings.Contains(conf.AlwaysAdmin, "true") {
@@ -41,7 +57,7 @@ func (api API) rbac(next http.HandlerFunc, allowedRoles []UserRole) http.Handler
 			return
 		}
 
-		_, user, _ := strategy.AuthenticateRequest(r)
+		_, user, _ := rb.strategy.AuthenticateRequest(r)
 
 		for _, role := range allowedRoles {
 			if contains(user.GetGroups(), role.ToString()) {

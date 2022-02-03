@@ -57,12 +57,21 @@ Now, go write code and implement features!
 
 ### Seed the DB with test data
 
-Create a membership database and grant rights to user test
+> note: before seeding the db, it has to be up and running with the current schema
+run the db migrations
+```
+make migrate-up
+```
 
+seed the db
 ```
-cd test/postgres
-sh seedLocal.sh
+make seed
 ```
+This will create some random members and a test user.
+
+| username | password |
+|----------|----------|
+| test@test.com | test |
 
 ### How to install golang-migrate
 
@@ -124,3 +133,15 @@ The following options are available if using Remote-Containers.
 - Use the [PostgreSQL extension](https://marketplace.visualstudio.com/items?itemName=ckolkman.vscode-postgres) in VS Code
 - Use pgAdmin on [localhost:8080](http://localhost:8080) with info@hackrva.org/test
 - Use make run-sql or make run-sql-command
+
+### Troubleshooting devContainer
+Sometimes i'm getting an error when tryign to build the containers.
+```
+Command failed: docker inspect --type image memberdashboard_dev
+```
+This happened after I ran a `docker system prune -a`, but I think I've seen it before.
+
+To fix this, build the containers with the following command then reopen vscode in Container
+```
+docker-compose -f docker-compose.yml -f .devcontainer/docker-compose.yml build
+```

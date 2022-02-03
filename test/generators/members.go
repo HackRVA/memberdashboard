@@ -24,9 +24,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to parse %v as count.", os.Args[1])
 	}
+	fakeResources()
 
 	rand.Seed(time.Now().UnixNano())
 	db, _ := dbstore.Setup()
+	db.AddMembers([]models.Member{testMember()})
 
 	for i := 0; i < count; i++ {
 		member := fakeMember()
@@ -41,17 +43,20 @@ func main() {
 			db.AddPayments(payments)
 		}
 	}
+
+	registerTestUser()
 }
 
 func fakeMember() models.Member {
 	level, _ := strconv.Atoi(faker.Number().Between(1, 5))
 	resources := []models.MemberResource{}
 	return models.Member{
-		Name:      faker.Name().Name(),
-		Email:     faker.Internet().Email(),
-		Level:     uint8(level),
-		RFID:      faker.Lorem().Characters(10),
-		Resources: resources,
+		Name:           faker.Name().Name(),
+		Email:          faker.Internet().Email(),
+		Level:          uint8(level),
+		RFID:           faker.Lorem().Characters(10),
+		Resources:      resources,
+		SubscriptionID: faker.Internet().MacAddress(),
 	}
 }
 
@@ -70,4 +75,29 @@ func fakePaymentHistory(member models.Member, lastPayment time.Time, numberOfPay
 		})
 	}
 	return payments
+}
+
+func testMember() models.Member {
+	return models.Member{
+		Name:           "test",
+		Email:          "test@test.com",
+		Level:          uint8(models.Premium),
+		RFID:           faker.Lorem().Characters(10),
+		Resources:      []models.MemberResource{},
+		SubscriptionID: faker.Internet().MacAddress(),
+	}
+}
+
+func registerTestUser() {
+	db, _ := dbstore.Setup()
+	db.RegisterUser(models.Credentials{
+		Email:    "test@test.com",
+		Password: "test",
+	})
+}
+
+func fakeResources() {
+	db, _ := dbstore.Setup()
+	db.RegisterResource(faker.App().Name(), string(faker.Internet().IpV4Address()), false)
+	db.RegisterResource(faker.App().Name(), string(faker.Internet().IpV4Address()), true)
 }

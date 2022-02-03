@@ -269,12 +269,12 @@ VALUES `
 			m.Level = uint8(models.Inactive)
 		}
 
-		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d, %s)", memberName, m.Email, m.Level, m.SubscriptionID))
+		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d, '%s')", memberName, m.Email, m.Level, m.SubscriptionID))
 	}
 
 	str := strings.Join(valStr, ",")
 
-	_, err = dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	_, err = dbPool.Exec(context.Background(), sqlStr+str+"ON CONFLICT DO NOTHING;")
 	if err != nil {
 		return fmt.Errorf("add members query failed: %v", err)
 	}
