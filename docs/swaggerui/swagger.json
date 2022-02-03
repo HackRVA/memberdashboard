@@ -100,33 +100,6 @@
         }
       }
     },
-    "/api/info": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "description": "This will simply respond with some sample info",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "info"
-        ],
-        "summary": "A simple hello world.",
-        "operationId": "info",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/infoResponse"
-          }
-        }
-      }
-    },
     "/api/member": {
       "get": {
         "security": [
@@ -468,30 +441,6 @@
       }
     },
     "/api/resource": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "resource"
-        ],
-        "summary": "Returns a resource.",
-        "operationId": "getResourceRequest",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/getResourceResponse"
-          }
-        }
-      },
       "put": {
         "security": [
           {
@@ -974,6 +923,10 @@
         "rfid": {
           "type": "string",
           "x-go-name": "RFID"
+        },
+        "subscriptionID": {
+          "type": "string",
+          "x-go-name": "SubscriptionID"
         }
       },
       "x-go-package": "memberserver/api/models"
