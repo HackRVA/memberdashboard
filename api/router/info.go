@@ -2,15 +2,13 @@ package router
 
 import (
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 type InfoHTTPHandler interface {
 	GetInfo(http.ResponseWriter, *http.Request)
 }
 
-func setupInfoRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, infoServer InfoHTTPHandler) (*mux.Router, *mux.Router) {
+func (r Router) setupInfoRoutes(infoServer InfoHTTPHandler) {
 	// swagger:route GET /api/resource resource getResourceRequest
 	//
 
@@ -30,6 +28,5 @@ func setupInfoRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, infoS
 	//
 	//     Responses:
 	//       200: infoResponse
-	authedRouter.HandleFunc("/info", infoServer.GetInfo)
-	return unauthedRouter, authedRouter
+	r.authedRouter.HandleFunc("/info", infoServer.GetInfo)
 }

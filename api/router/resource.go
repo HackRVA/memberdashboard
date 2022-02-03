@@ -3,8 +3,6 @@ package router
 import (
 	"memberserver/api/rbac"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 type ResourceHTTPHandler interface {
@@ -18,7 +16,7 @@ type ResourceHTTPHandler interface {
 	DeleteResourceACL(w http.ResponseWriter, req *http.Request)
 }
 
-func setupResourceRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, resource ResourceHTTPHandler, accessControl rbac.RBAC) (*mux.Router, *mux.Router) {
+func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl rbac.RBAC) {
 	// Returns a resource.
 	//
 	//     Produces:
@@ -68,7 +66,7 @@ func setupResourceRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, r
 	//
 	//     Responses:
 	//       200:
-	authedRouter.HandleFunc("/resource", accessControl.Restrict(resource.Resource, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPut, http.MethodDelete, http.MethodGet)
+	r.authedRouter.HandleFunc("/resource", accessControl.Restrict(resource.Resource, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPut, http.MethodDelete, http.MethodGet)
 	// swagger:route GET /api/resource/status resource getResourceStatus
 	//
 	// Returns status of the resources.
@@ -90,7 +88,7 @@ func setupResourceRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, r
 	//
 	//     Responses:
 	//       200: getResourceStatusResponse
-	authedRouter.HandleFunc("/resource/status", accessControl.Restrict(resource.Status, []rbac.UserRole{rbac.Admin})).Methods(http.MethodGet)
+	r.authedRouter.HandleFunc("/resource/status", accessControl.Restrict(resource.Status, []rbac.UserRole{rbac.Admin})).Methods(http.MethodGet)
 	// swagger:route POST /api/resource/register resource registerResourceRequest
 	//
 	// Updates a resource.
@@ -108,7 +106,7 @@ func setupResourceRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, r
 	//
 	//     Responses:
 	//       200: postResourceResponse
-	authedRouter.HandleFunc("/resource/register", accessControl.Restrict(resource.Register, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
+	r.authedRouter.HandleFunc("/resource/register", accessControl.Restrict(resource.Register, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
 	// swagger:route POST /api/resource/member/bulk resource resourceBulkMemberRequest
 	//
 	// Adds multple members to a resource.
@@ -126,7 +124,7 @@ func setupResourceRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, r
 	//
 	//     Responses:
 	//       200: addMulitpleMembersToResourceResponse
-	authedRouter.HandleFunc("/resource/member/bulk", accessControl.Restrict(resource.AddMultipleMembersToResource, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
+	r.authedRouter.HandleFunc("/resource/member/bulk", accessControl.Restrict(resource.AddMultipleMembersToResource, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
 	// swagger:route DELETE /api/resource/deleteacls resource resourceDeleteACLS
 	//
 	// Clears out all Resource ACLs on those devices
@@ -144,7 +142,7 @@ func setupResourceRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, r
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	authedRouter.HandleFunc("/resource/deleteacls", accessControl.Restrict(resource.DeleteResourceACL, []rbac.UserRole{rbac.Admin})).Methods(http.MethodDelete)
+	r.authedRouter.HandleFunc("/resource/deleteacls", accessControl.Restrict(resource.DeleteResourceACL, []rbac.UserRole{rbac.Admin})).Methods(http.MethodDelete)
 	// swagger:route POST /api/resource/updateacls resource resourceUpdateACLS
 	//
 	// Attempts to send all members to a Resource
@@ -162,7 +160,7 @@ func setupResourceRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, r
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	authedRouter.HandleFunc("/resource/updateacls", accessControl.Restrict(resource.UpdateResourceACL, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
+	r.authedRouter.HandleFunc("/resource/updateacls", accessControl.Restrict(resource.UpdateResourceACL, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
 	// swagger:route POST /api/resource/open resource openResourceRequest
 	//
 	// sends an MQTT message to open a resource
@@ -177,7 +175,7 @@ func setupResourceRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, r
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	authedRouter.HandleFunc("/resource/open", accessControl.Restrict(resource.Open, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
+	r.authedRouter.HandleFunc("/resource/open", accessControl.Restrict(resource.Open, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
 	// swagger:route DELETE /api/resource/member resource resourceRemoveMemberRequest
 	//
 	// Removes a member from a resource.
@@ -195,6 +193,5 @@ func setupResourceRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, r
 	//
 	//     Responses:
 	//       200: removeMemberSuccessResponse
-	authedRouter.HandleFunc("/resource/member", accessControl.Restrict(resource.RemoveMember, []rbac.UserRole{rbac.Admin})).Methods(http.MethodDelete)
-	return unauthedRouter, authedRouter
+	r.authedRouter.HandleFunc("/resource/member", accessControl.Restrict(resource.RemoveMember, []rbac.UserRole{rbac.Admin})).Methods(http.MethodDelete)
 }

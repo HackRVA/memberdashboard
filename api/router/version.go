@@ -2,15 +2,13 @@ package router
 
 import (
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 type VersionHTTPHandler interface {
 	ServeHTTP(http.ResponseWriter, *http.Request)
 }
 
-func setupVersionRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, versionServer VersionHTTPHandler) (*mux.Router, *mux.Router) {
+func (r Router) setupVersionRoutes(versionServer VersionHTTPHandler) {
 	// swagger:route GET /api/version version Version
 	//
 	//   Shows the current build's version information
@@ -25,6 +23,5 @@ func setupVersionRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, ve
 	//
 	//     Responses:
 	//       200: versionResponse
-	unauthedRouter.HandleFunc("/api/version", versionServer.ServeHTTP)
-	return unauthedRouter, authedRouter
+	r.UnAuthedRouter.HandleFunc("/api/version", versionServer.ServeHTTP)
 }

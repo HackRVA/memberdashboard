@@ -3,8 +3,6 @@ package router
 import (
 	"memberserver/api/rbac"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 type MemberHTTPHandler interface {
@@ -20,7 +18,7 @@ type MemberHTTPHandler interface {
 	AddNewMemberHandler(w http.ResponseWriter, r *http.Request)
 }
 
-func setupMemberRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, member MemberHTTPHandler, accessControl rbac.AccessControl) (*mux.Router, *mux.Router) {
+func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.AccessControl) {
 	// swagger:route GET /api/member member getMemberListRequest
 	//
 	// Returns a list of the members in the system.
@@ -35,7 +33,7 @@ func setupMemberRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, mem
 	//
 	//     Responses:
 	//       200: getMembersResponse
-	authedRouter.HandleFunc("/member", accessControl.Restrict(member.GetMembersHandler, []rbac.UserRole{rbac.Admin}))
+	r.authedRouter.HandleFunc("/member", accessControl.Restrict(member.GetMembersHandler, []rbac.UserRole{rbac.Admin}))
 	// swagger:route POST /api/member/new member addNewMemberRequest
 	//
 	// Add a new member
@@ -57,7 +55,7 @@ func setupMemberRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, mem
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	authedRouter.HandleFunc("/member/new", accessControl.Restrict(member.AddNewMemberHandler, []rbac.UserRole{rbac.Admin}))
+	r.authedRouter.HandleFunc("/member/new", accessControl.Restrict(member.AddNewMemberHandler, []rbac.UserRole{rbac.Admin}))
 	// swagger:route GET /api/member/self member getCurrentMemberRequest
 	//
 	// Returns current members information
@@ -72,7 +70,7 @@ func setupMemberRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, mem
 	//
 	//     Responses:
 	//       200: getMemberResponse
-	authedRouter.HandleFunc("/member/self", member.GetCurrentUserHandler)
+	r.authedRouter.HandleFunc("/member/self", member.GetCurrentUserHandler)
 	// swagger:route GET /api/member/email/{email} member getMemberByEmailRequest
 	//
 	// Returns a member based on the email address.
@@ -105,7 +103,7 @@ func setupMemberRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, mem
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	authedRouter.HandleFunc("/member/email/{email}", accessControl.Restrict(member.MemberEmailHandler, []rbac.UserRole{rbac.Admin})).Methods(http.MethodGet, http.MethodPut)
+	r.authedRouter.HandleFunc("/member/email/{email}", accessControl.Restrict(member.MemberEmailHandler, []rbac.UserRole{rbac.Admin})).Methods(http.MethodGet, http.MethodPut)
 	// swagger:route GET /api/member/slack/nonmembers member getSlackNonMemberList
 	//
 	// Returns a list slack users that are possibly not members.
@@ -122,7 +120,7 @@ func setupMemberRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, mem
 	//
 	//     Responses:
 	//       200: text/csv
-	authedRouter.HandleFunc("/member/slack/nonmembers", accessControl.Restrict(member.GetNonMembersOnSlackHandler, []rbac.UserRole{rbac.Admin}))
+	r.authedRouter.HandleFunc("/member/slack/nonmembers", accessControl.Restrict(member.GetNonMembersOnSlackHandler, []rbac.UserRole{rbac.Admin}))
 	// swagger:route GET /api/member/tier member getTiers
 	//
 	// Returns a list the member tiers.
@@ -137,7 +135,7 @@ func setupMemberRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, mem
 	//
 	//     Responses:
 	//       200: getTierResponse
-	authedRouter.HandleFunc("/member/tier", accessControl.Restrict(member.GetTiersHandler, []rbac.UserRole{rbac.Admin}))
+	r.authedRouter.HandleFunc("/member/tier", accessControl.Restrict(member.GetTiersHandler, []rbac.UserRole{rbac.Admin}))
 	// swagger:route POST /api/member/assignRFID/self member setRFIDRequest
 	//
 	// Assigns an RFID tag to the currently logged in user
@@ -157,7 +155,7 @@ func setupMemberRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, mem
 	//
 	//     Responses:
 	//       200: setRFIDResponse
-	authedRouter.HandleFunc("/member/assignRFID/self", member.AssignRFIDSelfHandler).Methods(http.MethodPost)
+	r.authedRouter.HandleFunc("/member/assignRFID/self", member.AssignRFIDSelfHandler).Methods(http.MethodPost)
 	// swagger:route POST /api/member/assignRFID member setSelfRFIDRequest
 	//
 	// Assigns an RFID tag to a member
@@ -177,6 +175,5 @@ func setupMemberRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, mem
 	//
 	//     Responses:
 	//       200: setRFIDResponse
-	authedRouter.HandleFunc("/member/assignRFID", accessControl.Restrict(member.AssignRFIDHandler, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
-	return unauthedRouter, authedRouter
+	r.authedRouter.HandleFunc("/member/assignRFID", accessControl.Restrict(member.AssignRFIDHandler, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
 }

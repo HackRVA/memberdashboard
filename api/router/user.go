@@ -2,8 +2,6 @@ package router
 
 import (
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 type UserHTTPHandler interface {
@@ -16,7 +14,7 @@ type AuthHTTPHandler interface {
 	Logout(w http.ResponseWriter, r *http.Request)
 }
 
-func setupUserRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, userServer UserHTTPHandler, auth AuthHTTPHandler) (*mux.Router, *mux.Router) {
+func (r Router) setupUserRoutes(userServer UserHTTPHandler, auth AuthHTTPHandler) {
 	// swagger:route GET /api/user user user
 	//
 	// Returns the current logged in user.
@@ -31,7 +29,7 @@ func setupUserRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, userS
 	//
 	//     Responses:
 	//       200: getUserResponse
-	authedRouter.HandleFunc("/user", userServer.GetUser)
+	r.authedRouter.HandleFunc("/user", userServer.GetUser)
 	// swagger:route POST /api/auth/login auth loginRequest
 	//
 	// Login
@@ -49,7 +47,7 @@ func setupUserRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, userS
 	//
 	//     Responses:
 	//       200: loginResponse
-	authedRouter.HandleFunc("/auth/login", auth.Login).Methods(http.MethodPost)
+	r.authedRouter.HandleFunc("/auth/login", auth.Login).Methods(http.MethodPost)
 	// swagger:route DELETE /api/auth/logout auth logoutRequest
 	//
 	// Logout
@@ -64,7 +62,7 @@ func setupUserRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, userS
 	//
 	//     Responses:
 	//       200:
-	authedRouter.HandleFunc("/api/auth/logout", auth.Logout).Methods(http.MethodDelete)
+	r.authedRouter.HandleFunc("/auth/logout", auth.Logout).Methods(http.MethodDelete)
 	// swagger:route POST /api/auth/register auth registerUserRequest
 	//
 	// Register a new user
@@ -79,6 +77,5 @@ func setupUserRoutes(unauthedRouter *mux.Router, authedRouter *mux.Router, userS
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
-	unauthedRouter.HandleFunc("/api/auth/register", auth.RegisterUser)
-	return unauthedRouter, authedRouter
+	r.UnAuthedRouter.HandleFunc("/api/auth/register", auth.RegisterUser)
 }

@@ -56,12 +56,12 @@ func New(api api.API, auth *auth.AuthController) Router {
 
 func (r *Router) RegisterRoutes(auth *auth.AuthController) *mux.Router {
 	accessControl := rbac.New(r.authStrategy)
-	setupUserRoutes(r.UnAuthedRouter, r.authedRouter, r.api.UserServer, auth)
-	setupMemberRoutes(r.UnAuthedRouter, r.authedRouter, r.api.MemberServer, accessControl)
-	setupResourceRoutes(r.UnAuthedRouter, r.authedRouter, r.api.ResourceServer, accessControl)
-	setupPaymentRoutes(r.UnAuthedRouter, r.authedRouter, r.api, accessControl)
-	setupVersionRoutes(r.UnAuthedRouter, r.authedRouter, r.api.VersionServer)
-	setupInfoRoutes(r.UnAuthedRouter, r.authedRouter, r.api)
+	r.setupUserRoutes(r.api.UserServer, auth)
+	r.setupMemberRoutes(r.api.MemberServer, accessControl)
+	r.setupResourceRoutes(r.api.ResourceServer, accessControl)
+	r.setupPaymentRoutes(r.api, accessControl)
+	r.setupVersionRoutes(r.api.VersionServer)
+	r.setupInfoRoutes(r.api)
 
 	spa := spaHandler{staticPath: "./ui/dist/", indexPath: "index.html"}
 	r.UnAuthedRouter.PathPrefix("/").Handler(spa)
