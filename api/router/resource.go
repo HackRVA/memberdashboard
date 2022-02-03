@@ -17,6 +17,7 @@ type ResourceHTTPHandler interface {
 }
 
 func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl rbac.RBAC) {
+	// swagger:route GET /api/resource resource updateResourceRequest
 	// Returns a resource.
 	//
 	//     Produces:

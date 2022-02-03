@@ -441,6 +441,42 @@
       }
     },
     "/api/resource": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "resource"
+        ],
+        "summary": "Updates a resource.",
+        "operationId": "updateResourceRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/ResourceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/postResourceResponse"
+          }
+        }
+      },
       "put": {
         "security": [
           {
