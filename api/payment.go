@@ -52,7 +52,7 @@ func makeMemberCountTrendChart(payments linkedhashmap.Map) models.PaymentChart {
 	return pc
 }
 
-func (a API) getPaymentChart(w http.ResponseWriter, req *http.Request) {
+func (a API) GetPaymentChart(w http.ResponseWriter, req *http.Request) {
 	chartType := req.URL.Query().Get("type")
 	var paymentCharts []models.PaymentChart
 
@@ -126,7 +126,7 @@ func makeMemberDistributionChart(payments linkedhashmap.Map, paymentCharts []mod
 // PaypalSubscriptionWebHookHandler paypal will tell us when a new subscription is created.
 //   We can use this to add a member to our database.  We don't have to give them
 //   access to anything at this time, but it will make it easier to assign them an RFID fob
-func (api *API) PaypalSubscriptionWebHookHandler(err error, n *listener.PaypalNotification) {
+func (api API) PaypalSubscriptionWebHookHandler(err error, n *listener.PaypalNotification) {
 	if err != nil {
 		log.Printf("IPN error: %v", err)
 		return

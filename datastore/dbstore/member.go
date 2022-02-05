@@ -274,7 +274,7 @@ VALUES `
 
 	str := strings.Join(valStr, ",")
 
-	_, err = dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	_, err = dbPool.Exec(context.Background(), sqlStr+str+"ON CONFLICT DO NOTHING;")
 	if err != nil {
 		return fmt.Errorf("add members query failed: %v", err)
 	}

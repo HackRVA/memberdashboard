@@ -91,6 +91,16 @@ else
 	@echo "  make migrate-force version=2"
 endif
 
+.PHONY:seed
+seed: ## Seed the db with member data and a test user
+##   Run a sql script file against postgres by specifying a script path
+##   Usage:
+##     make seed
+##   Example:
+##     make seed
+##
+	go run ./test/generators/members.go 50
+
 .PHONY:run-sql
 run-sql: ## Run a sql script
 ##   Run a sql script file against postgres by specifying a script path

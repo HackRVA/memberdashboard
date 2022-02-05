@@ -7,6 +7,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"memberserver/api"
+	"memberserver/api/auth"
+	"memberserver/api/router"
 	"memberserver/datastore/dbstore"
 	"memberserver/scheduler"
 )
@@ -21,10 +23,12 @@ func main() {
 		log.Errorf("error setting up db: %s", err)
 	}
 
-	router := api.Setup(db)
+	auth := auth.New(db)
+	api := api.Setup(db, auth)
+	router := router.New(api, auth)
 
 	srv := &http.Server{
-		Handler: router,
+		Handler: router.UnAuthedRouter,
 		Addr:    "0.0.0.0:3000",
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,

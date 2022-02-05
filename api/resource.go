@@ -67,7 +67,7 @@ func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
-func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *http.Request) {
+func (rs resourceAPI) AddMultipleMembersToResource(w http.ResponseWriter, req *http.Request) {
 	var membersResource models.MembersResourceRelation
 
 	err := json.NewDecoder(req.Body).Decode(&membersResource)
@@ -87,7 +87,7 @@ func (rs resourceAPI) addMultipleMembersToResource(w http.ResponseWriter, req *h
 	ok(w, resource)
 }
 
-func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
+func (rs resourceAPI) RemoveMember(w http.ResponseWriter, req *http.Request) {
 	var update models.MemberResourceRelationUpdateRequest
 
 	err := json.NewDecoder(req.Body).Decode(&update)
@@ -115,7 +115,7 @@ func (rs resourceAPI) removeMember(w http.ResponseWriter, req *http.Request) {
 	rs.resourcemanager.UpdateResources()
 }
 
-func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
+func (rs resourceAPI) Register(w http.ResponseWriter, req *http.Request) {
 	var register models.RegisterResourceRequest
 
 	err := json.NewDecoder(req.Body).Decode(&register)
@@ -133,7 +133,7 @@ func (rs resourceAPI) register(w http.ResponseWriter, req *http.Request) {
 	ok(w, r)
 }
 
-func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
+func (rs resourceAPI) Status(w http.ResponseWriter, req *http.Request) {
 	resources := rs.db.GetResources()
 	// statusMap := make(map[string]uint8)
 
@@ -159,7 +159,7 @@ func (rs resourceAPI) status(w http.ResponseWriter, req *http.Request) {
 	// w.Write(j)
 }
 
-func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request) {
+func (rs resourceAPI) UpdateResourceACL(w http.ResponseWriter, req *http.Request) {
 	rs.resourcemanager.UpdateResources()
 
 	ok(w, models.EndpointSuccess{
@@ -167,7 +167,7 @@ func (rs resourceAPI) updateResourceACL(w http.ResponseWriter, req *http.Request
 	})
 }
 
-func (rs resourceAPI) open(w http.ResponseWriter, req *http.Request) {
+func (rs resourceAPI) Open(w http.ResponseWriter, req *http.Request) {
 	var openResourceRequest models.OpenResourceRequest
 
 	err := json.NewDecoder(req.Body).Decode(&openResourceRequest)
@@ -189,7 +189,7 @@ func (rs resourceAPI) open(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
-func (rs resourceAPI) deleteResourceACL(w http.ResponseWriter, req *http.Request) {
+func (rs resourceAPI) DeleteResourceACL(w http.ResponseWriter, req *http.Request) {
 	rs.resourcemanager.DeleteResourceACL()
 
 	ok(w, models.EndpointSuccess{

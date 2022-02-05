@@ -19,6 +19,9 @@ type InMemoryVersionStore struct {
 }
 
 func (i *InMemoryVersionStore) GetVersion() []byte {
+	if len(GitCommit) == 0 {
+		GitCommit = "dev"
+	}
 	version := models.VersionResponse{
 		Major: "1",
 		Build: GitCommit,

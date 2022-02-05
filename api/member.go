@@ -11,12 +11,14 @@ import (
 	"strings"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 	log "github.com/sirupsen/logrus"
 )
 
 type MemberServer struct {
 	store           datastore.DataStore
 	ResourceManager *resourcemanager.ResourceManager
+	AuthStrategy    union.Union
 }
 
 func (m *MemberServer) MemberEmailHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +92,7 @@ func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (m *MemberServer) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request) {
-	_, user, _ := strategy.AuthenticateRequest(r)
+	_, user, _ := m.AuthStrategy.AuthenticateRequest(r)
 
 	member, err := m.store.GetMemberByEmail(user.GetUserName())
 
@@ -123,7 +125,7 @@ func (m *MemberServer) AssignRFIDSelfHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	_, user, _ := strategy.AuthenticateRequest(r)
+	_, user, _ := m.AuthStrategy.AuthenticateRequest(r)
 
 	m.assignRFID(w, user.GetUserName(), assignRFIDRequest.RFID)
 }
