@@ -90,6 +90,7 @@ func (resource *ResourceDatabaseMethod) getInactiveMembersResourceACL() string {
 	LEFT JOIN membership.resources
 	ON membership.resources.id = membership.member_resource.resource_id
 	WHERE member_tier_id = 1
+	AND subscription_id is not NULL
 	AND rfid is not null;`
 }
 
