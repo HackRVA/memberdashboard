@@ -110,6 +110,10 @@ func (s *Scheduler) checkMemberSubscriptions() {
 			log.Error(err)
 			continue
 		}
+		if value == "" {
+			log.Errorf("was not able to get payment amount: %s", value)
+			continue
+		}
 		lastPayment, err := strconv.ParseFloat(value, 32)
 		if err != nil {
 			log.Error(err)
