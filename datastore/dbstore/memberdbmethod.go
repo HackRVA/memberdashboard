@@ -81,3 +81,10 @@ func (member *MemberDatabaseMethod) updateMemberName() string {
 	WHERE id=$1
 	RETURNING name;`
 }
+
+func (member *MemberDatabaseMethod) updateMemberSubscriptionID() string {
+	return `UPDATE membership.members
+	SET subscription_id=$2
+	WHERE id=$1
+	RETURNING name;`
+}
