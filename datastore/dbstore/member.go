@@ -300,6 +300,10 @@ func (db *DatabaseStore) ProcessMember(newMember models.Member) error {
 		return db.updateMemberName(member.ID, newMember)
 	}
 
+	if member.SubscriptionID != newMember.SubscriptionID {
+		return db.updateSubscriptionID(member.ID, newMember)
+	}
+
 	return nil
 }
 
@@ -314,6 +318,24 @@ func (db *DatabaseStore) updateMemberName(memberID string, newMember models.Memb
 
 	// if the member already exists, we might want to update their name.
 	err = dbPool.QueryRow(context.Background(), memberDbMethod.updateMemberName(), memberID, newMember.Name).Scan(&member.Name)
+	if err != nil {
+		return fmt.Errorf("conn.Query failed: %v", err)
+	}
+
+	return nil
+}
+
+func (db *DatabaseStore) updateSubscriptionID(memberID string, newMember models.Member) error {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	var member models.Member
+
+	// if the member already exists, we might want to update their name.
+	err = dbPool.QueryRow(context.Background(), memberDbMethod.updateMemberSubscriptionID(), memberID, newMember.SubscriptionID).Scan(&member.SubscriptionID)
 	if err != nil {
 		return fmt.Errorf("conn.Query failed: %v", err)
 	}
