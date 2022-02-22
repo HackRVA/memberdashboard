@@ -9,15 +9,11 @@ import { PaymentChartResponse } from '../types/api/payment-chart-response';
 
 @Injectable('payment')
 export class PaymentService extends HTTPService {
-  private readonly paymentsUrlSegment: string = ENV.api + '/payments';
+  private readonly paymentsUrlSegment: string = ENV.api + '/member';
 
   getPaymentCharts(): Observable<PaymentChartResponse[]> {
     return this.get<PaymentChartResponse[]>(
-      this.paymentsUrlSegment + '/charts'
+      this.paymentsUrlSegment + '/stats'
     );
-  }
-
-  refreshPayments(): Observable<void> {
-    return this.post<void>(this.paymentsUrlSegment + '/refresh');
   }
 }

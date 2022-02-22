@@ -105,3 +105,24 @@ func (member *MemberDatabaseMethod) updateMemberCounts() string {
 	DO UPDATE SET credited = EXCLUDED.credited, classic = EXCLUDED.classic, standard = EXCLUDED.standard, premium = EXCLUDED.premium;
 	`
 }
+
+func (member *MemberDatabaseMethod) getMemberCounts() string {
+	return `SELECT 
+	month,
+	classic,
+	standard,
+	premium,
+	credited
+	 FROM membership.member_counts;`
+}
+
+func (member *MemberDatabaseMethod) getMemberCountByMonth() string {
+	return `SELECT
+	month,
+	classic,
+	standard,
+	premium,
+	credited
+	FROM membership.member_counts
+		WHERE month = date_trunc('month', '$1');;`
+}

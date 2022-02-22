@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 // NewMember - add a new member
 type NewMember struct {
 	Email string `json:"email"`
@@ -32,4 +34,12 @@ type AssignRFIDRequest struct {
 // UpdateMemberRequest -- request to update a member
 type UpdateMemberRequest struct {
 	FullName string `json:"fullName"`
+}
+
+type MemberCount struct {
+	Month    time.Time `json:"month"`
+	Classic  int       `json:"classic"`
+	Standard int       `json:"standard"`
+	Premium  int       `json:"premium"`
+	Credited int       `json:"credited"`
 }

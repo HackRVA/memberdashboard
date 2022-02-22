@@ -4,6 +4,7 @@ import (
 	"errors"
 	"memberserver/api/models"
 	"sort"
+	"time"
 )
 
 var Members = map[string]models.Member{}
@@ -65,6 +66,12 @@ func (i In_memory) ProcessMember(newMember models.Member) error {
 	return nil
 }
 func (i In_memory) UpdateMemberCounts() {}
+func (i In_memory) GetMemberCounts() ([]models.MemberCount, error) {
+	return []models.MemberCount{}, nil
+}
+func (i In_memory) GetMemberCountByMonth(month time.Time) (models.MemberCount, error) {
+	return models.MemberCount{}, nil
+}
 
 func MemberMapToSlice(m map[string]models.Member) []models.Member {
 	var members []models.Member

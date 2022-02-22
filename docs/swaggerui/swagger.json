@@ -380,6 +380,40 @@
         }
       }
     },
+    "/api/member/stats": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Get Chart information of monthly member counts",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "stats"
+        ],
+        "operationId": "searchPaymentChartRequest",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Type",
+            "name": "type",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getPaymentChartResponse"
+          }
+        }
+      }
+    },
     "/api/member/tier": {
       "get": {
         "security": [
@@ -402,40 +436,6 @@
         "responses": {
           "200": {
             "$ref": "#/responses/getTierResponse"
-          }
-        }
-      }
-    },
-    "/api/payments/charts": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "description": "Get Chart information of payments",
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "payments"
-        ],
-        "operationId": "searchPaymentChartRequest",
-        "parameters": [
-          {
-            "type": "string",
-            "x-go-name": "Type",
-            "name": "type",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/getPaymentChartResponse"
           }
         }
       }
