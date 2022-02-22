@@ -380,7 +380,33 @@
         }
       }
     },
-    "/api/member/stats": {
+    "/api/member/tier": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "member"
+        ],
+        "summary": "Returns a list the member tiers.",
+        "operationId": "getTiers",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getTierResponse"
+          }
+        }
+      }
+    },
+    "/api/reports/membercounts": {
       "get": {
         "security": [
           {
@@ -410,32 +436,6 @@
         "responses": {
           "200": {
             "$ref": "#/responses/getPaymentChartResponse"
-          }
-        }
-      }
-    },
-    "/api/member/tier": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "http",
-          "https"
-        ],
-        "tags": [
-          "member"
-        ],
-        "summary": "Returns a list the member tiers.",
-        "operationId": "getTiers",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/getTierResponse"
           }
         }
       }
@@ -915,19 +915,6 @@
       },
       "x-go-package": "memberserver/api/models"
     },
-    "InfoResponse": {
-      "description": "InfoResponse -- response of info request",
-      "type": "object",
-      "properties": {
-        "message": {
-          "description": "Info Message",
-          "type": "string",
-          "x-go-name": "Message",
-          "example": "hello, world!"
-        }
-      },
-      "x-go-package": "memberserver/api/models"
-    },
     "Member": {
       "description": "Member -- a member of the makerspace",
       "type": "object",
@@ -1058,37 +1045,6 @@
       },
       "x-go-package": "memberserver/api/models"
     },
-    "PaymentChart": {
-      "description": "PaymentChart - deliver information to the frontend so that\nwe can display a monthly payment chart",
-      "type": "object",
-      "properties": {
-        "cols": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ChartCol"
-          },
-          "x-go-name": "Cols"
-        },
-        "options": {
-          "$ref": "#/definitions/ChartOptions"
-        },
-        "rows": {
-          "type": "array",
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          },
-          "x-go-name": "Rows"
-        },
-        "type": {
-          "type": "string",
-          "x-go-name": "Type"
-        }
-      },
-      "x-go-package": "memberserver/api/models"
-    },
     "RegisterResourceRequest": {
       "description": "RegisterResourceRequest a resource that can accept an access control list",
       "type": "object",
@@ -1114,6 +1070,37 @@
           "type": "string",
           "x-go-name": "Name",
           "example": "string"
+        }
+      },
+      "x-go-package": "memberserver/api/models"
+    },
+    "ReportChart": {
+      "description": "ReportChart - deliver information to the frontend so that\nwe can display a monthly payment chart",
+      "type": "object",
+      "properties": {
+        "cols": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChartCol"
+          },
+          "x-go-name": "Cols"
+        },
+        "options": {
+          "$ref": "#/definitions/ChartOptions"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "x-go-name": "Rows"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
         }
       },
       "x-go-package": "memberserver/api/models"
@@ -1333,7 +1320,7 @@
       "schema": {
         "type": "array",
         "items": {
-          "$ref": "#/definitions/PaymentChart"
+          "$ref": "#/definitions/ReportChart"
         }
       }
     },
@@ -1375,15 +1362,6 @@
       "description": "",
       "schema": {
         "$ref": "#/definitions/UserResponse"
-      }
-    },
-    "infoResponse": {
-      "description": "",
-      "schema": {
-        "$ref": "#/definitions/InfoResponse"
-      },
-      "headers": {
-        "Body": {}
       }
     },
     "loginResponse": {

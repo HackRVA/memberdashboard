@@ -27,7 +27,7 @@ func (r *ReportsServer) GetMemberCounts(w http.ResponseWriter, req *http.Request
 		return
 	}
 
-	var charts []models.PaymentChart
+	var charts []models.ReportChart
 	memberCounts, err := r.store.GetMemberCounts()
 	if err != nil {
 		http.Error(w, "error getting member counts", http.StatusNotFound)
@@ -52,8 +52,8 @@ func (r *ReportsServer) GetMemberCounts(w http.ResponseWriter, req *http.Request
 	ok(w, charts)
 }
 
-func makeMemberTrendChart(counts []models.MemberCount) models.PaymentChart {
-	var chart models.PaymentChart
+func makeMemberTrendChart(counts []models.MemberCount) models.ReportChart {
+	var chart models.ReportChart
 	chart.Options.Title = "Membership Trends"
 	chart.Type = "line"
 	chart.Options.CurveType = "function"
@@ -70,15 +70,15 @@ func makeMemberTrendChart(counts []models.MemberCount) models.PaymentChart {
 	return chart
 }
 
-func makeDistritutionChartByMonth(month time.Time, store datastore.ReportStore) models.PaymentChart {
-	var distributionChart models.PaymentChart
+func makeDistritutionChartByMonth(month time.Time, store datastore.ReportStore) models.ReportChart {
+	var distributionChart models.ReportChart
 	memberCount, err := store.GetMemberCountByMonth(month)
 	if err != nil {
 		log.Errorf("error getting member counts")
 		return distributionChart
 	}
 
-	var chart models.PaymentChart
+	var chart models.ReportChart
 	chart.Options.Title = month.Format("Jan-06")
 	chart.Options.PieHole = 0.4
 	chart.Type = "pie"
@@ -101,10 +101,10 @@ func makeDistritutionChartByMonth(month time.Time, store datastore.ReportStore) 
 	return distributionChart
 }
 
-func makeMemberDistributionChart(counts []models.MemberCount) []models.PaymentChart {
-	var distributionCharts []models.PaymentChart
+func makeMemberDistributionChart(counts []models.MemberCount) []models.ReportChart {
+	var distributionCharts []models.ReportChart
 	for _, monthCount := range counts {
-		var chart models.PaymentChart
+		var chart models.ReportChart
 		chart.Options.Title = monthCount.Month.Format("Jan-06")
 		chart.Options.PieHole = 0.4
 		chart.Type = "pie"

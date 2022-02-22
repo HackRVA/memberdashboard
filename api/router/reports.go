@@ -10,7 +10,7 @@ type ReportsHTTPHandler interface {
 }
 
 func (r Router) setupReportsRoutes(reports ReportsHTTPHandler, accessControl rbac.AccessControl) {
-	// swagger:route GET /api/member/stats stats searchPaymentChartRequest
+	// swagger:route GET /api/reports/membercounts stats searchPaymentChartRequest
 	//
 	// Get Chart information of monthly member counts
 	//

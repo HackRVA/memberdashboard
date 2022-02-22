@@ -11,7 +11,7 @@ export interface ChartCols {
   type: string;
 }
 
-export interface PaymentChartResponse {
+export interface ReportChartResponse {
   id: string;
   type: string;
   options: ChartOptions;

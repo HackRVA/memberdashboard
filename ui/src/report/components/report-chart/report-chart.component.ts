@@ -14,28 +14,31 @@ import {
   primaryRed,
 } from '../../../shared/styles/colors';
 import { showComponent } from '../../../shared/functions';
-import { paymentChartStyle } from './payment-chart.style';
-import { PaymentService } from '../../services/payment.service';
+import { reportsChartStyle } from './report-chart.style';
+import { ReportService } from '../../services/report.service';
 import {
   ChartOptions,
-  PaymentChartResponse,
-} from '../../types/api/payment-chart-response';
+  ReportChartResponse,
+} from '../../types/api/reports-chart-response';
 import { Inject } from '../../../shared/di/inject';
 
-@customElement('payment-chart')
-export class PaymentChart extends LitElement {
-  @Inject('payment')
-  private paymentService: PaymentService;
+@customElement('report-chart')
+export class ReportChart extends LitElement {
+  @Inject('report')
+  private reportService: ReportService;
 
-  paymentCharts: Array<PaymentChartResponse> = [];
-  membershipTrendsData: PaymentChartResponse;
-  membershipDistributionData: Array<PaymentChartResponse> = [];
+  reportsCharts: Array<ReportChartResponse> = [];
+
+  membershipTrendsData: ReportChartResponse;
+
+  membershipDistributionData: Array<ReportChartResponse> = [];
 
   membershipTrendsChart: GoogleChart;
+
   membershipDistributionChart: GoogleChart;
 
   static get styles(): CSSResult[] {
-    return [paymentChartStyle];
+    return [reportsChartStyle];
   }
 
   firstUpdated(): void {
@@ -44,19 +47,19 @@ export class PaymentChart extends LitElement {
     this.membershipDistributionChart = this.shadowRoot?.querySelector(
       '#membership-distribution'
     );
-    this.createPaymentReportChart();
+    this.createMemberReportChart();
   }
 
-  creatMembershipTrendChart(chartData: PaymentChartResponse): void {
+  creatMembershipTrendChart(chartData: ReportChartResponse): void {
     this.membershipTrendsChart.type = chartData.type;
     this.membershipTrendsChart.options = chartData.options;
     this.membershipTrendsChart.rows = chartData.rows;
     this.membershipTrendsChart.cols = chartData.cols;
   }
 
-  createMembershipDistributionChart(chartData: PaymentChartResponse): void {
-    const options: ChartOptions = Object.assign({}, chartData.options);
-    options.title = options.title + ' - Membership Distribution';
+  createMembershipDistributionChart(chartData: ReportChartResponse): void {
+    const options: ChartOptions = { ...chartData.options };
+    options.title += ' - Membership Distribution';
 
     this.membershipDistributionChart.type = chartData.type;
     this.membershipDistributionChart.options = options;
@@ -69,14 +72,14 @@ export class PaymentChart extends LitElement {
     showComponent('#membership-months', this.shadowRoot);
   }
 
-  createPaymentReportChart(): void {
-    this.paymentService.getPaymentCharts().subscribe({
-      next: (result: PaymentChartResponse[]) => {
-        this.paymentCharts = result;
-        this.paymentCharts = this.updatePaymentCharts(this.paymentCharts);
+  createMemberReportChart(): void {
+    this.reportService.getReportsCharts().subscribe({
+      next: (result: ReportChartResponse[]) => {
+        this.reportsCharts = result;
+        this.reportsCharts = this.updateReportsCharts(this.reportsCharts);
 
-        this.membershipTrendsData = this.paymentCharts[0];
-        this.membershipDistributionData = this.paymentCharts.splice(1);
+        [this.membershipTrendsData] = this.reportsCharts;
+        this.membershipDistributionData = this.reportsCharts.splice(1);
 
         this.creatMembershipTrendChart(this.membershipTrendsData);
         this.createMembershipDistributionChart(
@@ -87,15 +90,15 @@ export class PaymentChart extends LitElement {
         this.requestUpdate();
       },
       error: () => {
-        console.error('unable to create payment report chart');
+        console.error('unable to create report chart');
       },
     });
   }
 
-  updatePaymentCharts(
-    paymentCharts: PaymentChartResponse[]
-  ): PaymentChartResponse[] {
-    paymentCharts.forEach((x: PaymentChartResponse) => {
+  updateReportsCharts(
+    reportsCharts: ReportChartResponse[]
+  ): ReportChartResponse[] {
+    reportsCharts.forEach((x: ReportChartResponse) => {
       x.options.colors = [
         primaryBlue.cssText,
         primaryDarkGreen.cssText,
@@ -104,17 +107,17 @@ export class PaymentChart extends LitElement {
       ];
     });
 
-    return paymentCharts;
+    return reportsCharts;
   }
 
-  updateMembershipDistributionChart(chartData: PaymentChartResponse): void {
+  updateMembershipDistributionChart(chartData: ReportChartResponse): void {
     this.createMembershipDistributionChart(chartData);
   }
 
-  getPaymentMonthOptions(): TemplateResult {
+  getReportMonthOptions(): TemplateResult {
     return html`
       <mwc-menu x="10" y="40" id="membership-months">
-        ${this.membershipDistributionData.map((x: PaymentChartResponse) => {
+        ${this.membershipDistributionData.map((x: ReportChartResponse) => {
           return html`
             <mwc-list-item
               @click=${() => this.updateMembershipDistributionChart(x)}
@@ -135,9 +138,9 @@ export class PaymentChart extends LitElement {
           label="Select a month"
           @click=${this.openMembershipMonthsOptions}
         ></mwc-button>
-        ${this.getPaymentMonthOptions()}
+        ${this.getReportMonthOptions()}
       </div>
-      <div id="payment-chart-container">
+      <div id="report-chart-container">
         <google-chart id="membership-distribution"> </google-chart>
         <google-chart id="membership-trends"> </google-chart>
       </div>

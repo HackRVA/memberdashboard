@@ -1,8 +1,8 @@
 // lit element
 import { css, CSSResult } from 'lit';
 
-export const paymentChartStyle: CSSResult = css`
-  #payment-chart-container {
+export const reportsChartStyle: CSSResult = css`
+  #report-chart-container {
     margin-top: 56px;
     display: flex;
     align-items: center;
