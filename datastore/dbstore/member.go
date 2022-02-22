@@ -342,3 +342,17 @@ func (db *DatabaseStore) updateSubscriptionID(memberID string, newMember models.
 
 	return nil
 }
+
+func (db *DatabaseStore) UpdateMemberCounts() {
+	println("updating member counts")
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	err = dbPool.QueryRow(context.Background(), memberDbMethod.updateMemberCounts()).Scan()
+	if err != nil {
+		log.Errorf("conn.Query failed: %v", err)
+	}
+}

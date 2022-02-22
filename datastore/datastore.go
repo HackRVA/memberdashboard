@@ -27,6 +27,7 @@ type MemberStore interface {
 	AddMembers(members []models.Member) error
 	GetMembersWithCredit() []models.Member
 	ProcessMember(newMember models.Member) error
+	UpdateMemberCounts()
 	GetMemberByRFID(rfid string) (models.Member, error)
 	UpdateMemberByEmail(fullName string, email string) error
 }

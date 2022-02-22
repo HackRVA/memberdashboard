@@ -64,6 +64,7 @@ func (i In_memory) GetMembersWithCredit() []models.Member {
 func (i In_memory) ProcessMember(newMember models.Member) error {
 	return nil
 }
+func (i In_memory) UpdateMemberCounts() {}
 
 func MemberMapToSlice(m map[string]models.Member) []models.Member {
 	var members []models.Member
