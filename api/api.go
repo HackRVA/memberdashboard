@@ -17,6 +17,7 @@ type API struct {
 	ResourceServer resourceAPI
 	VersionServer  *VersionServer
 	MemberServer   *MemberServer
+	ReportsServer  *ReportsServer
 	UserServer     *UserServer
 	AuthStrategy   union.Union
 	JWTKeeper      jwt.SecretsKeeper

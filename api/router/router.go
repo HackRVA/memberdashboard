@@ -60,6 +60,7 @@ func (r *Router) RegisterRoutes(auth *auth.AuthController) *mux.Router {
 	r.setupMemberRoutes(r.api.MemberServer, accessControl)
 	r.setupResourceRoutes(r.api.ResourceServer, accessControl)
 	r.setupPaymentRoutes(r.api, accessControl)
+	r.setupReportsRoutes(r.api.ReportsServer, accessControl)
 	r.setupVersionRoutes(r.api.VersionServer)
 
 	spa := spaHandler{staticPath: "./ui/dist/", indexPath: "index.html"}

@@ -16,7 +16,6 @@ type MemberHTTPHandler interface {
 	GetTiersHandler(w http.ResponseWriter, r *http.Request)
 	GetNonMembersOnSlackHandler(w http.ResponseWriter, r *http.Request)
 	AddNewMemberHandler(w http.ResponseWriter, r *http.Request)
-	GetMemberCounts(http.ResponseWriter, *http.Request)
 }
 
 func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.AccessControl) {
@@ -177,20 +176,4 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//     Responses:
 	//       200: setRFIDResponse
 	r.authedRouter.HandleFunc("/member/assignRFID", accessControl.Restrict(member.AssignRFIDHandler, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
-	// swagger:route GET /api/member/stats stats searchPaymentChartRequest
-	//
-	// Get Chart information of monthly member counts
-	//
-	//
-	//     Produces:
-	//     - application/json
-	//
-	//     Schemes: http, https
-	//
-	//     Security:
-	//     - bearerAuth:
-	//
-	//     Responses:
-	//       200: getPaymentChartResponse
-	r.authedRouter.HandleFunc("/member/stats", accessControl.Restrict(member.GetMemberCounts, []rbac.UserRole{rbac.Admin}))
 }

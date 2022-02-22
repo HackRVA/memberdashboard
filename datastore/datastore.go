@@ -12,6 +12,7 @@ type DataStore interface {
 	PaymentStore
 	CommunicationStore
 	UserStore
+	ReportStore
 }
 
 type AccessEvent interface {
@@ -29,9 +30,6 @@ type MemberStore interface {
 	ProcessMember(newMember models.Member) error
 	GetMemberByRFID(rfid string) (models.Member, error)
 	UpdateMemberByEmail(fullName string, email string) error
-	UpdateMemberCounts()
-	GetMemberCounts() ([]models.MemberCount, error)
-	GetMemberCountByMonth(month time.Time) (models.MemberCount, error)
 }
 
 type ResourceStore interface {
@@ -72,4 +70,10 @@ type UserStore interface {
 	GetUser(email string) (models.UserResponse, error)
 	UserSignin(email string, password string) error
 	RegisterUser(creds models.Credentials) error
+}
+
+type ReportStore interface {
+	UpdateMemberCounts()
+	GetMemberCounts() ([]models.MemberCount, error)
+	GetMemberCountByMonth(month time.Time) (models.MemberCount, error)
 }
