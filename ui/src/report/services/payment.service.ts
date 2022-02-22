@@ -9,11 +9,11 @@ import { PaymentChartResponse } from '../types/api/payment-chart-response';
 
 @Injectable('payment')
 export class PaymentService extends HTTPService {
-  private readonly paymentsUrlSegment: string = ENV.api + '/member';
+  private readonly paymentsUrlSegment: string = ENV.api + '/reports';
 
   getPaymentCharts(): Observable<PaymentChartResponse[]> {
     return this.get<PaymentChartResponse[]>(
-      this.paymentsUrlSegment + '/stats'
+      this.paymentsUrlSegment + '/membercounts'
     );
   }
 }

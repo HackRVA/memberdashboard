@@ -25,5 +25,5 @@ func (r Router) setupReportsRoutes(reports ReportsHTTPHandler, accessControl rba
 	//
 	//     Responses:
 	//       200: getPaymentChartResponse
-	r.authedRouter.HandleFunc("/member/stats", accessControl.Restrict(reports.GetMemberCounts, []rbac.UserRole{rbac.Admin}))
+	r.authedRouter.HandleFunc("/reports/membercounts", accessControl.Restrict(reports.GetMemberCounts, []rbac.UserRole{rbac.Admin}))
 }
