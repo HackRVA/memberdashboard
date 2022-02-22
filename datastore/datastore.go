@@ -6,7 +6,7 @@ import (
 )
 
 type DataStore interface {
-	Event
+	AccessEvent
 	MemberStore
 	ResourceStore
 	PaymentStore
@@ -14,8 +14,8 @@ type DataStore interface {
 	UserStore
 }
 
-type Event interface {
-	AddLogMsg(event models.LogMessage) error
+type AccessEvent interface {
+	LogAccessEvent(event models.LogMessage) error
 }
 
 type MemberStore interface {

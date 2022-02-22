@@ -254,6 +254,10 @@ func (p *PaymentProvider) GetSubscription(subscriptionID string) (string, string
 		return "", "", err
 	}
 
+	if len(c.PaypalURL) == 0 {
+		return "", "", errors.New("no paypal url is set")
+	}
+
 	if len(p.accessToken) == 0 {
 		p.accessToken, err = p.requestPaypalAccessToken()
 		if err != nil {

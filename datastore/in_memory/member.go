@@ -47,7 +47,7 @@ func (i In_memory) UpdateMemberByEmail(fullName string, email string) error {
 	}
 
 	if len(email) == 0 {
-		return errors.New("Email is required")
+		return errors.New("email is required")
 	}
 
 	return nil

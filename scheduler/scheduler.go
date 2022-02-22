@@ -92,6 +92,10 @@ func (s *Scheduler) scheduleTask(interval time.Duration, initFunc func(), tickFu
 }
 
 func (s *Scheduler) checkMemberSubscriptions() {
+	if len(s.config.PaypalURL) == 0 {
+		log.Debugf("paypal url isn't set")
+		return
+	}
 	members := s.dataStore.GetMembers()
 
 	for _, member := range members {

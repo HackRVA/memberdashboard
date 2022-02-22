@@ -10,21 +10,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (db *DatabaseStore) AddLogMsg(event models.LogMessage) error {
+func (db *DatabaseStore) LogAccessEvent(logMsg models.LogMessage) error {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {
 		log.Printf("got error: %v\n", err)
 	}
 	defer dbPool.Close()
-
-	logMsg := models.LogMessage{
-		Type:      event.Type,
-		IsKnown:   event.IsKnown,
-		Username:  event.Username,
-		RFID:      event.RFID,
-		Door:      event.Door,
-		EventTime: event.EventTime,
-	}
 
 	timeLayout := "2006-01-02T15:04:05-0700"
 	t := time.Unix(logMsg.EventTime, 0)
