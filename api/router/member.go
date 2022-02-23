@@ -30,6 +30,7 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: getMembersResponse
@@ -52,6 +53,7 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
@@ -67,6 +69,7 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: getMemberResponse
@@ -82,6 +85,7 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: getMemberResponse
@@ -100,6 +104,7 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
@@ -117,6 +122,7 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: text/csv
@@ -132,6 +138,7 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: getTierResponse
@@ -152,6 +159,7 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: setRFIDResponse
@@ -172,6 +180,7 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: setRFIDResponse

@@ -27,6 +27,7 @@ func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl 
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: getResourceResponse
@@ -45,6 +46,7 @@ func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl 
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: postResourceResponse
@@ -64,6 +66,7 @@ func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl 
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200:
@@ -86,6 +89,7 @@ func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl 
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: getResourceStatusResponse
@@ -104,6 +108,7 @@ func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl 
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: postResourceResponse
@@ -122,6 +127,7 @@ func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl 
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: addMulitpleMembersToResourceResponse
@@ -140,6 +146,7 @@ func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl 
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
@@ -173,6 +180,7 @@ func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl 
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: endpointSuccessResponse
@@ -191,6 +199,7 @@ func (r Router) setupResourceRoutes(resource ResourceHTTPHandler, accessControl 
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: removeMemberSuccessResponse

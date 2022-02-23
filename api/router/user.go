@@ -26,6 +26,7 @@ func (r Router) setupUserRoutes(userServer UserHTTPHandler, auth AuthHTTPHandler
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: getUserResponse

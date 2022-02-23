@@ -22,6 +22,9 @@ const (
 	// checkPaymentsInterval - check the resources every 24 hours
 	checkPaymentsInterval = 24
 
+	// updateMemberCountInterval
+	updateMemberCountInterval = 24
+
 	// evaluateMemberStatusInterval - check the resources every 25 hours
 	evaluateMemberStatusInterval = 25
 
@@ -65,6 +68,7 @@ func (s *Scheduler) Setup(db datastore.DataStore) {
 		{interval: resourceStatusCheckInterval * time.Hour, initFunc: s.checkResourceInit, tickFunc: s.checkResourceTick},
 		{interval: resourceUpdateInterval * time.Hour, initFunc: s.resourceManager.UpdateResources, tickFunc: s.resourceManager.UpdateResources},
 		{interval: checkIPInterval * time.Hour, initFunc: s.checkIPAddressTick, tickFunc: s.checkIPAddressTick},
+		{interval: updateMemberCountInterval * time.Hour, initFunc: s.dataStore.UpdateMemberCounts, tickFunc: s.dataStore.UpdateMemberCounts},
 	}
 
 	for _, task := range tasks {
@@ -92,6 +96,10 @@ func (s *Scheduler) scheduleTask(interval time.Duration, initFunc func(), tickFu
 }
 
 func (s *Scheduler) checkMemberSubscriptions() {
+	if len(s.config.PaypalURL) == 0 {
+		log.Debugf("paypal url isn't set")
+		return
+	}
 	members := s.dataStore.GetMembers()
 
 	for _, member := range members {

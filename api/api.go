@@ -17,6 +17,7 @@ type API struct {
 	ResourceServer resourceAPI
 	VersionServer  *VersionServer
 	MemberServer   *MemberServer
+	ReportsServer  *ReportsServer
 	UserServer     *UserServer
 	AuthStrategy   union.Union
 	JWTKeeper      jwt.SecretsKeeper
@@ -44,6 +45,7 @@ func Setup(store datastore.DataStore, auth *auth.AuthController) API {
 		},
 		VersionServer: &VersionServer{NewInMemoryVersionStore()},
 		MemberServer:  &MemberServer{store, rm, auth.AuthStrategy},
+		ReportsServer: &ReportsServer{store},
 		UserServer:    &userServer,
 		AuthStrategy:  auth.AuthStrategy,
 		JWTKeeper:     auth.JWTSecretsKeeper,

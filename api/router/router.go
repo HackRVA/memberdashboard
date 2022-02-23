@@ -10,19 +10,29 @@
 //      in: header
 //      name: Authorization
 //      description: Enter your bearer token
+//    basicAuth:
+//      type: basic
+//      in: header
+//      name: Authorization
+//      description: Enter your basic auth credentials
 //
 // swagger:meta
 package router
 
 import (
+	_ "embed"
 	"memberserver/api"
 	"memberserver/api/auth"
 	"memberserver/api/rbac"
 	"net/http"
 
+	"github.com/flowchartsman/swaggerui"
 	"github.com/gorilla/mux"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 )
+
+//go:embed swagger.json
+var spec []byte
 
 type Router struct {
 	UnAuthedRouter *mux.Router
@@ -60,12 +70,14 @@ func (r *Router) RegisterRoutes(auth *auth.AuthController) *mux.Router {
 	r.setupMemberRoutes(r.api.MemberServer, accessControl)
 	r.setupResourceRoutes(r.api.ResourceServer, accessControl)
 	r.setupPaymentRoutes(r.api, accessControl)
+	r.setupReportsRoutes(r.api.ReportsServer, accessControl)
 	r.setupVersionRoutes(r.api.VersionServer)
 
 	spa := spaHandler{staticPath: "./ui/dist/", indexPath: "index.html"}
+	r.UnAuthedRouter.PathPrefix("/swagger/").Handler(http.StripPrefix("/swagger", swaggerui.Handler(spec)))
 	r.UnAuthedRouter.PathPrefix("/").Handler(spa)
 	http.Handle("/", r.UnAuthedRouter)
 	http.Handle("/api/", r.authedRouter)
-	serveSwaggerUI(r.UnAuthedRouter)
+
 	return r.authedRouter
 }

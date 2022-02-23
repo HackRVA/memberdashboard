@@ -6,16 +6,17 @@ import (
 )
 
 type DataStore interface {
-	Event
+	AccessEvent
 	MemberStore
 	ResourceStore
 	PaymentStore
 	CommunicationStore
 	UserStore
+	ReportStore
 }
 
-type Event interface {
-	AddLogMsg(event models.LogMessage) error
+type AccessEvent interface {
+	LogAccessEvent(event models.LogMessage) error
 }
 
 type MemberStore interface {
@@ -69,4 +70,10 @@ type UserStore interface {
 	GetUser(email string) (models.UserResponse, error)
 	UserSignin(email string, password string) error
 	RegisterUser(creds models.Credentials) error
+}
+
+type ReportStore interface {
+	UpdateMemberCounts()
+	GetMemberCounts() ([]models.MemberCount, error)
+	GetMemberCountByMonth(month time.Time) (models.MemberCount, error)
 }

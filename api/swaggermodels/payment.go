@@ -6,7 +6,7 @@ import "memberserver/api/models"
 // swagger:response getPaymentChartResponse
 type getPaymentChartResponse struct {
 	// in: body
-	Body []models.PaymentChart
+	Body []models.ReportChart
 }
 
 // swagger:parameters searchPaymentChartRequest

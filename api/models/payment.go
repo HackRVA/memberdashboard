@@ -35,9 +35,9 @@ type ChartCol struct {
 	Type  string `json:"type"`
 }
 
-// PaymentChart - deliver information to the frontend so that
+// ReportChart - deliver information to the frontend so that
 //   we can display a monthly payment chart
-type PaymentChart struct {
+type ReportChart struct {
 	Options ChartOptions    `json:"options"`
 	Type    string          `json:"type"`
 	Rows    [][]interface{} `json:"rows"`

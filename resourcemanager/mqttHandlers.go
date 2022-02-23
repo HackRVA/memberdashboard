@@ -75,7 +75,15 @@ var OnAccessEvent mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Messag
 	}
 
 	log.Println(string(msg.Payload()))
-	slack.PostWebHook(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", payload.Username, payload.RFID, payload.Door, payload.EventTime))
+	go slack.PostWebHook(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", payload.Username, payload.RFID, payload.Door, payload.EventTime))
+	go db.LogAccessEvent(models.LogMessage{
+		Type:      payload.Type,
+		EventTime: payload.EventTime,
+		IsKnown:   payload.IsKnown,
+		Username:  payload.Username,
+		RFID:      payload.RFID,
+		Door:      payload.Door,
+	})
 }
 
 type HeartBeat struct {

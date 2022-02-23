@@ -103,7 +103,10 @@ func PostWebHook(msg string) {
 
 	newMsg := fmt.Sprint("{\"text\":'```", msg, "```'}")
 	jsonStr := []byte(newMsg)
-	log.Debugf("attempting to post to slack %s", newMsg)
+	if len(conf.SlackAccessEvents) == 0 {
+		log.Debugf("slack web hook isn't set")
+		return
+	}
 
 	c := &http.Client{}
 	req, err := http.NewRequest("POST", conf.SlackAccessEvents, bytes.NewBuffer(jsonStr))
