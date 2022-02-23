@@ -1,13 +1,18 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"math/rand"
 	"memberserver/api/models"
+	"memberserver/config"
 	"memberserver/datastore/dbstore"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/Rhymond/go-money"
@@ -44,6 +49,7 @@ func main() {
 		}
 	}
 
+	fakeMemberCounts(24)
 	registerTestUser()
 }
 
@@ -100,4 +106,45 @@ func fakeResources() {
 	db, _ := dbstore.Setup()
 	db.RegisterResource(faker.App().Name(), string(faker.Internet().IpV4Address()), false)
 	db.RegisterResource(faker.App().Name(), string(faker.Internet().IpV4Address()), true)
+}
+
+func fakeMemberCounts(numberOfMonths int) {
+	conf, _ := config.Load()
+
+	dbPool, err := pgxpool.Connect(context.Background(), conf.DBConnectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	var months []models.MemberCount
+
+	for i := 1; i < numberOfMonths; i++ {
+		m := time.Now().AddDate(0, -i, 0)
+		months = append(months, models.MemberCount{
+			Month:    m,
+			Classic:  faker.Number().NumberInt(3),
+			Standard: faker.Number().NumberInt(3),
+			Premium:  faker.Number().NumberInt(3),
+			Credited: faker.Number().NumberInt(3),
+		})
+	}
+
+	var valStr []string
+
+	sqlStr := `INSERT INTO membership.member_counts(month, classic, standard, premium, credited)
+VALUES `
+
+	for _, p := range months {
+		valStr = append(valStr, fmt.Sprintf("(TO_DATE('%s', 'YYYYMM'), %d, %d, %d, %d)", p.Month.Format("200601"), p.Classic, p.Standard, p.Premium, p.Credited))
+	}
+
+	str := strings.Join(valStr, ",")
+
+	log.Infof("Adding %d months of member counts", len(months))
+
+	_, err = dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	if err != nil {
+		log.Errorf("conn.Exec failed: %v", err)
+	}
 }
