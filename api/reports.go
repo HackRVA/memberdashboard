@@ -4,6 +4,7 @@ import (
 	"memberserver/api/models"
 	"memberserver/datastore"
 	"net/http"
+	"sort"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -60,6 +61,9 @@ func makeMemberTrendChart(counts []models.MemberCount) models.ReportChart {
 	chart.Options.Legend = "bottom"
 	chart.Cols = []models.ChartCol{{Label: "Month", Type: "string"}, {Label: "Member Count", Type: "number"}}
 
+	sort.Slice(counts, func(i1, i2 int) bool {
+		return counts[i1].Month.Before(counts[i2].Month)
+	})
 	for _, monthCount := range counts {
 		var row []interface{}
 		row = append(row, monthCount.Month.Format("Jan-06"))
