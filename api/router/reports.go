@@ -22,6 +22,7 @@ func (r Router) setupReportsRoutes(reports ReportsHTTPHandler, accessControl rba
 	//
 	//     Security:
 	//     - bearerAuth:
+	//     - basicAuth:
 	//
 	//     Responses:
 	//       200: getPaymentChartResponse

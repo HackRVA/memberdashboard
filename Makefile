@@ -139,4 +139,4 @@ endif
 
 .PHONY:swagger
 swagger: ## Generate swagger doc
-	swagger generate spec -o ./docs/swaggerui/swagger.json --scan-models
+	swagger generate spec -o ./api/router/swagger.json --scan-models
