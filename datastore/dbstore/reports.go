@@ -9,6 +9,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var reportsDbMethod ReportsDatabaseMethod
+
 func (db *DatabaseStore) UpdateMemberCounts() {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {
@@ -16,7 +18,7 @@ func (db *DatabaseStore) UpdateMemberCounts() {
 	}
 	defer dbPool.Close()
 
-	err = dbPool.QueryRow(context.Background(), memberDbMethod.updateMemberCounts()).Scan()
+	err = dbPool.QueryRow(context.Background(), reportsDbMethod.updateMemberCounts()).Scan()
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
@@ -31,7 +33,7 @@ func (db *DatabaseStore) GetMemberCounts() ([]models.MemberCount, error) {
 	}
 	defer dbPool.Close()
 
-	rows, err := dbPool.Query(db.ctx, memberDbMethod.getMemberCounts())
+	rows, err := dbPool.Query(db.ctx, reportsDbMethod.getMemberCounts())
 	if err != nil {
 		log.Errorf("error getting member counts: %v", err)
 		return memberCounts, err
@@ -61,7 +63,7 @@ func (db *DatabaseStore) GetMemberCountByMonth(month time.Time) (models.MemberCo
 	}
 	defer dbPool.Close()
 
-	err = dbPool.QueryRow(context.Background(), memberDbMethod.getMemberCountByMonth(), month).Scan(&memberCount.Classic, &memberCount.Standard, &memberCount.Premium, &memberCount.Credited)
+	err = dbPool.QueryRow(context.Background(), reportsDbMethod.getMemberCountByMonth(), month).Scan(&memberCount.Classic, &memberCount.Standard, &memberCount.Premium, &memberCount.Credited)
 	if err != nil {
 		log.Errorf("conn.Query failed: %v", err)
 	}
