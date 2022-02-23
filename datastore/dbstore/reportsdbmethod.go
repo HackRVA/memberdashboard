@@ -27,7 +27,8 @@ func (member *ReportsDatabaseMethod) getMemberCounts() string {
 	standard,
 	premium,
 	credited
-	 FROM membership.member_counts;`
+	FROM membership.member_counts
+	ORDER BY month;`
 }
 
 func (member *ReportsDatabaseMethod) getMemberCountByMonth() string {
