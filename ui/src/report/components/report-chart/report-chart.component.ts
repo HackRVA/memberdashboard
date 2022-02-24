@@ -208,7 +208,7 @@ export class ReportChart extends LitElement {
   getResourceOptions(): TemplateResult {
     return html`
       <mwc-menu x="10" y="40" id="resource-names">
-        ${this.resources.map((x: ResourceResponse) => {
+        ${this.resources?.map((x: ResourceResponse) => {
           return html`
             <mwc-list-item
               @click=${() => this.updateAccessTrendsChart(x.name)}
