@@ -76,4 +76,5 @@ type ReportStore interface {
 	UpdateMemberCounts()
 	GetMemberCounts() ([]models.MemberCount, error)
 	GetMemberCountByMonth(month time.Time) (models.MemberCount, error)
+	GetAccessStats(date time.Time, resourceName string) ([]models.AccessStats, error)
 }

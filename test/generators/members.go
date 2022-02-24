@@ -50,6 +50,7 @@ func main() {
 	}
 
 	fakeMemberCounts(24)
+	fakeAccessEvents(50)
 	registerTestUser()
 }
 
@@ -146,5 +147,32 @@ VALUES `
 	_, err = dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
 	if err != nil {
 		log.Errorf("conn.Exec failed: %v", err)
+	}
+}
+
+func fakeAccessEvents(numOfEvents int) {
+	db, _ := dbstore.Setup()
+	resources := db.GetResources()
+
+	for resourceIndex, r := range resources {
+		if resourceIndex == 5 {
+			break
+		}
+		for i := 0; i < numOfEvents; i++ {
+			eventTime := faker.Time().Between(time.Now().Add((time.Hour*24)*-30), time.Now())
+			logMsg := models.LogMessage{
+				Type:      "access",
+				EventTime: eventTime.Unix(),
+				IsKnown:   "true",
+				Username:  faker.Name().Name(),
+				RFID:      string(faker.Internet().IpV4Address()),
+				Door:      r.Name,
+			}
+			err := db.LogAccessEvent(logMsg)
+			if err != nil {
+				log.Errorf("error logging event: %s", err)
+			}
+			log.Infof("Added log event for %s time: %s", logMsg.Username, eventTime)
+		}
 	}
 }

@@ -16,4 +16,10 @@ export class ReportService extends HTTPService {
       this.reportsUrlSegment + '/membercounts'
     );
   }
+
+  getAccessChart(resourceName: string): Observable<ReportChartResponse> {
+    return this.get<ReportChartResponse>(
+      `${this.reportsUrlSegment}/access?resourceName=${resourceName}`
+    )
+  }
 }

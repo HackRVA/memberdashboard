@@ -9,3 +9,9 @@ type MemberCount struct {
 	Premium  int       `json:"premium"`
 	Credited int       `json:"credited"`
 }
+
+type AccessStats struct {
+	Date         time.Time `json:"date"`
+	AccessCount  int       `json:"accessCount"`
+	ResourceName string    `json:"resourceName"`
+}

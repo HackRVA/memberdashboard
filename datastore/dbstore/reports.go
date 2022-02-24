@@ -70,3 +70,33 @@ func (db *DatabaseStore) GetMemberCountByMonth(month time.Time) (models.MemberCo
 
 	return memberCount, nil
 }
+
+func (db *DatabaseStore) GetAccessStats(date time.Time, resourceName string) ([]models.AccessStats, error) {
+	var stats []models.AccessStats
+
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	rows, err := dbPool.Query(db.ctx, reportsDbMethod.getAccessStats(date, resourceName))
+	if err != nil {
+		log.Errorf("error getting member counts: %v", err)
+		return stats, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var m models.AccessStats
+		err = rows.Scan(&m.Date, &m.ResourceName, &m.AccessCount)
+		if err != nil {
+			log.Errorf("error scanning row: %s", err)
+		}
+
+		stats = append(stats, m)
+	}
+
+	return stats, nil
+}
