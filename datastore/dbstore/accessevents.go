@@ -21,9 +21,13 @@ func (db *DatabaseStore) LogAccessEvent(logMsg models.LogMessage) error {
 	t := time.Unix(logMsg.EventTime, 0)
 	t.Format(timeLayout)
 
-	_, err = dbPool.Query(context.Background(), memberDbMethod.insertEvent(), logMsg.Type, t.Format(timeLayout), logMsg.IsKnown, logMsg.Username, logMsg.RFID, logMsg.Door)
+	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.insertEvent(), logMsg.Type, t.Format(timeLayout), logMsg.IsKnown, logMsg.Username, logMsg.RFID, logMsg.Door)
 	if err != nil {
 		return fmt.Errorf("error insterting event to DB: %v", err)
+	}
+
+	if commandTag.RowsAffected() != 1 {
+		return errors.New("no row found to delete")
 	}
 
 	return nil
