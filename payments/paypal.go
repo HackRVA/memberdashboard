@@ -65,15 +65,17 @@ type Subscriber struct {
 	} `json:"subscriber"`
 }
 
+type Payment struct {
+	Amount struct {
+		CurrencyCode string `json:"currency_code"`
+		Value        string `json:"value"`
+	} `json:"amount"`
+	Time time.Time `json:"time"`
+}
 type subscriptionResponse struct {
 	Status      string `json:"status"`
 	BillingInfo struct {
-		LastPayment struct {
-			Amount struct {
-				CurrencyCode string `json:"currency_code"`
-				Value        string `json:"value"`
-			} `json:"amount"`
-		} `json:"last_payment"`
+		LastPayment Payment `json:"last_payment"`
 	} `json:"billing_info"`
 }
 
@@ -247,22 +249,27 @@ func (p PaymentProvider) GetMemberFromSubscription(subscriptionID string) (model
 	return m, nil
 }
 
-func (p *PaymentProvider) GetSubscription(subscriptionID string) (string, string, error) {
+func (p *PaymentProvider) GetSubscription(subscriptionID string) (string, Payment, error) {
+	var lastPayment Payment
+	if subscriptionID == "aaaaaaaaa" {
+		return "", lastPayment, fmt.Errorf("temporarily not calling this")
+	}
+	log.Debugf("fetching %s from paypal", subscriptionID)
 	c, err := config.Load()
 	if err != nil {
 		log.Errorf("error with config: %s", err)
-		return "", "", err
+		return "", lastPayment, err
 	}
 
 	if len(c.PaypalURL) == 0 {
-		return "", "", errors.New("no paypal url is set")
+		return "", lastPayment, errors.New("no paypal url is set")
 	}
 
 	if len(p.accessToken) == 0 {
 		p.accessToken, err = p.requestPaypalAccessToken()
 		if err != nil {
 			log.Errorf("error getting paypal access token %s\n", err.Error())
-			return "", "", err
+			return "", lastPayment, err
 		}
 	}
 
@@ -273,14 +280,14 @@ func (p *PaymentProvider) GetSubscription(subscriptionID string) (string, string
 
 	if err != nil {
 		fmt.Println(err)
-		return "", "", err
+		return "", lastPayment, err
 	}
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", p.accessToken))
 
 	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		return "", "", err
+		return "", lastPayment, err
 	}
 	defer res.Body.Close()
 
@@ -289,8 +296,10 @@ func (p *PaymentProvider) GetSubscription(subscriptionID string) (string, string
 	err = json.NewDecoder(res.Body).Decode(&subscriptionStatus)
 	if err != nil {
 		log.Error(err)
-		return "", "", err
+		return "", lastPayment, err
 	}
 
-	return subscriptionStatus.Status, subscriptionStatus.BillingInfo.LastPayment.Amount.Value, nil
+	lastPayment = subscriptionStatus.BillingInfo.LastPayment
+
+	return subscriptionStatus.Status, subscriptionStatus.BillingInfo.LastPayment, nil
 }

@@ -113,16 +113,7 @@ func (s *Scheduler) checkMemberSubscriptions() {
 			continue
 		}
 
-		status, value, err := s.paymentProvider.GetSubscription(member.SubscriptionID)
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-		if value == "" {
-			log.Errorf("was not able to get payment amount: %s", value)
-			continue
-		}
-		lastPayment, err := strconv.ParseFloat(value, 32)
+		status, lastPayment, err := s.paymentProvider.GetSubscription(member.SubscriptionID)
 		if err != nil {
 			log.Error(err)
 			continue
@@ -132,20 +123,31 @@ func (s *Scheduler) checkMemberSubscriptions() {
 	}
 }
 
-func (s *Scheduler) setMemberLevelBasedOnPaypalSubscriptionStatus(status string, lastPayment float64, member models.Member) {
+func (s *Scheduler) setMemberLevelBasedOnPaypalSubscriptionStatus(status string, lastPayment payments.Payment, member models.Member) {
 	switch status {
 	case payments.Active:
-		if int64(lastPayment) == models.MemberLevelToAmount[models.Premium] {
+		lastPaymentAmount, err := strconv.ParseFloat(lastPayment.Amount.Value, 32)
+		if err != nil {
+			log.Error(err)
+		}
+		if int64(lastPaymentAmount) == models.MemberLevelToAmount[models.Premium] {
 			s.dataStore.SetMemberLevel(member.ID, models.Premium)
 			return
 		}
-		if int64(lastPayment) == models.MemberLevelToAmount[models.Classic] {
+		if int64(lastPaymentAmount) == models.MemberLevelToAmount[models.Classic] {
 			s.dataStore.SetMemberLevel(member.ID, models.Classic)
 			return
 		}
 		s.dataStore.SetMemberLevel(member.ID, models.Standard)
 	case payments.Canceled:
-		s.dataStore.SetMemberLevel(member.ID, models.Inactive)
+		oneMonthAgo := (time.Hour * 24) * -30
+		if lastPayment.Time.Before(time.Now().Add(oneMonthAgo)) {
+			s.dataStore.SetMemberLevel(member.ID, models.Inactive)
+			log.Infof("%s subscription has ended", member.Name)
+			return
+		}
+		log.Infof("%s is in a grace period until their subscription ends", member.Name)
+		return
 	case payments.Suspended:
 		s.dataStore.SetMemberLevel(member.ID, models.Inactive)
 	default:
