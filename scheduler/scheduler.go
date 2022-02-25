@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"fmt"
 	"io/ioutil"
 	"memberserver/api/models"
 	"memberserver/config"
@@ -9,6 +10,7 @@ import (
 	"memberserver/payments"
 	"memberserver/resourcemanager"
 	"memberserver/resourcemanager/mqttserver"
+	"memberserver/slack"
 	"net/http"
 	"os"
 	"strconv"
@@ -142,11 +144,15 @@ func (s *Scheduler) setMemberLevelBasedOnPaypalSubscriptionStatus(status string,
 	case payments.Canceled:
 		oneMonthAgo := (time.Hour * 24) * -30
 		if lastPayment.Time.Before(time.Now().Add(oneMonthAgo)) {
+			if member.Level == uint8(models.Standard) || member.Level == uint8(models.Classic) || member.Level == uint8(models.Premium) {
+				go slack.PostWebHook(fmt.Sprintf("%s subscription has ended -- setting their member level to [INACTIVE]", member.Name))
+			}
 			s.dataStore.SetMemberLevel(member.ID, models.Inactive)
 			log.Infof("%s subscription has ended", member.Name)
 			return
 		}
 		log.Infof("%s is in a grace period until their subscription ends", member.Name)
+		go slack.PostWebHook(fmt.Sprintf("%s is in a grace period until their subscription ends", member.Name))
 		return
 	case payments.Suspended:
 		s.dataStore.SetMemberLevel(member.ID, models.Inactive)
