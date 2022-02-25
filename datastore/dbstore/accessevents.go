@@ -2,6 +2,7 @@ package dbstore
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"memberserver/api/models"
 	"time"
