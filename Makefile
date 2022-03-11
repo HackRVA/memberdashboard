@@ -19,7 +19,7 @@ migration: ## Create a new migration
 ##     make migration name=communication_log
 ##
 ifdef name
-	migrate create -ext sql -dir migrations -seq $(name)
+	migrate create -ext sql -dir dev/migrations -seq $(name)
 else
 	@echo No name provided.  Provide a name to make a migration
 	@echo Example:
@@ -38,7 +38,7 @@ migrate-up: ## Apply database migrations
 ##    or
 ##     make migrate-up n=2
 ##
-	migrate -database ${DB_CONNECTION_STRING}?sslmode=disable -verbose -path migrations up $(n)
+	migrate -database ${DB_CONNECTION_STRING}?sslmode=disable -verbose -path dev/migrations up $(n)
 
 .PHONY:migrate-down
 migrate-down: ## Revert database migrations
@@ -52,7 +52,7 @@ migrate-down: ## Revert database migrations
 ##    or
 ##     make migrate-down n=2
 ##
-	migrate -database ${DB_CONNECTION_STRING}?sslmode=disable -verbose -path migrations down $(n)
+	migrate -database ${DB_CONNECTION_STRING}?sslmode=disable -verbose -path dev/migrations down $(n)
 
 .PHONY:migrate-to
 migrate-to: ## Migrate to the specified version
@@ -65,7 +65,7 @@ migrate-to: ## Migrate to the specified version
 ##     make migrate-to version=2
 ##
 ifdef version
-	migrate -database ${DB_CONNECTION_STRING}?sslmode=disable -verbose -path migrations goto $(version)
+	migrate -database ${DB_CONNECTION_STRING}?sslmode=disable -verbose -path dev/migrations goto $(version)
 else
 	@echo No version provided. Provide a version to migrate to
 	@echo Example:
@@ -84,7 +84,7 @@ migrate-force: ## Force migrate to a database version
 ##     make migrate-force version=2
 ##
 ifdef version
-	migrate -database ${DB_CONNECTION_STRING}?sslmode=disable -verbose -path migrations force $(version)
+	migrate -database ${DB_CONNECTION_STRING}?sslmode=disable -verbose -path dev/migrations force $(version)
 else
 	@echo No version provided. Provide a version to force migrate
 	@echo Example:
@@ -139,4 +139,4 @@ endif
 
 .PHONY:swagger
 swagger: ## Generate swagger doc
-	swagger generate spec -o ./api/router/swagger.json --scan-models
+	swagger generate spec -o ./api/openapi/swagger.json --scan-models

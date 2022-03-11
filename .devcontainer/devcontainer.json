@@ -7,7 +7,7 @@
 	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
 	// The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
 	"dockerComposeFile": [
-		"../docker-compose.yml",
+		"../deployments/docker-compose.yml",
 		"docker-compose.yml"
 	],
 
@@ -41,10 +41,11 @@
 		"casualjim.gotemplate",
 		"dbaeumer.vscode-eslint",
 		"ckolkman.vscode-postgres",
+		"axosoft.gitkraken-glo", // dependency of gitlens
 		"eamodio.gitlens"
 	],
 
-	"postCreateCommand": ["sh", "postCreateCommand.sh"],
+	"postCreateCommand": ["sh", "./deployments/postCreateCommand.sh"],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [3000, 8000],
