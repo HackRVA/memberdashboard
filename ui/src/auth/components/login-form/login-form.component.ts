@@ -33,7 +33,7 @@ export class LoginForm extends LitElement {
 
   constructor() {
     super();
-    this.addEventListener('keypress', this.handleSubmitByEnter);
+    this.addEventListener('keypress', this.handleSubmitOnEnter);
   }
 
   firstUpdated(): void {
@@ -41,7 +41,7 @@ export class LoginForm extends LitElement {
     this.passwordFieldTemplate = this.shadowRoot?.querySelector('#password');
   }
 
-  handleSubmitByEnter(event: KeyboardEvent): void {
+  handleSubmitOnEnter(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.handleSubmit();
     }

@@ -32,7 +32,7 @@ export class RegisterForm extends LitElement {
 
   constructor() {
     super();
-    this.addEventListener('keypress', this.handleSubmitByEnter);
+    this.addEventListener('keypress', this.handleSubmitOnEnter);
   }
 
   firstUpdated(): void {
@@ -42,7 +42,7 @@ export class RegisterForm extends LitElement {
       this.shadowRoot.querySelector('#confirm-password');
   }
 
-  handleSubmitByEnter(event: KeyboardEvent): void {
+  handleSubmitOnEnter(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.handleSubmit();
     }
