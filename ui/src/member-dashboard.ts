@@ -42,19 +42,19 @@ export class MemberDashboard extends LitElement {
   }
 
   getUser(): void {
-    this.userService.getUser().subscribe({
-      next: (result: UserResponse) => {
-        const { email } = result;
+    this.userService
+      .getUser()
+      .toPromise()
+      .then((response: UserResponse) => {
+        const { email } = response;
         authUser$.next({ login: true, email: email });
         this.email = email;
         this.finishedLoading = true;
         this.requestUpdate();
-      },
-      error: () => {
+      })
+      .catch(() => {
         this.finishedLoading = true;
-        this.requestUpdate();
-      },
-    });
+      });
   }
 
   isUserLogin(): boolean {
