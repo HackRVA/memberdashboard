@@ -30,11 +30,22 @@ export class RegisterForm extends LitElement {
     return [registerFormStyles];
   }
 
+  constructor() {
+    super();
+    this.addEventListener('keypress', this.handleSubmitOnEnter);
+  }
+
   firstUpdated(): void {
     this.emailFieldTemplate = this.shadowRoot.querySelector('#email');
     this.passwordFieldTemplate = this.shadowRoot.querySelector('#password');
     this.confirmPasswordFieldTemplate =
       this.shadowRoot.querySelector('#confirm-password');
+  }
+
+  handleSubmitOnEnter(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.handleSubmit();
+    }
   }
 
   handleUserRegister(): void {

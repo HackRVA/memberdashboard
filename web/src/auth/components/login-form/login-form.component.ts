@@ -31,9 +31,20 @@ export class LoginForm extends LitElement {
     return [loginFormStyle, coreStyle];
   }
 
+  constructor() {
+    super();
+    this.addEventListener('keypress', this.handleSubmitOnEnter);
+  }
+
   firstUpdated(): void {
     this.emailFieldTemplate = this.shadowRoot?.querySelector('#email');
     this.passwordFieldTemplate = this.shadowRoot?.querySelector('#password');
+  }
+
+  handleSubmitOnEnter(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.handleSubmit();
+    }
   }
 
   handleSubmit(): void {
