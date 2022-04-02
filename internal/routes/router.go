@@ -70,7 +70,7 @@ func (r *Router) RegisterRoutes(auth *auth.AuthController) *mux.Router {
 	r.setupReportsRoutes(r.api.ReportsServer, accessControl)
 	r.setupVersionRoutes(r.api.VersionServer)
 
-	spa := spaHandler{staticPath: "./ui/dist/", indexPath: "index.html"}
+	spa := spaHandler{staticPath: "./web/dist/", indexPath: "index.html"}
 	openapi.ServeSwaggerUI(r.UnAuthedRouter)
 	r.UnAuthedRouter.PathPrefix("/").Handler(spa)
 	http.Handle("/", r.UnAuthedRouter)

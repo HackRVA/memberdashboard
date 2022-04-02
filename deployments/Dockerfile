@@ -14,11 +14,11 @@ FROM node:14.17.6 as frontend-build
 
 WORKDIR /app
 
-COPY internal/ui/package.json /app
+COPY internal/web/package.json /app
 
 RUN npm i
 
-COPY ./internal/ui /app
+COPY ./internal/web /app
 # compile and bundle typescript
 RUN npm run build
 
