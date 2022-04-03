@@ -1,6 +1,6 @@
 # See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.177.0/containers/go/.devcontainer/base.Dockerfile
 
-ARG VARIANT="1.17"
+ARG VARIANT="1.18"
 FROM mcr.microsoft.com/vscode/devcontainers/go:0-${VARIANT}
 
 # [Option] Install Node.js
