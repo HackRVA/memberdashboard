@@ -18,7 +18,7 @@ COPY internal/web/package.json /app
 
 RUN npm i
 
-COPY ./internal/web /app
+COPY ./web /app
 # compile and bundle typescript
 RUN npm run build
 
