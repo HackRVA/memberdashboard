@@ -29,3 +29,4 @@ jobs:
           name: hackrva/memberserver
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          context: ./deployments/Dockerfile
