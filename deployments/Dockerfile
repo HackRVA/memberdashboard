@@ -14,7 +14,7 @@ FROM node:14.17.6 as frontend-build
 
 WORKDIR /app
 
-COPY internal/web/package.json /app
+COPY ./web/package.json /app
 
 RUN npm i
 
