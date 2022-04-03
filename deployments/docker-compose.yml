@@ -1,0 +1,56 @@
+version: "3"
+services:
+    memberserver:
+        build:
+            context: ../
+            dockerfile: ./deployments/Dockerfile
+            args:
+                GIT_COMMIT: ${GIT_COMMIT}
+        container_name: memberdashboard
+        ports:
+            - 3000:3000
+        # volumes:
+        #     - .src/:/membership
+        depends_on:
+            - postgres
+        networks:
+            - membership
+        env_file:
+            - ../configs/memberserver.example.env
+        volumes:
+            # This is go modules cache, without it you will have to
+            # re-download all dependencies after restarting container
+            - modules:/go/pkg/mod/cache
+    postgres:
+        image: postgres
+        ports:
+            - 5432:5432
+        environment:
+          - POSTGRES_DB=membership
+          - POSTGRES_USER=test
+          - POSTGRES_PASSWORD=test
+        # volumes:
+            # - ./test/postgres/:/docker-entrypoint-initdb.d/
+        networks:
+            - membership
+
+    mosquitto:
+        container_name: mosquitto
+        image: eclipse-mosquitto:1.6.10
+        volumes:
+            - ./resourcebridge/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+            # - /etc/hackrva/mqtt.passwordfile:/mosquitto/config/mqtt.passwordfile
+        ports:
+            - '8883:8883'
+            - '1883:1883'
+        networks:
+            - membership
+        restart: unless-stopped
+
+networks:
+    membership:
+        external: false
+
+volumes:
+    modules:
+        driver: local

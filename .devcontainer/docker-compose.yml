@@ -17,7 +17,7 @@ services:
     # array). The sample below assumes your primary file is in the root of your project.
     #
     build:
-      context: .
+      context: ../
       dockerfile: .devcontainer/Dockerfile
     ports:
       - 3000:3000
@@ -26,9 +26,10 @@ services:
     networks:
       - membership
     env_file:
-      - memberserver.example.env
+      - ../configs/memberserver.example.env
     volumes:
-      - .:/workspace:cached
+      - ../:/workspace:cached
+    container_name: memberdashboard_dev
 
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
       # - /var/run/docker.sock:/var/run/docker.sock

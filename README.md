@@ -28,11 +28,11 @@ If you are on Windows, then it is recommended to clone to the repo to a folder o
 
 Either open the folder in VS Code and choose reopen in container or run the Remote-Containers: Open Folder in Container... command and select the local folder.
 
-![Open from container](openFromContainer.gif "Open from container")
+![Open from container](docs/openFromContainer.gif "Open from container")
 
 The backend server can be started by debugging in VS Code. Otherwise, you can start the server without debugging using `sh buildandrun.sh`.
 
-Start the web app as described in the [UI README](/ui/README.md).
+Start the web app as described in the [UI README](/web/README.md).
 
 ```
 # navigate to ui folder
@@ -58,20 +58,23 @@ Now, go write code and implement features!
 ### Seed the DB with test data
 
 > note: before seeding the db, it has to be up and running with the current schema
-run the db migrations
+> run the db migrations
+
 ```
 make migrate-up
 ```
 
 seed the db
+
 ```
 make seed
 ```
+
 This will create some random members and a test user.
 
-| username | password |
-|----------|----------|
-| test@test.com | test |
+| username      | password |
+| ------------- | -------- |
+| test@test.com | test     |
 
 ### How to install golang-migrate
 
@@ -135,13 +138,17 @@ The following options are available if using Remote-Containers.
 - Use make run-sql or make run-sql-command
 
 ### Troubleshooting devContainer
+
 Sometimes i'm getting an error when tryign to build the containers.
+
 ```
 Command failed: docker inspect --type image memberdashboard_dev
 ```
+
 This happened after I ran a `docker system prune -a`, but I think I've seen it before.
 
 To fix this, build the containers with the following command then reopen vscode in Container
+
 ```
 docker-compose -f docker-compose.yml -f .devcontainer/docker-compose.yml build
 ```

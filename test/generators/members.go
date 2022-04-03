@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"memberserver/api/models"
-	"memberserver/config"
-	"memberserver/datastore/dbstore"
+	"memberserver/internal/datastore/dbstore"
+	"memberserver/internal/models"
+	"memberserver/internal/services/config"
+	"memberserver/internal/services/scheduler/jobs"
+
 	"os"
 	"strconv"
 	"strings"
@@ -15,11 +17,8 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/Rhymond/go-money"
 	"syreclabs.com/go/faker"
 )
-
-var tiers = []int64{0, 0, 0, 30, 35, 50}
 
 func main() {
 	if len(os.Args) != 2 {
@@ -35,17 +34,19 @@ func main() {
 	db, _ := dbstore.Setup()
 	db.AddMembers([]models.Member{testMember()})
 
+	jobManager := jobs.New(db)
+
 	for i := 0; i < count; i++ {
 		member := fakeMember()
 		db.AddMembers([]models.Member{member})
 		log.Printf("Added member %v", member.Name)
 		if member.Level > 1 {
 			member, _ = db.GetMemberByEmail(member.Email)
-			lastPayment := time.Now().AddDate(0, 0, -rand.Intn(70))
-			numPayments := rand.Intn(6)
-			log.Printf("Creating %v payments", numPayments)
-			payments := fakePaymentHistory(member, lastPayment, numPayments)
-			db.AddPayments(payments)
+			memberLevelID, _ := strconv.Atoi(faker.Number().Between(1, 5))
+			jobManager.SetMemberLevel(models.ActiveStatus, models.Payment{
+				Amount: strconv.Itoa(int(models.MemberLevelToAmount[models.MemberLevel(memberLevelID)])),
+				Time:   time.Now().AddDate(0, 0, -rand.Intn(70)),
+			}, member)
 		}
 	}
 
@@ -64,23 +65,6 @@ func fakeMember() models.Member {
 		Resources:      resources,
 		SubscriptionID: faker.Internet().MacAddress(),
 	}
-}
-
-func fakePaymentHistory(member models.Member, lastPayment time.Time, numberOfPayments int) []models.Payment {
-	payments := []models.Payment{}
-	for i := 0; i < numberOfPayments; i++ {
-		paymentDate := lastPayment.AddDate(0, -i, 0)
-		payments = append(payments, models.Payment{
-			ID:       faker.Number().Number(8),
-			Date:     paymentDate,
-			Amount:   *money.New(tiers[member.Level]*100, "USD"),
-			Provider: 1,
-			MemberID: member.ID,
-			Email:    member.Email,
-			Name:     member.Name,
-		})
-	}
-	return payments
 }
 
 func testMember() models.Member {
@@ -143,8 +127,11 @@ VALUES `
 
 	log.Infof("Adding %d months of member counts", len(months))
 
-	_, err = dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	commandTag, err := dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
 	if err != nil {
 		log.Errorf("conn.Exec failed: %v", err)
+	}
+	if commandTag.RowsAffected() != 1 {
+		log.Errorf("no row affected")
 	}
 }
