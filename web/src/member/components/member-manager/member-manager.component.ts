@@ -31,22 +31,28 @@ export class MemberManager extends LitElement {
   members: MemberResponse[] = [];
 
   @property({ type: Number })
-  memberCount: number = 0;
+  memberCount = 0;
 
   @property({ type: Number })
-  totalMemberCount: number = 0;
+  totalMemberCount = 0;
 
   @Inject('member')
   private memberService: MemberService;
 
   memberResources: Array<MemberResource> = [];
-  email: string = '';
-  fullName: string = '';
+
+  email = '';
+
+  fullName = '';
+
+  subscriptionID = '';
 
   memberEmails: string[] = [];
+
   toastMsg: ToastMessage;
 
   membersCheckBoxTemplate: NodeListOf<CheckboxBase>;
+
   allMembersCheckBoxTemplate: CheckboxBase;
 
   static get styles(): CSSResult[] {
@@ -102,16 +108,17 @@ export class MemberManager extends LitElement {
     showComponent('#new-member-modal', this.shadowRoot);
   }
 
-  openRFIDModal(email: string = ''): void {
+  openRFIDModal(email = ''): void {
     this.email = email;
     this.requestUpdate();
 
     showComponent('#rfid-modal', this.shadowRoot);
   }
 
-  openEditMemberModal(email: string, fullName: string): void {
-    this.email = email;
-    this.fullName = fullName;
+  openEditMemberModal(member: MemberResponse): void {
+    this.email = member.email;
+    this.fullName = member.name;
+    this.subscriptionID = member.subscriptionID;
 
     this.requestUpdate();
     showComponent('#edit-member-modal', this.shadowRoot);
@@ -157,8 +164,7 @@ export class MemberManager extends LitElement {
             <mwc-list-item @click=${() =>
               this.openRFIDModal(member.email)}> Assign RFID 
             </mwc-list-item>
-            <mwc-list-item @click=${() =>
-              this.openEditMemberModal(member.email, member.name)}> 
+            <mwc-list-item @click=${() => this.openEditMemberModal(member)}> 
               Edit Member
             </mwc-list-item>
             <mwc-list-item @click=${() =>
@@ -321,6 +327,7 @@ export class MemberManager extends LitElement {
       <edit-member
         id="edit-member-modal"
         .email=${this.email}
+        .currentSubscriptionID=${this.subscriptionID}
         .currentFullName=${this.fullName}
         @updated=${this.refreshMemberList}
       ></edit-member>

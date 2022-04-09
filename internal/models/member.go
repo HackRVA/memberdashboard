@@ -33,7 +33,8 @@ type AssignRFIDRequest struct {
 
 // UpdateMemberRequest -- request to update a member
 type UpdateMemberRequest struct {
-	FullName string `json:"fullName"`
+	FullName       string `json:"fullName"`
+	SubscriptionID string `json:"subscriptionID"`
 }
 
 type Payment struct {

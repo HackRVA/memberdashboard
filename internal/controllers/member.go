@@ -58,14 +58,17 @@ func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	_, err = m.store.GetMemberByEmail(memberEmail)
+	err = m.store.UpdateMember(models.Member{
+		Email: memberEmail,
+	}, models.Member{
+		Name:           request.FullName,
+		SubscriptionID: request.SubscriptionID,
+	})
 
 	if err != nil {
 		notFound(w, "error getting member by email")
 		return
 	}
-
-	err = m.store.UpdateMemberByEmail(request.FullName, memberEmail)
 
 	ok(w, models.EndpointSuccess{
 		Ack: true,
