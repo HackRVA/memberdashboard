@@ -336,7 +336,7 @@ func TestUpdateMemberSubscriptionID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.TestName, func(t *testing.T) {
 			tt.Setup()
-			request := newupdateMemberRequest(tt.Update, tt.Expected.Email)
+			request := newUpdateMemberRequest(tt.Update, tt.Expected.Email)
 			response := httptest.NewRecorder()
 
 			server.UpdateMemberByEmailHandler(response, request)
@@ -368,7 +368,7 @@ func newGetMemberByEmailRequest(email string) *http.Request {
 	return req
 }
 
-func newupdateMemberRequest(update models.UpdateMemberRequest, email string) *http.Request {
+func newUpdateMemberRequest(update models.UpdateMemberRequest, email string) *http.Request {
 	reqBody, _ := json.Marshal(update)
 	req, _ := http.NewRequest(http.MethodPut, "/api/member/email/"+email, bytes.NewReader(reqBody))
 	return req
