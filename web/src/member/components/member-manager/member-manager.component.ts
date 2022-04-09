@@ -31,21 +31,21 @@ export class MemberManager extends LitElement {
   members: MemberResponse[] = [];
 
   @property({ type: Number })
-  memberCount = 0;
+  memberCount: number = 0;
 
   @property({ type: Number })
-  totalMemberCount = 0;
+  totalMemberCount: number = 0;
 
   @Inject('member')
   private memberService: MemberService;
 
   memberResources: Array<MemberResource> = [];
 
-  email = '';
+  email: string = '';
 
-  fullName = '';
+  fullName: string = '';
 
-  subscriptionID = '';
+  subscriptionID:string = '';
 
   memberEmails: string[] = [];
 

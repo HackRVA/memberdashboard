@@ -19,13 +19,13 @@ import { IPopup } from '../../../shared/types/custom/ipop-up';
 @customElement('edit-member')
 export class EditMemberModal extends LitElement implements IPopup {
   @property({ type: String })
-  email = '';
+  email: string = '';
 
   @property({ type: String })
-  currentFullName = '';
+  currentFullName: string = '';
 
   @property({ type: String })
-  currentSubscriptionID = '';
+  currentSubscriptionID: string = '';
 
   @Inject('member')
   private memberService: MemberService;
@@ -45,8 +45,7 @@ export class EditMemberModal extends LitElement implements IPopup {
   firstUpdated(): void {
     this.editMemberModalTemplate = this.shadowRoot.querySelector('mwc-dialog');
     this.fullNameTemplate = this.shadowRoot.querySelector('#name');
-    this.subscriptionIDTemplate =
-      this.shadowRoot.querySelector('#subscription-id');
+    this.subscriptionIDTemplate = this.shadowRoot.querySelector('#subscription-id');
   }
 
   updated(): void {
