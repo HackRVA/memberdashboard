@@ -15,6 +15,7 @@ func (db *DatabaseStore) LogAccessEvent(logMsg models.LogMessage) error {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {
 		log.Printf("got error: %v\n", err)
+		return fmt.Errorf("error connecting to DB: %v", err)
 	}
 	defer dbPool.Close()
 

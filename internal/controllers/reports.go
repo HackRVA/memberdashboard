@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"memberserver/internal/datastore"
 	"memberserver/internal/models"
 	"net/http"
@@ -13,7 +14,35 @@ type ReportsServer struct {
 	store datastore.ReportStore
 }
 
-func (r *ReportsServer) GetMemberCounts(w http.ResponseWriter, req *http.Request) {
+func (r *ReportsServer) GetAccessStatsChart(w http.ResponseWriter, req *http.Request) {
+	resourceName := req.URL.Query().Get("resourceName")
+	day := req.URL.Query().Get("day")
+
+	var d time.Time
+	var err error
+
+	if len(resourceName) == 0 {
+		http.Error(w, "please provide a resourceName query string (e.g. `?resourceName=frontdoor`)", http.StatusBadRequest)
+		return
+	}
+
+	if len(day) > 0 {
+		d, err = time.Parse("", day)
+		if err != nil {
+			log.Errorf("error parsing time")
+		}
+	}
+
+	accessStats, err := r.store.GetAccessStats(d, resourceName)
+	if err != nil {
+		http.Error(w, "error looking up access counts", http.StatusInternalServerError)
+		return
+	}
+
+	ok(w, makeAccessTrendChart(accessStats, resourceName))
+}
+
+func (r *ReportsServer) GetMemberCountsCharts(w http.ResponseWriter, req *http.Request) {
 	chartType := req.URL.Query().Get("type")
 	month := req.URL.Query().Get("month")
 
@@ -50,6 +79,19 @@ func (r *ReportsServer) GetMemberCounts(w http.ResponseWriter, req *http.Request
 	}
 
 	ok(w, charts)
+}
+
+func (r *ReportsServer) GetMemberChurn(w http.ResponseWriter, req *http.Request) {
+	churn, err := r.store.GetMemberChurn()
+	if err != nil {
+		log.Errorf("error getting member churn: %s", err)
+		http.Error(w, "error getting member churn", http.StatusInternalServerError)
+		return
+	}
+
+	ok(w, models.MemberChurn{
+		Churn: churn,
+	})
 }
 
 func makeMemberTrendChart(counts []models.MemberCount) models.ReportChart {
@@ -126,4 +168,22 @@ func makeMemberDistributionChart(counts []models.MemberCount) []models.ReportCha
 		distributionCharts = append(distributionCharts, chart)
 	}
 	return distributionCharts
+}
+
+func makeAccessTrendChart(stats []models.AccessStats, resourceName string) models.ReportChart {
+	var chart models.ReportChart
+	chart.Options.Title = fmt.Sprintf("%s Access Trends", resourceName)
+	chart.Type = "line"
+	chart.Options.CurveType = "function"
+	chart.Options.Legend = "bottom"
+	chart.Cols = []models.ChartCol{{Label: "Day", Type: "string"}, {Label: "Access Count", Type: "number"}}
+
+	for _, s := range stats {
+		var row []interface{}
+		row = append(row, s.Date.Format("Jan-06-19"))
+		// explicitly exclude credited
+		row = append(row, s.AccessCount)
+		chart.Rows = append(chart.Rows, row)
+	}
+	return chart
 }
