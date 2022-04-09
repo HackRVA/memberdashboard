@@ -45,7 +45,7 @@ export class MemberManager extends LitElement {
 
   fullName: string = '';
 
-  subscriptionID:string = '';
+  subscriptionID: string = '';
 
   memberEmails: string[] = [];
 
