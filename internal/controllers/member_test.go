@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"memberserver/internal/datastore/in_memory"
 	"memberserver/internal/models"
+	"memberserver/internal/services/member"
 	"memberserver/internal/services/resourcemanager"
 	"memberserver/internal/services/resourcemanager/mqttserver"
 	"net/http"
@@ -53,7 +54,8 @@ var testMemberStore = in_memory.In_memory{
 }
 
 func TestGetMember(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(in_memory.MemberMapToSlice(testMemberStore.Members))
@@ -95,7 +97,8 @@ func TestGetMember(t *testing.T) {
 }
 
 func TestGetMemberByEmail(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Members["test@test.com"])
@@ -148,7 +151,8 @@ func TestGetMemberByEmail(t *testing.T) {
 }
 
 func TestAssignRFID(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	tests := []struct {
 		TestName           string
@@ -198,7 +202,8 @@ func TestAssignRFID(t *testing.T) {
 }
 
 func TestGetTiers(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Tiers)
@@ -231,7 +236,8 @@ func TestGetTiers(t *testing.T) {
 }
 
 func TestNewMember(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	newMember := models.Member{
 		Email: "test1@test.com",
@@ -274,7 +280,8 @@ func TestNewMember(t *testing.T) {
 }
 
 func TestUpdateMemberSubscriptionID(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	expectedResponse, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,
@@ -291,7 +298,7 @@ func TestUpdateMemberSubscriptionID(t *testing.T) {
 		{
 			TestName: "should return a valid response for a valid email",
 			Setup: func() {
-				server.store.AddNewMember(models.Member{
+				server.MemberService.Add(models.Member{
 					Name:           "testUser",
 					Email:          "testUser@email.com",
 					SubscriptionID: "unmodified",

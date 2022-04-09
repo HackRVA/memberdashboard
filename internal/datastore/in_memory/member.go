@@ -41,16 +41,16 @@ func (i In_memory) AssignRFID(email string, rfid string) (models.Member, error) 
 	return models.Member{}, errors.New("user not found")
 }
 
-func (i In_memory) UpdateMember(existing models.Member, update models.Member) error {
+func (i In_memory) UpdateMember(update models.Member) error {
 	if len(update.Name) == 0 {
 		return errors.New("fullname is required")
 	}
 
-	if len(existing.Email) == 0 {
+	if len(update.Email) == 0 {
 		return errors.New("email is required")
 	}
 
-	if _, ok := Members[existing.Email]; !ok {
+	if _, ok := Members[update.Email]; !ok {
 		return errors.New("not found")
 	}
 

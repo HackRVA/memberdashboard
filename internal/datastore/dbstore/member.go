@@ -155,14 +155,14 @@ func (db *DatabaseStore) AssignRFID(email string, rfid string) (models.Member, e
 	return member, err
 }
 
-func (db *DatabaseStore) UpdateMember(lookup models.Member, update models.Member) error {
+func (db *DatabaseStore) UpdateMember(update models.Member) error {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {
 		log.Printf("got error: %v\n", err)
 	}
 	defer dbPool.Close()
 
-	member, err := db.GetMemberByEmail(lookup.Email)
+	member, err := db.GetMemberByEmail(update.Email)
 
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())

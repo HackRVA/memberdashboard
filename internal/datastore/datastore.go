@@ -28,7 +28,7 @@ type MemberStore interface {
 	GetMembersWithCredit() []models.Member
 	ProcessMember(newMember models.Member) error
 	GetMemberByRFID(rfid string) (models.Member, error)
-	UpdateMember(member models.Member, update models.Member) error
+	UpdateMember(update models.Member) error
 	SetMemberLevel(memberId string, level models.MemberLevel) error
 	ApplyMemberCredits()
 	UpdateMemberTiers()
