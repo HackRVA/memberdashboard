@@ -27,7 +27,7 @@ FROM node:14.17.6
 
 WORKDIR /app
 
-COPY --from=frontend-build /app/dist ./ui/dist/
+COPY --from=frontend-build /app/dist ./web/dist/
 COPY --from=backend-build /membership/server .
 COPY --from=backend-build /membership/internal/templates ./templates
 
