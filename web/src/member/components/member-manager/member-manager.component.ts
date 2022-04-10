@@ -108,7 +108,7 @@ export class MemberManager extends LitElement {
     showComponent('#new-member-modal', this.shadowRoot);
   }
 
-  openRFIDModal(email = ''): void {
+  openRFIDModal(email: string = ''): void {
     this.email = email;
     this.requestUpdate();
 
