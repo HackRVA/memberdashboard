@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -140,6 +142,27 @@ func (rm ResourceManager) Open(resource models.Resource) {
 	})
 
 	rm.MQTTServer.Publish(resource.Name, string(b))
+}
+
+// RemoveOne - remove a member from all resources
+func (rm ResourceManager) RemoveOne(member models.Member) {
+	member, err := rm.store.GetMemberByEmail(member.Email)
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
+
+	memberAccess, _ := rm.store.GetMembersAccess(member)
+
+	for _, m := range memberAccess {
+		rm.RemoveMember(models.MemberAccess{
+			Email:           member.Email,
+			ResourceAddress: m.ResourceAddress,
+			ResourceName:    m.ResourceName,
+			Name:            member.Name,
+			RFID:            member.RFID,
+		})
+	}
 }
 
 // PushOne - update one user on the resources

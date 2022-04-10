@@ -10,6 +10,7 @@ export interface MemberResponse {
   name: string;
   email: string;
   rfid: string;
+  subscriptionID: string;
   memberLevel: MemberLevel;
   resources: Array<MemberResource>;
 }

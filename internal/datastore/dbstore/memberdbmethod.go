@@ -46,9 +46,7 @@ func (member *MemberDatabaseMethod) getMemberByEmail() string {
 }
 
 func (member *MemberDatabaseMethod) updateMemberByEmail() string {
-	const updateMemberByEmailQuery = `UPDATE membership.members SET name=$1 WHERE email=$2;`
-
-	return updateMemberByEmailQuery
+	return `UPDATE membership.members SET name=$1, subscription_id=$2 WHERE email=$3;`
 }
 
 func (member *MemberDatabaseMethod) getMemberByRFID() string {

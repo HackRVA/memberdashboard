@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"memberserver/internal/datastore/in_memory"
 	"memberserver/internal/models"
+	"memberserver/internal/services/member"
 	"memberserver/internal/services/resourcemanager"
 	"memberserver/internal/services/resourcemanager/mqttserver"
 	"net/http"
@@ -53,7 +54,8 @@ var testMemberStore = in_memory.In_memory{
 }
 
 func TestGetMember(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(in_memory.MemberMapToSlice(testMemberStore.Members))
@@ -95,7 +97,8 @@ func TestGetMember(t *testing.T) {
 }
 
 func TestGetMemberByEmail(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Members["test@test.com"])
@@ -148,7 +151,8 @@ func TestGetMemberByEmail(t *testing.T) {
 }
 
 func TestAssignRFID(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	tests := []struct {
 		TestName           string
@@ -198,7 +202,8 @@ func TestAssignRFID(t *testing.T) {
 }
 
 func TestGetTiers(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Tiers)
@@ -231,7 +236,8 @@ func TestGetTiers(t *testing.T) {
 }
 
 func TestNewMember(t *testing.T) {
-	server := &MemberServer{&testMemberStore, resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{}), union.New()}
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
 
 	newMember := models.Member{
 		Email: "test1@test.com",
@@ -273,6 +279,74 @@ func TestNewMember(t *testing.T) {
 	}
 }
 
+func TestUpdateMemberSubscriptionID(t *testing.T) {
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
+
+	expectedResponse, _ := json.Marshal(models.EndpointSuccess{
+		Ack: true,
+	})
+
+	tests := []struct {
+		TestName           string
+		Setup              func()
+		Update             models.UpdateMemberRequest
+		Expected           models.Member
+		expectedHTTPStatus int
+		expectedResponse   string
+	}{
+		{
+			TestName: "should return a valid response for a valid email",
+			Setup: func() {
+				server.MemberService.Add(models.Member{
+					Name:           "testUser",
+					Email:          "testUser@email.com",
+					SubscriptionID: "unmodified",
+				})
+			},
+			Expected: models.Member{
+				Name:           "testUser",
+				Email:          "testUser@email.com",
+				SubscriptionID: "modified",
+			},
+			Update: models.UpdateMemberRequest{
+				FullName:       "testUser",
+				SubscriptionID: "modified",
+			},
+			expectedHTTPStatus: http.StatusOK,
+			expectedResponse:   string(expectedResponse),
+		},
+		{
+			TestName: "should respond not found if member doesn't exist",
+			Setup:    func() {},
+			Expected: models.Member{
+				Name:           "doesn't exist",
+				Email:          "doesntexist@email.com",
+				SubscriptionID: "",
+			},
+			Update: models.UpdateMemberRequest{
+				FullName:       "doesn't exist",
+				SubscriptionID: "",
+			},
+			expectedHTTPStatus: http.StatusNotFound,
+			expectedResponse:   "error getting member by email\n",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.TestName, func(t *testing.T) {
+			tt.Setup()
+			request := newUpdateMemberRequest(tt.Update, tt.Expected.Email)
+			response := httptest.NewRecorder()
+
+			server.UpdateMemberByEmailHandler(response, request)
+
+			assertStatus(t, response.Code, tt.expectedHTTPStatus)
+			assertResponseBody(t, response.Body.String(), tt.expectedResponse)
+		})
+	}
+}
+
 func newAssignRFIDRequest(email, rfid string) *http.Request {
 	assignReq := models.AssignRFIDRequest{
 		RFID:  rfid,
@@ -291,6 +365,12 @@ func newGetMembersRequest() *http.Request {
 
 func newGetMemberByEmailRequest(email string) *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/member/email/%s", email), nil)
+	return req
+}
+
+func newUpdateMemberRequest(update models.UpdateMemberRequest, email string) *http.Request {
+	reqBody, _ := json.Marshal(update)
+	req, _ := http.NewRequest(http.MethodPut, "/api/member/email/"+email, bytes.NewReader(reqBody))
 	return req
 }
 

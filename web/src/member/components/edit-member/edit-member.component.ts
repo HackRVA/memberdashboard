@@ -11,10 +11,10 @@ import '../../../shared/components/toast-msg';
 import { editMemberStyle } from './edit-member.style';
 import { MemberService } from '../../services/member.service';
 import { Inject } from '../../../shared/di/inject';
-import { ToastMessage } from './../../../shared/types/custom/toast-msg';
+import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { showComponent } from '../../../shared/functions';
 import { UpdateMemberRequest } from '../../types/api/update-member-request';
-import { IPopup } from './../../../shared/types/custom/ipop-up';
+import { IPopup } from '../../../shared/types/custom/ipop-up';
 
 @customElement('edit-member')
 export class EditMemberModal extends LitElement implements IPopup {
@@ -24,13 +24,19 @@ export class EditMemberModal extends LitElement implements IPopup {
   @property({ type: String })
   currentFullName: string = '';
 
+  @property({ type: String })
+  currentSubscriptionID: string = '';
+
   @Inject('member')
   private memberService: MemberService;
 
   toastMsg: ToastMessage;
 
   editMemberModalTemplate: Dialog;
+
   fullNameTemplate: TextField;
+
+  subscriptionIDTemplate: TextField;
 
   static get styles(): CSSResult[] {
     return [editMemberStyle];
@@ -39,10 +45,12 @@ export class EditMemberModal extends LitElement implements IPopup {
   firstUpdated(): void {
     this.editMemberModalTemplate = this.shadowRoot.querySelector('mwc-dialog');
     this.fullNameTemplate = this.shadowRoot.querySelector('#name');
+    this.subscriptionIDTemplate = this.shadowRoot.querySelector('#subscription-id');
   }
 
   updated(): void {
     this.fullNameTemplate.value = this.currentFullName;
+    this.subscriptionIDTemplate.value = this.currentSubscriptionID;
   }
 
   private handleClosed(): void {
@@ -64,6 +72,7 @@ export class EditMemberModal extends LitElement implements IPopup {
   private tryToUpdateMember(): void {
     const request: UpdateMemberRequest = {
       fullName: this.fullNameTemplate.value,
+      subscriptionID: this.subscriptionIDTemplate.value,
     };
 
     this.updateMember(this.email, request);
@@ -117,6 +126,14 @@ export class EditMemberModal extends LitElement implements IPopup {
           label="Full Name"
           helper="Full Name"
           id="name"
+        ></mwc-textfield>
+        <mwc-textfield
+          required
+          type="text"
+          outlined
+          label="Subscription ID"
+          helper="Subscription ID"
+          id="subscription-id"
         ></mwc-textfield>
         <mwc-button slot="primaryAction" @click=${this.handleSubmit}>
           Submit
