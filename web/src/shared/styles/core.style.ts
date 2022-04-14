@@ -12,8 +12,6 @@ import { css, CSSResult } from 'lit';
 // memberdashboard
 import { primaryBlue, primaryRed, primaryGreen, primaryWhite } from './colors';
 
-document.documentElement.setAttribute("theme", "dark");
-
 export const coreStyle: CSSResult = css`
   .center-text {
     text-align: center;
@@ -56,5 +54,4 @@ export const coreStyle: CSSResult = css`
       opacity: 1;
     }
   }
-
 `;
