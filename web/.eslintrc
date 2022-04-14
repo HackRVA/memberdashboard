@@ -1,4 +1,10 @@
 {
+   "rules": {
+      "no-inferrable-types": {
+         "ignoreParameters": 0,
+         "ignoreProperties": 0
+      }
+   },
    "root": true,
    "parser": "@typescript-eslint/parser",
    "plugins": [
