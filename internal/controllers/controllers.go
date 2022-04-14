@@ -5,6 +5,7 @@ import (
 	"memberserver/internal/datastore"
 	"memberserver/internal/services/config"
 	"memberserver/internal/services/report"
+	"memberserver/internal/services/member"
 	"memberserver/internal/services/resourcemanager"
 	"memberserver/internal/services/resourcemanager/mqttserver"
 
@@ -45,8 +46,8 @@ func Setup(store datastore.DataStore, auth *auth.AuthController) API {
 			resourcemanager: rm,
 		},
 		VersionServer: &VersionServer{NewInMemoryVersionStore()},
-		MemberServer:  &MemberServer{store, rm, auth.AuthStrategy},
 		ReportsServer: &ReportsServer{report.Report{Store: store}},
+		MemberServer:  &MemberServer{rm, member.NewMemberService(store, rm), auth.AuthStrategy},
 		UserServer:    &userServer,
 		AuthStrategy:  auth.AuthStrategy,
 		JWTKeeper:     auth.JWTSecretsKeeper,

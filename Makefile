@@ -140,3 +140,8 @@ endif
 .PHONY:swagger
 swagger: ## Generate swagger doc
 	swagger generate spec -o ./api/openapi/swagger.json --scan-models
+
+
+watch-ui: ## run ui in watch mode
+##   Usage: make watch-ui
+	npm --prefix=web start

@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"memberserver/internal/datastore"
-	"memberserver/internal/models"
 	"memberserver/internal/services/config"
 	"net/http"
 
@@ -64,38 +62,6 @@ func GetUsers() ([]SlackUser, error) {
 	slackUsers = slackUsersResponse.Members
 
 	return slackUsers, err
-}
-
-func FindNonMembers(db datastore.MemberStore) []string {
-	var nonMembers []string
-
-	users, err := GetUsers()
-	if err != nil {
-		log.Errorf("error fetching slack users: %s", err)
-	}
-
-	members := db.GetMembers()
-	memberMap := make(map[string]models.Member)
-
-	for _, m := range members {
-		memberMap[m.Email] = m
-	}
-
-	for _, u := range users {
-		if u.IsBot {
-			continue
-		}
-
-		if u.Deleted {
-			continue
-		}
-
-		_, ok := memberMap[u.Profile.Email]
-		if !ok {
-			nonMembers = append(nonMembers, u.RealName+", "+u.Profile.Email)
-		}
-	}
-	return nonMembers
 }
 
 func Send(msg string) {
