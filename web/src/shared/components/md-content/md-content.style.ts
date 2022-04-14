@@ -13,4 +13,9 @@ export const mdContentStyle: CSSResult = css`
     float: right;
     color: ${primaryDarkGray};
   }
+
+  .theme-toggle-container {
+    display: flex;
+    padding-right: 2rem;
+  }
 `;

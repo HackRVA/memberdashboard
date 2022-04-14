@@ -7,17 +7,15 @@ import { Dialog } from '@material/mwc-dialog';
 import { TextField } from '@material/mwc-textfield';
 
 // memberdashboard
-import '../../../shared/components/toast-msg';
+import '../../../../shared/components/toast-msg';
 import { editMemberStyle } from './edit-member.style';
-import { MemberService } from '../../services/member.service';
-import { Inject } from '../../../shared/di/inject';
-import { ToastMessage } from '../../../shared/types/custom/toast-msg';
-import { showComponent } from '../../../shared/functions';
-import { UpdateMemberRequest } from '../../types/api/update-member-request';
-import { IPopup } from '../../../shared/types/custom/ipop-up';
+import { MemberService, MemberManagerService } from '../../../services/member.service';
+import { Inject } from '../../../../shared/di/inject';
+import { UpdateMemberRequest } from '../../../types/api/update-member-request';
+import  { displayToast } from '../../../../shared/components/abstract-toast';
 
-@customElement('edit-member')
-export class EditMemberModal extends LitElement implements IPopup {
+@customElement('edit-member-form')
+export class EditMemberForm extends LitElement {
   @property({ type: String })
   email: string = '';
 
@@ -27,10 +25,14 @@ export class EditMemberModal extends LitElement implements IPopup {
   @property({ type: String })
   currentSubscriptionID: string = '';
 
+  @property({ type: Function })
+  closeHandler: Function;
+
   @Inject('member')
   private memberService: MemberService;
 
-  toastMsg: ToastMessage;
+  @Inject('member-manager')
+  private memberManagerService: MemberManagerService;
 
   editMemberModalTemplate: Dialog;
 
@@ -51,10 +53,6 @@ export class EditMemberModal extends LitElement implements IPopup {
   updated(): void {
     this.fullNameTemplate.value = this.currentFullName;
     this.subscriptionIDTemplate.value = this.currentSubscriptionID;
-  }
-
-  private handleClosed(): void {
-    this.emptyFormField();
   }
 
   private emptyFormField(): void {
@@ -82,9 +80,12 @@ export class EditMemberModal extends LitElement implements IPopup {
     this.memberService.updateMemberByEmail(email, request).subscribe({
       complete: () => {
         this.fireUpdatedEvent();
+        this.memberManagerService.getMembers();
+        displayToast(this.shadowRoot,'success');
+
       },
       error: () => {
-        this.displayToastMsg('Unable to update member');
+        displayToast(this.shadowRoot,'Unable to update member');
       },
     });
   }
@@ -98,27 +99,15 @@ export class EditMemberModal extends LitElement implements IPopup {
     if (this.isValid()) {
       this.tryToUpdateMember();
       this.emptyFormField();
-      this.editMemberModalTemplate.close();
     } else {
-      this.displayToastMsg(
+      displayToast(this.shadowRoot,
         'Hrmmm, are you sure everything in the form is correct?'
       );
     }
   }
 
-  private displayToastMsg(message: string): void {
-    this.toastMsg = Object.assign({}, { message: message, duration: 4000 });
-    this.requestUpdate();
-    showComponent('#toast-msg', this.shadowRoot);
-  }
-
-  public show(): void {
-    this.editMemberModalTemplate?.show();
-  }
-
   render(): TemplateResult {
     return html`
-      <mwc-dialog heading="Edit Member" @closed=${this.handleClosed}>
         <mwc-textfield
           required
           type="text"
@@ -135,14 +124,15 @@ export class EditMemberModal extends LitElement implements IPopup {
           helper="Subscription ID"
           id="subscription-id"
         ></mwc-textfield>
-        <mwc-button slot="primaryAction" @click=${this.handleSubmit}>
+        <mwc-button slot="primaryAction" @click=${() => {
+          this.handleSubmit();
+          this.closeHandler();
+        }}>
           Submit
         </mwc-button>
-        <mwc-button slot="secondaryAction" dialogAction="cancel">
+        <mwc-button slot="secondaryAction" @click=${this.closeHandler}>
           Cancel
         </mwc-button>
-      </mwc-dialog>
-      <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
 }

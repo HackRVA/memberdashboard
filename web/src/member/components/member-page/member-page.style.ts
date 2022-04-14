@@ -8,7 +8,7 @@ import {
   primaryRed,
 } from '../../../shared/styles/colors';
 
-export const memberManagerStyle: CSSResult = css`
+export const memberPageStyle: CSSResult = css`
   .member-container {
     display: grid;
     align-items: center;

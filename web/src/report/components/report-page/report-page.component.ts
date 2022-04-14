@@ -5,14 +5,11 @@ import { html, LitElement, TemplateResult } from 'lit';
 // memberdashboard
 import '../report-chart';
 import '../../../shared/components/md-card';
+import { withCard } from '../../../shared/functions';
 
 @customElement('report-page')
 export class ReportPage extends LitElement {
   render(): TemplateResult {
-    return html`
-      <md-card>
-        <report-chart> </report-chart>
-      </md-card>
-    `;
+    return withCard(html`<report-chart> </report-chart>`);
   }
 }

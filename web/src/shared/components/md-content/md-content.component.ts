@@ -16,6 +16,9 @@ import { VersionService } from '../../services/version.service';
 import { isAdmin } from '../../functions';
 import { Inject } from '../../di';
 
+// polymer
+import '@polymer/paper-toggle-button'
+
 @customElement('md-content')
 export class MDContent extends LitElement {
   @property({ type: String })
@@ -133,10 +136,19 @@ export class MDContent extends LitElement {
     return html``;
   }
 
+  isDark: boolean = true;
+
   render(): TemplateResult {
     return html`
       <mwc-top-app-bar-fixed centerTitle>
         <div slot="title">Member Dashboard</div>
+        <div class="theme-toggle-container" slot="navigationIcon">
+          <paper-toggle-button checked=${this.isDark} @click=${()=> {
+            document.documentElement.setAttribute("theme", this.isDark ? "" : "dark")
+            this.isDark = !this.isDark;
+          }}></paper-toggle-button>
+          <vaadin-icon slot="prefix" icon="vaadin:lightbulb"></vaadin-icon>
+        </div>
         <div slot="actionItems">${this.email}</div>
         ${this.displayLogout()}
       </mwc-top-app-bar-fixed>

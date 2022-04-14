@@ -5,7 +5,7 @@ export interface MemberResource {
   name: string;
 }
 
-export interface MemberResponse {
+export interface Member {
   id: string;
   name: string;
   email: string;
