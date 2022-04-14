@@ -10,10 +10,6 @@ import {
 } from '../../../shared/styles/colors';
 
 export const loginPageStyle: CSSResult = css`
-  mwc-top-app-bar-fixed {
-    --mdc-theme-primary: ${primaryWhite};
-    --mdc-theme-on-primary: ${primaryBlue};
-  }
   .login-container {
     display: grid;
     justify-content: center;
@@ -34,8 +30,14 @@ export const loginPageStyle: CSSResult = css`
     padding: 12px;
     border: 1px solid ${primaryWhite};
     border-radius: 8px;
-    background-color: ${primaryDarkGray};
     opacity: 0.7;
-    color: ${plainWhite};
+  }
+
+  :host {
+    --mdc-theme-primary: var(--lumo-primary-color, rgb(0, 106, 245));
+  }
+
+  login-form {
+    --mdc-theme-on-primary: var(--lumo-primary-color);
   }
 `;
