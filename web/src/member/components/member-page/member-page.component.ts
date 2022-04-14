@@ -13,7 +13,6 @@ import { Member } from '../../types/api/member-response';
 import { coreStyle } from '../../../shared/styles';
 import { MemberManagerService } from '../../services/member.service';
 import { Inject } from '../../../shared/di';
-import { displayToast } from '../../../shared/components/abstract-toast';
 
 @customElement('member-page')
 export class MemberPage extends LitElement {
@@ -28,29 +27,26 @@ export class MemberPage extends LitElement {
   }
 
   async firstUpdated(): Promise<void> {
-    this.memberManagerService.registerListener(this.updateGrid)
+    this.memberManagerService.registerListener(this.updateGrid);
     this.refreshMembers();
   }
 
   updateGrid = (): void => {
     this.members = this.memberManagerService.filteredMembers;
-  }
+  };
 
   refreshMembers = (): void => {
-    // displayToast(this.shadowRoot, "updating member list...")
     this.members = null;
-    this.memberManagerService.getMembers()
-  }
+    this.memberManagerService.getMembers();
+  };
 
   render(): TemplateResult {
     return html`
-        <loading-content .finishedLoading=${!!this.members}>
-          <member-manager-menu></member-manager-menu>
-          <member-search .updateGrid=${this.updateGrid}></member-search>
-          <member-grid 
-            .members=${this.members}
-          ></member-grid>
-        </loading-content>
+      <loading-content .finishedLoading=${!!this.members}>
+        <member-manager-menu></member-manager-menu>
+        <member-search .updateGrid=${this.updateGrid}></member-search>
+        <member-grid .members=${this.members}></member-grid>
+      </loading-content>
     `;
   }
 }

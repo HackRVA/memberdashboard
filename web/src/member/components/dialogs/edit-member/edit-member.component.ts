@@ -9,10 +9,13 @@ import { TextField } from '@material/mwc-textfield';
 // memberdashboard
 import '../../../../shared/components/toast-msg';
 import { editMemberStyle } from './edit-member.style';
-import { MemberService, MemberManagerService } from '../../../services/member.service';
+import {
+  MemberService,
+  MemberManagerService,
+} from '../../../services/member.service';
 import { Inject } from '../../../../shared/di/inject';
 import { UpdateMemberRequest } from '../../../types/api/update-member-request';
-import  { displayToast } from '../../../../shared/components/abstract-toast';
+import { displayToast } from '../../../../shared/components/abstract-toast';
 
 @customElement('edit-member-form')
 export class EditMemberForm extends LitElement {
@@ -26,7 +29,7 @@ export class EditMemberForm extends LitElement {
   currentSubscriptionID: string = '';
 
   @property({ type: Function })
-  closeHandler: Function;
+  closeHandler: () => void;
 
   @Inject('member')
   private memberService: MemberService;
@@ -47,7 +50,8 @@ export class EditMemberForm extends LitElement {
   firstUpdated(): void {
     this.editMemberModalTemplate = this.shadowRoot.querySelector('mwc-dialog');
     this.fullNameTemplate = this.shadowRoot.querySelector('#name');
-    this.subscriptionIDTemplate = this.shadowRoot.querySelector('#subscription-id');
+    this.subscriptionIDTemplate =
+      this.shadowRoot.querySelector('#subscription-id');
   }
 
   updated(): void {
@@ -81,11 +85,10 @@ export class EditMemberForm extends LitElement {
       complete: () => {
         this.fireUpdatedEvent();
         this.memberManagerService.getMembers();
-        displayToast(this.shadowRoot,'success');
-
+        displayToast('success');
       },
       error: () => {
-        displayToast(this.shadowRoot,'Unable to update member');
+        displayToast('Unable to update member');
       },
     });
   }
@@ -100,39 +103,40 @@ export class EditMemberForm extends LitElement {
       this.tryToUpdateMember();
       this.emptyFormField();
     } else {
-      displayToast(this.shadowRoot,
-        'Hrmmm, are you sure everything in the form is correct?'
-      );
+      displayToast('Hrmmm, are you sure everything in the form is correct?');
     }
   }
 
   render(): TemplateResult {
     return html`
-        <mwc-textfield
-          required
-          type="text"
-          outlined
-          label="Full Name"
-          helper="Full Name"
-          id="name"
-        ></mwc-textfield>
-        <mwc-textfield
-          required
-          type="text"
-          outlined
-          label="Subscription ID"
-          helper="Subscription ID"
-          id="subscription-id"
-        ></mwc-textfield>
-        <mwc-button slot="primaryAction" @click=${() => {
+      <mwc-textfield
+        required
+        type="text"
+        outlined
+        label="Full Name"
+        helper="Full Name"
+        id="name"
+      ></mwc-textfield>
+      <mwc-textfield
+        required
+        type="text"
+        outlined
+        label="Subscription ID"
+        helper="Subscription ID"
+        id="subscription-id"
+      ></mwc-textfield>
+      <mwc-button
+        slot="primaryAction"
+        @click=${() => {
           this.handleSubmit();
           this.closeHandler();
-        }}>
-          Submit
-        </mwc-button>
-        <mwc-button slot="secondaryAction" @click=${this.closeHandler}>
-          Cancel
-        </mwc-button>
+        }}
+      >
+        Submit
+      </mwc-button>
+      <mwc-button slot="secondaryAction" @click=${this.closeHandler}>
+        Cancel
+      </mwc-button>
     `;
   }
 }

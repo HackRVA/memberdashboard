@@ -4,15 +4,17 @@ import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // material
 import { TextField } from '@material/mwc-textfield/mwc-textfield';
-import { Dialog } from '@material/mwc-dialog';
 
 // memberdashboard
 import '../toast-msg';
-import { MemberService, MemberManagerService } from '../../../member/services/member.service';
+import {
+  MemberService,
+  MemberManagerService,
+} from '../../../member/services/member.service';
 import { coreStyle } from '../../styles/core.style';
 import { AssignRFIDRequest } from '../../../member/types/api/assign-rfid-request';
 import { CreateMemberRequest } from '../../../member/types/api/create-member-request';
-import  { displayToast } from '../../components/abstract-toast';
+import { displayToast } from '../../components/abstract-toast';
 import { rfidFormStyle } from './rfid-form.style';
 import { Inject } from '../../di';
 
@@ -31,10 +33,10 @@ export class RFIDModal extends LitElement {
   isThisSelf: boolean = false;
 
   @property({ type: Function })
-  closeHandler: Function;
-  
+  closeHandler: () => void;
+
   @property({ type: Boolean })
-  isNewMember: Boolean;
+  isNewMember: boolean;
 
   @Inject('member')
   private memberService: MemberService;
@@ -55,8 +57,8 @@ export class RFIDModal extends LitElement {
   }
 
   updated(): void {
-    this.emailFieldTemplate.value = this.email || "";
-    this.rfidFieldTemplate.value = this.RFID || "";
+    this.emailFieldTemplate.value = this.email || '';
+    this.rfidFieldTemplate.value = this.RFID || '';
 
     if (this.isThisSelf) {
       this.emailFieldTemplate.disabled = true;
@@ -91,10 +93,10 @@ export class RFIDModal extends LitElement {
         this.fireUpdatedEvent();
         this.emptyFormField();
         this.memberManagerService.getMembers();
-        this.displayToastMsg('Success');
+        displayToast('Success');
       },
       error: () => {
-        this.displayToastMsg('Hrmmm, something went wrong? :3');
+        displayToast('Hrmmm, something went wrong? :3');
       },
     });
   }
@@ -105,10 +107,10 @@ export class RFIDModal extends LitElement {
         this.fireUpdatedEvent();
         this.emptyFormField();
         this.memberManagerService.getMembers();
-        this.displayToastMsg('Success');
+        displayToast('Success');
       },
       error: () => {
-        this.displayToastMsg('Hrmmm, are you sure this is a member? :3');
+        displayToast('Hrmmm, are you sure this is a member? :3');
       },
     });
   }
@@ -119,10 +121,10 @@ export class RFIDModal extends LitElement {
         this.fireUpdatedEvent();
         this.closeHandler();
         this.memberManagerService.getMembers();
-        this.displayToastMsg('Success');
+        displayToast('Success');
       },
       error: () => {
-        this.displayToastMsg('Hrmmm, are you sure this is a member? :3');
+        displayToast('Hrmmm, are you sure this is a member? :3');
       },
     });
   }
@@ -136,9 +138,7 @@ export class RFIDModal extends LitElement {
       }
       this.closeHandler();
     } else {
-      this.displayToastMsg(
-        'Hrmmm, are you sure everything in the form is correct?'
-      );
+      displayToast('Hrmmm, are you sure everything in the form is correct?');
     }
   }
 
@@ -162,24 +162,20 @@ export class RFIDModal extends LitElement {
     );
   }
 
-  private displayToastMsg = (message: string): void => {
-    displayToast(this.shadowRoot, message);
-  }
-
   private newMemberDisclaimer() {
-    if (!this.isNewMember) return
+    if (!this.isNewMember) return;
     return html`<span>
-    This is an option if the new member's info hasn't been sent from paypal yet.  
-    Check the table before trying to add them manually.
-    note: if you add the member with this method, their email has to match what they use in paypal.
-    </span>
-    <hr/>
-    `
+        This is an option if the new member's info hasn't been sent from paypal
+        yet. Check the table before trying to add them manually. note: if you
+        add the member with this method, their email has to match what they use
+        in paypal.
+      </span>
+      <hr /> `;
   }
 
   render(): TemplateResult {
     return html`
-    ${this.newMemberDisclaimer()}
+      ${this.newMemberDisclaimer()}
       <mwc-textfield
         required
         type="email"
@@ -197,7 +193,11 @@ export class RFIDModal extends LitElement {
       <mwc-button slot="primaryAction" @click=${this.handleSubmit}>
         Submit
       </mwc-button>
-      <mwc-button slot="secondaryAction" dialogAction="cancel" @click=${this.closeHandler}>
+      <mwc-button
+        slot="secondaryAction"
+        dialogAction="cancel"
+        @click=${this.closeHandler}
+      >
         Cancel
       </mwc-button>
     `;

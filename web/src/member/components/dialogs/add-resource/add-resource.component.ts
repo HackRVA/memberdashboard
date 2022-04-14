@@ -12,7 +12,7 @@ import { ResourceResponse } from '../../../../resource/types/api/resource-respon
 import { isEmpty } from '../../../../shared/functions';
 import { addMembersToResourceStyle } from './add-resource.style';
 import { Inject } from '../../../../shared/di/inject';
-import  { displayToast } from '../../../../shared/components/abstract-toast';
+import { displayToast } from '../../../../shared/components/abstract-toast';
 import { coreStyle } from '../../../../shared/styles';
 import { MemberManagerService } from '../../../services/member.service';
 
@@ -22,7 +22,7 @@ export class AddResourceForm extends LitElement {
   emails: string[] = [];
 
   @property({ type: Function })
-  closeHandler: Function;
+  closeHandler: () => void;
 
   resourceSelectTemplate: Select;
 
@@ -66,12 +66,12 @@ export class AddResourceForm extends LitElement {
   private bulkAddMembersToResource(
     request: BulkAddMembersToResourceRequest
   ): void {
-    console.log("bulk request: ", request)
+    console.log('bulk request: ', request);
     this.resourceService.bulkAddMembersToResource(request).subscribe({
       complete: () => {
         this.fireUpdatedEvent();
         this.memberManagerService.getMembers();
-        displayToast(this.shadowRoot, 'success')
+        displayToast('success');
       },
     });
   }
@@ -86,9 +86,9 @@ export class AddResourceForm extends LitElement {
       this.tryToAddMembersToResource();
       this.emptyFormField();
       this.closeHandler();
-      displayToast(this.shadowRoot, "success")
+      displayToast('success');
     } else {
-      displayToast(this.shadowRoot, "Hrmmmmm")
+      displayToast('Hrmmmmm');
     }
   }
 

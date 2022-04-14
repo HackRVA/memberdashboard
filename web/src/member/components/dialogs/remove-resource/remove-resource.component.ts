@@ -12,13 +12,11 @@ import { RemoveMemberResourceRequest } from '../../../../resource/types/api/remo
 import { isEmpty } from '../../../../shared/functions';
 import { MemberResource } from '../../../types/api/member-response';
 import { Inject } from '../../../../shared/di';
-import  { displayToast } from '../../../../shared/components/abstract-toast';
+import { displayToast } from '../../../../shared/components/abstract-toast';
 import { MemberManagerService } from '../../../services/member.service';
 
 @customElement('remove-resource-form')
-export class RemoveResourceForm
-  extends LitElement
-{
+export class RemoveResourceForm extends LitElement {
   @property({ type: String })
   email: string = '';
 
@@ -26,7 +24,7 @@ export class RemoveResourceForm
   memberResources: Array<MemberResource> = [];
 
   @property({ type: Function })
-  closeHandler: Function;
+  closeHandler: () => void;
 
   @Inject('resource')
   private resourceService: ResourceService;
@@ -48,7 +46,7 @@ export class RemoveResourceForm
       this.tryToRemoveMemberFromResource();
       this.emptyFormField();
     } else {
-      displayToast(this.shadowRoot, 'Hrmmmm');
+      displayToast('Hrmmmm');
     }
   }
 
@@ -66,7 +64,7 @@ export class RemoveResourceForm
       complete: () => {
         this.fireUpdatedEvent();
         this.memberManagerService.getMembers();
-        displayToast(this.shadowRoot, 'success')
+        displayToast('success');
       },
     });
   }
@@ -113,10 +111,13 @@ export class RemoveResourceForm
           `;
         })}
       </mwc-select>
-      <mwc-button slot="primaryAction" @click=${() => {
-        this.handleSubmit();
-        this.closeHandler();
-      }}>
+      <mwc-button
+        slot="primaryAction"
+        @click=${() => {
+          this.handleSubmit();
+          this.closeHandler();
+        }}
+      >
         Submit
       </mwc-button>
       <mwc-button slot="secondaryAction" @click=${this.closeHandler}>
