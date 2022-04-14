@@ -52,12 +52,10 @@ export class MemberChurn extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <div>
-        <paper-tooltip for="member-churn" animation-delay="0">
-          Churn is how many members we have lost or gained since last month.
-        </paper-tooltip>
-        <h3 id="member-churn">Member Churn: ${this.churnTemplate()}</h3>
-      </div>
+      <paper-tooltip for="member-churn" animation-delay="0">
+        Churn is how many members we have lost or gained since last month.
+      </paper-tooltip>
+      <h3 id="member-churn">Member Churn: ${this.churnTemplate()}</h3>
     `;
   }
 }
