@@ -15,10 +15,7 @@ import { VersionResponse } from '../../types/api/version-response';
 import { VersionService } from '../../services/version.service';
 import { isAdmin } from '../../functions';
 import { Inject } from '../../di';
-
-// polymer
-import '@polymer/paper-toggle-button';
-import { Checkbox } from '@material/mwc-checkbox';
+import '../theme-toggler';
 
 @customElement('md-content')
 export class MDContent extends LitElement {
@@ -39,26 +36,7 @@ export class MDContent extends LitElement {
 
   firstUpdated(): void {
     this.getVersion();
-    this.setTheme();
   }
-
-  get darkModePreference(): string {
-    return JSON.parse(localStorage.getItem('dark-mode-preference'));
-  }
-
-  set darkModePreference(preference: string) {
-    localStorage.setItem('dark-mode-preference', JSON.stringify(preference));
-  }
-
-  setTheme = (): void => {
-    if (!this.darkModePreference || this.darkModePreference !== 'dark') {
-      document.documentElement.setAttribute('theme', 'dark');
-      this.darkModePreference = 'dark';
-      return;
-    }
-    document.documentElement.setAttribute('theme', '');
-    this.darkModePreference = '';
-  };
 
   goToHome(): void {
     Router.go('/home');
@@ -160,14 +138,7 @@ export class MDContent extends LitElement {
     return html`
       <mwc-top-app-bar-fixed centerTitle>
         <div slot="title">Member Dashboard</div>
-        <div class="theme-toggle-container" slot="navigationIcon">
-          <paper-toggle-button
-            id="dark=mode-toggle"
-            checked=${this.darkModePreference === 'dark'}
-            @click=${this.setTheme}
-          ></paper-toggle-button>
-          <vaadin-icon slot="prefix" icon="vaadin:lightbulb"></vaadin-icon>
-        </div>
+        <theme-toggler slot="navigationIcon"></theme-toggler>
         <div slot="actionItems">${this.email}</div>
         ${this.displayLogout()}
       </mwc-top-app-bar-fixed>
