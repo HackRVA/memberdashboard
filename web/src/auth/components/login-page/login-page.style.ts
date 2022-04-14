@@ -24,7 +24,7 @@ export const loginPageStyle: CSSResult = css`
   register-form {
     height: 250px;
     padding: 24px 16px;
-    background-color: ${primaryDarkGray};
+    background-color: var(--secondary-background-color)};
     border-radius: 8px;
     border: 1px solid silver;
   }
