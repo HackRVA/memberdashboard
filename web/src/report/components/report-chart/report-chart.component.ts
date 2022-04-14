@@ -48,7 +48,7 @@ export class ReportChart extends LitElement {
 
   membershipDistributionChart: GoogleChart;
 
-  resourceName = 'Bamity';
+  resourceName: String;
 
   resources: Array<ResourceResponse>;
 
@@ -78,7 +78,7 @@ export class ReportChart extends LitElement {
     this.membershipTrendsChart.cols = chartData.cols;
   }
 
-  creatMembershipAccessTrendChart(chartData: ReportChartResponse): void {
+  createMembershipTrendChart(chartData: ReportChartResponse): void {
     this.membershipAccessTrendsChart.type = chartData.type;
     this.membershipAccessTrendsChart.options = chartData.options;
     this.membershipAccessTrendsChart.rows = chartData.rows;
@@ -105,7 +105,7 @@ export class ReportChart extends LitElement {
     showComponent('#resource-names', this.shadowRoot);
   }
 
-  getResources() {
+  getResources(): void {
     this.resourceService.getResources().subscribe({
       next: (response: ResourceResponse[]) => {
         this.resources = response;
@@ -123,7 +123,7 @@ export class ReportChart extends LitElement {
         this.accessChart = result;
         this.accessChart = this.updateAccessChart(this.accessChart);
         this.membershipAccessTrendsData = this.accessChart;
-        this.creatMembershipAccessTrendChart(this.membershipAccessTrendsData);
+        this.createMembershipTrendChart(this.membershipAccessTrendsData);
         this.requestUpdate();
       },
       error: () => {

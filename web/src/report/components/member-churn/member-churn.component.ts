@@ -26,7 +26,7 @@ export class MemberChurn extends LitElement {
     this.getMemberChurn();
   }
 
-  getMemberChurn() {
+  getMemberChurn(): void {
     this.reportService.getMemberChurn().subscribe({
       next: (response: ChurnResponse) => {
         this.churn = response.churn;
