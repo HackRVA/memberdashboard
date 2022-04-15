@@ -1,4 +1,7 @@
 {
+   "rules": {
+      "@typescript-eslint/no-inferrable-types": 0
+   },
    "root": true,
    "parser": "@typescript-eslint/parser",
    "plugins": [

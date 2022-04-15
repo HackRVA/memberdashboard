@@ -1,67 +1,52 @@
 // lit element
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // memberdashboard
-import '../member-manager';
+import '../member-grid';
+import '../member-search';
+import '../member-manager-menu';
 import '../../../shared/components/md-card';
 import '../../../shared/components/loading-content';
+import { memberPageStyle } from './member-page.style';
+import { Member } from '../../types/api/member-response';
 import { coreStyle } from '../../../shared/styles';
-import { MemberService } from '../../services/member.service';
-import { MemberResponse } from '../../types/api/member-response';
-import { MemberLevel } from '../../types/custom/member-level';
+import { MemberManagerService } from '../../services/member.service';
 import { Inject } from '../../../shared/di';
 
 @customElement('member-page')
 export class MemberPage extends LitElement {
-  members: MemberResponse[];
-  memberCount: number = 0;
-  totalMemberCount: number = 0;
-  finishedLoading: boolean = false;
+  @property()
+  members: Member[];
 
-  @Inject('member')
-  private memberService: MemberService;
+  @Inject('member-manager')
+  private memberManagerService: MemberManagerService;
 
   static get styles(): CSSResult[] {
-    return [coreStyle];
+    return [coreStyle, memberPageStyle];
   }
 
-  firstUpdated(): void {
-    this.getMembers();
+  async firstUpdated(): Promise<void> {
+    this.memberManagerService.registerListener(this.updateGrid);
+    this.refreshMembers();
   }
 
-  getMembers(): void {
-    this.memberService.getMembers().subscribe({
-      next: (result: MemberResponse[]) => {
-        this.finishedLoading = true;
-        this.members = result;
-        this.totalMemberCount = result.length;
-        this.memberCount = this.getActiveMembers().length;
-        this.requestUpdate();
-      },
-      error: () => {
-        console.error('unable to get members');
-      },
-    });
-  }
+  updateGrid = (): void => {
+    this.members = this.memberManagerService.filteredMembers;
+  };
 
-  getActiveMembers(): MemberResponse[] {
-    return this.members.filter(
-      (x: MemberResponse) => x.memberLevel !== MemberLevel.inactive
-    );
-  }
+  refreshMembers = (): void => {
+    this.members = null;
+    this.memberManagerService.getMembers();
+  };
 
   render(): TemplateResult {
     return html`
-      <md-card>
-        <loading-content .finishedLoading=${this.finishedLoading}>
-          <member-manager
-            .members=${this.members}
-            .memberCount=${this.memberCount}
-            .totalMemberCount=${this.totalMemberCount}
-          ></member-manager>
-        </loading-content>
-      </md-card>
+      <loading-content .finishedLoading=${!!this.members}>
+        <member-manager-menu></member-manager-menu>
+        <member-search .updateGrid=${this.updateGrid}></member-search>
+        <member-grid .members=${this.members}></member-grid>
+      </loading-content>
     `;
   }
 }

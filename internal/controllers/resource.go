@@ -37,7 +37,7 @@ func (rs resourceAPI) update(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	r, err := rs.db.UpdateResource(updateResourceReq.ID, updateResourceReq.Name, updateResourceReq.Address, updateResourceReq.IsDefault)
+	r, err := rs.db.UpdateResource(updateResourceReq)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

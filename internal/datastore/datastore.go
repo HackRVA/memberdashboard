@@ -39,7 +39,7 @@ type ResourceStore interface {
 	GetResourceByID(ID string) (models.Resource, error)
 	GetResourceByName(resourceName string) (models.Resource, error)
 	RegisterResource(name string, address string, isDefault bool) (models.Resource, error)
-	UpdateResource(id string, name string, address string, isDefault bool) (*models.Resource, error)
+	UpdateResource(res models.Resource) (*models.Resource, error)
 	DeleteResource(id string) error
 	AddMultipleMembersToResource(emails []string, resourceID string) ([]models.MemberResourceRelation, error)
 	AddUserToDefaultResources(email string) ([]models.MemberResourceRelation, error)

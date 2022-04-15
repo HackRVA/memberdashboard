@@ -10,7 +10,7 @@ import { coreStyle } from '../../../shared/styles';
 import { userDetailStyle } from './user-detail.style';
 import {
   MemberResource,
-  MemberResponse,
+  Member,
 } from '../../../member/types/api/member-response';
 import { MemberService } from '../../../member/services/member.service';
 import { displayMemberStatus } from '../../../member/functions';
@@ -22,7 +22,7 @@ import { Inject } from '../../../shared/di';
 export class UserDetail extends LitElement {
   @property({ type: String })
   email: string = '';
-  memberUser: MemberResponse;
+  memberUser: Member;
 
   @Inject('member')
   private memberService: MemberService;
@@ -41,7 +41,7 @@ export class UserDetail extends LitElement {
 
   getMemberByEmail(): void {
     this.memberService.getUsersMemberInfo().subscribe({
-      next: (response: MemberResponse) => {
+      next: (response: Member) => {
         this.memberUser = response;
         this.requestUpdate();
       },

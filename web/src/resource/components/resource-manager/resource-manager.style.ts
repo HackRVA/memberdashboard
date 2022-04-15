@@ -4,7 +4,7 @@ import { css, CSSResult } from 'lit';
 // memberdashboard
 import {
   primaryLightGray,
-  primaryLightGreen,
+  chartDarkGreen,
   primaryRed,
 } from '../../../shared/styles/colors';
 
@@ -45,7 +45,7 @@ export const resourceManagerStyle: CSSResult = css`
   }
 
   .online {
-    color: ${primaryLightGreen};
+    color: ${chartDarkGreen};
   }
   .offline {
     color: ${primaryRed};

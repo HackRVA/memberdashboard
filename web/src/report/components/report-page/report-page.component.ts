@@ -6,15 +6,14 @@ import { html, LitElement, TemplateResult } from 'lit';
 import '../report-chart';
 import '../member-churn';
 import '../../../shared/components/md-card';
+import { withCard } from '../../../shared/functions';
 
 @customElement('report-page')
 export class ReportPage extends LitElement {
   render(): TemplateResult {
-    return html`
-      <md-card>
-        <member-churn> </member-churn>
-        <report-chart> </report-chart>
-      </md-card>
-    `;
+    return withCard(html`
+      <member-churn> </member-churn>
+      <report-chart> </report-chart>
+    `);
   }
 }

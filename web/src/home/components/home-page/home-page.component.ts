@@ -8,6 +8,7 @@ import '../../../shared/components/md-card';
 import { homePageStyle } from './home-page.style';
 import '../../../shared/components/happy-minion';
 import '../home-detail';
+import { withCard } from '../../../shared/functions';
 
 @customElement('home-page')
 export class HomePage extends LitElement {
@@ -24,8 +25,6 @@ export class HomePage extends LitElement {
   }
 
   render(): TemplateResult {
-    return html`
-      <md-card> ${this.displayContentBasedOnPermission()} </md-card>
-    `;
+    return withCard(html`${this.displayContentBasedOnPermission()}`);
   }
 }

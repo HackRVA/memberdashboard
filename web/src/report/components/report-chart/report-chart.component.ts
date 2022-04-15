@@ -8,10 +8,10 @@ import { GoogleChart } from '@google-web-components/google-chart';
 
 // memberdashboard
 import {
-  primaryBlue,
-  primaryDarkGray,
-  primaryDarkGreen,
-  primaryRed,
+  chartBlue,
+  chartDarkGray,
+  chartDarkGreen,
+  chartRed,
 } from '../../../shared/styles/colors';
 import { showComponent } from '../../../shared/functions';
 import { reportsChartStyle } from './report-chart.style';
@@ -157,10 +157,10 @@ export class ReportChart extends LitElement {
 
   updateAccessChart(accessChart: ReportChartResponse): ReportChartResponse {
     accessChart.options.colors = [
-      primaryBlue.cssText,
-      primaryDarkGreen.cssText,
-      primaryRed.cssText,
-      primaryDarkGray.cssText,
+      chartBlue.cssText,
+      chartDarkGreen.cssText,
+      chartRed.cssText,
+      chartDarkGray.cssText,
     ];
 
     return accessChart;
@@ -171,10 +171,10 @@ export class ReportChart extends LitElement {
   ): ReportChartResponse[] {
     reportsCharts.forEach((x: ReportChartResponse) => {
       x.options.colors = [
-        primaryBlue.cssText,
-        primaryDarkGreen.cssText,
-        primaryRed.cssText,
-        primaryDarkGray.cssText,
+        chartBlue.cssText,
+        chartDarkGreen.cssText,
+        chartRed.cssText,
+        chartDarkGray.cssText,
       ];
     });
 
@@ -221,17 +221,19 @@ export class ReportChart extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <div class="select-month">
-        <mwc-button
-          raised
-          label="Select a month"
-          @click=${this.openMembershipMonthsOptions}
-        ></mwc-button>
-        ${this.getReportMonthOptions()}
-      </div>
-      <div id="report-chart-container">
-        <google-chart id="membership-distribution"> </google-chart>
-        <google-chart id="membership-trends"> </google-chart>
+      <div>
+        <div class="select-month">
+          <mwc-button
+            raised
+            label="Select a month"
+            @click=${this.openMembershipMonthsOptions}
+          ></mwc-button>
+          ${this.getReportMonthOptions()}
+        </div>
+        <div id="report-chart-container">
+          <google-chart id="membership-distribution"> </google-chart>
+          <google-chart id="membership-trends"> </google-chart>
+        </div>
       </div>
       <div class="select-resource">
         <mwc-button

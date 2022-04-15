@@ -11,6 +11,7 @@ import './auth/components/login-page';
 import './shared/components/md-content';
 import './shared/components/loading-content';
 import './material-loader';
+import './vaadin-loader';
 import { UserResponse } from './user/types/api/user-response';
 import { UserService } from './user/services/user.service';
 import { authUser$ } from './auth/auth-user';
