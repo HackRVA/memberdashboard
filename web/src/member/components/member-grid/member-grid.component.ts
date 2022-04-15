@@ -101,7 +101,7 @@ export class MemberGrid extends LitElement {
             .items="${this.members}" 
             theme="row-dividers" 
             column-reordering-allowed 
-            style="height: 70vh;"
+            all-rows-visible
         >
             <vaadin-grid-column
                 path="name"

@@ -11,6 +11,7 @@ export const registerFormStyles: CSSResult = css`
   }
   mwc-button {
     width: 100%;
+    --mdc-theme-on-primary: var(--lumo-primary-color);
     --mdc-theme-primary: ${primaryDarkGreen};
   }
 `;
