@@ -8,7 +8,7 @@ import '@polymer/paper-tooltip';
 // memberdashboard
 import {
   primaryDarkGray,
-  primaryDarkGreen,
+  chartDarkGreen,
   primaryRed,
 } from '../../../shared/styles/colors';
 import { ReportService } from '../../services/report.service';
@@ -47,7 +47,7 @@ export class MemberChurn extends LitElement {
         <span style="color:${primaryDarkGray}">${this.churn}</span>
       `;
     }
-    return html` <span style="color:${primaryDarkGreen}">${this.churn}</span> `;
+    return html` <span style="color:${chartDarkGreen}">${this.churn}</span> `;
   }
 
   render(): TemplateResult {

@@ -4,7 +4,6 @@ import { Member } from './types/api/member-response';
 
 import structuredClone from '@ungap/structured-clone'; // polyfill
 
-
 export const displayMemberStatus = (memberLevel: MemberLevel): string => {
   switch (memberLevel) {
     case MemberLevel.inactive:
@@ -25,11 +24,6 @@ export const displayMemberStatus = (memberLevel: MemberLevel): string => {
 function getResourcesLabel(member: Member) {
   if (!member.resources) return member;
 
-  // return structuredClone({
-  //   resourcesLabel: member.resources.map(resource => resource.name).join(','),
-  //   resources: structuredClone([...member.resources]),
-  //   ...member,
-  // });
   return {
     resourcesLabel: member.resources.map(resource => resource.name).join(','),
     resources: [...member.resources],
@@ -38,9 +32,9 @@ function getResourcesLabel(member: Member) {
 }
 
 function withResourceLabels(members: Member[]): Member[] {
-  return members.map(getResourcesLabel)
+  return members.map(getResourcesLabel);
 }
 
 export function deepCopy(members: Member[]) {
-  return structuredClone(withResourceLabels(members));;
+  return structuredClone(withResourceLabels(members));
 }

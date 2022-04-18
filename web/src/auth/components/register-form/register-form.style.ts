@@ -14,4 +14,12 @@ export const registerFormStyles: CSSResult = css`
     --mdc-theme-on-primary: var(--lumo-primary-color);
     --mdc-theme-primary: ${primaryDarkGreen};
   }
+
+  :host {
+    --mdc-theme-primary: var(--lumo-primary-color, rgb(0, 106, 245));
+  }
+
+  register-form {
+    --mdc-theme-on-primary: var(--lumo-primary-color);
+  }
 `;

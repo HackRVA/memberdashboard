@@ -2,7 +2,7 @@
 import { Observable } from 'rxjs';
 
 // memberdashboard
-import { Member, MemberResource } from '../types/api/member-response';
+import { Member } from '../types/api/member-response';
 import { CreateMemberRequest } from '../types/api/create-member-request';
 import { UpdateMemberRequest } from './../types/api/update-member-request';
 import { AckResponse } from './../../shared/types/api/ack-response';
@@ -66,19 +66,16 @@ export class MemberManagerService {
   activeMembers: Member[];
   _showActive: boolean = true;
 
-  previousFilteredValues: Member[];
   _filteredMembers: Member[] = [];
-  _refreshMembers: Function;
+  _refreshMembers: () => void;
 
   get filteredMembers(): Member[] {
     return this._filteredMembers;
   }
   set filteredMembers(members: Member[]) {
-    this.previousFilteredValues = this._filteredMembers;
     this._filteredMembers = deepCopy(members);
-    this.updateListeners(this._filteredMembers);
+    this.updateListeners();
   }
-
 
   get showActive(): boolean {
     return this._showActive;
@@ -92,26 +89,30 @@ export class MemberManagerService {
     this.filteredMembers = this.activeMembers;
   }
 
-  listeners: Array<Function> = [];
+  listeners: Array<() => void> = [];
 
-  registerListener = (listener: Function): void => {
+  registerListener = (listener: () => void): void => {
     this.listeners.push(listener);
-  }
+  };
 
-  updateListeners(members: Member[]): void {
-    this.listeners.forEach((listener) => listener(members));
+  updateListeners(): void {
+    this.listeners.forEach(listener => listener());
   }
 
   updateMembers(memberResponse: Member[]): void {
-    this.allMembers = memberResponse
-    this.inactiveMembers = this.allMembers.filter(member => member.memberLevel === 1);
-    this.activeMembers = this.allMembers.filter(member => member.memberLevel > 1);
+    this.allMembers = memberResponse;
+    this.inactiveMembers = this.allMembers.filter(
+      member => member.memberLevel === 1
+    );
+    this.activeMembers = this.allMembers.filter(
+      member => member.memberLevel > 1
+    );
 
     const members = {
       all: this.allMembers,
       active: this.activeMembers,
       inactive: this.inactiveMembers,
-    }
+    };
 
     this.filteredMembers = this.showActive ? members.active : members.inactive;
   }

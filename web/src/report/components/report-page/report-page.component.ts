@@ -11,11 +11,9 @@ import { withCard } from '../../../shared/functions';
 @customElement('report-page')
 export class ReportPage extends LitElement {
   render(): TemplateResult {
-    return html`
-      <md-card>
-        <member-churn> </member-churn>
-        <report-chart> </report-chart>
-      </md-card>
-    `;
+    return withCard(html`
+      <member-churn> </member-churn>
+      <report-chart> </report-chart>
+    `);
   }
 }
