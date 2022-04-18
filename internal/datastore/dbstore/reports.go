@@ -2,6 +2,7 @@ package dbstore
 
 import (
 	"context"
+	"fmt"
 	"memberserver/internal/models"
 	"time"
 
@@ -71,4 +72,69 @@ func (db *DatabaseStore) GetMemberCountByMonth(month time.Time) (models.MemberCo
 	}
 
 	return memberCount, nil
+}
+
+func (db *DatabaseStore) GetAccessStats(date time.Time, resourceName string) ([]models.AccessStats, error) {
+	var stats []models.AccessStats
+
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	rows, err := dbPool.Query(db.ctx, reportsDbMethod.getAccessStats(date, resourceName))
+	if err != nil {
+		log.Errorf("error getting member counts: %v", err)
+		return stats, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var m models.AccessStats
+		err = rows.Scan(&m.Date, &m.ResourceName, &m.AccessCount)
+		if err != nil {
+			log.Errorf("error scanning row: %s", err)
+		}
+
+		stats = append(stats, m)
+	}
+
+	return stats, nil
+}
+
+func (db *DatabaseStore) GetMemberChurn() (int, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+		return -1, fmt.Errorf("error connecting to DB: %s", err)
+	}
+	defer dbPool.Close()
+
+	rows, err := dbPool.Query(db.ctx, reportsDbMethod.getMemberChurn())
+	if err != nil {
+		return -1, fmt.Errorf("error running query: %s", err)
+	}
+
+	defer rows.Close()
+
+	counts := []struct {
+		Month       time.Time
+		MemberCount int
+	}{}
+	for rows.Next() {
+		var count struct {
+			Month       time.Time
+			MemberCount int
+		}
+		err = rows.Scan(&count.Month, &count.MemberCount)
+		if err != nil {
+			log.Errorf("error scanning row: %s", err)
+		}
+
+		counts = append(counts, count)
+	}
+
+	return counts[0].MemberCount - counts[1].MemberCount, nil
 }
