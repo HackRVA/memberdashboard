@@ -48,7 +48,7 @@ export class ReportChart extends LitElement {
 
   membershipDistributionChart: GoogleChart;
 
-  resourceName: String;
+  resourceName: string;
 
   resources: Array<ResourceResponse>;
 
@@ -157,10 +157,10 @@ export class ReportChart extends LitElement {
 
   updateAccessChart(accessChart: ReportChartResponse): ReportChartResponse {
     accessChart.options.colors = [
-      primaryBlue.cssText,
-      primaryDarkGreen.cssText,
-      primaryRed.cssText,
-      primaryDarkGray.cssText,
+      chartBlue.cssText,
+      chartDarkGreen.cssText,
+      chartRed.cssText,
+      chartDarkGray.cssText,
     ];
 
     return accessChart;
