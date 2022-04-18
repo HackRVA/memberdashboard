@@ -1,7 +1,6 @@
 package jobs
 
 import (
-	"fmt"
 	"io/ioutil"
 	"memberserver/internal/datastore"
 	"memberserver/internal/integrations"
@@ -9,16 +8,14 @@ import (
 	"memberserver/internal/services/config"
 	"memberserver/internal/services/logger"
 	"memberserver/internal/services/mail"
+	"memberserver/internal/services/member"
 	"memberserver/internal/services/resourcemanager"
 	"memberserver/internal/services/resourcemanager/mqttserver"
 	"memberserver/pkg/paypal"
-	"memberserver/pkg/slack"
 
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -29,17 +26,20 @@ type JobController struct {
 	mailAPI         mail.MailApi
 	resourceManager resourcemanager.ResourceManager
 	paymentProvider integrations.PaymentProvider
+	member          member.MemberService
 }
 
 func New(db datastore.DataStore) JobController {
 	config, _ := config.Load()
 	mailAPI, _ := mail.Setup()
+	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), db)
 	return JobController{
 		config:          config,
 		mailAPI:         mailAPI,
-		resourceManager: resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), db),
+		resourceManager: rm,
 		paymentProvider: paypal.Setup(db),
 		DataStore:       db,
+		member:          member.NewMemberService(db, rm),
 	}
 }
 
@@ -77,32 +77,10 @@ func (j JobController) SetMemberLevel(status string, lastPayment models.Payment,
 
 	switch status {
 	case models.ActiveStatus:
-		lastPaymentAmount, err := strconv.ParseFloat(lastPayment.Amount, 32)
-		if err != nil {
-			log.Error(err)
-		}
-		if int64(lastPaymentAmount) == models.MemberLevelToAmount[models.Premium] {
-			j.DataStore.SetMemberLevel(member.ID, models.Premium)
-			return
-		}
-		if int64(lastPaymentAmount) == models.MemberLevelToAmount[models.Classic] {
-			j.DataStore.SetMemberLevel(member.ID, models.Classic)
-			return
-		}
-		j.DataStore.SetMemberLevel(member.ID, models.Standard)
+		j.member.ActiveStatusHandler(member, lastPayment)
+		return
 	case models.CanceledStatus:
-		oneMonthAgo := (time.Hour * 24) * -30
-		if lastPayment.Time.Before(time.Now().Add(oneMonthAgo)) {
-			if member.Level == uint8(models.Standard) || member.Level == uint8(models.Classic) || member.Level == uint8(models.Premium) {
-				go slack.Send(fmt.Sprintf("%s is in a grace period until their subscription ends", member.Name))
-			}
-			j.DataStore.SetMemberLevel(member.ID, models.Inactive)
-			log.Infof("[scheduled-job] %s subscription has ended", member.Name)
-			go slack.Send(fmt.Sprintf("%s is in a grace period until their subscription ends", member.Name))
-
-			return
-		}
-		log.Infof("[scheduled-job] %s is in a grace period until their subscription ends", member.Name)
+		j.member.CancelStatusHandler(member, lastPayment)
 		return
 	case models.SuspendedStatus:
 		j.DataStore.SetMemberLevel(member.ID, models.Inactive)
