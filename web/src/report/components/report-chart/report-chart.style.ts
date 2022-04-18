@@ -18,6 +18,10 @@ export const reportsChartStyle: CSSResult = css`
     position: relative;
     float: right;
   }
+  .select-resource {
+    position: relative;
+    float: right;
+  }
   @media only screen and (max-width: 480px) {
     #membership-trends,
     #membership-distribution {

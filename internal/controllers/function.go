@@ -25,3 +25,7 @@ func notFound(writer http.ResponseWriter, errorMessage string) {
 func badRequest(writer http.ResponseWriter, errorMessage string) {
 	http.Error(writer, errors.New(errorMessage).Error(), http.StatusBadRequest)
 }
+
+func internalServerError(writer http.ResponseWriter, errorMessage string) {
+	http.Error(writer, errors.New(errorMessage).Error(), http.StatusInternalServerError)
+}

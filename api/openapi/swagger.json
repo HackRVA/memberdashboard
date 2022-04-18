@@ -421,6 +421,69 @@
         }
       }
     },
+    "/api/reports/access": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "description": "Get Chart information of daily access event counts",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "tags": [
+          "stats"
+        ],
+        "operationId": "accessChartRequest",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "ResourceName",
+            "name": "resourceName",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getAccessStatsChartResponse"
+          }
+        }
+      }
+    },
+    "/api/reports/churn": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "description": "Get Chart information of daily access event counts",
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "operationId": "stats",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getMemberChurnResponse"
+          }
+        }
+      }
+    },
     "/api/reports/membercounts": {
       "get": {
         "security": [
@@ -442,7 +505,7 @@
         "tags": [
           "stats"
         ],
-        "operationId": "searchPaymentChartRequest",
+        "operationId": "membershipChartRequest",
         "parameters": [
           {
             "type": "string",
@@ -875,6 +938,26 @@
     }
   },
   "definitions": {
+    "AccessStats": {
+      "type": "object",
+      "properties": {
+        "accessCount": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "AccessCount"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Date"
+        },
+        "resourceName": {
+          "type": "string",
+          "x-go-name": "ResourceName"
+        }
+      },
+      "x-go-package": "memberserver/internal/models"
+    },
     "AssignRFIDRequest": {
       "description": "AssignRFIDRequest -- request to associate an rfid to a member",
       "type": "object",
@@ -1346,6 +1429,24 @@
       },
       "headers": {
         "Body": {}
+      }
+    },
+    "getAccessStatsChartResponse": {
+      "description": "PaymentResponse response of payment chart information",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/AccessStats"
+        }
+      }
+    },
+    "getMemberChurnResponse": {
+      "description": "PaymentResponse response of payment chart information",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/AccessStats"
+        }
       }
     },
     "getMemberResponse": {

@@ -37,3 +37,13 @@ type ReportChart struct {
 	Rows    [][]interface{} `json:"rows"`
 	Cols    []ChartCol      `json:"cols"`
 }
+
+type AccessStats struct {
+	Date         time.Time `json:"date"`
+	AccessCount  int       `json:"accessCount"`
+	ResourceName string    `json:"resourceName"`
+}
+
+type MemberChurn struct {
+	Churn int `json:"churn"`
+}
