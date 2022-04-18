@@ -6,6 +6,7 @@ import { html, LitElement, TemplateResult } from 'lit';
 import '../report-chart';
 import '../member-churn';
 import '../../../shared/components/md-card';
+import { withCard } from '../../../shared/functions';
 
 @customElement('report-page')
 export class ReportPage extends LitElement {

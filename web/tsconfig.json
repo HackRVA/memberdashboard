@@ -4,7 +4,10 @@
     "module": "esnext",
     "moduleResolution": "node",
     "noEmitOnError": true,
-    "lib": ["es2017", "dom"],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
@@ -17,5 +20,13 @@
     "incremental": true,
     "skipLibCheck": true,
   },
-  "include": ["**/*.ts"]
+  "types": [
+    "node"
+  ],
+  "typeRoots": [
+    "../node_modules/@types"
+  ],
+  "include": [
+    "**/*.ts"
+  ]
 }

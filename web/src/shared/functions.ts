@@ -1,3 +1,6 @@
+// Lit
+import { html, TemplateResult } from 'lit';
+
 // jwt-decode
 import jwt_decode from 'jwt-decode';
 
@@ -47,3 +50,7 @@ export const isAdmin = (): boolean => {
 
   return false;
 };
+
+export function withCard(template: TemplateResult): TemplateResult {
+  return html`<md-card style="background-color: var(--lumo-base-color);">${template}</md-card>`
+}

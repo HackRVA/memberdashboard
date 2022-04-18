@@ -15,6 +15,7 @@ import { VersionResponse } from '../../types/api/version-response';
 import { VersionService } from '../../services/version.service';
 import { isAdmin } from '../../functions';
 import { Inject } from '../../di';
+import '../theme-toggler';
 
 @customElement('md-content')
 export class MDContent extends LitElement {
@@ -137,6 +138,7 @@ export class MDContent extends LitElement {
     return html`
       <mwc-top-app-bar-fixed centerTitle>
         <div slot="title">Member Dashboard</div>
+        <theme-toggler slot="navigationIcon"></theme-toggler>
         <div slot="actionItems">${this.email}</div>
         ${this.displayLogout()}
       </mwc-top-app-bar-fixed>

@@ -20,7 +20,7 @@ export const mdCardStyle: CSSResult = css`
     min-height: 20vh;
     min-width: 50vw;
     overflow-x: scroll;
-    background-color: ${primaryWhite};
+    background-color: var(--secondary-background-color);
   }
   card-container {
     display: grid;

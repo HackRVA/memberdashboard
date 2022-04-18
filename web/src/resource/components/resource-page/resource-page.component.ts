@@ -10,6 +10,7 @@ import { coreStyle } from '../../../shared/styles';
 import { ResourceService } from '../../services/resource.service';
 import { ResourceResponse } from '../../types/api/resource-response';
 import { Inject } from '../../../shared/di/inject';
+import { withCard } from '../../../shared/functions';
 
 @customElement('resource-page')
 export class ResourcePage extends LitElement {
@@ -43,8 +44,7 @@ export class ResourcePage extends LitElement {
   }
 
   render(): TemplateResult {
-    return html`
-      <md-card>
+    return withCard(html`
         <loading-content .finishedLoading=${this.finishedLoading}>
           <resource-manager
             .resources=${this.resources}
@@ -52,7 +52,6 @@ export class ResourcePage extends LitElement {
           >
           </resource-manager>
         </loading-content>
-      </md-card>
-    `;
+    `);
   }
 }

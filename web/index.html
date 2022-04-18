@@ -16,11 +16,77 @@
 
   <title>Member Dashboard</title>
   <style>
-    html,
+    html {
+      --lumo-primary-color: #6f6cab;
+      --lumo-primary-text-color: hsl(0, 0%, 15.7%);
+      --lumo-primary-color-50pct: rgba(114, 22, 243, 0.5);
+      --lumo-primary-color-10pct: rgba(114, 22, 243, 0.1);
+      --lumo-error-text-color: rgb(255, 56, 103);
+      --lumo-error-color-50pct: rgba(255, 56, 103, 0.5);
+      --lumo-error-color-10pct: rgba(255, 56, 103, 0.1);
+      --lumo-success-text-color: rgb(20, 184, 143);
+      --lumo-success-color-50pct: rgba(20, 184, 143, 0.5);
+      --lumo-success-color-10pct: rgba(20, 184, 143, 0.1);
+      --lumo-primary-color: hsl(265, 90%, 52%);
+      --lumo-error-color: hsl(346, 100%, 61%);
+      --lumo-success-color: hsl(165, 80%, 40%);
+      --lumo-header-text-color: hsl(285, 35%, 15%);
+      --lumo-body-text-color: hsla(285, 40%, 16%, 0.94);
+      --lumo-secondary-text-color: hsla(285, 42%, 18%, 0.72);
+      --lumo-tertiary-text-color: hsla(285, 45%, 20%, 0.5);
+      --lumo-disabled-text-color: hsla(285, 50%, 22%, 0.26);
+
+      /*  material */
+      --mdc-theme-primary: var(--lumo-primary-color);
+      --mdc-theme-secondary: var(--lumo-secondary-color);
+      --mdc-theme-background: var(--lumo-shade-color);
+      --mdc-text-field-fill-color: var(--secondary-background-color);
+      --mdc-text-field-ink-color: var(--primary-text-color);
+
+      /* polymer */
+      --primary-background-color: var(--lumo-shade-color);
+      --primary-text-color: var(--lumo-primary-text-color);
+      --secondary-background-color: var(--lumo-shade-10pct);
+      --paper-card-background-color: var(--secondary-background-color);
+
+      background-color: var(--primary-background-color);
+      color: var(--primary-text-color);
+    }
     body {
       margin: 0;
       padding: 0;
-      background-color: #e1e1e1;
+      font-family: var(--lumo-font-family);
+    }
+
+    [theme~="dark"] {
+      --lumo-primary-color: #6f6cab;
+      --lumo-primary-text-color: hsl(214deg 78% 88% / 89%);
+      --lumo-primary-color-50pct: rgba(111, 108, 171, 0.5);
+      --lumo-primary-color-10pct: rgba(111, 108, 171, 0.1);
+      --_lumo-button-color: #6f6cab;
+      --lumo-shade: hsl(214, 32%, 14%);
+      --lumo-header-text-color: hsl(214, 66%, 97%);
+      --lumo-secondary-text-color: hsla(214, 87%, 91%, 0.6);
+      --lumo-tertiary-text-color: hsla(214, 78%, 88%, 0.4);
+      --lumo-disabled-text-color: hsla(214, 69%, 84%, 0.33);
+
+      /* material */
+      --mdc-theme-primary: var(--lumo-primary-color);
+      --mdc-tab-color-default: var(--lumo-header-text-color);
+      --mdc-tab-text-label-color-default: var(--lumo-header-text-color);
+      --mdc-text-field-outlined-idle-border-color: var(--lumo-secondary-text-color);
+      --mdc-text-field-label-ink-color: var(--lumo-secondary-text-color);
+      --mdc-text-field-outlined-idle-border-color: var(--lumo-secondary-text-color);
+      --mdc-notched-outline-border-color: var(--lumo-secondary-text-color);
+      --mdc-text-field-disabled-fill-color: var(--lumo-shade-80pct);
+      --mdc-text-field-disabled-ink-color: var(--lumo-secondary-text-color);
+
+      --primary-background-color: var(--lumo-shade);
+      --secondary-background-color: var(--lumo-shade-40pct);
+      --primary-text-color: var(--lumo-primary-text-color);
+
+      --lumo-base-color: var(--lumo-shade);
+      --lumo-body-text-color: var(--primary-text-color);
     }
   </style>
 </head>
