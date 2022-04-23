@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"memberserver/internal/models"
 	"memberserver/pkg/paypal"
 	"memberserver/pkg/paypal/listener"
 
@@ -31,6 +32,12 @@ func (api API) PaypalSubscriptionWebHookHandler(err error, n *listener.Subscript
 	if err != nil {
 		log.Errorf("error parsing member from webhook: %v", err)
 	}
+
+	// Paypal will send us subscriptionID before they actually process the subscription payment.
+	// Because of this, we may not get payment information right away.
+	// Setting them as active allows us to assign an rfid fob that will actually push to the rfid
+	// devices.  Their actual membership status will be evaluate the next time the scheduled job runs.
+	newMember.Level = uint8(models.Standard)
 
 	log.Printf("member: %v", newMember)
 
