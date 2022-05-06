@@ -5,6 +5,7 @@ import (
 	"memberserver/internal/models"
 	"net/http"
 
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -37,7 +38,7 @@ func (rs resourceAPI) update(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	r, err := rs.db.UpdateResource(updateResourceReq.ID, updateResourceReq.Name, updateResourceReq.Address, updateResourceReq.IsDefault)
+	r, err := rs.db.UpdateResource(updateResourceReq)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -78,6 +79,11 @@ func (rs resourceAPI) AddMultipleMembersToResource(w http.ResponseWriter, req *h
 	}
 
 	resource, err := rs.db.AddMultipleMembersToResource(membersResource.Emails, membersResource.ID)
+	for _, email := range membersResource.Emails {
+		member, _ := rs.db.GetMemberByEmail(email)
+		logrus.Info("pushing member to resource", member.Email, member.Resources)
+		rs.resourcemanager.PushOne(member)
+	}
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

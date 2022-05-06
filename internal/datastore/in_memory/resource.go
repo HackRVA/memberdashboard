@@ -49,7 +49,7 @@ func (store *In_memory) GetResourceByID(ID string) (models.Resource, error) {
 func (store *In_memory) GetResourceByName(resourceName string) (models.Resource, error) {
 	return models.Resource{}, nil
 }
-func (store *In_memory) UpdateResource(id string, name string, address string, isDefault bool) (*models.Resource, error) {
+func (store *In_memory) UpdateResource(res models.Resource) (*models.Resource, error) {
 	return &models.Resource{}, nil
 }
 func (store *In_memory) DeleteResource(id string) error {

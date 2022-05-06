@@ -120,7 +120,7 @@ func (db *DatabaseStore) RegisterResource(name string, address string, isDefault
 }
 
 // UpdateResource - updates a resource in the db
-func (db *DatabaseStore) UpdateResource(id string, name string, address string, isDefault bool) (*models.Resource, error) {
+func (db *DatabaseStore) UpdateResource(res models.Resource) (*models.Resource, error) {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {
 		log.Printf("got error: %v\n", err)
@@ -130,12 +130,12 @@ func (db *DatabaseStore) UpdateResource(id string, name string, address string, 
 	r := &models.Resource{}
 
 	// if the resource doesn't already exist let's register it
-	if id == "" {
+	if res.ID == "" {
 		log.Error("invalid resourseID of 0")
 		return r, errors.New("invalid resourseID of 0")
 	}
 
-	row := dbPool.QueryRow(db.ctx, resourceDbMethod.updateResource(), id, name, address, isDefault).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
+	row := dbPool.QueryRow(db.ctx, resourceDbMethod.updateResource(), res.ID, res.Name, res.Address, res.IsDefault).Scan(&r.ID, &r.Name, &r.Address, &r.IsDefault)
 	if row == pgx.ErrNoRows {
 		log.Printf("no rows affected %s", row.Error())
 		return r, errors.New("no rows affected")

@@ -14,6 +14,10 @@ import { memberGridStyle } from './member-grid.style';
 import { displayMemberStatus } from '../../functions';
 import dialogs from '../dialogs/dialogs';
 
+import { ResourceService } from '../../../resource/services/resource.service';
+import { Inject } from '../../../shared/di/inject';
+import { BulkAddMembersToResourceRequest } from '../../../resource/types/api/bulk-add-members-to-resource-request';
+
 function actionBuilder(
   getLabel: (member: Member) => string,
   getAction:
@@ -36,6 +40,9 @@ function actionBuilder(
 
 @customElement('member-grid')
 export class MemberGrid extends LitElement {
+  @Inject('resource')
+  private resourceService: ResourceService;
+
   @property({ type: Array })
   members: Member[] = [];
 
@@ -52,6 +59,8 @@ export class MemberGrid extends LitElement {
     { text: 'Edit Member' },
     { text: 'Add resource' },
     { text: 'Remove resource' },
+    // { text: 'Refresh Membership Status' },
+    { text: 'Push to Resources' },
   ];
 
   private resourceActions: {
@@ -73,6 +82,23 @@ export class MemberGrid extends LitElement {
         'Edit Member': this.dialogs.editMember,
         'Add resource': this.dialogs.addMemberToResource,
         'Remove resource': this.dialogs.removeMemberFromResource,
+        // 'Refresh Member Status': () => {},
+        'Push to Resources': (member: Member) => {
+          console.log('try to push to rfid devices', member);
+
+          member.resources.forEach(resource => {
+            const request: BulkAddMembersToResourceRequest = {
+              emails: [member.email],
+              resourceID: resource.resourceID,
+            };
+            this.resourceService.bulkAddMembersToResource(request).subscribe({
+              complete: () => {
+                // displayToast('success');
+                console.log('success');
+              },
+            });
+          });
+        },
       };
 
       actionHandlers[e.detail.value.text](model.item);

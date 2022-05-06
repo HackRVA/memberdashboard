@@ -59,7 +59,6 @@ func (m memberService) AssignRFID(email string, rfid string) (models.Member, err
 		return models.Member{}, errors.New("not a valid rfid")
 	}
 
-	m.resourceManager.RemoveOne(models.Member{Email: email})
 	go m.resourceManager.PushOne(models.Member{Email: email})
 	return m.store.AssignRFID(email, rfid)
 }
