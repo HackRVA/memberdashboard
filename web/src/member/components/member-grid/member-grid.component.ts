@@ -23,9 +23,14 @@ function actionBuilder(
   getAction:
     | ((isNewMember: boolean) => (member: Member) => void)
     | (() => void),
-  renderer?: () => void
+  renderer?: (root: HTMLElement, grid, model) => void
 ) {
-  if (renderer) return renderer;
+  /**
+   * note: using closure so that selection is evaluated at runtime
+   */
+  if (renderer)
+    return (root: HTMLElement, grid, model): void =>
+      renderer(root, grid, model);
 
   return (root: HTMLElement, grid, model): void => {
     if (root.firstElementChild) return;
@@ -190,7 +195,11 @@ export class MemberGrid extends LitElement {
           auto-width
           flex-grow="0"
           path="actions"
-          .renderer="${this.actionsRenderer}"
+          .renderer="${actionBuilder(
+            member => '',
+            () => null,
+            this.actionsRenderer
+          )}"
         ></vaadin-grid-column>
       </vaadin-grid>
     `;
