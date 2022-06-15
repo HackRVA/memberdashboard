@@ -38,7 +38,8 @@ func NewMemberService(store datastore.MemberStore, rm resourcemanager.ResourceMa
 }
 
 func (m memberService) Add(newMember models.Member) (models.Member, error) {
-	m.AssignRFID(newMember.Email, newMember.RFID)
+	// assignRFID needs to run after the member has been added to the DB
+	defer m.AssignRFID(newMember.Email, newMember.RFID)
 	return m.store.AddNewMember(newMember)
 }
 
@@ -59,7 +60,8 @@ func (m memberService) AssignRFID(email string, rfid string) (models.Member, err
 		return models.Member{}, errors.New("not a valid rfid")
 	}
 
-	go m.resourceManager.PushOne(models.Member{Email: email})
+	// we need to push to resources after we add rfid to DB
+	defer m.resourceManager.PushOne(models.Member{Email: email})
 	return m.store.AssignRFID(email, rfid)
 }
 

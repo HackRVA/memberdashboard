@@ -273,10 +273,10 @@ VALUES `
 		// postgres doesn't like apostrophes
 		memberName := strings.Replace(m.Name, "'", "''", -1)
 
-		// if member level isn't set them to inactive,
-		//   otherwise, use the level they already have.
+		// Give new members standard access at first
+		//   Their actual status will be evaluated the next day
 		if m.Level == 0 {
-			m.Level = uint8(models.Inactive)
+			m.Level = uint8(models.Standard)
 		}
 
 		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d, '%s')", memberName, m.Email, m.Level, m.SubscriptionID))
