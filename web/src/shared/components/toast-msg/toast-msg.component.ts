@@ -5,7 +5,7 @@ import { customElement, property } from 'lit/decorators.js';
 // material
 import { Snackbar } from '@material/mwc-snackbar';
 
-// memberdashboard;
+// memberdashboard
 import { ToastMessage } from '../../types/custom/toast-msg';
 import { IPopup } from './../../types/custom/ipop-up';
 
