@@ -21,6 +21,7 @@ type AccessEvent interface {
 type MemberStore interface {
 	GetTiers() []models.Tier // update where this is
 	GetMembers() []models.Member
+	GetMembersWithLimit(limit int, offset int, active bool) []models.Member
 	GetMemberByEmail(email string) (models.Member, error)
 	AssignRFID(email string, rfid string) (models.Member, error)
 	AddNewMember(newMember models.Member) (models.Member, error)

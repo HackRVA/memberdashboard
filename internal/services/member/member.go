@@ -21,6 +21,7 @@ type memberService struct {
 type MemberService interface {
 	Add(models.Member) (models.Member, error)
 	Get() []models.Member
+	GetMembersWithLimit(limit int, offset int, active bool) []models.Member
 	GetByEmail(email string) (models.Member, error)
 	Update(models.Member) error
 	AssignRFID(email string, rfid string) (models.Member, error)
@@ -43,6 +44,9 @@ func (m memberService) Add(newMember models.Member) (models.Member, error) {
 	return m.store.AddNewMember(newMember)
 }
 
+func (m memberService) GetMembersWithLimit(limit int, count int, active bool) []models.Member {
+	return m.store.GetMembersWithLimit(limit, count, active)
+}
 func (m memberService) Get() []models.Member {
 	return m.store.GetMembers()
 }

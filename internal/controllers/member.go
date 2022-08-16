@@ -7,9 +7,11 @@ import (
 	"memberserver/internal/services/member"
 	"memberserver/internal/services/resourcemanager"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 )
 
@@ -30,7 +32,34 @@ func (m *MemberServer) MemberEmailHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (m *MemberServer) GetMembersHandler(w http.ResponseWriter, r *http.Request) {
-	ok(w, m.MemberService.Get())
+	search := r.URL.Query().Get("search")
+	if search != "" {
+		results := []models.Member{}
+		for _, member := range m.MemberService.Get() {
+			if fuzzy.Match(search, member.Name) || fuzzy.Match(search, member.Email) {
+				results = append(results, member)
+			}
+		}
+		ok(w, results)
+		return
+	}
+	active := r.URL.Query().Get("active")
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		ok(w, m.MemberService.Get())
+		return
+	}
+	count, err := strconv.Atoi(r.URL.Query().Get("count"))
+	if err != nil {
+		ok(w, m.MemberService.Get())
+		return
+	}
+
+	if active == "true" {
+		println("get active")
+	}
+
+	ok(w, m.MemberService.GetMembersWithLimit(count, page, active == "true"))
 }
 
 func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http.Request) {

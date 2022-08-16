@@ -13,6 +13,60 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func (db *DatabaseStore) GetMembersWithLimit(limit int, offset int, active bool) []models.Member {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	var members []models.Member
+	rows, err := dbPool.Query(db.ctx, memberDbMethod.getMemberWithLimit(limit, offset, active))
+	if err != nil {
+		log.Errorf("GetMembers failed: %v", err)
+	}
+
+	defer rows.Close()
+
+	resourceMemo := make(map[string]models.MemberResource)
+
+	for rows.Next() {
+		var rIDs []string
+		var member models.Member
+		err = rows.Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs, &member.SubscriptionID)
+		if err != nil {
+			log.Errorf("error scanning row: %s", err)
+		}
+
+		// having issues with unmarshalling a jsonb object array from pgx
+		// using a less efficient approach for now
+		// TODO: fix this on the query level
+		for _, rID := range rIDs {
+			if _, exist := resourceMemo[rID]; exist {
+				member.Resources = append(member.Resources, models.MemberResource{ResourceID: rID, Name: resourceMemo[rID].Name})
+				continue
+			}
+
+			resource, err := db.GetResourceByID(rID)
+			if err != nil {
+				logger.Errorf("error getting resource by id in memberResource lookup: %s %s_\n", err.Error(), rID)
+				continue
+			}
+
+			resourceMemo[rID] = models.MemberResource{
+				ResourceID: resource.ID,
+				Name:       resource.Name,
+			}
+
+			member.Resources = append(member.Resources, models.MemberResource{ResourceID: rID, Name: resource.Name})
+		}
+
+		members = append(members, member)
+	}
+
+	return members
+}
+
 func (db *DatabaseStore) GetMembers() []models.Member {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {

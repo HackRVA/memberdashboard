@@ -11,6 +11,9 @@ var Members = map[string]models.Member{}
 func (i In_memory) GetTiers() []models.Tier {
 	return i.Tiers
 }
+func (i In_memory) GetMembersWithLimit(limit int, offset int, active bool) []models.Member {
+	return MemberMapToSlice(i.Members)
+}
 func (i In_memory) GetMembers() []models.Member {
 	return MemberMapToSlice(i.Members)
 }
