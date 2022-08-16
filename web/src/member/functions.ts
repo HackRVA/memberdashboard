@@ -2,7 +2,8 @@
 import { MemberLevel } from './types/custom/member-level';
 import { Member } from './types/api/member-response';
 
-import structuredClone from '@ungap/structured-clone'; // polyfill
+// polyfill
+import structuredClone from '@ungap/structured-clone';
 
 export const displayMemberStatus = (memberLevel: MemberLevel): string => {
   switch (memberLevel) {
