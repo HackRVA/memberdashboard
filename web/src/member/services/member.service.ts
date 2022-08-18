@@ -118,7 +118,15 @@ export class MemberManagerService {
   }
 
   getMembers = async (): Promise<Member[]> => {
-    this.filteredMembers = await this.memberService.getMembers().toPromise();
+    this.memberService.getMembers().subscribe(
+      (members: Member[]) => {
+        this.filteredMembers = members;
+        console.log(members.length);
+      },
+      (error: null) => {
+        console.log(error);
+      }
+    );
     this.updateMembers(this.filteredMembers);
     return this.filteredMembers;
   };
