@@ -36,7 +36,7 @@ func (m *MemberServer) GetMembersHandler(w http.ResponseWriter, r *http.Request)
 	if search != "" {
 		results := []models.Member{}
 		for _, member := range m.MemberService.Get() {
-			if fuzzy.Match(search, member.Name) || fuzzy.Match(search, member.Email) {
+			if fuzzy.Match(search, member.Name) || fuzzy.Match(search, member.Email) || fuzzy.Match(search, member.RFID) {
 				results = append(results, member)
 			}
 		}

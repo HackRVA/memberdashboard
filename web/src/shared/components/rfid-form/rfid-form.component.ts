@@ -7,10 +7,7 @@ import { TextField } from '@material/mwc-textfield/mwc-textfield';
 
 // memberdashboard
 import '../toast-msg';
-import {
-  MemberService,
-  MemberManagerService,
-} from '../../../member/services/member.service';
+import { MemberService } from '../../../member/services/member.service';
 import { coreStyle } from '../../styles/core.style';
 import { AssignRFIDRequest } from '../../../member/types/api/assign-rfid-request';
 import { CreateMemberRequest } from '../../../member/types/api/create-member-request';
@@ -40,9 +37,6 @@ export class RFIDModal extends LitElement {
 
   @Inject('member')
   private memberService: MemberService;
-
-  @Inject('member-manager')
-  private memberManagerService: MemberManagerService;
 
   emailFieldTemplate: TextField;
   rfidFieldTemplate: TextField;
@@ -92,7 +86,7 @@ export class RFIDModal extends LitElement {
       complete: () => {
         this.fireUpdatedEvent();
         this.emptyFormField();
-        this.memberManagerService.getMembers();
+        // this.memberService.getMembers();
         displayToast('Success');
       },
       error: () => {
@@ -106,7 +100,7 @@ export class RFIDModal extends LitElement {
       complete: () => {
         this.fireUpdatedEvent();
         this.emptyFormField();
-        this.memberManagerService.getMembers();
+        // this.memberService.getMembers();
         displayToast('Success');
       },
       error: () => {
@@ -120,7 +114,7 @@ export class RFIDModal extends LitElement {
       complete: () => {
         this.fireUpdatedEvent();
         this.closeHandler();
-        this.memberManagerService.getMembers();
+        // this.memberService.getMembers();
         displayToast('Success');
       },
       error: () => {

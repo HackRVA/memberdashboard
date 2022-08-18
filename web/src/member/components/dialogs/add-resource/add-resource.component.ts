@@ -14,7 +14,6 @@ import { addMembersToResourceStyle } from './add-resource.style';
 import { Inject } from '../../../../shared/di/inject';
 import { displayToast } from '../../../../shared/components/abstract-toast';
 import { coreStyle } from '../../../../shared/styles';
-import { MemberManagerService } from '../../../services/member.service';
 
 @customElement('add-resource-form')
 export class AddResourceForm extends LitElement {
@@ -28,8 +27,6 @@ export class AddResourceForm extends LitElement {
 
   @Inject('resource')
   private resourceService: ResourceService;
-  @Inject('member-manager')
-  private memberManagerService: MemberManagerService;
 
   resources: ResourceResponse[] = [];
 
@@ -70,7 +67,7 @@ export class AddResourceForm extends LitElement {
     this.resourceService.bulkAddMembersToResource(request).subscribe({
       complete: () => {
         this.fireUpdatedEvent();
-        this.memberManagerService.getMembers();
+        // this.memberService.getMembers();
         displayToast('success');
       },
     });

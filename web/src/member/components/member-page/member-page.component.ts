@@ -11,41 +11,77 @@ import '../../../shared/components/loading-content';
 import { memberPageStyle } from './member-page.style';
 import { Member } from '../../types/api/member-response';
 import { coreStyle } from '../../../shared/styles';
-import { MemberManagerService } from '../../services/member.service';
+import { MemberService } from '../../services/member.service';
 import { Inject } from '../../../shared/di';
 
 @customElement('member-page')
 export class MemberPage extends LitElement {
-  @property()
-  members: Member[];
+  @Inject('member')
+  private memberService: MemberService;
 
-  @Inject('member-manager')
-  private memberManagerService: MemberManagerService;
+  page = 0;
+  count = 10;
+  active = true;
+  search = '';
+
+  members: Member[];
 
   static get styles(): CSSResult[] {
     return [coreStyle, memberPageStyle];
   }
 
-  async firstUpdated(): Promise<void> {
-    this.memberManagerService.registerListener(this.updateGrid);
+  firstUpdated(): void {
     this.refreshMembers();
   }
 
-  updateGrid = (): void => {
-    this.members = this.memberManagerService.filteredMembers;
+  async refreshMembers(): Promise<void> {
+    this.members = await this.memberService
+      .getMembers(this.page, this.count, this.active, this.search)
+      .toPromise();
+    this.requestUpdate();
+  }
+
+  incrementPage(): void {
+    this.page++;
+    this.refreshMembers();
+  }
+  decrementPage(): void {
+    if (this.page == 0) {
+      return;
+    }
+    this.page--;
+    this.refreshMembers();
+  }
+
+  memberSeach = (searchTerm: string): Promise<void> => {
+    return (async (): Promise<void> => {
+      if (searchTerm.length == 0) {
+        this.refreshMembers();
+        return;
+      }
+      this.members = await this.memberService
+        .getMembers(0, 0, this.active, searchTerm)
+        .toPromise();
+      this.requestUpdate();
+    })();
   };
 
-  refreshMembers = (): void => {
-    this.members = null;
-    this.memberManagerService.getMembers();
+  setActive = (active: boolean): Promise<void> => {
+    return (async (): Promise<void> => {
+      this.active = active;
+      this.refreshMembers();
+    })();
   };
 
   render(): TemplateResult {
     return html`
       <loading-content .finishedLoading=${!!this.members}>
-        <member-manager-menu></member-manager-menu>
-        <member-search .updateGrid=${this.updateGrid}></member-search>
+        <member-manager-menu .setActive=${this.setActive}></member-manager-menu>
+        <member-search .memberSearch=${this.memberSeach}></member-search>
         <member-grid .members=${this.members}></member-grid>
+        <button @click=${this.decrementPage}><</button>
+        <button @click=${this.incrementPage}>></button>
+        <span> ${this.page} </span>
       </loading-content>
     `;
   }

@@ -13,7 +13,6 @@ import { isEmpty } from '../../../../shared/functions';
 import { MemberResource } from '../../../types/api/member-response';
 import { Inject } from '../../../../shared/di';
 import { displayToast } from '../../../../shared/components/abstract-toast';
-import { MemberManagerService } from '../../../services/member.service';
 
 @customElement('remove-resource-form')
 export class RemoveResourceForm extends LitElement {
@@ -28,9 +27,6 @@ export class RemoveResourceForm extends LitElement {
 
   @Inject('resource')
   private resourceService: ResourceService;
-
-  @Inject('member-manager')
-  private memberManagerService: MemberManagerService;
 
   emailFieldTemplate: TextField;
   memberResourceSelectTemplate: Select;
@@ -63,7 +59,7 @@ export class RemoveResourceForm extends LitElement {
     this.resourceService.removeMemberFromResource(request).subscribe({
       complete: () => {
         this.fireUpdatedEvent();
-        this.memberManagerService.getMembers();
+        // this.memberService.members;
         displayToast('success');
       },
     });

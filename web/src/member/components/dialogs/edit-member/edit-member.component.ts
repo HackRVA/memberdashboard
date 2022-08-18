@@ -9,10 +9,7 @@ import { TextField } from '@material/mwc-textfield';
 // memberdashboard
 import '../../../../shared/components/toast-msg';
 import { editMemberStyle } from './edit-member.style';
-import {
-  MemberService,
-  MemberManagerService,
-} from '../../../services/member.service';
+import { MemberService } from '../../../services/member.service';
 import { Inject } from '../../../../shared/di/inject';
 import { UpdateMemberRequest } from '../../../types/api/update-member-request';
 import { displayToast } from '../../../../shared/components/abstract-toast';
@@ -33,9 +30,6 @@ export class EditMemberForm extends LitElement {
 
   @Inject('member')
   private memberService: MemberService;
-
-  @Inject('member-manager')
-  private memberManagerService: MemberManagerService;
 
   editMemberModalTemplate: Dialog;
 
@@ -84,7 +78,7 @@ export class EditMemberForm extends LitElement {
     this.memberService.updateMemberByEmail(email, request).subscribe({
       complete: () => {
         this.fireUpdatedEvent();
-        this.memberManagerService.getMembers();
+        // this.memberService.members;
         displayToast('success');
       },
       error: () => {
