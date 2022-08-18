@@ -117,7 +117,7 @@ export class MemberManagerService {
     this.filteredMembers = this.showActive ? members.active : members.inactive;
   }
 
-  getMembers = async (): Promise<Member[]> => {
+  getMembers = (): Member[] => {
     this.memberService.getMembers().subscribe(
       (members: Member[]) => {
         this.filteredMembers = members;
