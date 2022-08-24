@@ -1,7 +1,14 @@
 # Infrastructure
-```
-    cloud
-{ database } <--> [firewall] <-[proxy]-> [server] <--> [mqtt broker] <--> [...resources/rfid devices]
+
+```mermaid
+flowchart LR;
+        database[(Database)]<-. sql connection over ssl .->firewall
+        <-.->proxy([http reverse proxy])<-.->server(member dashboard/server)
+        <-. mqtt messages .->mqttbroker([mosquitto/mqtt broker])
+        mqttbroker<-. mqtt message .->frontdoor([front door rfid])
+        mqttbroker<-. mqtt message .->cnc([CNC rfid])
+        mqttbroker<-. mqtt message .->laser([laser rfid])
+        mqttbroker<-. mqtt message .->resources([rfid device])
 ```
 
 * The db runs on a hosting provider in the cloud. 
@@ -11,7 +18,6 @@
 
 ## Database
 The database runs postgres.
-
 
 ## Server
 Responsibilities:
