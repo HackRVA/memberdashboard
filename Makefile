@@ -145,3 +145,10 @@ swagger: ## Generate swagger doc
 watch-ui: ## run ui in watch mode
 ##   Usage: make watch-ui
 	npm --prefix=web start
+
+serve-docs: ## serve-docs locally
+##   Usage: make serve-docs
+	bash ./scripts/serve-docs.sh
+deploy-docs: ## deploy-docs to gh-pages
+##   Usage: make deploy-docs
+	bash ./scripts/deploy-docs.sh

@@ -1,0 +1,13 @@
+[book]
+authors = ["Dustin Firebaugh"]
+language = "en"
+multilingual = false
+src = "src"
+title = "member dashboard"
+
+[output.html]
+default-theme="navy"
+git-repository-url = "https://github.com/HackRVA/memberdashboard"
+git-repository-icon = "fa-github"
+edit-url-template = "https://github.com/HackRVA/memberdashboard/edit/main/docs/memberdashboard/{path}"
+site-url = "/memberdashboard/"

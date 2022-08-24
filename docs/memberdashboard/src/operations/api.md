@@ -1,4 +1,4 @@
-# MemberServer Docs
+# API
 
 ## SwaggerUI
 SwaggerUI is the static site for serving up our api documentation.
