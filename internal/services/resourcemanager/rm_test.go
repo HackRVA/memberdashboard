@@ -14,13 +14,13 @@ var pub []string
 
 type stubMQTTServer struct{}
 
-func (mqtt *stubMQTTServer) Publish(topic string, payload interface{}) {
+func (mqtt *stubMQTTServer) Publish(address string, topic string, payload interface{}) {
 	println(topic)
 	json, _ := json.Marshal(payload)
 	pub = append(pub, topic+string(json))
 }
 
-func (mqtt *stubMQTTServer) Subscribe(topic string, handler mqtt.MessageHandler) {
+func (mqtt *stubMQTTServer) Subscribe(address string, topic string, handler mqtt.MessageHandler) {
 
 }
 

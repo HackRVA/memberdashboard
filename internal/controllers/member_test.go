@@ -8,10 +8,11 @@ import (
 	"memberserver/internal/models"
 	"memberserver/internal/services/member"
 	"memberserver/internal/services/resourcemanager"
-	"memberserver/internal/services/resourcemanager/mqttserver"
+	"memberserver/pkg/mqtt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 )
@@ -53,9 +54,18 @@ var testMemberStore = in_memory.In_memory{
 	},
 }
 
+type paymentProvider struct{}
+
+func (p paymentProvider) GetSubscription(subscriptionID string) (status string, lastPaymentAmount string, lastPaymentTime time.Time, err error) {
+	return
+}
+func (p paymentProvider) GetSubscriber(subscriptionID string) (name string, email string, err error) {
+	return
+}
+
 func TestGetMember(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
+	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(in_memory.MemberMapToSlice(testMemberStore.Members))
@@ -97,8 +107,8 @@ func TestGetMember(t *testing.T) {
 }
 
 func TestGetMemberByEmail(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
+	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Members["test@test.com"])
@@ -151,8 +161,8 @@ func TestGetMemberByEmail(t *testing.T) {
 }
 
 func TestAssignRFID(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
+	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	tests := []struct {
 		TestName           string
@@ -202,8 +212,8 @@ func TestAssignRFID(t *testing.T) {
 }
 
 func TestGetTiers(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
+	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Tiers)
@@ -236,8 +246,8 @@ func TestGetTiers(t *testing.T) {
 }
 
 func TestNewMember(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
+	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	newMember := models.Member{
 		Email: "test1@test.com",
@@ -280,8 +290,8 @@ func TestNewMember(t *testing.T) {
 }
 
 func TestUpdateMemberSubscriptionID(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm), union.New()}
+	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
+	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	expectedResponse, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,

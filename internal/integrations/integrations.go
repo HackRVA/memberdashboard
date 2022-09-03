@@ -1,8 +1,8 @@
 package integrations
 
-import "memberserver/internal/models"
+import "time"
 
 type PaymentProvider interface {
-	GetSubscription(subscriptionID string) (string, models.Payment, error)
-	GetMemberFromSubscription(subscriptionID string) (models.Member, error)
+	GetSubscription(subscriptionID string) (status string, lastPaymentAmount string, lastPaymentTime time.Time, err error)
+	GetSubscriber(subscriptionID string) (name string, email string, err error)
 }

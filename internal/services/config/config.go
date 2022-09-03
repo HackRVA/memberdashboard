@@ -37,6 +37,12 @@ type Config struct {
 	AlwaysAdmin          string `json:"alwaysAdmin"`
 }
 
+// Get gets the config and ignores errors
+func Get() Config {
+	c, _ := Load()
+	return c
+}
+
 // Load in the config file to memory
 //  you can create a config file or pass in Environment variables
 //  the config file will take priority
@@ -86,7 +92,9 @@ func Load() (Config, error) {
 		log.Debugf("error reading in the config file: %s", err)
 	}
 
-	_ = json.Unmarshal([]byte(file), &c)
+	if err := json.Unmarshal([]byte(file), &c); err != nil {
+		return Config{}, err
+	}
 
 	// if we still don't have an access secret let's generate a random one
 	return c, nil

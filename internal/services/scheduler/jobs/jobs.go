@@ -10,7 +10,7 @@ import (
 	"memberserver/internal/services/mail"
 	"memberserver/internal/services/member"
 	"memberserver/internal/services/resourcemanager"
-	"memberserver/internal/services/resourcemanager/mqttserver"
+	"memberserver/pkg/mqtt"
 	"memberserver/pkg/paypal"
 
 	"net/http"
@@ -32,14 +32,15 @@ type JobController struct {
 func New(db datastore.DataStore) JobController {
 	config, _ := config.Load()
 	mailAPI, _ := mail.Setup()
-	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), db)
+	rm := resourcemanager.NewResourceManager(mqtt.New(), db)
+	pp := paypal.Setup(config.PaypalURL, config.PaypalClientID, config.PaypalClientSecret, logger.New())
 	return JobController{
 		config:          config,
 		mailAPI:         mailAPI,
 		resourceManager: rm,
-		paymentProvider: paypal.Setup(db),
+		paymentProvider: pp,
 		DataStore:       db,
-		member:          member.NewMemberService(db, rm),
+		member:          member.NewMemberService(db, rm, pp),
 	}
 }
 
@@ -62,13 +63,16 @@ func (j JobController) CheckMemberSubscriptions() {
 			continue
 		}
 
-		status, lastPayment, err := j.paymentProvider.GetSubscription(member.SubscriptionID)
+		status, lastPaymentAmount, lastPaymentTime, err := j.paymentProvider.GetSubscription(member.SubscriptionID)
 		if err != nil {
 			log.Error(err)
 			continue
 		}
 
-		j.SetMemberLevel(status, lastPayment, member)
+		j.SetMemberLevel(status, models.Payment{
+			Amount: lastPaymentAmount,
+			Time:   lastPaymentTime,
+		}, member)
 	}
 }
 
@@ -94,12 +98,14 @@ func (j JobController) CheckResourceInit() {
 
 	resources := j.DataStore.GetResources()
 
+	config, _ := config.Load()
+
 	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
-		j.resourceManager.MQTTServer.Subscribe(r.Name+"/send", j.resourceManager.OnAccessEvent)
-		j.resourceManager.MQTTServer.Subscribe(r.Name+"/result", j.resourceManager.HealthCheck)
-		j.resourceManager.MQTTServer.Subscribe(r.Name+"/sync", j.resourceManager.OnHeartBeat)
-		j.resourceManager.MQTTServer.Subscribe(r.Name+"/cleanup", j.resourceManager.OnRemoveInvalidRequest)
+		j.resourceManager.MQTTServer.Subscribe(config.MQTTBrokerAddress, r.Name+"/send", j.resourceManager.OnAccessEvent)
+		j.resourceManager.MQTTServer.Subscribe(config.MQTTBrokerAddress, r.Name+"/result", j.resourceManager.HealthCheck)
+		j.resourceManager.MQTTServer.Subscribe(config.MQTTBrokerAddress, r.Name+"/sync", j.resourceManager.OnHeartBeat)
+		j.resourceManager.MQTTServer.Subscribe(config.MQTTBrokerAddress, r.Name+"/cleanup", j.resourceManager.OnRemoveInvalidRequest)
 		j.resourceManager.CheckStatus(r)
 	}
 }

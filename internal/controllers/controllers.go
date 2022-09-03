@@ -4,10 +4,12 @@ import (
 	"memberserver/internal/controllers/auth"
 	"memberserver/internal/datastore"
 	"memberserver/internal/services/config"
-	"memberserver/internal/services/report"
+	"memberserver/internal/services/logger"
 	"memberserver/internal/services/member"
+	"memberserver/internal/services/report"
 	"memberserver/internal/services/resourcemanager"
-	"memberserver/internal/services/resourcemanager/mqttserver"
+	"memberserver/pkg/mqtt"
+	"memberserver/pkg/paypal"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/jwt"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
@@ -33,10 +35,11 @@ type resourceAPI struct {
 
 // Setup - setup us up the routes
 func Setup(store datastore.DataStore, auth *auth.AuthController) API {
-	c, _ := config.Load()
+	c := config.Get()
 
 	userServer := NewUserServer(store, c)
-	rm := resourcemanager.NewResourceManager(mqttserver.NewMQTTServer(), store)
+	rm := resourcemanager.NewResourceManager(mqtt.New(), store)
+	pp := paypal.Setup(c.PaypalURL, c.PaypalClientID, c.PaypalClientSecret, logger.New())
 
 	return API{
 		db: store,
@@ -47,7 +50,7 @@ func Setup(store datastore.DataStore, auth *auth.AuthController) API {
 		},
 		VersionServer: &VersionServer{NewInMemoryVersionStore()},
 		ReportsServer: &ReportsServer{report.Report{Store: store}},
-		MemberServer:  &MemberServer{rm, member.NewMemberService(store, rm), auth.AuthStrategy},
+		MemberServer:  &MemberServer{rm, member.NewMemberService(store, rm, pp), auth.AuthStrategy},
 		UserServer:    &userServer,
 		AuthStrategy:  auth.AuthStrategy,
 		JWTKeeper:     auth.JWTSecretsKeeper,

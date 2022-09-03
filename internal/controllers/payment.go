@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"memberserver/internal/models"
-	"memberserver/pkg/paypal"
 	"memberserver/pkg/paypal/listener"
 
 	log "github.com/sirupsen/logrus"
@@ -26,9 +25,7 @@ func (api API) PaypalSubscriptionWebHookHandler(err error, n *listener.Subscript
 		return
 	}
 
-	paypal := paypal.Setup(api.db)
-
-	newMember, err := paypal.GetMemberFromSubscription(n.Resource.ID)
+	newMember, err := api.MemberServer.MemberService.GetMemberFromSubscription(n.Resource.ID)
 	if err != nil {
 		log.Errorf("error parsing member from webhook: %v", err)
 	}

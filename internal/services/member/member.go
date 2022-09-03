@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"memberserver/internal/datastore"
+	"memberserver/internal/integrations"
 	"memberserver/internal/models"
 	"memberserver/internal/services/resourcemanager"
 	"memberserver/pkg/slack"
@@ -16,6 +17,7 @@ import (
 type memberService struct {
 	store           datastore.MemberStore
 	resourceManager resourcemanager.ResourceManager
+	paymentProvider integrations.PaymentProvider
 }
 
 type MemberService interface {
@@ -29,12 +31,14 @@ type MemberService interface {
 	FindNonMembersOnSlack() []string
 	CancelStatusHandler(member models.Member, lastPayment models.Payment)
 	ActiveStatusHandler(member models.Member, lastPayment models.Payment)
+	GetMemberFromSubscription(subscriptionID string) (models.Member, error)
 }
 
-func NewMemberService(store datastore.MemberStore, rm resourcemanager.ResourceManager) memberService {
+func NewMemberService(store datastore.MemberStore, rm resourcemanager.ResourceManager, pp integrations.PaymentProvider) memberService {
 	return memberService{
 		store:           store,
 		resourceManager: rm,
+		paymentProvider: pp,
 	}
 }
 
@@ -133,6 +137,18 @@ func (ms memberService) ActiveStatusHandler(m models.Member, lastPayment models.
 	}
 
 	member.setMemberLevel(lastPaymentAmount)
+}
+
+func (ms memberService) GetMemberFromSubscription(subscriptionID string) (models.Member, error) {
+	name, email, err := ms.paymentProvider.GetSubscriber(subscriptionID)
+	if err != nil {
+		return models.Member{}, err
+	}
+	return models.Member{
+		Email:          email,
+		Name:           name,
+		SubscriptionID: subscriptionID,
+	}, nil
 }
 
 type member struct {

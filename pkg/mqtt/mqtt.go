@@ -1,8 +1,7 @@
-package mqttserver
+package mqtt
 
 import (
 	"math/rand"
-	"memberserver/internal/services/config"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -10,18 +9,18 @@ import (
 )
 
 type MQTTServer interface {
-	Publish(topic string, payload interface{})
-	Subscribe(topic string, handler mqtt.MessageHandler)
+	Publish(address string, topic string, payload interface{})
+	Subscribe(address string, topic string, handler mqtt.MessageHandler)
 }
 
-type mqttServer struct{}
+type server struct{}
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func NewMQTTServer() *mqttServer {
-	return &mqttServer{}
+func New() *server {
+	return &server{}
 }
 
 func randStringRunes(n int) string {
@@ -34,9 +33,8 @@ func randStringRunes(n int) string {
 }
 
 // Subscribe - subscribe to an MQTT topic and pass in a messageHandler
-func (m *mqttServer) Subscribe(topic string, handler mqtt.MessageHandler) {
-	conf, _ := config.Load()
-	opts := mqtt.NewClientOptions().AddBroker(conf.MQTTBrokerAddress)
+func (m *server) Subscribe(address string, topic string, handler mqtt.MessageHandler) {
+	opts := mqtt.NewClientOptions().AddBroker(address)
 	opts.SetClientID("member-server-subscriber-" + randStringRunes(12))
 
 	opts.OnConnect = func(c mqtt.Client) {
@@ -54,9 +52,8 @@ func (m *mqttServer) Subscribe(topic string, handler mqtt.MessageHandler) {
 }
 
 // Publish - publish to an MQTT topic
-func (m *mqttServer) Publish(topic string, payload interface{}) {
-	conf, _ := config.Load()
-	opts := mqtt.NewClientOptions().AddBroker(conf.MQTTBrokerAddress)
+func (m *server) Publish(address string, topic string, payload interface{}) {
+	opts := mqtt.NewClientOptions().AddBroker(address)
 	opts.SetClientID("member-server-publisher-" + randStringRunes(12))
 
 	client := mqtt.NewClient(opts)
