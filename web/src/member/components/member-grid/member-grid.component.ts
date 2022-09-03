@@ -177,7 +177,9 @@ export class MemberGrid extends LitElement {
             if (root.firstElementChild) return;
 
             const label = document.createElement('vaadin-context-menu-item');
-            label.textContent = model.item.resourcesLabel || 'no resources';
+            label.textContent =
+              model.item.resources.map(resource => resource.name).join(',') ||
+              'no resources';
 
             const menuBar = document.createElement('vaadin-menu-bar');
             menuBar.items = [
