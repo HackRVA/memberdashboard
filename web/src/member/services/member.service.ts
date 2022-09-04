@@ -62,6 +62,10 @@ export class MemberService extends HTTPService {
   downloadNonMembersCSV(): Observable<Blob> {
     return this.get<Blob>(`${this.memberUrlSegment}/slack/nonmembers`, 'blob');
   }
+
+  checkMemberStatus(id: string): Observable<Member> {
+    return this.get<Member>(`${this.memberUrlSegment}/${id}/status`);
+  }
 }
 
 export default new MemberService();

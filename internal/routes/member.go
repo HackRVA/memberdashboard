@@ -16,6 +16,7 @@ type MemberHTTPHandler interface {
 	GetTiersHandler(w http.ResponseWriter, r *http.Request)
 	GetNonMembersOnSlackHandler(w http.ResponseWriter, r *http.Request)
 	AddNewMemberHandler(w http.ResponseWriter, r *http.Request)
+	CheckStatus(w http.ResponseWriter, r *http.Request)
 }
 
 func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.AccessControl) {
@@ -74,6 +75,22 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//     Responses:
 	//       200: getMemberResponse
 	r.authedRouter.HandleFunc("/member/self", member.GetCurrentUserHandler)
+	// swagger:route GET /api/member/{id}/status member
+	//
+	// Returns current members information
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Security:
+	//     - bearerAuth:
+	//     - basicAuth:
+	//
+	//     Responses:
+	//       200: getMemberResponse
+	r.authedRouter.HandleFunc("/member/{id}/status", accessControl.Restrict(member.CheckStatus, []rbac.UserRole{rbac.Admin}))
 	// swagger:route GET /api/member/email/{email} member getMemberByEmailRequest
 	//
 	// Returns a member based on the email address.

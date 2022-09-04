@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/gorilla/mux"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 )
@@ -205,4 +206,21 @@ func (m *MemberServer) AddNewMemberHandler(w http.ResponseWriter, r *http.Reques
 
 	ok(w, addedMember)
 
+}
+
+func (m *MemberServer) CheckStatus(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id := params["id"]
+	if id == "" {
+		badRequest(w, "not a valid subscriptionID")
+		return
+	}
+
+	member, err := m.MemberService.CheckStatus(id)
+	if err != nil {
+		http.Error(w, "error getting member by email", http.StatusNotFound)
+		return
+	}
+
+	ok(w, member)
 }

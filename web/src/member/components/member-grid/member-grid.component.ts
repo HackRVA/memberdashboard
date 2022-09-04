@@ -8,6 +8,7 @@ import '../../../shared/components/abstract-dialog';
 import '../dialogs/edit-member';
 import '../dialogs/remove-resource';
 import '../dialogs/add-resource';
+import '../dialogs/refresh-member';
 import { Member } from '../../types/api/member-response';
 import { coreStyle } from '../../../shared/styles';
 import { memberGridStyle } from './member-grid.style';
@@ -87,7 +88,7 @@ export class MemberGrid extends LitElement {
         'Edit Member': this.dialogs.editMember,
         'Add resource': this.dialogs.addMemberToResource,
         'Remove resource': this.dialogs.removeMemberFromResource,
-        // 'Refresh Member Status': () => {},
+        'Refresh Member Status': this.dialogs.refreshMemberStatus,
         'Push to Resources': (member: Member) => {
           console.log('try to push to rfid devices', member);
 
@@ -165,9 +166,7 @@ export class MemberGrid extends LitElement {
           path="memberLevel"
           .renderer="${actionBuilder(
             member => displayMemberStatus(member.memberLevel),
-            () => {
-              console.log('show some info');
-            }
+            this.dialogs.refreshMemberStatus
           )}"
         ></vaadin-grid-column>
         <vaadin-grid-column

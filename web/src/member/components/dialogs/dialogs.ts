@@ -11,6 +11,7 @@ export default (
   editRFID: (isNewMember: boolean) => void;
   addMemberToResource: (member: Member) => void;
   removeMemberFromResource: (member: Member) => void;
+  refreshMemberStatus: (member: Member) => void;
 } => {
   return {
     editMember: (member: Member): void => {
@@ -72,6 +73,19 @@ export default (
                     }}
                 >
                 </remove-resource>`;
+
+      shadowRoot.appendChild(el);
+    },
+    refreshMemberStatus: (member: Member): void => {
+      const el = document.createElement('abstract-dialog');
+      el.heading = 'member status';
+      el.dialogLayout = html` <refresh-member-status-form
+        .subscriptionID=${member.subscriptionID}
+        .closeHandler=${(): void => {
+          el.hide();
+        }}
+      >
+      </refresh-member-status-form>`;
 
       shadowRoot.appendChild(el);
     },

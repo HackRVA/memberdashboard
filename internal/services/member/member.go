@@ -32,6 +32,7 @@ type MemberService interface {
 	CancelStatusHandler(member models.Member, lastPayment models.Payment)
 	ActiveStatusHandler(member models.Member, lastPayment models.Payment)
 	GetMemberFromSubscription(subscriptionID string) (models.Member, error)
+	CheckStatus(id string) (models.Member, error)
 }
 
 func NewMemberService(store datastore.MemberStore, rm resourcemanager.ResourceManager, pp integrations.PaymentProvider) memberService {
@@ -71,6 +72,14 @@ func (m memberService) AssignRFID(email string, rfid string) (models.Member, err
 	// we need to push to resources after we add rfid to DB
 	defer m.resourceManager.PushOne(models.Member{Email: email})
 	return m.store.AssignRFID(email, rfid)
+}
+
+func (m memberService) CheckStatus(subscriptionID string) (models.Member, error) {
+	_, email, err := m.paymentProvider.GetSubscriber(subscriptionID)
+	if err != nil {
+		return models.Member{}, err
+	}
+	return m.store.GetMemberByEmail(email)
 }
 
 func (m memberService) GetTiers() []models.Tier {
