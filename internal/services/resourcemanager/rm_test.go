@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/sirupsen/logrus"
 )
 
 var pub []string
@@ -26,7 +27,7 @@ func (mqtt *stubMQTTServer) Subscribe(address string, topic string, handler mqtt
 
 // TestUpdateResourceACL we just want to test that the mqtt message looks reasonable
 func TestUpdateResourceACL(t *testing.T) {
-	resourceManager := NewResourceManager(&stubMQTTServer{}, &in_memory.In_memory{})
+	resourceManager := New(&stubMQTTServer{}, &in_memory.In_memory{}, logrus.New())
 	resource := models.Resource{
 		ID:   "0",
 		Name: "should just straight up send it",
@@ -44,7 +45,7 @@ func TestUpdateResourceACL(t *testing.T) {
 
 // TestUpdateResources we just want to test that the mqtt message looks reasonable
 func TestUpdateResources(t *testing.T) {
-	resourceManager := NewResourceManager(&stubMQTTServer{}, &in_memory.In_memory{})
+	resourceManager := New(&stubMQTTServer{}, &in_memory.In_memory{}, logrus.New())
 	resources := []models.Resource{
 		{
 			ID:   "0",

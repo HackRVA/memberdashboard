@@ -4,9 +4,6 @@ import (
 	"encoding/json"
 	"memberserver/internal/models"
 	"net/http"
-
-	"github.com/sirupsen/logrus"
-	log "github.com/sirupsen/logrus"
 )
 
 // Resource http handlers for resources
@@ -55,7 +52,7 @@ func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	log.Printf("attempting to delete %s", deleteResourceReq.ID)
+	rs.logger.Printf("attempting to delete %s", deleteResourceReq.ID)
 
 	err = rs.db.DeleteResource(deleteResourceReq.ID)
 	if err != nil {
@@ -81,7 +78,7 @@ func (rs resourceAPI) AddMultipleMembersToResource(w http.ResponseWriter, req *h
 	resource, err := rs.db.AddMultipleMembersToResource(membersResource.Emails, membersResource.ID)
 	for _, email := range membersResource.Emails {
 		member, _ := rs.db.GetMemberByEmail(email)
-		logrus.Info("pushing member to resource", member.Email, member.Resources)
+		rs.logger.Info("pushing member to resource", member.Email, member.Resources)
 		rs.resourcemanager.PushOne(member)
 	}
 
@@ -114,7 +111,7 @@ func (rs resourceAPI) RemoveMember(w http.ResponseWriter, req *http.Request) {
 
 	resource, err := rs.db.GetResourceByID(update.ID)
 	if err != nil {
-		log.Errorf("error getting resource to update when removing a member: %s", err)
+		rs.logger.Errorf("error getting resource to update when removing a member: %s", err)
 	}
 
 	rs.resourcemanager.UpdateResourceACL(resource)

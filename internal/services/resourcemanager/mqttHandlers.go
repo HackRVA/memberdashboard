@@ -40,7 +40,7 @@ func (rm *ResourceManager) HealthCheck(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 
-	if acl.Hash != hash(accessList) {
+	if acl.Hash != rm.hash(accessList) {
 		log.Debugf("[%s] is out of date - attempting to update with new data", r.Name)
 		// status = StatusOutOfDate
 		// err = UpdateResourceACL(r)

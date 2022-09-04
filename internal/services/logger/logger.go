@@ -7,18 +7,49 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type Logger struct {
-	level log.Level
-}
-
 func New() *Logger {
 	return &Logger{}
+}
+
+func init() {
+	log.SetLevel(log.DebugLevel)
+}
+
+func Errorf(format string, args ...interface{}) {
+	go slack.Send("[member-server-error]: " + fmt.Sprintf(format, args...))
+	log.Errorf(format, args...)
+}
+
+var (
+	Info  = log.Info
+	Debug = log.Debug
+
+	Error = log.Error
+	Infof = log.Infof
+
+	Debugf = log.Debugf
+
+	Fatal  = log.Fatal
+	Fatalf = log.Fatalf
+
+	Trace  = log.Trace
+	Tracef = log.Tracef
+
+	Print  = log.Print
+	Printf = log.Printf
+)
+
+type Logger struct {
+	level log.Level
 }
 
 func (l *Logger) SetLevel(level log.Level) {
 	l.level = level
 }
 
+func (l *Logger) Printf(format string, args ...interface{}) {
+	Printf(format, args...)
+}
 func (l *Logger) Errorf(format string, args ...interface{}) {
 	Errorf(format, args...)
 }
@@ -34,26 +65,21 @@ func (l *Logger) Fatalf(format string, args ...interface{}) {
 func (l *Logger) Tracef(format string, args ...interface{}) {
 	Tracef(format, args...)
 }
-
-func init() {
-	log.SetLevel(log.DebugLevel)
+func (l *Logger) Print(args ...interface{}) {
+	Print(args...)
 }
-
-func Errorf(format string, args ...interface{}) {
-	go slack.Send("[member-server-error]: " + fmt.Sprintf(format, args...))
-	log.Errorf(format, args...)
+func (l *Logger) Error(args ...interface{}) {
+	Error(args...)
 }
-
-var Info = log.Info
-var Debug = log.Debug
-
-var Error = log.Error
-var Infof = log.Infof
-
-var Debugf = log.Debugf
-
-var Fatal = log.Fatal
-var Fatalf = log.Fatalf
-
-var Trace = log.Trace
-var Tracef = log.Tracef
+func (l *Logger) Debug(args ...interface{}) {
+	Debug(args...)
+}
+func (l *Logger) Info(args ...interface{}) {
+	Info(args...)
+}
+func (l *Logger) Fatal(args ...interface{}) {
+	Fatal(args...)
+}
+func (l *Logger) Trace(args ...interface{}) {
+	Trace(args...)
+}

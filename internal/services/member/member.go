@@ -10,14 +10,13 @@ import (
 	"memberserver/pkg/slack"
 	"strconv"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 type memberService struct {
 	store           datastore.MemberStore
 	resourceManager resourcemanager.ResourceManager
 	paymentProvider integrations.PaymentProvider
+	logger          logger
 }
 
 type MemberService interface {
@@ -35,11 +34,12 @@ type MemberService interface {
 	CheckStatus(id string) (models.Member, error)
 }
 
-func NewMemberService(store datastore.MemberStore, rm resourcemanager.ResourceManager, pp integrations.PaymentProvider) memberService {
+func New(store datastore.MemberStore, rm resourcemanager.ResourceManager, pp integrations.PaymentProvider, logger logger) memberService {
 	return memberService{
 		store:           store,
 		resourceManager: rm,
 		paymentProvider: pp,
+		logger:          logger,
 	}
 }
 
@@ -91,7 +91,7 @@ func (m memberService) FindNonMembersOnSlack() []string {
 
 	users, err := slack.GetUsers()
 	if err != nil {
-		logrus.Errorf("error fetching slack users: %s", err)
+		m.logger.Errorf("error fetching slack users: %s", err)
 	}
 
 	members := m.Get()
@@ -120,8 +120,9 @@ func (m memberService) FindNonMembersOnSlack() []string {
 
 func (ms memberService) CancelStatusHandler(m models.Member, lastPayment models.Payment) {
 	member := member{
-		store: ms.store,
-		model: m,
+		store:  ms.store,
+		model:  m,
+		logger: ms.logger,
 	}
 
 	if member.paymentIsBeforeOneMonthAgo(lastPayment) {
@@ -137,12 +138,13 @@ func (ms memberService) CancelStatusHandler(m models.Member, lastPayment models.
 
 func (ms memberService) ActiveStatusHandler(m models.Member, lastPayment models.Payment) {
 	member := member{
-		store: ms.store,
-		model: m,
+		store:  ms.store,
+		model:  m,
+		logger: ms.logger,
 	}
 	lastPaymentAmount, err := strconv.ParseFloat(lastPayment.Amount, 32)
 	if err != nil {
-		logrus.Error(err)
+		ms.logger.Error(err)
 	}
 
 	member.setMemberLevel(lastPaymentAmount)
@@ -161,8 +163,9 @@ func (ms memberService) GetMemberFromSubscription(subscriptionID string) (models
 }
 
 type member struct {
-	model models.Member
-	store datastore.MemberStore
+	model  models.Member
+	store  datastore.MemberStore
+	logger logger
 }
 
 func (m member) paymentIsBeforeOneMonthAgo(payment models.Payment) bool {
@@ -175,17 +178,17 @@ func (m member) isActive() bool {
 }
 
 func (m member) notifyGracePeriod() {
-	logrus.Infof("[scheduled-job] %s notify about being in grace period", m.model.Name)
+	m.logger.Infof("[scheduled-job] %s notify about being in grace period", m.model.Name)
 	go slack.Send(fmt.Sprintf("%s is in a grace period until their subscription ends", m.model.Name))
 }
 
 func (m member) endGracePeriod() {
-	logrus.Infof("[scheduled-job] %s notify about grace period ending", m.model.Name)
+	m.logger.Infof("[scheduled-job] %s notify about grace period ending", m.model.Name)
 	go slack.Send(fmt.Sprintf("%s grace period has ended. Setting membership level to inactive.", m.model.Name))
 }
 
 func (m member) setInactive() {
-	logrus.Infof("[scheduled-job] %s setting member to inactive", m.model.Name)
+	m.logger.Infof("[scheduled-job] %s setting member to inactive", m.model.Name)
 	m.store.SetMemberLevel(m.model.ID, models.Inactive)
 }
 

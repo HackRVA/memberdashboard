@@ -6,7 +6,6 @@ import (
 	"memberserver/internal/integrations"
 	"memberserver/internal/models"
 	"memberserver/internal/services/config"
-	"memberserver/internal/services/logger"
 	"memberserver/internal/services/mail"
 	"memberserver/internal/services/member"
 	"memberserver/internal/services/resourcemanager"
@@ -27,27 +26,29 @@ type JobController struct {
 	resourceManager resourcemanager.ResourceManager
 	paymentProvider integrations.PaymentProvider
 	member          member.MemberService
+	logger          logger
 }
 
-func New(db datastore.DataStore) JobController {
+func New(db datastore.DataStore, logger logger) JobController {
 	config, _ := config.Load()
 	mailAPI, _ := mail.Setup()
-	rm := resourcemanager.NewResourceManager(mqtt.New(), db)
-	pp := paypal.Setup(config.PaypalURL, config.PaypalClientID, config.PaypalClientSecret, logger.New())
+	rm := resourcemanager.New(mqtt.New(), db, logger)
+	pp := paypal.Setup(config.PaypalURL, config.PaypalClientID, config.PaypalClientSecret, logger)
 	return JobController{
 		config:          config,
 		mailAPI:         mailAPI,
 		resourceManager: rm,
 		paymentProvider: pp,
 		DataStore:       db,
-		member:          member.NewMemberService(db, rm, pp),
+		member:          member.New(db, rm, pp, logger),
+		logger:          logger,
 	}
 }
 
 func (j JobController) CheckMemberSubscriptions() {
 	log.Infof("[scheduled-job] checking member subscription status")
 	if len(j.config.PaypalURL) == 0 {
-		logger.Debug("paypal url isn't set")
+		j.logger.Debug("paypal url isn't set")
 		return
 	}
 	members := j.DataStore.GetMembers()
@@ -139,7 +140,7 @@ func (j JobController) CheckIPAddressInterval() {
 	}
 
 	currentIp := strings.TrimSpace(string(body))
-	logger.Infof("ip addr: %s", currentIp)
+	j.logger.Infof("ip addr: %s", currentIp)
 
 	const ipFileName string = ".public_ip_address"
 	// detect if file exists

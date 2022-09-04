@@ -10,6 +10,7 @@ import (
 	"memberserver/internal/controllers/auth"
 	"memberserver/internal/datastore/dbstore"
 	router "memberserver/internal/routes"
+	"memberserver/internal/services/logger"
 	"memberserver/internal/services/scheduler"
 	"memberserver/internal/services/scheduler/jobs"
 )
@@ -36,7 +37,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	j := jobs.New(db)
+	j := jobs.New(db, logger.New())
 	s := scheduler.Scheduler{}
 
 	go s.Setup(j)

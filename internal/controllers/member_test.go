@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
+	"github.com/sirupsen/logrus"
 )
 
 var testMemberStore = in_memory.In_memory{
@@ -64,8 +65,8 @@ func (p paymentProvider) GetSubscriber(subscriptionID string) (name string, emai
 }
 
 func TestGetMember(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(in_memory.MemberMapToSlice(testMemberStore.Members))
@@ -107,8 +108,8 @@ func TestGetMember(t *testing.T) {
 }
 
 func TestGetMemberByEmail(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Members["test@test.com"])
@@ -161,8 +162,8 @@ func TestGetMemberByEmail(t *testing.T) {
 }
 
 func TestAssignRFID(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	tests := []struct {
 		TestName           string
@@ -212,8 +213,8 @@ func TestAssignRFID(t *testing.T) {
 }
 
 func TestGetTiers(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Tiers)
@@ -246,8 +247,8 @@ func TestGetTiers(t *testing.T) {
 }
 
 func TestNewMember(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	newMember := models.Member{
 		Email: "test1@test.com",
@@ -290,8 +291,8 @@ func TestNewMember(t *testing.T) {
 }
 
 func TestUpdateMemberSubscriptionID(t *testing.T) {
-	rm := resourcemanager.NewResourceManager(mqtt.New(), &in_memory.In_memory{})
-	server := &MemberServer{rm, member.NewMemberService(&testMemberStore, rm, paymentProvider{}), union.New()}
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	expectedResponse, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,

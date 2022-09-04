@@ -5,12 +5,11 @@ import (
 	"memberserver/internal/services/report"
 	"net/http"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type ReportsServer struct {
 	service report.ReportService
+	Logger  Logger
 }
 
 func (r *ReportsServer) GetAccessStatsChart(w http.ResponseWriter, req *http.Request) {
@@ -28,7 +27,7 @@ func (r *ReportsServer) GetAccessStatsChart(w http.ResponseWriter, req *http.Req
 	if len(day) > 0 {
 		d, err = time.Parse("", day)
 		if err != nil {
-			log.Errorf("error parsing time")
+			r.Logger.Errorf("error parsing time")
 		}
 	}
 

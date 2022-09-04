@@ -34,7 +34,7 @@ func main() {
 	db, _ := dbstore.Setup()
 	db.AddMembers([]models.Member{testMember()})
 
-	jobManager := jobs.New(db)
+	jobManager := jobs.New(db, log.New())
 
 	for i := 0; i < count; i++ {
 		member := fakeMember()

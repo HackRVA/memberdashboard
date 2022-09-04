@@ -7,14 +7,11 @@ import (
 	"memberserver/internal/datastore"
 	"memberserver/internal/models"
 	"memberserver/internal/services/config"
-	"memberserver/internal/services/logger"
 	"memberserver/pkg/mqtt"
 
 	"time"
 
 	"strings"
-
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -29,6 +26,7 @@ const (
 type ResourceManager struct {
 	MQTTServer mqtt.MQTTServer
 	store      datastore.DataStore
+	logger     logger
 }
 
 const (
@@ -40,8 +38,8 @@ const (
 	StatusOffline
 )
 
-func NewResourceManager(ms mqtt.MQTTServer, store datastore.DataStore) ResourceManager {
-	return ResourceManager{ms, store}
+func New(ms mqtt.MQTTServer, store datastore.DataStore, logger logger) ResourceManager {
+	return ResourceManager{ms, store, logger}
 }
 
 // UpdateResourceACL pulls a resource's accesslist from the DB and pushes it to the resource
@@ -60,7 +58,7 @@ func (rm ResourceManager) UpdateResourceACL(r models.Resource) error {
 	if err != nil {
 		return err
 	}
-	logger.Infof("access list: %s", j)
+	rm.logger.Infof("access list: %s", j)
 
 	// publish the update to mqtt broker
 	rm.MQTTServer.Publish(config.Get().MQTTBrokerAddress, r.Name+"/update", j)
@@ -97,7 +95,7 @@ func (rm ResourceManager) UpdateResources() {
 func (rm ResourceManager) EnableValidUIDs() {
 	activeMembers, err := rm.store.GetActiveMembersByResource()
 	if err != nil {
-		logger.Errorf("error getting active members from db %s", err.Error())
+		rm.logger.Errorf("error getting active members from db %s", err.Error())
 		return
 	}
 
@@ -113,11 +111,11 @@ func (rm ResourceManager) EnableValidUIDs() {
 func (rm ResourceManager) RemovedInvalidUIDs() {
 	inactiveMembers, err := rm.store.GetInactiveMembersByResource()
 	if err != nil {
-		logger.Errorf("error getting inactive members from db %s", err.Error())
+		rm.logger.Errorf("error getting inactive members from db %s", err.Error())
 		return
 	}
 
-	logger.Debug("looking for members to remove")
+	rm.logger.Debug("looking for members to remove")
 
 	for _, m := range inactiveMembers {
 		/* We will just try to remove all invalid members even if they are already removed */
@@ -134,7 +132,7 @@ func (rm ResourceManager) RemoveMember(memberAccess models.MemberAccess) {
 	})
 
 	rm.MQTTServer.Publish(config.Get().MQTTBrokerAddress, memberAccess.ResourceName, string(b))
-	logger.Debugf("attempting to remove member %s from rfid device %s : %s", memberAccess.Email, memberAccess.ResourceName, memberAccess.ResourceAddress)
+	rm.logger.Debugf("attempting to remove member %s from rfid device %s : %s", memberAccess.Email, memberAccess.ResourceName, memberAccess.ResourceAddress)
 }
 
 func (rm ResourceManager) Open(resource models.Resource) {
@@ -151,7 +149,7 @@ func (rm ResourceManager) Open(resource models.Resource) {
 func (rm ResourceManager) RemoveOne(member models.Member) {
 	member, err := rm.store.GetMemberByEmail(member.Email)
 	if err != nil {
-		logrus.Error(err)
+		rm.logger.Error(err)
 		return
 	}
 
@@ -204,12 +202,12 @@ func (rm ResourceManager) CheckStatus(r models.Resource) {
 	rm.MQTTServer.Publish(config.Get().MQTTBrokerAddress, r.Name+"/cmd", "aclhash")
 }
 
-func hash(accessList []string) string {
+func (rm ResourceManager) hash(accessList []string) string {
 	h := sha1.New()
 	h.Write([]byte(strings.Join(accessList[:], "\n")))
 	bs := h.Sum(nil)
 
-	logger.Debug(strings.Join(accessList[:], "\n"))
-	logger.Debugf("%x\n", bs)
+	rm.logger.Debug(strings.Join(accessList[:], "\n"))
+	rm.logger.Debugf("%x\n", bs)
 	return fmt.Sprintf("%x", bs)
 }
