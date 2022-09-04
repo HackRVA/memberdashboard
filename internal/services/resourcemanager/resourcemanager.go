@@ -26,6 +26,7 @@ const (
 type ResourceManager struct {
 	MQTTServer mqtt.MQTTServer
 	store      datastore.DataStore
+	notifier   notifier
 	logger     logger
 }
 
@@ -38,8 +39,8 @@ const (
 	StatusOffline
 )
 
-func New(ms mqtt.MQTTServer, store datastore.DataStore, logger logger) ResourceManager {
-	return ResourceManager{ms, store, logger}
+func New(ms mqtt.MQTTServer, store datastore.DataStore, notifier notifier, logger logger) ResourceManager {
+	return ResourceManager{ms, store, notifier, logger}
 }
 
 // UpdateResourceACL pulls a resource's accesslist from the DB and pushes it to the resource

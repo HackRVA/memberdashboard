@@ -55,6 +55,10 @@ var testMemberStore = in_memory.In_memory{
 	},
 }
 
+type slackNotifier struct{}
+
+func (s slackNotifier) Send(msg string) {}
+
 type paymentProvider struct{}
 
 func (p paymentProvider) GetSubscription(subscriptionID string) (status string, lastPaymentAmount string, lastPaymentTime time.Time, err error) {
@@ -65,7 +69,7 @@ func (p paymentProvider) GetSubscriber(subscriptionID string) (name string, emai
 }
 
 func TestGetMember(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	// convert all members from the store to a json byte array
@@ -108,7 +112,7 @@ func TestGetMember(t *testing.T) {
 }
 
 func TestGetMemberByEmail(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	// convert all members from the store to a json byte array
@@ -162,7 +166,7 @@ func TestGetMemberByEmail(t *testing.T) {
 }
 
 func TestAssignRFID(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	tests := []struct {
@@ -213,7 +217,7 @@ func TestAssignRFID(t *testing.T) {
 }
 
 func TestGetTiers(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	// convert all members from the store to a json byte array
@@ -247,7 +251,7 @@ func TestGetTiers(t *testing.T) {
 }
 
 func TestNewMember(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	newMember := models.Member{
@@ -291,7 +295,7 @@ func TestNewMember(t *testing.T) {
 }
 
 func TestUpdateMemberSubscriptionID(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	expectedResponse, _ := json.Marshal(models.EndpointSuccess{

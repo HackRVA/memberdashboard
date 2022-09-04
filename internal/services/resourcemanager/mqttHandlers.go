@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"memberserver/internal/datastore/dbstore"
 	"memberserver/internal/models"
-	"memberserver/pkg/slack"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	log "github.com/sirupsen/logrus"
@@ -72,7 +71,14 @@ func (rm *ResourceManager) OnAccessEvent(client mqtt.Client, msg mqtt.Message) {
 	}
 
 	log.Println(string(msg.Payload()))
-	go slack.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", payload.Username, payload.RFID, payload.Door, payload.EventTime))
+
+	m, err := rm.store.GetMemberByRFID(payload.RFID)
+	if err != nil {
+		rm.logger.Errorf("swipe on %s of unknown fob: %s", payload.Door, payload.RFID)
+		return
+	}
+
+	go rm.notifier.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", m.Name, payload.RFID, payload.Door, payload.EventTime))
 	go rm.store.LogAccessEvent(models.LogMessage{
 		Type:      payload.Type,
 		EventTime: payload.EventTime,

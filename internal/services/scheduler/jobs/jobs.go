@@ -11,6 +11,7 @@ import (
 	"memberserver/internal/services/resourcemanager"
 	"memberserver/pkg/mqtt"
 	"memberserver/pkg/paypal"
+	"memberserver/pkg/slack"
 
 	"net/http"
 	"os"
@@ -32,7 +33,7 @@ type JobController struct {
 func New(db datastore.DataStore, logger logger) JobController {
 	config, _ := config.Load()
 	mailAPI, _ := mail.Setup()
-	rm := resourcemanager.New(mqtt.New(), db, logger)
+	rm := resourcemanager.New(mqtt.New(), db, slack.Notifier{}, logger)
 	pp := paypal.Setup(config.PaypalURL, config.PaypalClientID, config.PaypalClientSecret, logger)
 	return JobController{
 		config:          config,

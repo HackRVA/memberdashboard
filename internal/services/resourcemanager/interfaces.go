@@ -12,3 +12,7 @@ type logger interface {
 	Info(args ...interface{})
 	Trace(args ...interface{})
 }
+
+type notifier interface {
+	Send(msg string)
+}

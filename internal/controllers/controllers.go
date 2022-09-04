@@ -10,6 +10,7 @@ import (
 	"memberserver/internal/services/resourcemanager"
 	"memberserver/pkg/mqtt"
 	"memberserver/pkg/paypal"
+	"memberserver/pkg/slack"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/jwt"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
@@ -54,7 +55,7 @@ func Setup(store datastore.DataStore, auth *auth.AuthController) API {
 
 	userServer := NewUserServer(store, c)
 	log := logger.New()
-	rm := resourcemanager.New(mqtt.New(), store, log)
+	rm := resourcemanager.New(mqtt.New(), store, slack.Notifier{}, log)
 	pp := paypal.Setup(c.PaypalURL, c.PaypalClientID, c.PaypalClientSecret, log)
 
 	return API{
