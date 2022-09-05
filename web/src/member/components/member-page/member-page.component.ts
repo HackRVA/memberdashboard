@@ -79,9 +79,18 @@ export class MemberPage extends LitElement {
         <member-manager-menu .setActive=${this.setActive}></member-manager-menu>
         <member-search .memberSearch=${this.memberSeach}></member-search>
         <member-grid .members=${this.members}></member-grid>
-        <button @click=${this.decrementPage}><</button>
-        <button @click=${this.incrementPage}>></button>
-        <span> ${this.page} </span>
+        <div class="paginator-container mt-24 ml-8">
+          <mwc-icon-button
+            icon="arrow_back"
+            @click=${this.decrementPage}
+          ></mwc-icon-button>
+          <mwc-icon-button
+            class="ml-8"
+            icon="arrow_forward"
+            @click=${this.incrementPage}
+          ></mwc-icon-button>
+          <span class="ml-8"> ${this.page} </span>
+        </div>
       </loading-content>
     `;
   }

@@ -1,14 +1,6 @@
 // lit element
 import { css, CSSResult } from 'lit';
 
-// vaadin themes
-// import '@vaadin/vaadin-lumo-styles/color.js';
-// import '@vaadin/vaadin-lumo-styles/typography.js';
-// import '@vaadin/vaadin-lumo-styles/sizing.js';
-// import '@vaadin/vaadin-lumo-styles/spacing.js';
-// import '@vaadin/vaadin-lumo-styles/style.js';
-// import '@vaadin/vaadin-lumo-styles/utility.js';
-
 // memberdashboard
 import { primaryBlue, primaryRed, primaryGreen, primaryWhite } from './colors';
 
@@ -29,12 +21,20 @@ export const coreStyle: CSSResult = css`
     color: ${primaryBlue};
   }
 
-  .margin-r-24 {
+  .mr-24 {
     margin-right: 24px;
   }
 
-  .margin-r-8 {
+  .mt-24 {
+    margin-top: 24px;
+  }
+
+  .mr-8 {
     margin-right: 8px;
+  }
+
+  .ml-8 {
+    margin-left: 8px;
   }
 
   .beta {

@@ -68,9 +68,6 @@ export class HomeDetail extends LitElement {
   render(): TemplateResult {
     return html`
       <div id="home-detail" class="center">
-        <section class="margin-r-8">
-          <span class="beta"> BETA </span>
-        </section>
         <section>
           <mwc-button
             unelevated
