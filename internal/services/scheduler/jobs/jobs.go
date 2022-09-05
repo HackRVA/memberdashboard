@@ -16,8 +16,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type JobController struct {
@@ -47,7 +45,7 @@ func New(db datastore.DataStore, logger logger) JobController {
 }
 
 func (j JobController) CheckMemberSubscriptions() {
-	log.Infof("[scheduled-job] checking member subscription status")
+	j.logger.Infof("[scheduled-job] checking member subscription status")
 	if len(j.config.PaypalURL) == 0 {
 		j.logger.Debug("paypal url isn't set")
 		return
@@ -61,13 +59,13 @@ func (j JobController) CheckMemberSubscriptions() {
 		}
 		if member.SubscriptionID == "none" || len(member.SubscriptionID) == 0 {
 			// we might need to figure out why they don't have a subscriptionID
-			log.Printf("no subscriptionID for: %s", member.Name)
+			j.logger.Printf("no subscriptionID for: %s", member.Name)
 			continue
 		}
 
 		status, lastPaymentAmount, lastPaymentTime, err := j.paymentProvider.GetSubscription(member.SubscriptionID)
 		if err != nil {
-			log.Error(err)
+			j.logger.Error(err)
 			continue
 		}
 
@@ -79,7 +77,7 @@ func (j JobController) CheckMemberSubscriptions() {
 }
 
 func (j JobController) SetMemberLevel(status string, lastPayment models.Payment, member models.Member) {
-	log.Infof("[scheduled-job] setting member level: %s - %s", member.Name, status)
+	j.logger.Infof("[scheduled-job] setting member level: %s - %s", member.Name, status)
 
 	switch status {
 	case models.ActiveStatus:
@@ -96,7 +94,7 @@ func (j JobController) SetMemberLevel(status string, lastPayment models.Payment,
 }
 
 func (j JobController) CheckResourceInit() {
-	log.Infof("[scheduled-job] setup mqtt subscriptions to resources")
+	j.logger.Infof("[scheduled-job] setup mqtt subscriptions to resources")
 
 	resources := j.DataStore.GetResources()
 
@@ -113,7 +111,7 @@ func (j JobController) CheckResourceInit() {
 }
 
 func (j JobController) CheckResourceInterval() {
-	log.Infof("[scheduled-job] checking resource status")
+	j.logger.Infof("[scheduled-job] checking resource status")
 
 	resources := j.DataStore.GetResources()
 
@@ -125,18 +123,18 @@ func (j JobController) CheckResourceInterval() {
 var IPAddressCache string
 
 func (j JobController) CheckIPAddressInterval() {
-	log.Infof("[scheduled-job] checking ip address")
+	j.logger.Infof("[scheduled-job] checking ip address")
 
 	resp, err := http.Get("https://icanhazip.com/")
 	if err != nil {
-		log.Errorf("can't get IP address: %s", err)
+		j.logger.Errorf("can't get IP address: %s", err)
 		return
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(err)
+		j.logger.Error(err)
 		return
 	}
 
@@ -151,7 +149,7 @@ func (j JobController) CheckIPAddressInterval() {
 	if os.IsNotExist(err) {
 		var file, err = os.Create(ipFileName)
 		if err != nil {
-			log.Error(err)
+			j.logger.Error(err)
 			return
 		}
 		defer file.Close()
@@ -159,13 +157,13 @@ func (j JobController) CheckIPAddressInterval() {
 
 	b, err := ioutil.ReadFile(ipFileName)
 	if err != nil {
-		log.Error(err)
+		j.logger.Error(err)
 		return
 	}
 
 	err = ioutil.WriteFile(ipFileName, body, 0644)
 	if err != nil {
-		log.Error(err)
+		j.logger.Error(err)
 		return
 	}
 
@@ -187,18 +185,18 @@ func (j JobController) CheckIPAddressInterval() {
 }
 
 func (j JobController) RemovedInvalidUIDs() {
-	log.Infof("[scheduled-job] removing any invalid members from resources")
+	j.logger.Infof("[scheduled-job] removing any invalid members from resources")
 	j.resourceManager.RemovedInvalidUIDs()
 }
 func (j JobController) EnableValidUIDs() {
-	log.Infof("[scheduled-job] enabling valid members on resources")
+	j.logger.Infof("[scheduled-job] enabling valid members on resources")
 	j.resourceManager.EnableValidUIDs()
 }
 func (j JobController) UpdateResources() {
-	log.Infof("[scheduled-job] updating resources")
+	j.logger.Infof("[scheduled-job] updating resources")
 	j.resourceManager.UpdateResources()
 }
 func (j JobController) UpdateMemberCounts() {
-	log.Infof("[scheduled-job] updating member counts")
+	j.logger.Infof("[scheduled-job] updating member counts")
 	j.DataStore.UpdateMemberCounts()
 }
