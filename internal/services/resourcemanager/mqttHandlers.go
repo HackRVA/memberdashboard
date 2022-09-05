@@ -78,15 +78,17 @@ func (rm *ResourceManager) OnAccessEvent(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 
-	go rm.notifier.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", m.Name, payload.RFID, payload.Door, payload.EventTime))
-	go rm.store.LogAccessEvent(models.LogMessage{
-		Type:      payload.Type,
-		EventTime: payload.EventTime,
-		IsKnown:   payload.IsKnown,
-		Username:  payload.Username,
-		RFID:      payload.RFID,
-		Door:      payload.Door,
-	})
+	defer func(m models.Member, p models.LogMessage) {
+		go rm.notifier.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", m.Name, p.RFID, p.Door, p.EventTime))
+		go rm.store.LogAccessEvent(models.LogMessage{
+			Type:      p.Type,
+			EventTime: p.EventTime,
+			IsKnown:   p.IsKnown,
+			Username:  m.Name,
+			RFID:      p.RFID,
+			Door:      p.Door,
+		})
+	}(m, payload)
 }
 
 type HeartBeat struct {

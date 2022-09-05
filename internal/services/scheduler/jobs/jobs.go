@@ -102,10 +102,10 @@ func (j JobController) CheckResourceInit() {
 
 	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
-		j.resourceManager.MQTTServer.Subscribe(config.MQTTBrokerAddress, r.Name+"/send", j.resourceManager.OnAccessEvent)
-		j.resourceManager.MQTTServer.Subscribe(config.MQTTBrokerAddress, r.Name+"/result", j.resourceManager.HealthCheck)
-		j.resourceManager.MQTTServer.Subscribe(config.MQTTBrokerAddress, r.Name+"/sync", j.resourceManager.OnHeartBeat)
-		j.resourceManager.MQTTServer.Subscribe(config.MQTTBrokerAddress, r.Name+"/cleanup", j.resourceManager.OnRemoveInvalidRequest)
+		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/send", j.resourceManager.OnAccessEvent)
+		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/result", j.resourceManager.HealthCheck)
+		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/sync", j.resourceManager.OnHeartBeat)
+		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/cleanup", j.resourceManager.OnRemoveInvalidRequest)
 		j.resourceManager.CheckStatus(r)
 	}
 }

@@ -1,5 +1,7 @@
 package resourcemanager
 
+import mqtt "github.com/eclipse/paho.mqtt.golang"
+
 type logger interface {
 	Printf(format string, args ...interface{})
 	Errorf(format string, args ...interface{})
@@ -15,4 +17,9 @@ type logger interface {
 
 type notifier interface {
 	Send(msg string)
+}
+
+type mqttServer interface {
+	Publish(address string, topic string, payload interface{})
+	Subscribe(address string, topic string, handler mqtt.MessageHandler)
 }
