@@ -151,10 +151,12 @@ export class MDContent extends LitElement {
         ></mwc-tab>
         ${this.renderAdminTabs()}
       </mwc-tab-bar>
-      <slot> </slot>
-      <div class="version margin-r-24">
-        <p>Version ${this.generateVersionNumber(this.version)}</p>
-      </div>
+      <main>
+        <slot> </slot>
+        <div class="version mr-24">
+          <p>Version ${this.generateVersionNumber(this.version)}</p>
+        </div>
+      </main>
     `;
   }
 }

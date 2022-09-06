@@ -77,4 +77,13 @@ export const memberPageStyle: CSSResult = css`
     max-width: 320px;
     white-space: nowrap;
   }
+
+  .paginator-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .paginator-container > mwc-icon-button {
+    --mdc-icon-button-size: 24px;
+  }
 `;
