@@ -119,6 +119,7 @@ func (p Paypal) GetSubscription(subscriptionID string) (status string, lastPayme
 		return status, lastPaymentAmount, lastPaymentTime, err
 	}
 
+	status = s.Status
 	lastPaymentAmount = s.BillingInfo.LastPayment.Amount.Value
 	lastPaymentTime = s.BillingInfo.LastPayment.Time
 

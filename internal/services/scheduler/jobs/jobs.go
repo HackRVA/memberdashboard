@@ -77,7 +77,7 @@ func (j JobController) CheckMemberSubscriptions() {
 }
 
 func (j JobController) SetMemberLevel(status string, lastPayment models.Payment, member models.Member) {
-	j.logger.Infof("[scheduled-job] setting member level: %s - %s", member.Name, status)
+	j.logger.Infof("[scheduled-job] setting member level: %s - %s - last payment amount: %s", member.Name, status, lastPayment.Amount)
 
 	switch status {
 	case models.ActiveStatus:
@@ -102,7 +102,7 @@ func (j JobController) CheckResourceInit() {
 
 	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
-		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/send", j.resourceManager.OnAccessEvent)
+		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/send", j.resourceManager.Receive)
 		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/result", j.resourceManager.HealthCheck)
 		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/sync", j.resourceManager.OnHeartBeat)
 		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/cleanup", j.resourceManager.OnRemoveInvalidRequest)

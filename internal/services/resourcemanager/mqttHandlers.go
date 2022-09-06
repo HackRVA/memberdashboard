@@ -59,8 +59,7 @@ type EventLogPayload struct {
 	Door     string `json:"door"`
 }
 
-// OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
-func (rm *ResourceManager) OnAccessEvent(client mqtt.Client, msg mqtt.Message) {
+func (rm *ResourceManager) Receive(client mqtt.Client, msg mqtt.Message) {
 	var payload models.LogMessage
 
 	if err := json.Unmarshal(msg.Payload(), &payload); err != nil {
@@ -68,8 +67,16 @@ func (rm *ResourceManager) OnAccessEvent(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 
-	rm.logger.Println(string(msg.Payload()))
+	if payload.EventTime == 0 {
+		rm.logger.Println("receive: ", string(msg.Payload()))
+		return
+	}
 
+	rm.OnAccessEvent(payload)
+}
+
+// OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
+func (rm *ResourceManager) OnAccessEvent(payload models.LogMessage) {
 	m, err := rm.store.GetMemberByRFID(payload.RFID)
 	if err != nil {
 		rm.logger.Errorf("swipe on %s of unknown fob: %s", payload.Door, payload.RFID)
@@ -77,10 +84,6 @@ func (rm *ResourceManager) OnAccessEvent(client mqtt.Client, msg mqtt.Message) {
 	}
 
 	defer func(m models.Member, p models.LogMessage) {
-		if p.EventTime == 0 {
-			rm.logger.Debugf("name: %s, rfid: %s, door: %s, time: %d", m.Name, p.RFID, p.Door, p.EventTime)
-			return
-		}
 		go rm.notifier.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", m.Name, p.RFID, p.Door, p.EventTime))
 		go rm.store.LogAccessEvent(models.LogMessage{
 			Type:      p.Type,
