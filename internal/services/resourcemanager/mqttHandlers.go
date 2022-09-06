@@ -7,7 +7,6 @@ import (
 	"memberserver/internal/models"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	log "github.com/sirupsen/logrus"
 )
 
 // HealthCheck -- this is the mqtt messageHandler that runs when a resource checks in
@@ -22,25 +21,25 @@ func (rm *ResourceManager) HealthCheck(client mqtt.Client, msg mqtt.Message) {
 
 	err := json.Unmarshal(msg.Payload(), &acl)
 	if err != nil {
-		log.Errorf("error unmarshalling mqtt payload: %s", err)
+		rm.logger.Errorf("error unmarshalling mqtt payload: %s", err)
 		return
 	}
 
-	log.Infof("name from resource: %s", acl.Name)
+	rm.logger.Infof("name from resource: %s", acl.Name)
 	// get resourceByName
 	r, err := rm.store.GetResourceByName(acl.Name)
 	if err != nil {
-		log.Errorf("error fetching resource: %s", err)
+		rm.logger.Errorf("error fetching resource: %s", err)
 		return
 	}
 	accessList, err := rm.store.GetResourceACL(r)
 	if err != nil {
-		log.Error(err)
+		rm.logger.Error(err)
 		return
 	}
 
 	if acl.Hash != rm.hash(accessList) {
-		log.Debugf("[%s] is out of date - attempting to update with new data", r.Name)
+		rm.logger.Debugf("[%s] is out of date - attempting to update with new data", r.Name)
 		// status = StatusOutOfDate
 		// err = UpdateResourceACL(r)
 		// if err != nil {
@@ -64,13 +63,12 @@ type EventLogPayload struct {
 func (rm *ResourceManager) OnAccessEvent(client mqtt.Client, msg mqtt.Message) {
 	var payload models.LogMessage
 
-	err := json.Unmarshal(msg.Payload(), &payload)
-	if err != nil {
-		log.Errorf("error unmarshalling mqtt payload: %s", err)
+	if err := json.Unmarshal(msg.Payload(), &payload); err != nil {
+		rm.logger.Errorf("error unmarshalling mqtt payload: %s", err)
 		return
 	}
 
-	log.Println(string(msg.Payload()))
+	rm.logger.Println(string(msg.Payload()))
 
 	m, err := rm.store.GetMemberByRFID(payload.RFID)
 	if err != nil {
@@ -79,6 +77,10 @@ func (rm *ResourceManager) OnAccessEvent(client mqtt.Client, msg mqtt.Message) {
 	}
 
 	defer func(m models.Member, p models.LogMessage) {
+		if p.EventTime == 0 {
+			rm.logger.Debugf("name: %s, rfid: %s, door: %s, time: %d", m.Name, p.RFID, p.Door, p.EventTime)
+			return
+		}
 		go rm.notifier.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", m.Name, p.RFID, p.Door, p.EventTime))
 		go rm.store.LogAccessEvent(models.LogMessage{
 			Type:      p.Type,
@@ -100,7 +102,7 @@ func (rm *ResourceManager) OnHeartBeat(client mqtt.Client, msg mqtt.Message) {
 	var hb HeartBeat
 	err := json.Unmarshal(msg.Payload(), &hb)
 	if err != nil {
-		log.Errorf("error unmarshalling mqtt payload: %s", err)
+		rm.logger.Errorf("error unmarshalling mqtt payload: %s", err)
 		return
 	}
 

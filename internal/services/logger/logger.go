@@ -35,8 +35,9 @@ var (
 	Trace  = log.Trace
 	Tracef = log.Tracef
 
-	Print  = log.Print
-	Printf = log.Printf
+	Print   = log.Print
+	Printf  = log.Printf
+	Println = log.Println
 )
 
 type Logger struct {
@@ -47,6 +48,9 @@ func (l *Logger) SetLevel(level log.Level) {
 	l.level = level
 }
 
+func (l *Logger) Println(args ...interface{}) {
+	Println(args...)
+}
 func (l *Logger) Printf(format string, args ...interface{}) {
 	Printf(format, args...)
 }
