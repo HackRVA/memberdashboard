@@ -21,7 +21,7 @@ export class NotFound extends LitElement {
 
   render(): TemplateResult {
     return html` 
-        <div class="not-found-container center-text">
+        <div class="not-found-container text-center">
           <h2> <b>404</b> </h2>
           <p class="sad-freshmon">${'(っ- ‸ – ς)'}</p>
           <p class="page-not-found">Page not found</p>

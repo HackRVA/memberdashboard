@@ -93,7 +93,7 @@ export class UserDetail extends LitElement {
               </dd>
             </dl>
           </div>
-          <div class="card-actions center-text">
+          <div class="card-actions text-center">
             <mwc-button label="Assign RFID" @click=${this.openRFIDModal}>
             </mwc-button>
           </div>

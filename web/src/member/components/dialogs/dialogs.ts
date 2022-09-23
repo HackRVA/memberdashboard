@@ -32,7 +32,7 @@ export default (
     editRFID: (isNewMember: boolean): ((member: Member) => void) => {
       return (member: Member): void => {
         const el = document.createElement('abstract-dialog');
-        el.heading = 'edit RFID';
+        el.heading = 'Edit RFID';
         el.dialogLayout = html` <rfid-form
           id="edit-member-form"
           .email=${member.email}
