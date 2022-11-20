@@ -17,14 +17,15 @@ const (
 	commandDeleteUID = "deletuid"
 	commandAddUser   = "adduser"
 	commandOpenDoor  = "opendoor"
+	commandListUser  = "listusr"
 )
 
 // Resource manager keeps the resources up to date by
 //  pushing new updates and checking in on their health
 
 type ResourceManager struct {
-	MQTT     mqttServer
-	store    datastore.DataStore
+	MQTT mqttServer
+	datastore.DataStore
 	notifier notifier
 	logger   logger
 }
@@ -45,7 +46,7 @@ func New(ms mqttServer, store datastore.DataStore, notifier notifier, logger log
 // UpdateResourceACL pulls a resource's accesslist from the DB and pushes it to the resource
 func (rm ResourceManager) UpdateResourceACL(r models.Resource) error {
 	// get acl for that resource
-	accessList, err := rm.store.GetResourceACL(r)
+	accessList, err := rm.GetResourceACL(r)
 
 	if err != nil {
 		return err
@@ -68,10 +69,10 @@ func (rm ResourceManager) UpdateResourceACL(r models.Resource) error {
 
 // UpdateResources - publish an MQTT message to add a member to the actual device
 func (rm ResourceManager) UpdateResources() {
-	resources := rm.store.GetResources()
+	resources := rm.GetResources()
 
 	for _, r := range resources {
-		members, _ := rm.store.GetResourceACLWithMemberInfo(r)
+		members, _ := rm.GetResourceACLWithMemberInfo(r)
 		for _, m := range members {
 			if m.Level == uint8(models.Inactive) {
 				continue
@@ -93,7 +94,7 @@ func (rm ResourceManager) UpdateResources() {
 }
 
 func (rm ResourceManager) EnableValidUIDs() {
-	activeMembers, err := rm.store.GetActiveMembersByResource()
+	activeMembers, err := rm.GetActiveMembersByResource()
 	if err != nil {
 		rm.logger.Errorf("error getting active members from db %s", err.Error())
 		return
@@ -109,7 +110,7 @@ func (rm ResourceManager) EnableValidUIDs() {
 }
 
 func (rm ResourceManager) RemovedInvalidUIDs() {
-	inactiveMembers, err := rm.store.GetInactiveMembersByResource()
+	inactiveMembers, err := rm.GetInactiveMembersByResource()
 	if err != nil {
 		rm.logger.Errorf("error getting inactive members from db %s", err.Error())
 		return
@@ -147,13 +148,13 @@ func (rm ResourceManager) Open(resource models.Resource) {
 
 // RemoveOne - remove a member from all resources
 func (rm ResourceManager) RemoveOne(member models.Member) {
-	member, err := rm.store.GetMemberByEmail(member.Email)
+	member, err := rm.GetMemberByEmail(member.Email)
 	if err != nil {
 		rm.logger.Error(err)
 		return
 	}
 
-	memberAccess, _ := rm.store.GetMembersAccess(member)
+	memberAccess, _ := rm.GetMembersAccess(member)
 
 	for _, m := range memberAccess {
 		rm.RemoveMember(models.MemberAccess{
@@ -168,7 +169,7 @@ func (rm ResourceManager) RemoveOne(member models.Member) {
 
 // PushOne - update one user on the resources
 func (rm ResourceManager) PushOne(m models.Member) {
-	memberAccess, _ := rm.store.GetMembersAccess(m)
+	memberAccess, _ := rm.GetMembersAccess(m)
 	for _, m := range memberAccess {
 		b, _ := json.Marshal(&models.MemberRequest{
 			ResourceAddress: m.ResourceAddress,
@@ -183,7 +184,7 @@ func (rm ResourceManager) PushOne(m models.Member) {
 }
 
 func (rm ResourceManager) DeleteResourceACL() {
-	resources := rm.store.GetResources()
+	resources := rm.GetResources()
 
 	for _, r := range resources {
 		b, _ := json.Marshal(&models.DeleteMemberRequest{
@@ -195,9 +196,10 @@ func (rm ResourceManager) DeleteResourceACL() {
 }
 
 // CheckStatus will publish an mqtt command that requests for a specific device to verify that
-//   the resource has the correct and up to date access list
-//   It will do this by hashing the list retrieved from the DB and comparing it
-//   with the hash that the resource reports
+//
+//	the resource has the correct and up to date access list
+//	It will do this by hashing the list retrieved from the DB and comparing it
+//	with the hash that the resource reports
 func (rm ResourceManager) CheckStatus(r models.Resource) {
 	rm.MQTT.Publish(config.Get().MQTTBrokerAddress, r.Name+"/cmd", "aclhash")
 }

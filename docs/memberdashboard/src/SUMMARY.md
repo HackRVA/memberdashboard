@@ -11,6 +11,7 @@
 - [Integrations](operations/integrations.md)
 - [Payment Provider](operations/payment-provider.md)
 # Development
+- [Getting Started](development/getting_started.md)
 - [Setup](development/setup.md)
 - [Config](development/config.md)
 - [Development Tasks](development/development-tasks.md)

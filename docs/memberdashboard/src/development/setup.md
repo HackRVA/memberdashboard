@@ -1,4 +1,5 @@
 # Dev Setup
+> Note: the docker and remote containers will be deprecated soon on this project.  See [Getting Started](./getting_started.md) for more updated dev setup instructions.
 
 ## The Easy Way (using Remote-Containers)
 

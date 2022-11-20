@@ -1,43 +1,31 @@
-package main
+package generators
 
 import (
-	"context"
-	"fmt"
 	"math/rand"
-	"memberserver/internal/datastore/dbstore"
+	"memberserver/internal/datastore"
 	"memberserver/internal/models"
-	"memberserver/internal/services/config"
+	"memberserver/internal/services/logger"
 	"memberserver/internal/services/scheduler/jobs"
 
-	"os"
 	"strconv"
-	"strings"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 
 	"syreclabs.com/go/faker"
 )
 
-func main() {
-	if len(os.Args) != 2 {
-		log.Fatal("Provide an argument for # of members to create.")
-	}
-	count, err := strconv.Atoi(os.Args[1])
-	if err != nil {
-		log.Fatalf("Unable to parse %v as count.", os.Args[1])
-	}
-	fakeResources()
+func Seed(db datastore.DataStore, numMembers int) {
+
+	FakeResources(db)
 
 	rand.Seed(time.Now().UnixNano())
-	db, _ := dbstore.Setup()
-	db.AddMembers([]models.Member{testMember()})
+	db.AddMembers([]models.Member{TestMember()})
 
-	jobManager := jobs.New(db, log.New())
+	jobManager := jobs.New(db, logger.New())
 
-	for i := 0; i < count; i++ {
-		member := fakeMember()
+	for i := 0; i < numMembers; i++ {
+		member := FakeMember()
 		db.AddMembers([]models.Member{member})
 		log.Printf("Added member %v", member.Name)
 		if member.Level > 1 {
@@ -50,13 +38,12 @@ func main() {
 		}
 	}
 
-	fakeMemberCounts(24)
-	fakeAccessEvents(50)
-	registerTestUser()
+	FakeMemberCounts(24, db)
+	FakeAccessEvents(50, db)
+	RegisterTestUser(db)
 }
 
-func fakeAccessEvents(numOfEvents int) {
-	db, _ := dbstore.Setup()
+func FakeAccessEvents(numOfEvents int, db datastore.DataStore) {
 	resources := db.GetResources()
 
 	for resourceIndex, r := range resources {
@@ -82,7 +69,7 @@ func fakeAccessEvents(numOfEvents int) {
 	}
 }
 
-func fakeMember() models.Member {
+func FakeMember() models.Member {
 	level, _ := strconv.Atoi(faker.Number().Between(1, 5))
 	resources := []models.MemberResource{}
 	return models.Member{
@@ -95,40 +82,34 @@ func fakeMember() models.Member {
 	}
 }
 
-func testMember() models.Member {
+func TestMember() models.Member {
 	return models.Member{
-		Name:           "test",
-		Email:          "test@test.com",
-		Level:          uint8(models.Premium),
-		RFID:           faker.Lorem().Characters(10),
-		Resources:      []models.MemberResource{},
+		Name:  "test",
+		Email: "test@test.com",
+		Level: uint8(models.Premium),
+		RFID:  faker.Lorem().Characters(10),
+		Resources: []models.MemberResource{
+			{
+				Name: "admin",
+			},
+		},
 		SubscriptionID: faker.Internet().MacAddress(),
 	}
 }
 
-func registerTestUser() {
-	db, _ := dbstore.Setup()
+func RegisterTestUser(db datastore.DataStore) {
 	db.RegisterUser(models.Credentials{
 		Email:    "test@test.com",
 		Password: "test",
 	})
 }
 
-func fakeResources() {
-	db, _ := dbstore.Setup()
+func FakeResources(db datastore.DataStore) {
 	db.RegisterResource(faker.App().Name(), string(faker.Internet().IpV4Address()), false)
 	db.RegisterResource(faker.App().Name(), string(faker.Internet().IpV4Address()), true)
 }
 
-func fakeMemberCounts(numberOfMonths int) {
-	conf, _ := config.Load()
-
-	dbPool, err := pgxpool.Connect(context.Background(), conf.DBConnectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
+func FakeMemberCounts(numberOfMonths int, db datastore.DataStore) {
 	var months []models.MemberCount
 
 	for i := 1; i < numberOfMonths; i++ {
@@ -142,24 +123,24 @@ func fakeMemberCounts(numberOfMonths int) {
 		})
 	}
 
-	var valStr []string
+	// var valStr []string
 
-	sqlStr := `INSERT INTO membership.member_counts(month, classic, standard, premium, credited)
-VALUES `
+	// 	sqlStr := `INSERT INTO membership.member_counts(month, classic, standard, premium, credited)
+	// VALUES `
 
-	for _, p := range months {
-		valStr = append(valStr, fmt.Sprintf("(TO_DATE('%s', 'YYYYMM'), %d, %d, %d, %d)", p.Month.Format("200601"), p.Classic, p.Standard, p.Premium, p.Credited))
-	}
+	// 	for _, p := range months {
+	// 		valStr = append(valStr, fmt.Sprintf("(TO_DATE('%s', 'YYYYMM'), %d, %d, %d, %d)", p.Month.Format("200601"), p.Classic, p.Standard, p.Premium, p.Credited))
+	// 	}
 
-	str := strings.Join(valStr, ",")
+	// 	str := strings.Join(valStr, ",")
 
-	log.Infof("Adding %d months of member counts", len(months))
+	// 	log.Infof("Adding %d months of member counts", len(months))
 
-	commandTag, err := dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
-	if err != nil {
-		log.Errorf("conn.Exec failed: %v", err)
-	}
-	if commandTag.RowsAffected() != 1 {
-		log.Errorf("no row affected")
-	}
+	// commandTag, err := dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
+	// if err != nil {
+	// 	log.Errorf("conn.Exec failed: %v", err)
+	// }
+	// if commandTag.RowsAffected() != 1 {
+	// 	log.Errorf("no row affected")
+	// }
 }

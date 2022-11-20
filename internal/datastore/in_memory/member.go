@@ -6,19 +6,20 @@ import (
 	"sort"
 )
 
-var Members = map[string]models.Member{}
-
-func (i In_memory) GetTiers() []models.Tier {
+func (i *In_memory) GetTiers() []models.Tier {
 	return i.Tiers
 }
-func (i In_memory) GetMembersWithLimit(limit int, offset int, active bool) []models.Member {
+func (i *In_memory) GetMembersWithLimit(limit int, offset int, active bool) []models.Member {
 	return MemberMapToSlice(i.Members)
 }
-func (i In_memory) GetMembers() []models.Member {
+func (i *In_memory) GetMembers() []models.Member {
 	return MemberMapToSlice(i.Members)
 }
-func (i In_memory) GetMemberByEmail(email string) (models.Member, error) {
+func (i *In_memory) GetMemberByEmail(email string) (models.Member, error) {
+	// i.Members = Members
+	println("Member len: ", len(i.Members))
 	for _, k := range i.Members {
+		println(k.Email)
 		if k.Email == email {
 			return k, nil
 		}
@@ -26,11 +27,11 @@ func (i In_memory) GetMemberByEmail(email string) (models.Member, error) {
 	return models.Member{}, errors.New("error getting user: not found")
 }
 
-func (i In_memory) GetMemberByRFID(rfid string) (models.Member, error) {
+func (i *In_memory) GetMemberByRFID(rfid string) (models.Member, error) {
 	return models.Member{}, nil
 }
 
-func (i In_memory) AssignRFID(email string, rfid string) (models.Member, error) {
+func (i *In_memory) AssignRFID(email string, rfid string) (models.Member, error) {
 	if len(rfid) == 0 {
 		return models.Member{}, errors.New("not a valid rfid")
 	}
@@ -44,7 +45,7 @@ func (i In_memory) AssignRFID(email string, rfid string) (models.Member, error) 
 	return models.Member{}, errors.New("user not found")
 }
 
-func (i In_memory) UpdateMember(update models.Member) error {
+func (i *In_memory) UpdateMember(update models.Member) error {
 	if len(update.Name) == 0 {
 		return errors.New("fullname is required")
 	}
@@ -53,32 +54,39 @@ func (i In_memory) UpdateMember(update models.Member) error {
 		return errors.New("email is required")
 	}
 
-	if _, ok := Members[update.Email]; !ok {
+	if _, ok := i.Members[update.Email]; !ok {
 		return errors.New("not found")
 	}
 
 	return nil
 }
 
-func (i In_memory) AddNewMember(newMember models.Member) (models.Member, error) {
-	Members[newMember.Email] = newMember
+func (i *In_memory) AddNewMember(newMember models.Member) (models.Member, error) {
+	i.Members[newMember.Email] = newMember
 	return newMember, nil
 }
-func (i In_memory) AddMembers(members []models.Member) error {
+func (i *In_memory) AddMembers(members []models.Member) error {
+	if i.Members == nil {
+		i.Members = map[string]models.Member{}
+	}
+
+	for _, m := range members {
+		i.Members[m.Name] = m
+	}
 	return nil
 }
-func (i In_memory) GetMembersWithCredit() []models.Member {
+func (i *In_memory) GetMembersWithCredit() []models.Member {
 	return []models.Member{}
 }
-func (i In_memory) ProcessMember(newMember models.Member) error {
+func (i *In_memory) ProcessMember(newMember models.Member) error {
 	return nil
 }
 
-func (i In_memory) SetMemberLevel(memberId string, level models.MemberLevel) error {
+func (i *In_memory) SetMemberLevel(memberId string, level models.MemberLevel) error {
 	return nil
 }
-func (i In_memory) ApplyMemberCredits() {}
-func (i In_memory) UpdateMemberTiers()  {}
+func (i *In_memory) ApplyMemberCredits() {}
+func (i *In_memory) UpdateMemberTiers()  {}
 
 func MemberMapToSlice(m map[string]models.Member) []models.Member {
 	var members []models.Member

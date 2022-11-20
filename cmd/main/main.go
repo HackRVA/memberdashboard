@@ -8,8 +8,11 @@ import (
 
 	"memberserver/internal/controllers"
 	"memberserver/internal/controllers/auth"
+	"memberserver/internal/datastore"
 	"memberserver/internal/datastore/dbstore"
+	"memberserver/internal/datastore/in_memory"
 	router "memberserver/internal/routes"
+	"memberserver/internal/services/config"
 	"memberserver/internal/services/logger"
 	"memberserver/internal/services/scheduler"
 	"memberserver/internal/services/scheduler/jobs"
@@ -19,10 +22,22 @@ func init() {
 	log.SetLevel(log.DebugLevel)
 }
 
+// setupDB
+// if the configuration does not include a DBConnectionString
+//
+//	the server will run with a fakeDB that runs in memory
+func setupDB() (datastore.DataStore, error) {
+	c, _ := config.Load()
+	if c.DBConnectionString == "" {
+		return in_memory.Setup()
+	}
+	return dbstore.Setup()
+}
+
 func main() {
-	db, err := dbstore.Setup()
+	db, err := setupDB()
 	if err != nil {
-		log.Errorf("error setting up db: %s", err)
+		log.Fatal("error setting up db: %s", err)
 	}
 
 	auth := auth.New(db)

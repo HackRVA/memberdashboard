@@ -8,6 +8,18 @@ help: ## Show this help.
 ##
 	@sed -ne '/@sed/!s/##//p' $(MAKEFILE_LIST)
 
+run: ## run the app in dev mode
+##
+##   Usage:
+##     run the app
+##   Example:
+##     make run
+	go run ./cmd/main
+
+build-ui: ## builds the ui
+## allows for embedding the ui in the shippable binary
+	bash ./scripts/build_ui.sh
+
 .PHONY:migration
 migration: ## Create a new migration
 ##   Create a new migration with name
@@ -152,3 +164,8 @@ serve-docs: ## serve-docs locally
 deploy-docs: ## deploy-docs to gh-pages
 ##   Usage: make deploy-docs
 	bash ./scripts/deploy-docs.sh
+
+clean:
+	rm -rf ./internal/ui/web/
+	mkdir ./internal/ui/web/
+	echo "this is a placeholder file/nthe ui should be copied to this dir" >> ./internal/ui/web/_blank_

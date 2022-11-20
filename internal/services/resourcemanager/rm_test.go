@@ -1,10 +1,11 @@
-package resourcemanager
+package resourcemanager_test
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"memberserver/internal/datastore/in_memory"
 	"memberserver/internal/models"
+	"memberserver/internal/services/resourcemanager"
 	"testing"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -31,7 +32,7 @@ func (mqtt *stubMQTTServer) Subscribe(address string, topic string, handler mqtt
 
 // TestUpdateResourceACL we just want to test that the mqtt message looks reasonable
 func TestUpdateResourceACL(t *testing.T) {
-	resourceManager := New(&stubMQTTServer{}, &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	resourceManager := resourcemanager.New(&stubMQTTServer{}, &in_memory.In_memory{}, slackNotifier{}, logrus.New())
 	resource := models.Resource{
 		ID:   "0",
 		Name: "should just straight up send it",
@@ -49,7 +50,7 @@ func TestUpdateResourceACL(t *testing.T) {
 
 // TestUpdateResources we just want to test that the mqtt message looks reasonable
 func TestUpdateResources(t *testing.T) {
-	resourceManager := New(&stubMQTTServer{}, &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	resourceManager := resourcemanager.New(&stubMQTTServer{}, &in_memory.In_memory{}, slackNotifier{}, logrus.New())
 	resources := []models.Resource{
 		{
 			ID:   "0",
@@ -67,7 +68,7 @@ func TestUpdateResources(t *testing.T) {
 
 	// add some stuff to the store
 	for _, v := range resources {
-		resourceManager.store.RegisterResource(v.Name, v.Address, v.IsDefault)
+		resourceManager.RegisterResource(v.Name, v.Address, v.IsDefault)
 	}
 
 	want := `should just straight up send it"{\"doorip\":\"\",\"cmd\":\"adduser\",\"user\":\"test\",\"uid\":\"\",\"acctype\":1,\"validuntil\":-86400}"`

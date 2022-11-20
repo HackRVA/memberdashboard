@@ -1,30 +1,32 @@
 // Package Classification Member Server API.
 //
-//     Schemes: http, https
-//     Version: 0.0.1
-//     License: MIT http://opensource.org/licenses/MIT
+//	 Schemes: http, https
+//	 Version: 0.0.1
+//	 License: MIT http://opensource.org/licenses/MIT
 //
-//    SecurityDefinitions:
-//    bearerAuth:
-//      type: apiKey
-//      in: header
-//      name: Authorization
-//      description: Enter your bearer token
-//    basicAuth:
-//      type: basic
-//      in: header
-//      name: Authorization
-//      description: Enter your basic auth credentials
+//	SecurityDefinitions:
+//	bearerAuth:
+//	  type: apiKey
+//	  in: header
+//	  name: Authorization
+//	  description: Enter your bearer token
+//	basicAuth:
+//	  type: basic
+//	  in: header
+//	  name: Authorization
+//	  description: Enter your basic auth credentials
 //
 // swagger:meta
 package routes
 
 import (
 	_ "embed"
+	"io/fs"
 	"memberserver/api/openapi"
 	api "memberserver/internal/controllers"
 	"memberserver/internal/controllers/auth"
 	"memberserver/internal/middleware/rbac"
+	"memberserver/internal/ui"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -61,6 +63,11 @@ func New(api api.API, auth *auth.AuthController) Router {
 	return router
 }
 
+func (r *Router) mountFS() {
+	web, _ := fs.Sub(ui.UI, "web")
+	r.UnAuthedRouter.PathPrefix("/").Handler(http.FileServer(http.FS(web)))
+}
+
 func (r *Router) RegisterRoutes(auth *auth.AuthController) *mux.Router {
 	accessControl := rbac.New(r.authStrategy)
 	r.setupUserRoutes(r.api.UserServer, auth)
@@ -70,9 +77,10 @@ func (r *Router) RegisterRoutes(auth *auth.AuthController) *mux.Router {
 	r.setupReportsRoutes(r.api.ReportsServer, accessControl)
 	r.setupVersionRoutes(r.api.VersionServer)
 
-	spa := spaHandler{staticPath: "./web/dist/", indexPath: "index.html"}
 	openapi.ServeSwaggerUI(r.UnAuthedRouter)
-	r.UnAuthedRouter.PathPrefix("/").Handler(spa)
+
+	r.mountFS()
+
 	http.Handle("/", r.UnAuthedRouter)
 	http.Handle("/api/", r.authedRouter)
 

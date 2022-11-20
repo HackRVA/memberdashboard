@@ -125,8 +125,8 @@ func (ms memberService) CancelStatusHandler(m models.Member, lastPayment models.
 		logger: ms.logger,
 	}
 
-	if member.paymentIsBeforeOneMonthAgo(lastPayment) {
-		if member.isActive() {
+	if member.PaymentIsBeforeOneMonthAgo(lastPayment) {
+		if member.IsActive() {
 			member.endGracePeriod()
 		}
 		member.setInactive()
@@ -168,12 +168,20 @@ type member struct {
 	logger logger
 }
 
-func (m member) paymentIsBeforeOneMonthAgo(payment models.Payment) bool {
+func NewMemberService(s datastore.MemberStore, m models.Member, l logger) member {
+	return member{
+		model:  m,
+		store:  s,
+		logger: l,
+	}
+}
+
+func (m member) PaymentIsBeforeOneMonthAgo(payment models.Payment) bool {
 	oneMonthAgo := (time.Hour * 24) * -30
 	return payment.Time.Before(time.Now().Add(oneMonthAgo))
 }
 
-func (m member) isActive() bool {
+func (m member) IsActive() bool {
 	return m.model.Level == uint8(models.Standard) || m.model.Level == uint8(models.Classic) || m.model.Level == uint8(models.Premium)
 }
 

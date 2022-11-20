@@ -34,6 +34,10 @@ func randStringRunes(n int) string {
 
 // Subscribe - subscribe to an MQTT topic and pass in a messageHandler
 func (m *server) Subscribe(address string, topic string, handler mqtt.MessageHandler) {
+	if address == "" {
+		log.Error("mqtt address isn't configured")
+		return
+	}
 	opts := mqtt.NewClientOptions().AddBroker(address)
 	opts.SetClientID("member-server-subscriber-" + randStringRunes(12))
 
@@ -53,6 +57,10 @@ func (m *server) Subscribe(address string, topic string, handler mqtt.MessageHan
 
 // Publish - publish to an MQTT topic
 func (m *server) Publish(address string, topic string, payload interface{}) {
+	if address == "" {
+		log.Error("mqtt address isn't configured")
+		return
+	}
 	opts := mqtt.NewClientOptions().AddBroker(address)
 	opts.SetClientID("member-server-publisher-" + randStringRunes(12))
 

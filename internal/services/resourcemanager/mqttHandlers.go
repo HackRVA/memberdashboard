@@ -10,10 +10,11 @@ import (
 )
 
 // HealthCheck -- this is the mqtt messageHandler that runs when a resource checks in
-//  we expect the payload to be json that marshals to `ACLResponse` which includes the name
-//  and a hash of it's ACL
-//  if the ACL hash doesn't match what we have in the database, we will trigger an update to push
-//  to the resource
+//
+//	we expect the payload to be json that marshals to `ACLResponse` which includes the name
+//	and a hash of it's ACL
+//	if the ACL hash doesn't match what we have in the database, we will trigger an update to push
+//	to the resource
 func (rm *ResourceManager) HealthCheck(client mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("MSG: %s\n", msg.Payload())
 
@@ -27,12 +28,12 @@ func (rm *ResourceManager) HealthCheck(client mqtt.Client, msg mqtt.Message) {
 
 	rm.logger.Infof("name from resource: %s", acl.Name)
 	// get resourceByName
-	r, err := rm.store.GetResourceByName(acl.Name)
+	r, err := rm.GetResourceByName(acl.Name)
 	if err != nil {
 		rm.logger.Errorf("error fetching resource: %s", err)
 		return
 	}
-	accessList, err := rm.store.GetResourceACL(r)
+	accessList, err := rm.GetResourceACL(r)
 	if err != nil {
 		rm.logger.Error(err)
 		return
@@ -77,7 +78,7 @@ func (rm *ResourceManager) Receive(client mqtt.Client, msg mqtt.Message) {
 
 // OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
 func (rm *ResourceManager) OnAccessEvent(payload models.LogMessage) {
-	m, err := rm.store.GetMemberByRFID(payload.RFID)
+	m, err := rm.GetMemberByRFID(payload.RFID)
 	if err != nil {
 		rm.logger.Errorf("swipe on %s of unknown fob: %s", payload.Door, payload.RFID)
 		return
@@ -85,7 +86,7 @@ func (rm *ResourceManager) OnAccessEvent(payload models.LogMessage) {
 
 	defer func(m models.Member, p models.LogMessage) {
 		go rm.notifier.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", m.Name, p.RFID, p.Door, p.EventTime))
-		go rm.store.LogAccessEvent(models.LogMessage{
+		go rm.LogAccessEvent(models.LogMessage{
 			Type:      p.Type,
 			EventTime: p.EventTime,
 			IsKnown:   p.IsKnown,

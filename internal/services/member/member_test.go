@@ -1,18 +1,17 @@
-package member
+package member_test
 
 import (
 	"memberserver/internal/datastore/in_memory"
 	"memberserver/internal/models"
+	"memberserver/internal/services/logger"
+	"memberserver/internal/services/member"
 	"testing"
 	"time"
 )
 
 func TestPaymentBeforeOneMonthAgo(t *testing.T) {
 	store := &in_memory.In_memory{}
-	member := member{
-		store: store,
-		model: models.Member{},
-	}
+	m := member.NewMemberService(store, models.Member{}, logger.New())
 
 	tests := []struct {
 		payment     models.Payment
@@ -54,7 +53,7 @@ func TestPaymentBeforeOneMonthAgo(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		isOneMonthAgo := member.paymentIsBeforeOneMonthAgo(tt.payment)
+		isOneMonthAgo := m.PaymentIsBeforeOneMonthAgo(tt.payment)
 		if isOneMonthAgo != tt.expected {
 			t.Errorf("expected: %t, received: %t", tt.expected, isOneMonthAgo)
 		}
@@ -92,14 +91,12 @@ func TestIsMemberActive(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		member := member{
-			store: store,
-			model: models.Member{
+		m := member.NewMemberService(
+			store, models.Member{
 				Level: uint8(tt.currentMemberLevel),
-			},
-		}
-		if member.isActive() != tt.expected {
-			t.Errorf("expected: %t, received: %t", tt.expected, member.isActive())
+			}, logger.New())
+		if m.IsActive() != tt.expected {
+			t.Errorf("expected: %t, received: %t", tt.expected, m.IsActive())
 		}
 	}
 }

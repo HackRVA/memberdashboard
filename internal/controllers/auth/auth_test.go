@@ -11,8 +11,16 @@ import (
 )
 
 func TestRegisterUser(t *testing.T) {
+	db := &in_memory.In_memory{
+		Members: make(map[string]models.Member),
+	}
+	db.Members["test"] = models.Member{
+		Name:  "test",
+		Email: "test",
+	}
+
 	server := AuthController{
-		store: &in_memory.In_memory{},
+		store: db,
 	}
 
 	tests := []struct {
