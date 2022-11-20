@@ -18,6 +18,7 @@ import dialogs from '../dialogs/dialogs';
 import { ResourceService } from '../../../resource/services/resource.service';
 import { Inject } from '../../../shared/di/inject';
 import { BulkAddMembersToResourceRequest } from '../../../resource/types/api/bulk-add-members-to-resource-request';
+import { displayToast } from '../../../shared/components/abstract-toast';
 
 function actionBuilder(
   getLabel: (member: Member) => string,
@@ -90,8 +91,6 @@ export class MemberGrid extends LitElement {
         'Remove resource': this.dialogs.removeMemberFromResource,
         'Refresh Member Status': this.dialogs.refreshMemberStatus,
         'Push to Resources': (member: Member) => {
-          console.log('try to push to rfid devices', member);
-
           member.resources.forEach(resource => {
             const request: BulkAddMembersToResourceRequest = {
               emails: [member.email],
@@ -99,8 +98,7 @@ export class MemberGrid extends LitElement {
             };
             this.resourceService.bulkAddMembersToResource(request).subscribe({
               complete: () => {
-                // displayToast('success');
-                console.log('success');
+                displayToast('success');
               },
             });
           });

@@ -1,5 +1,5 @@
 // lit element
-import { customElement, property } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // memberdashboard

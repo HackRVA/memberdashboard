@@ -20,7 +20,7 @@ export class LoadingContent extends LitElement {
     }
 
     return html`
-      <div class="center-text">
+      <div class="text-center">
         <mwc-circular-progress indeterminate></mwc-circular-progress>
       </div>
     `;

@@ -63,7 +63,6 @@ export class AddResourceForm extends LitElement {
   private bulkAddMembersToResource(
     request: BulkAddMembersToResourceRequest
   ): void {
-    console.log('bulk request: ', request);
     this.resourceService.bulkAddMembersToResource(request).subscribe({
       complete: () => {
         this.fireUpdatedEvent();
