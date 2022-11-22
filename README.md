@@ -4,7 +4,7 @@
     <img alt="Test passing" src="https://github.com/Hackrva/memberdashboard/workflows/Test/badge.svg" />
     <img alt="Test UI passing" src="https://github.com/Hackrva/memberdashboard/workflows/Test%20UI/badge.svg" />
     <a href="https://goreportcard.com/report/github.com/HackRVA/memberserver">
-        <img class="badge" tag="github.com/HackRVA/memberserver" src="https://img.shields.io/badge/go%20report-A+-brightgreen.svg?style=flat">
+    <img alt="Go report" src="https://goreportcard.com/badge/github.com/HackRVA/memberserver">
     </a>
 </div>
 
