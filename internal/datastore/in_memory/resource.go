@@ -1,6 +1,6 @@
 package in_memory
 
-import "memberserver/internal/models"
+import "github.com/HackRVA/memberserver/internal/models"
 
 var Resources = map[string]models.Resource{}
 

@@ -3,12 +3,13 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	"memberserver/internal/models"
-	"memberserver/internal/services/member"
-	"memberserver/internal/services/resourcemanager"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/HackRVA/memberserver/internal/models"
+	"github.com/HackRVA/memberserver/internal/services/member"
+	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/mux"

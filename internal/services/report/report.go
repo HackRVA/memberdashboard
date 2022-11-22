@@ -3,9 +3,10 @@ package report
 import (
 	"errors"
 	"fmt"
-	"memberserver/internal/datastore"
-	"memberserver/internal/models"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/datastore"
+	"github.com/HackRVA/memberserver/internal/models"
 
 	"github.com/sirupsen/logrus"
 )

@@ -78,9 +78,9 @@ type ACLResponse struct {
 
 // ACLRequest is the json body we expect to receive
 //
-// {
-// 	"acl": [ 2755459513, 848615840 ]
-// }
+//	{
+//		"acl": [ 2755459513, 848615840 ]
+//	}
 type ACLRequest struct {
 	ACL []string `json:"acl"`
 }

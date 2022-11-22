@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"memberserver/internal/models"
-	"memberserver/internal/services/logger"
 	"strings"
+
+	"github.com/HackRVA/memberserver/internal/services/logger"
+
+	"github.com/HackRVA/memberserver/internal/models"
 
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -279,8 +281,9 @@ func (db *DatabaseStore) GetTiers() []models.Tier {
 var memberDbMethod MemberDatabaseMethod
 
 // GetMembersWithCredit - gets members that have been credited a membership
-//  if a member exists in the member_credits table
-//  they are credited a membership
+//
+//	if a member exists in the member_credits table
+//	they are credited a membership
 func (db *DatabaseStore) GetMembersWithCredit() []models.Member {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {

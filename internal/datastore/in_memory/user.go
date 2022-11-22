@@ -2,7 +2,8 @@ package in_memory
 
 import (
 	"errors"
-	"memberserver/internal/models"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 func (i *In_memory) GetUser(email string) (models.UserResponse, error) {

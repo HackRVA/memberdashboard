@@ -44,8 +44,9 @@ func Get() Config {
 }
 
 // Load in the config file to memory
-//  you can create a config file or pass in Environment variables
-//  the config file will take priority
+//
+//	you can create a config file or pass in Environment variables
+//	the config file will take priority
 func Load() (Config, error) {
 	c := Config{}
 

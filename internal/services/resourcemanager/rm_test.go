@@ -3,10 +3,12 @@ package resourcemanager_test
 import (
 	"encoding/base64"
 	"encoding/json"
-	"memberserver/internal/datastore/in_memory"
-	"memberserver/internal/models"
-	"memberserver/internal/services/resourcemanager"
 	"testing"
+
+	"github.com/HackRVA/memberserver/internal/datastore/in_memory"
+	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
+
+	"github.com/HackRVA/memberserver/internal/models"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/sirupsen/logrus"

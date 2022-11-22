@@ -1,8 +1,9 @@
 package swagger
 
 import (
-	"memberserver/internal/models"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 // swagger:parameters updateResourceRequest

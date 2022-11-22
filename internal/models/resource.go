@@ -28,7 +28,8 @@ type MembersResourceRelation struct {
 }
 
 // MemberAccess represents that a member has access to a certain resource.
-//  this will get pushed to a device.
+//
+//	this will get pushed to a device.
 type MemberAccess struct {
 	Email           string
 	ResourceAddress string
@@ -43,7 +44,8 @@ type ACLUpdateRequest struct {
 }
 
 // ACLResponse Response from a resource that is a hash of the ACL that the
-//   resource has stored
+//
+//	resource has stored
 type ACLResponse struct {
 	Hash string `json:"acl"`
 	// Name of the resource - this should match what we have in the database

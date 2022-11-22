@@ -30,7 +30,8 @@ type ChartCol struct {
 }
 
 // ReportChart - deliver information to the frontend so that
-//   we can display a monthly payment chart
+//
+//	we can display a monthly payment chart
 type ReportChart struct {
 	Options ChartOptions    `json:"options"`
 	Type    string          `json:"type"`

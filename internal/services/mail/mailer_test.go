@@ -1,10 +1,12 @@
 package mail
 
 import (
-	"memberserver/internal/models"
-	"memberserver/internal/services/config"
 	"testing"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/services/config"
+
+	"github.com/HackRVA/memberserver/internal/models"
 
 	"github.com/jackc/pgx/v4"
 )

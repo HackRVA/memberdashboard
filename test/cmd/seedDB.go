@@ -2,10 +2,11 @@ package main
 
 import (
 	"log"
-	"memberserver/internal/datastore/dbstore"
-	"memberserver/test/generators"
 	"os"
 	"strconv"
+
+	"github.com/HackRVA/memberserver/internal/datastore/dbstore"
+	"github.com/HackRVA/memberserver/test/generators"
 )
 
 func main() {

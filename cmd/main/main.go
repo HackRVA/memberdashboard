@@ -6,16 +6,17 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"memberserver/internal/controllers"
-	"memberserver/internal/controllers/auth"
-	"memberserver/internal/datastore"
-	"memberserver/internal/datastore/dbstore"
-	"memberserver/internal/datastore/in_memory"
-	router "memberserver/internal/routes"
-	"memberserver/internal/services/config"
-	"memberserver/internal/services/logger"
-	"memberserver/internal/services/scheduler"
-	"memberserver/internal/services/scheduler/jobs"
+	router "github.com/HackRVA/memberserver/internal/routes"
+
+	"github.com/HackRVA/memberserver/internal/controllers"
+	"github.com/HackRVA/memberserver/internal/controllers/auth"
+	"github.com/HackRVA/memberserver/internal/datastore"
+	"github.com/HackRVA/memberserver/internal/datastore/dbstore"
+	"github.com/HackRVA/memberserver/internal/datastore/in_memory"
+	"github.com/HackRVA/memberserver/internal/services/config"
+	"github.com/HackRVA/memberserver/internal/services/logger"
+	"github.com/HackRVA/memberserver/internal/services/scheduler"
+	"github.com/HackRVA/memberserver/internal/services/scheduler/jobs"
 )
 
 func init() {

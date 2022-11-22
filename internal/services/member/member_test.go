@@ -1,12 +1,14 @@
 package member_test
 
 import (
-	"memberserver/internal/datastore/in_memory"
-	"memberserver/internal/models"
-	"memberserver/internal/services/logger"
-	"memberserver/internal/services/member"
 	"testing"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/datastore/in_memory"
+	"github.com/HackRVA/memberserver/internal/services/logger"
+	"github.com/HackRVA/memberserver/internal/services/member"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 func TestPaymentBeforeOneMonthAgo(t *testing.T) {

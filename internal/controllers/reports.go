@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"memberserver/internal/models"
-	"memberserver/internal/services/report"
 	"net/http"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/models"
+	"github.com/HackRVA/memberserver/internal/services/report"
 )
 
 type ReportsServer struct {

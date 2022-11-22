@@ -2,8 +2,9 @@ package controllers
 
 import (
 	"encoding/json"
-	"memberserver/internal/models"
 	"net/http"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 // Resource http handlers for resources

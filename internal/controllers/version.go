@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"memberserver/internal/models"
 	"net/http"
 	"strings"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 // GitCommit is populated by a golang build arg

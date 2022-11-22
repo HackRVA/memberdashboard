@@ -2,7 +2,8 @@ package logger
 
 import (
 	"fmt"
-	"memberserver/pkg/slack"
+
+	"github.com/HackRVA/memberserver/pkg/slack"
 
 	log "github.com/sirupsen/logrus"
 )

@@ -3,11 +3,12 @@ package auth
 import (
 	"bytes"
 	"encoding/json"
-	"memberserver/internal/datastore/in_memory"
-	"memberserver/internal/models"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/HackRVA/memberserver/internal/datastore/in_memory"
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 func TestRegisterUser(t *testing.T) {

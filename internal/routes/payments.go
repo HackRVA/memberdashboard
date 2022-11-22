@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"memberserver/internal/middleware/rbac"
-	"memberserver/pkg/paypal/listener"
+	"github.com/HackRVA/memberserver/internal/middleware/rbac"
+	"github.com/HackRVA/memberserver/pkg/paypal/listener"
 )
 
 type PaymentsHTTPHandler interface {

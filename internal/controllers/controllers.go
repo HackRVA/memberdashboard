@@ -1,16 +1,16 @@
 package controllers
 
 import (
-	"memberserver/internal/controllers/auth"
-	"memberserver/internal/datastore"
-	"memberserver/internal/services/config"
-	"memberserver/internal/services/logger"
-	"memberserver/internal/services/member"
-	"memberserver/internal/services/report"
-	"memberserver/internal/services/resourcemanager"
-	"memberserver/pkg/mqtt"
-	"memberserver/pkg/paypal"
-	"memberserver/pkg/slack"
+	"github.com/HackRVA/memberserver/internal/controllers/auth"
+	"github.com/HackRVA/memberserver/internal/datastore"
+	"github.com/HackRVA/memberserver/internal/services/config"
+	"github.com/HackRVA/memberserver/internal/services/logger"
+	"github.com/HackRVA/memberserver/internal/services/member"
+	"github.com/HackRVA/memberserver/internal/services/report"
+	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
+	"github.com/HackRVA/memberserver/pkg/mqtt"
+	"github.com/HackRVA/memberserver/pkg/paypal"
+	"github.com/HackRVA/memberserver/pkg/slack"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/jwt"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"

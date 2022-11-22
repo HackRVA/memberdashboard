@@ -1,8 +1,9 @@
 package datastore
 
 import (
-	"memberserver/internal/models"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 type DataStore interface {

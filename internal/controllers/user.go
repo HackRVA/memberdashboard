@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"memberserver/internal/datastore"
-	"memberserver/internal/models"
-	"memberserver/internal/services/config"
 	"net/http"
+
+	"github.com/HackRVA/memberserver/internal/datastore"
+	"github.com/HackRVA/memberserver/internal/models"
+	"github.com/HackRVA/memberserver/internal/services/config"
 
 	"github.com/shaj13/go-guardian/v2/auth"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/jwt"

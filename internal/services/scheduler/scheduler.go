@@ -1,8 +1,9 @@
 package scheduler
 
 import (
-	"memberserver/internal/models"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 const (
@@ -45,8 +46,9 @@ type JobController interface {
 }
 
 // Setup Scheduler
-//  We want certain tasks to happen on a regular basis
-//  The scheduler will make sure that happens
+//
+//	We want certain tasks to happen on a regular basis
+//	The scheduler will make sure that happens
 func (s *Scheduler) Setup(j JobController) {
 	tasks := []Task{
 		{interval: checkPaymentsInterval * time.Hour, initFunc: j.CheckMemberSubscriptions, tickFunc: j.CheckMemberSubscriptions},

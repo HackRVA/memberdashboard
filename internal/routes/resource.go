@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"memberserver/internal/middleware/rbac"
 	"net/http"
+
+	"github.com/HackRVA/memberserver/internal/middleware/rbac"
 )
 
 type ResourceHTTPHandler interface {

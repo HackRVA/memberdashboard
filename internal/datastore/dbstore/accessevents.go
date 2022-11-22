@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"memberserver/internal/models"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/models"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"

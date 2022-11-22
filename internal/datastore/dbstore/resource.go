@@ -3,8 +3,9 @@ package dbstore
 import (
 	"errors"
 	"fmt"
-	"memberserver/internal/models"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/models"
 
 	log "github.com/sirupsen/logrus"
 
@@ -341,7 +342,8 @@ func (db *DatabaseStore) GetResourceACLWithMemberInfo(r models.Resource) ([]mode
 }
 
 // GetMembersAccess returns a list of a specific members access
-//   this is used for sending a new rfid assigment to a resource
+//
+//	this is used for sending a new rfid assigment to a resource
 func (db *DatabaseStore) GetMembersAccess(m models.Member) ([]models.MemberAccess, error) {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {

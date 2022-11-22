@@ -3,8 +3,9 @@ package dbstore
 import (
 	"context"
 	"fmt"
-	"memberserver/internal/models"
 	"strings"
+
+	"github.com/HackRVA/memberserver/internal/models"
 
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"

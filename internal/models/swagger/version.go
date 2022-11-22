@@ -1,6 +1,6 @@
 package swagger
 
-import "memberserver/internal/models"
+import "github.com/HackRVA/memberserver/internal/models"
 
 // swagger:response versionResponse
 type versionResponse struct {

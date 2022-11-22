@@ -4,9 +4,10 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"memberserver/internal/datastore"
-	"memberserver/internal/models"
-	"memberserver/internal/services/config"
+
+	"github.com/HackRVA/memberserver/internal/datastore"
+	"github.com/HackRVA/memberserver/internal/models"
+	"github.com/HackRVA/memberserver/internal/services/config"
 
 	"time"
 

@@ -1,8 +1,9 @@
 package in_memory
 
 import (
-	"memberserver/internal/models"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 func (i *In_memory) GetCommunications() []models.Communication {

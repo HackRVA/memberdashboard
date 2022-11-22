@@ -2,10 +2,12 @@ package generators
 
 import (
 	"math/rand"
-	"memberserver/internal/datastore"
-	"memberserver/internal/models"
-	"memberserver/internal/services/logger"
-	"memberserver/internal/services/scheduler/jobs"
+
+	"github.com/HackRVA/memberserver/internal/datastore"
+	"github.com/HackRVA/memberserver/internal/services/logger"
+	"github.com/HackRVA/memberserver/internal/services/scheduler/jobs"
+
+	"github.com/HackRVA/memberserver/internal/models"
 
 	"strconv"
 	"time"

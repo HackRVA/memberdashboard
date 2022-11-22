@@ -1,4 +1,4 @@
-module memberserver
+module github.com/HackRVA/memberserver
 
 go 1.18
 

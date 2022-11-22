@@ -1,8 +1,8 @@
 package in_memory
 
 import (
-	"memberserver/internal/models"
-	"memberserver/test/generators"
+	"github.com/HackRVA/memberserver/internal/models"
+	"github.com/HackRVA/memberserver/test/generators"
 )
 
 type In_memory struct {

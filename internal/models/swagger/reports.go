@@ -1,6 +1,6 @@
 package swagger
 
-import "memberserver/internal/models"
+import "github.com/HackRVA/memberserver/internal/models"
 
 // PaymentResponse response of payment chart information
 // swagger:response getPaymentChartResponse

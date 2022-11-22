@@ -2,9 +2,11 @@ package mail
 
 import (
 	"errors"
-	"memberserver/internal/models"
-	"memberserver/internal/services/config"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/services/config"
+
+	"github.com/HackRVA/memberserver/internal/models"
 
 	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"

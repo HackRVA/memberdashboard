@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"memberserver/internal/services/config"
 	"net/http"
+
+	"github.com/HackRVA/memberserver/internal/services/config"
 
 	log "github.com/sirupsen/logrus"
 )

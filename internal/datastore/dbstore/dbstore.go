@@ -2,7 +2,8 @@ package dbstore
 
 import (
 	"context"
-	"memberserver/internal/services/config"
+
+	"github.com/HackRVA/memberserver/internal/services/config"
 )
 
 type DatabaseStore struct {

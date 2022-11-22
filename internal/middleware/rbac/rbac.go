@@ -1,9 +1,10 @@
 package rbac
 
 import (
-	"memberserver/internal/services/config"
 	"net/http"
 	"strings"
+
+	"github.com/HackRVA/memberserver/internal/services/config"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 )

@@ -3,13 +3,15 @@ package member
 import (
 	"errors"
 	"fmt"
-	"memberserver/internal/datastore"
-	"memberserver/internal/integrations"
-	"memberserver/internal/models"
-	"memberserver/internal/services/resourcemanager"
-	"memberserver/pkg/slack"
 	"strconv"
 	"time"
+
+	"github.com/HackRVA/memberserver/internal/datastore"
+	"github.com/HackRVA/memberserver/internal/integrations"
+	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
+	"github.com/HackRVA/memberserver/pkg/slack"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 type memberService struct {

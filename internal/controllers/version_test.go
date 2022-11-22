@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
-	"memberserver/internal/models"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 func NewStubVersionStore() *StubVersionStore {

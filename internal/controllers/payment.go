@@ -1,13 +1,14 @@
 package controllers
 
 import (
-	"memberserver/internal/models"
-	"memberserver/pkg/paypal/listener"
+	"github.com/HackRVA/memberserver/internal/models"
+	"github.com/HackRVA/memberserver/pkg/paypal/listener"
 )
 
 // PaypalSubscriptionWebHookHandler paypal will tell us when a new subscription is created.
-//   We can use this to add a member to our database.  We don't have to give them
-//   access to anything at this time, but it will make it easier to assign them an RFID fob
+//
+//	We can use this to add a member to our database.  We don't have to give them
+//	access to anything at this time, but it will make it easier to assign them an RFID fob
 func (api API) PaypalSubscriptionWebHookHandler(err error, n *listener.Subscription) {
 	if err != nil {
 		api.logger.Printf("IPN error: %v", err)

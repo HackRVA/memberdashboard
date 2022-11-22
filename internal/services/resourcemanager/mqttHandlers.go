@@ -3,8 +3,9 @@ package resourcemanager
 import (
 	"encoding/json"
 	"fmt"
-	"memberserver/internal/datastore/dbstore"
-	"memberserver/internal/models"
+
+	"github.com/HackRVA/memberserver/internal/datastore/dbstore"
+	"github.com/HackRVA/memberserver/internal/models"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )

@@ -1,7 +1,7 @@
 package swagger
 
 import (
-	"memberserver/internal/models"
+	"github.com/HackRVA/memberserver/internal/models"
 )
 
 // tokenResponseBody for json response of signin

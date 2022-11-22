@@ -22,12 +22,13 @@ package routes
 import (
 	_ "embed"
 	"io/fs"
-	"memberserver/api/openapi"
-	api "memberserver/internal/controllers"
-	"memberserver/internal/controllers/auth"
-	"memberserver/internal/middleware/rbac"
-	"memberserver/internal/ui"
 	"net/http"
+
+	"github.com/HackRVA/memberserver/api/openapi"
+	api "github.com/HackRVA/memberserver/internal/controllers"
+	"github.com/HackRVA/memberserver/internal/controllers/auth"
+	"github.com/HackRVA/memberserver/internal/middleware/rbac"
+	"github.com/HackRVA/memberserver/internal/ui"
 
 	"github.com/gorilla/mux"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"

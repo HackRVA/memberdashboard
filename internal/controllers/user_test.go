@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"memberserver/internal/services/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/HackRVA/memberserver/internal/services/config"
 
 	"github.com/shaj13/go-guardian/v2/auth"
 )
