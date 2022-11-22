@@ -1,4 +1,4 @@
-module memberserver/resourcedummy
+module github.com/HackRVA/memberserver/resourcedummy
 
 go 1.15
 

@@ -38,7 +38,7 @@ func setupDB() (datastore.DataStore, error) {
 func main() {
 	db, err := setupDB()
 	if err != nil {
-		log.Fatal("error setting up db: %s", err)
+		log.Fatalf("error setting up db: %s", err)
 	}
 
 	auth := auth.New(db)
