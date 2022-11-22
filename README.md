@@ -3,6 +3,7 @@
 <div style="display: inline-flex; gap: 8px">
     <img alt="Test passing" src="https://github.com/Hackrva/memberdashboard/workflows/Test/badge.svg" />
     <img alt="Test UI passing" src="https://github.com/Hackrva/memberdashboard/workflows/Test%20UI/badge.svg" />
+    <img class="badge" tag="github.com/HackRVA/memberserver" src="https://img.shields.io/badge/go%20report-A+-brightgreen.svg?style=flat">
 </div>
 
 ## Introduction
