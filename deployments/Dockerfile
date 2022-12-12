@@ -14,13 +14,12 @@ FROM golang:1.18 as backend-build
 
 WORKDIR /membership
 COPY . .
+# copy ui files so that we can embed frontend into the binary
+COPY --from=frontend-build /app/dist /membership/internal/ui/web
 
 RUN go test -v ./...
 
 RUN go mod vendor
-
-# copy ui files so that we can embed frontend into the binary
-COPY --from=frontend-build /app/dist ./internal/ui/web/
 
 RUN go build -o server -ldflags "-X memberserver/internal/controllers.GitCommit=$(git rev-parse --short HEAD)" ./cmd/main
 
