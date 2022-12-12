@@ -19,7 +19,7 @@ RUN go test -v ./...
 
 RUN go mod vendor
 
-# embed frontend to binary
+# copy ui files so that we can embed frontend into the binary
 COPY --from=frontend-build /app/dist ./internal/ui/web/
 
 RUN go build -o server -ldflags "-X memberserver/internal/controllers.GitCommit=$(git rev-parse --short HEAD)" ./cmd/main
@@ -29,8 +29,6 @@ FROM golang:1.18
 
 WORKDIR /app
 
-COPY --from=frontend-build /app/dist ./web/dist/
-COPY --from=frontend-build /app/dist ./web/dist/
 COPY --from=backend-build /membership/server .
 COPY --from=backend-build /membership/internal/templates ./templates
 
