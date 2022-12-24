@@ -12,3 +12,7 @@ memberserver
 
 bin/mdbook
 .dist
+
+
+internal/ui/web/
+!internal/ui/web/_blank_
