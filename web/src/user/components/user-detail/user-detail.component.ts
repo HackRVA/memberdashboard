@@ -85,6 +85,8 @@ export class UserDetail extends LitElement {
               <dd>${this.memberUser?.email}</dd>
               <dt>Status</dt>
               <dd>${displayMemberStatus(this.memberUser?.memberLevel)}</dd>
+              <dt>Subscription ID</dt>
+              <dd>${this.memberUser?.subscriptionID}</dd>
               <dt>RFID</dt>
               <dd>
                 ${this.memberUser?.rfid !== 'notset'
