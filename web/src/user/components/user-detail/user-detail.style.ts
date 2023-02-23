@@ -8,7 +8,6 @@ export const userDetailStyle: CSSResult = css`
     justify-content: center;
   }
   paper-card {
-    height: 320px;
     width: 360px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     background-color: var(--secondary-background-color);
