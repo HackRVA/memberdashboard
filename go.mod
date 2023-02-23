@@ -13,7 +13,7 @@ require (
 	github.com/shaj13/go-guardian/v2 v2.11.5
 	github.com/shaj13/libcache v1.0.0
 	github.com/sirupsen/logrus v1.8.1
-	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	syreclabs.com/go/faker v1.2.3
 )
 
