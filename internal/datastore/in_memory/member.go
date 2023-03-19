@@ -70,7 +70,7 @@ func (i *In_memory) UpdateMember(update models.Member) error {
 func (i *In_memory) AddNewMember(newMember models.Member) (models.Member, error) {
 	i.allocMembers()
 	if newMember.ID == "" {
-		newMember.ID = string(len(i.Members))
+		newMember.ID = string(rune(len(i.Members)))
 	}
 	i.Members[newMember.Email] = newMember
 	return newMember, nil
