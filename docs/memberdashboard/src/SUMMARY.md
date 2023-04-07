@@ -10,9 +10,14 @@
 - [Infrastructure](operations/infrastructure.md)
 - [Integrations](operations/integrations.md)
 - [Payment Provider](operations/payment-provider.md)
+# Hardware
+- [RFID](hardware/rfid.md)
+- [esprfid](hardware/esprfid.md)
+- [mqtt](hardware/mqtt.md)
 # Development
 - [Getting Started](development/getting_started.md)
 - [Setup](development/setup.md)
+- [Installing flutter](development/installing_flutter.md)
 - [Config](development/config.md)
 - [Development Tasks](development/development-tasks.md)
 - [Database Migrations](development/migratedb.md)

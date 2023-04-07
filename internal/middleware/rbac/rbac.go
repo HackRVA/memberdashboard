@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/HackRVA/memberserver/internal/services/config"
+	config "github.com/HackRVA/memberserver/configs"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 )

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
+	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/internal/datastore"
 	"github.com/HackRVA/memberserver/internal/models"
-	"github.com/HackRVA/memberserver/internal/services/config"
 
 	"github.com/shaj13/go-guardian/v2/auth"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/basic"

@@ -7,6 +7,11 @@ import (
 	"github.com/HackRVA/memberserver/internal/models"
 )
 
+func (i *In_memory) allocMembers() {
+	if i.Members == nil {
+		i.Members = map[string]models.Member{}
+	}
+}
 func (i *In_memory) GetTiers() []models.Tier {
 	return i.Tiers
 }
@@ -63,14 +68,15 @@ func (i *In_memory) UpdateMember(update models.Member) error {
 }
 
 func (i *In_memory) AddNewMember(newMember models.Member) (models.Member, error) {
+	i.allocMembers()
+	if newMember.ID == "" {
+		newMember.ID = string(len(i.Members))
+	}
 	i.Members[newMember.Email] = newMember
 	return newMember, nil
 }
 func (i *In_memory) AddMembers(members []models.Member) error {
-	if i.Members == nil {
-		i.Members = map[string]models.Member{}
-	}
-
+	i.allocMembers()
 	for _, m := range members {
 		i.Members[m.Name] = m
 	}

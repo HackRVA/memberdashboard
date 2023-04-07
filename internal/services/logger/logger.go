@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 
+	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/pkg/slack"
 
 	log "github.com/sirupsen/logrus"
@@ -17,7 +18,8 @@ func init() {
 }
 
 func Errorf(format string, args ...interface{}) {
-	go slack.Send("[member-server-error]: " + fmt.Sprintf(format, args...))
+	c, _ := config.Load()
+	go slack.Send(c.SlackAccessEvents, "[member-server-error]: "+fmt.Sprintf(format, args...))
 	log.Errorf(format, args...)
 }
 

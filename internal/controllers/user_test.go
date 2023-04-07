@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/HackRVA/memberserver/internal/services/config"
+	config "github.com/HackRVA/memberserver/configs"
 
 	"github.com/shaj13/go-guardian/v2/auth"
 )

@@ -3,15 +3,12 @@ package jobs
 import (
 	"io/ioutil"
 
+	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/internal/datastore"
 	"github.com/HackRVA/memberserver/internal/integrations"
-	"github.com/HackRVA/memberserver/internal/services/config"
+	"github.com/HackRVA/memberserver/internal/services"
 	"github.com/HackRVA/memberserver/internal/services/mail"
-	"github.com/HackRVA/memberserver/internal/services/member"
-	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
-	"github.com/HackRVA/memberserver/pkg/mqtt"
 	"github.com/HackRVA/memberserver/pkg/paypal"
-	"github.com/HackRVA/memberserver/pkg/slack"
 
 	"github.com/HackRVA/memberserver/internal/models"
 
@@ -24,24 +21,23 @@ type JobController struct {
 	config          config.Config
 	DataStore       datastore.DataStore
 	mailAPI         mail.MailApi
-	resourceManager resourcemanager.ResourceManager
+	resourceManager services.Resource
 	paymentProvider integrations.PaymentProvider
-	member          member.MemberService
+	member          services.Member
 	logger          logger
 }
 
-func New(db datastore.DataStore, logger logger) JobController {
+func New(db datastore.DataStore, logger logger, member services.Member, resource services.Resource) JobController {
 	config, _ := config.Load()
 	mailAPI, _ := mail.Setup()
-	rm := resourcemanager.New(mqtt.New(), db, slack.Notifier{}, logger)
 	pp := paypal.Setup(config.PaypalURL, config.PaypalClientID, config.PaypalClientSecret, logger)
 	return JobController{
 		config:          config,
 		mailAPI:         mailAPI,
-		resourceManager: rm,
+		resourceManager: resource,
 		paymentProvider: pp,
 		DataStore:       db,
-		member:          member.New(db, rm, pp, logger),
+		member:          member,
 		logger:          logger,
 	}
 }
@@ -104,10 +100,10 @@ func (j JobController) CheckResourceInit() {
 
 	// on startup we will subscribe to resources and publish an initial status check
 	for _, r := range resources {
-		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/send", j.resourceManager.Receive)
-		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/result", j.resourceManager.HealthCheck)
-		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/sync", j.resourceManager.OnHeartBeat)
-		j.resourceManager.MQTT.Subscribe(config.MQTTBrokerAddress, r.Name+"/cleanup", j.resourceManager.OnRemoveInvalidRequest)
+		j.resourceManager.MQTT().Subscribe(config.MQTTBrokerAddress, r.Name+"/send", j.resourceManager.ReceiveHandler)
+		j.resourceManager.MQTT().Subscribe(config.MQTTBrokerAddress, r.Name+"/result", j.resourceManager.HealthCheckHandler)
+		j.resourceManager.MQTT().Subscribe(config.MQTTBrokerAddress, r.Name+"/sync", j.resourceManager.OnHeartBeatHandler)
+		j.resourceManager.MQTT().Subscribe(config.MQTTBrokerAddress, r.Name+"/cleanup", j.resourceManager.OnRemoveInvalidRequestHandler)
 		j.resourceManager.CheckStatus(r)
 	}
 }

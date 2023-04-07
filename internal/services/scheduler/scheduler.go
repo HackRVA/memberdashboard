@@ -3,7 +3,7 @@ package scheduler
 import (
 	"time"
 
-	"github.com/HackRVA/memberserver/internal/models"
+	"github.com/HackRVA/memberserver/internal/services"
 )
 
 const (
@@ -33,23 +33,11 @@ type Task struct {
 	tickFunc func()
 }
 
-type JobController interface {
-	CheckMemberSubscriptions()
-	SetMemberLevel(status string, lastPayment models.Payment, member models.Member)
-	CheckResourceInit()
-	CheckResourceInterval()
-	CheckIPAddressInterval()
-	RemovedInvalidUIDs()
-	EnableValidUIDs()
-	UpdateResources()
-	UpdateMemberCounts()
-}
-
 // Setup Scheduler
 //
 //	We want certain tasks to happen on a regular basis
 //	The scheduler will make sure that happens
-func (s *Scheduler) Setup(j JobController) {
+func (s *Scheduler) Setup(j services.Job) {
 	tasks := []Task{
 		{interval: checkPaymentsInterval * time.Hour, initFunc: j.CheckMemberSubscriptions, tickFunc: j.CheckMemberSubscriptions},
 		{interval: evaluateMemberStatusInterval * time.Hour, initFunc: j.RemovedInvalidUIDs, tickFunc: j.RemovedInvalidUIDs},

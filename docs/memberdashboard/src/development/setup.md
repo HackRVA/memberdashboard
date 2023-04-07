@@ -1,25 +1,21 @@
 # Dev Setup
-> Note: the docker and remote containers will be deprecated soon on this project.  See [Getting Started](./getting_started.md) for more updated dev setup instructions.
+> Note: The Docker and Remote-Containers setup will soon be deprecated for this project. Please refer to [Getting Started](./getting_started.md) for more updated dev setup instructions.
 
 ## The Easy Way (using Remote-Containers)
 
-Install the following
+To get started quickly, follow these steps:
 
-- [Docker](https://www.docker.com/products/docker-desktop)
-- [VS Code](https://code.visualstudio.com/download)
-- VS Code [Remote-Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension
-
-That's it! Nothing else needs to be installed.
-
-If you are on Windows, then it is recommended to clone to the repo to a folder on the WSL for best performance.
-
-Either open the folder in VS Code and choose reopen in container or run the Remote-Containers: Open Folder in Container... command and select the local folder.
+1. Install [Docker](https://www.docker.com/products/docker-desktop), [VS Code](https://code.visualstudio.com/download), and the VS Code [Remote-Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
+2. Clone the repo to a folder on WSL if you are using Windows for better performance.
+3. Open the folder in VS Code and choose "Reopen in Container" or run the "Remote-Containers: Open Folder in Container..." command and select the local folder.
 
 ![Open from container](/img/openFromContainer.gif "Open from container")
 
-The backend server can be started by debugging in VS Code. Otherwise, you can start the server without debugging using `sh buildandrun.sh`.
+You don't need to install any other dependencies.
 
-Start the web app as described in the [UI README](/web/README.md).
+To start the backend server, debug it in VS Code. Alternatively, you can use `sh buildandrun.sh` to start the server without debugging.
+
+Please refer to the [UI README](/web/README.md) for instructions on starting the web app.
 
 ```
 # navigate to ui folder

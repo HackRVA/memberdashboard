@@ -6,9 +6,10 @@ import (
 	"strconv"
 	"time"
 
+	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/internal/datastore"
 	"github.com/HackRVA/memberserver/internal/integrations"
-	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
+	"github.com/HackRVA/memberserver/internal/services"
 	"github.com/HackRVA/memberserver/pkg/slack"
 
 	"github.com/HackRVA/memberserver/internal/models"
@@ -16,27 +17,12 @@ import (
 
 type memberService struct {
 	store           datastore.MemberStore
-	resourceManager resourcemanager.ResourceManager
+	resourceManager services.Resource
 	paymentProvider integrations.PaymentProvider
-	logger          logger
+	logger          services.Logger
 }
 
-type MemberService interface {
-	Add(models.Member) (models.Member, error)
-	Get() []models.Member
-	GetMembersWithLimit(limit int, offset int, active bool) []models.Member
-	GetByEmail(email string) (models.Member, error)
-	Update(models.Member) error
-	AssignRFID(email string, rfid string) (models.Member, error)
-	GetTiers() []models.Tier
-	FindNonMembersOnSlack() []string
-	CancelStatusHandler(member models.Member, lastPayment models.Payment)
-	ActiveStatusHandler(member models.Member, lastPayment models.Payment)
-	GetMemberFromSubscription(subscriptionID string) (models.Member, error)
-	CheckStatus(id string) (models.Member, error)
-}
-
-func New(store datastore.MemberStore, rm resourcemanager.ResourceManager, pp integrations.PaymentProvider, logger logger) memberService {
+func New(store datastore.MemberStore, rm services.Resource, pp integrations.PaymentProvider, logger services.Logger) memberService {
 	return memberService{
 		store:           store,
 		resourceManager: rm,
@@ -90,8 +76,7 @@ func (m memberService) GetTiers() []models.Tier {
 
 func (m memberService) FindNonMembersOnSlack() []string {
 	var nonMembers []string
-
-	users, err := slack.GetUsers()
+	users, err := slack.GetUsers(config.Get().SlackToken)
 	if err != nil {
 		m.logger.Errorf("error fetching slack users: %s", err)
 	}
@@ -189,12 +174,12 @@ func (m member) IsActive() bool {
 
 func (m member) notifyGracePeriod() {
 	m.logger.Infof("[scheduled-job] %s notify about being in grace period", m.model.Name)
-	go slack.Send(fmt.Sprintf("%s is in a grace period until their subscription ends", m.model.Name))
+	go slack.Send(config.Get().SlackAccessEvents, fmt.Sprintf("%s is in a grace period until their subscription ends", m.model.Name))
 }
 
 func (m member) endGracePeriod() {
 	m.logger.Infof("[scheduled-job] %s notify about grace period ending", m.model.Name)
-	go slack.Send(fmt.Sprintf("%s grace period has ended. Setting membership level to inactive.", m.model.Name))
+	go slack.Send(config.Get().SlackAccessEvents, fmt.Sprintf("%s grace period has ended. Setting membership level to inactive.", m.model.Name))
 }
 
 func (m member) setInactive() {

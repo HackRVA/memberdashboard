@@ -4,8 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/HackRVA/memberserver/internal/services/config"
-
+	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/internal/models"
 
 	"github.com/jackc/pgx/v4"

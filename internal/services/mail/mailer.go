@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/HackRVA/memberserver/internal/services/config"
+	config "github.com/HackRVA/memberserver/configs"
 
 	"github.com/HackRVA/memberserver/internal/models"
 

@@ -8,8 +8,7 @@ import (
 	"strings"
 
 	"github.com/HackRVA/memberserver/internal/models"
-	"github.com/HackRVA/memberserver/internal/services/member"
-	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
+	"github.com/HackRVA/memberserver/internal/services"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/mux"
@@ -18,8 +17,8 @@ import (
 )
 
 type MemberServer struct {
-	ResourceManager resourcemanager.ResourceManager
-	MemberService   member.MemberService
+	ResourceManager services.Resource
+	MemberService   services.Member
 	AuthStrategy    union.Union
 }
 

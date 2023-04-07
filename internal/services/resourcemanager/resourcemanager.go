@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/internal/datastore"
 	"github.com/HackRVA/memberserver/internal/models"
-	"github.com/HackRVA/memberserver/internal/services/config"
+	"github.com/HackRVA/memberserver/pkg/mqtt"
 
 	"time"
 
@@ -25,7 +26,7 @@ const (
 //  pushing new updates and checking in on their health
 
 type ResourceManager struct {
-	MQTT mqttServer
+	mqtt mqtt.MQTTServer
 	datastore.DataStore
 	notifier notifier
 	logger   logger
@@ -40,8 +41,12 @@ const (
 	StatusOffline
 )
 
-func New(ms mqttServer, store datastore.DataStore, notifier notifier, logger logger) ResourceManager {
-	return ResourceManager{ms, store, notifier, logger}
+func New(ms mqttServer, store datastore.DataStore, notifier notifier, logger logger) *ResourceManager {
+	return &ResourceManager{ms, store, notifier, logger}
+}
+
+func (rm ResourceManager) MQTT() mqtt.MQTTServer {
+	return rm.mqtt
 }
 
 // UpdateResourceACL pulls a resource's accesslist from the DB and pushes it to the resource
@@ -63,7 +68,7 @@ func (rm ResourceManager) UpdateResourceACL(r models.Resource) error {
 	rm.logger.Infof("access list: %s", j)
 
 	// publish the update to mqtt broker
-	rm.MQTT.Publish(config.Get().MQTTBrokerAddress, r.Name+"/update", j)
+	rm.mqtt.Publish(config.Get().MQTTBrokerAddress, r.Name+"/update", j)
 
 	return nil
 }
@@ -87,7 +92,7 @@ func (rm ResourceManager) UpdateResources() {
 				AccessType:      1,
 				ValidUntil:      -86400,
 			})
-			rm.MQTT.Publish(config.Get().MQTTBrokerAddress, r.Name, string(b))
+			rm.mqtt.Publish(config.Get().MQTTBrokerAddress, r.Name, string(b))
 
 			time.Sleep(2 * time.Second)
 		}
@@ -133,7 +138,7 @@ func (rm ResourceManager) RemoveMember(memberAccess models.MemberAccess) {
 		RFID:            memberAccess.RFID,
 	})
 
-	rm.MQTT.Publish(config.Get().MQTTBrokerAddress, memberAccess.ResourceName, string(b))
+	rm.mqtt.Publish(config.Get().MQTTBrokerAddress, memberAccess.ResourceName, string(b))
 	rm.logger.Debugf("attempting to remove member %s from rfid device %s : %s", memberAccess.Email, memberAccess.ResourceName, memberAccess.ResourceAddress)
 }
 
@@ -144,7 +149,7 @@ func (rm ResourceManager) Open(resource models.Resource) {
 		Address: resource.Address,
 	})
 
-	rm.MQTT.Publish(config.Get().MQTTBrokerAddress, resource.Name, string(b))
+	rm.mqtt.Publish(config.Get().MQTTBrokerAddress, resource.Name, string(b))
 }
 
 // RemoveOne - remove a member from all resources
@@ -180,7 +185,7 @@ func (rm ResourceManager) PushOne(m models.Member) {
 			AccessType:      1,
 			ValidUntil:      -86400,
 		})
-		rm.MQTT.Publish(config.Get().MQTTBrokerAddress, m.ResourceName, string(b))
+		rm.mqtt.Publish(config.Get().MQTTBrokerAddress, m.ResourceName, string(b))
 	}
 }
 
@@ -192,7 +197,7 @@ func (rm ResourceManager) DeleteResourceACL() {
 			ResourceAddress: r.Address,
 			Command:         "deletusers", // not a type-o this is how the command is defined in the rfid reader
 		})
-		rm.MQTT.Publish(config.Get().MQTTBrokerAddress, r.Name, string(b))
+		rm.mqtt.Publish(config.Get().MQTTBrokerAddress, r.Name, string(b))
 	}
 }
 
@@ -202,7 +207,7 @@ func (rm ResourceManager) DeleteResourceACL() {
 //	It will do this by hashing the list retrieved from the DB and comparing it
 //	with the hash that the resource reports
 func (rm ResourceManager) CheckStatus(r models.Resource) {
-	rm.MQTT.Publish(config.Get().MQTTBrokerAddress, r.Name+"/cmd", "aclhash")
+	rm.mqtt.Publish(config.Get().MQTTBrokerAddress, r.Name+"/cmd", "aclhash")
 }
 
 func (rm ResourceManager) hash(accessList []string) string {

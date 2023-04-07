@@ -16,7 +16,7 @@ import (
 //	and a hash of it's ACL
 //	if the ACL hash doesn't match what we have in the database, we will trigger an update to push
 //	to the resource
-func (rm *ResourceManager) HealthCheck(client mqtt.Client, msg mqtt.Message) {
+func (rm *ResourceManager) HealthCheckHandler(client mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("MSG: %s\n", msg.Payload())
 
 	var acl models.ACLResponse
@@ -61,7 +61,7 @@ type EventLogPayload struct {
 	Door     string `json:"door"`
 }
 
-func (rm *ResourceManager) Receive(client mqtt.Client, msg mqtt.Message) {
+func (rm *ResourceManager) ReceiveHandler(client mqtt.Client, msg mqtt.Message) {
 	var payload models.LogMessage
 
 	if err := json.Unmarshal(msg.Payload(), &payload); err != nil {
@@ -74,11 +74,11 @@ func (rm *ResourceManager) Receive(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 
-	rm.OnAccessEvent(payload)
+	rm.OnAccessEventHandler(payload)
 }
 
 // OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
-func (rm *ResourceManager) OnAccessEvent(payload models.LogMessage) {
+func (rm *ResourceManager) OnAccessEventHandler(payload models.LogMessage) {
 	m, err := rm.GetMemberByRFID(payload.RFID)
 	if err != nil {
 		rm.logger.Errorf("swipe on %s of unknown fob: %s", payload.Door, payload.RFID)
@@ -103,7 +103,7 @@ type HeartBeat struct {
 }
 
 // OnHeartBeat handles heartbeats from
-func (rm *ResourceManager) OnHeartBeat(client mqtt.Client, msg mqtt.Message) {
+func (rm *ResourceManager) OnHeartBeatHandler(client mqtt.Client, msg mqtt.Message) {
 	var hb HeartBeat
 	err := json.Unmarshal(msg.Payload(), &hb)
 	if err != nil {
@@ -117,6 +117,6 @@ func (rm *ResourceManager) OnHeartBeat(client mqtt.Client, msg mqtt.Message) {
 }
 
 // go through and remove members rfid fobs that are listed as invalid
-func (rm *ResourceManager) OnRemoveInvalidRequest(client mqtt.Client, msg mqtt.Message) {
+func (rm *ResourceManager) OnRemoveInvalidRequestHandler(client mqtt.Client, msg mqtt.Message) {
 	rm.RemovedInvalidUIDs()
 }

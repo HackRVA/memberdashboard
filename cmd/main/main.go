@@ -7,14 +7,19 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	router "github.com/HackRVA/memberserver/internal/routes"
+	"github.com/HackRVA/memberserver/pkg/mqtt"
+	"github.com/HackRVA/memberserver/pkg/paypal"
+	"github.com/HackRVA/memberserver/pkg/slack"
 
+	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/internal/controllers"
 	"github.com/HackRVA/memberserver/internal/controllers/auth"
 	"github.com/HackRVA/memberserver/internal/datastore"
 	"github.com/HackRVA/memberserver/internal/datastore/dbstore"
 	"github.com/HackRVA/memberserver/internal/datastore/in_memory"
-	"github.com/HackRVA/memberserver/internal/services/config"
 	"github.com/HackRVA/memberserver/internal/services/logger"
+	"github.com/HackRVA/memberserver/internal/services/member"
+	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
 	"github.com/HackRVA/memberserver/internal/services/scheduler"
 	"github.com/HackRVA/memberserver/internal/services/scheduler/jobs"
 )
@@ -40,9 +45,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("error setting up db: %s", err)
 	}
+	c := config.Get()
+
+	log := logger.New()
+	rm := resourcemanager.New(mqtt.New(), db, slack.Notifier{WebHookURL: c.SlackAccessEvents}, log)
+	pp := paypal.Setup(c.PaypalURL, c.PaypalClientID, c.PaypalClientSecret, log)
 
 	auth := auth.New(db)
-	api := controllers.Setup(db, auth)
+	api := controllers.Setup(db, auth, rm, pp, log)
 	router := router.New(api, auth)
 
 	srv := &http.Server{
@@ -53,7 +63,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	j := jobs.New(db, logger.New())
+	j := jobs.New(db, log, member.New(db, rm, pp, log), rm)
 	s := scheduler.Scheduler{}
 
 	go s.Setup(j)

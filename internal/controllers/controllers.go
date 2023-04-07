@@ -1,16 +1,13 @@
 package controllers
 
 import (
+	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/internal/controllers/auth"
 	"github.com/HackRVA/memberserver/internal/datastore"
-	"github.com/HackRVA/memberserver/internal/services/config"
-	"github.com/HackRVA/memberserver/internal/services/logger"
+	"github.com/HackRVA/memberserver/internal/integrations"
+	"github.com/HackRVA/memberserver/internal/services"
 	"github.com/HackRVA/memberserver/internal/services/member"
 	"github.com/HackRVA/memberserver/internal/services/report"
-	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
-	"github.com/HackRVA/memberserver/pkg/mqtt"
-	"github.com/HackRVA/memberserver/pkg/paypal"
-	"github.com/HackRVA/memberserver/pkg/slack"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/jwt"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
@@ -32,7 +29,7 @@ type API struct {
 type resourceAPI struct {
 	db              datastore.DataStore
 	config          config.Config
-	resourcemanager resourcemanager.ResourceManager
+	resourcemanager services.Resource
 	logger          Logger
 }
 
@@ -50,13 +47,10 @@ type Logger interface {
 }
 
 // Setup - setup us up the routes
-func Setup(store datastore.DataStore, auth *auth.AuthController) API {
+func Setup(store datastore.DataStore, auth *auth.AuthController, rm services.Resource, pp integrations.PaymentProvider, log services.Logger) API {
 	c := config.Get()
 
 	userServer := NewUserServer(store, c)
-	log := logger.New()
-	rm := resourcemanager.New(mqtt.New(), store, slack.Notifier{}, log)
-	pp := paypal.Setup(c.PaypalURL, c.PaypalClientID, c.PaypalClientSecret, log)
 
 	return API{
 		db: store,

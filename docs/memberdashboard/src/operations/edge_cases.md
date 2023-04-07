@@ -7,6 +7,7 @@ The DB has a constraint that prevents it from using the same email address for t
 So, the system created a new "member" with only the subscriptionID populated.
 (i.e. no name, no email)
 i.e.
+
 | id | name | email | rfid | member_tier_id | subscription_id |
 | -- | -- | -- | -- | -- | -- |
 | <some_id> | null | null | null | inactive | <some_subscription_id> |

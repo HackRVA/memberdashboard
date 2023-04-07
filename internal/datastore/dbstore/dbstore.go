@@ -3,7 +3,7 @@ package dbstore
 import (
 	"context"
 
-	"github.com/HackRVA/memberserver/internal/services/config"
+	config "github.com/HackRVA/memberserver/configs"
 )
 
 type DatabaseStore struct {

@@ -256,6 +256,7 @@ func TestNewMember(t *testing.T) {
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	newMember := models.Member{
+		ID:    "testID",
 		Email: "test1@test.com",
 		RFID:  "newrfid",
 	}

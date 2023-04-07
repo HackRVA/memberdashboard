@@ -5,7 +5,7 @@ import (
 	"net/smtp"
 	"time"
 
-	"github.com/HackRVA/memberserver/internal/services/config"
+	config "github.com/HackRVA/memberserver/configs"
 
 	"github.com/jordan-wright/email"
 	"github.com/mailgun/mailgun-go/v4"

@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/HackRVA/memberserver/internal/services/config"
-
 	log "github.com/sirupsen/logrus"
 )
 
@@ -32,10 +30,9 @@ type SlackUserResponse struct {
 	Members []SlackUser `json:"members"`
 }
 
-func GetUsers() ([]SlackUser, error) {
-	conf, _ := config.Load()
+func GetUsers(token string) ([]SlackUser, error) {
 	var slackUsers []SlackUser
-	if len(conf.SlackToken) == 0 {
+	if len(token) == 0 {
 		return slackUsers, errors.New("slack Token not found")
 	}
 
@@ -44,7 +41,7 @@ func GetUsers() ([]SlackUser, error) {
 	if err != nil {
 		return slackUsers, err
 	}
-	req.Header.Add("Authorization", "Bearer "+conf.SlackToken)
+	req.Header.Add("Authorization", "Bearer "+token)
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -65,18 +62,16 @@ func GetUsers() ([]SlackUser, error) {
 	return slackUsers, err
 }
 
-func Send(msg string) {
-	conf, _ := config.Load()
-
+func Send(slackWebHook string, msg string) {
 	newMsg := fmt.Sprint("{\"text\":'```", msg, "```'}")
 	jsonStr := []byte(newMsg)
-	if len(conf.SlackAccessEvents) == 0 {
+	if len(slackWebHook) == 0 {
 		log.Debugf("slack web hook isn't set")
 		return
 	}
 
 	c := &http.Client{}
-	req, err := http.NewRequest("POST", conf.SlackAccessEvents, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", slackWebHook, bytes.NewBuffer(jsonStr))
 
 	if err != nil {
 		log.Errorf("some error sending to slack hook: %s", err)

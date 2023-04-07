@@ -1,7 +1,9 @@
 package slack
 
-type Notifier struct{}
+type Notifier struct {
+	WebHookURL string
+}
 
 func (s Notifier) Send(msg string) {
-	Send(msg)
+	Send(s.WebHookURL, msg)
 }

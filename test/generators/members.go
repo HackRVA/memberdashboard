@@ -5,6 +5,8 @@ import (
 
 	"github.com/HackRVA/memberserver/internal/datastore"
 	"github.com/HackRVA/memberserver/internal/services/logger"
+	"github.com/HackRVA/memberserver/internal/services/member"
+	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
 	"github.com/HackRVA/memberserver/internal/services/scheduler/jobs"
 
 	"github.com/HackRVA/memberserver/internal/models"
@@ -24,7 +26,10 @@ func Seed(db datastore.DataStore, numMembers int) {
 	rand.Seed(time.Now().UnixNano())
 	db.AddMembers([]models.Member{TestMember()})
 
-	jobManager := jobs.New(db, logger.New())
+	jobManager := jobs.New(
+		db,
+		logger.New(),
+		member.New(db, resourcemanager.New(nil, db, nil, nil), nil, nil), nil)
 
 	for i := 0; i < numMembers; i++ {
 		member := FakeMember()

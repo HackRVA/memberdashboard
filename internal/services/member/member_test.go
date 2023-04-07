@@ -4,11 +4,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/HackRVA/memberserver/internal/datastore/in_memory"
+	"github.com/HackRVA/memberserver/internal/models"
 	"github.com/HackRVA/memberserver/internal/services/logger"
 	"github.com/HackRVA/memberserver/internal/services/member"
-
-	"github.com/HackRVA/memberserver/internal/models"
 )
 
 func TestPaymentBeforeOneMonthAgo(t *testing.T) {
@@ -101,4 +102,21 @@ func TestIsMemberActive(t *testing.T) {
 			t.Errorf("expected: %t, received: %t", tt.expected, m.IsActive())
 		}
 	}
+}
+
+func TestMemberService_Add(t *testing.T) {
+	mockStore := &in_memory.In_memory{}
+	memberSvc := member.New(mockStore, nil, nil, nil)
+
+	newMember := models.Member{
+		Name:  "Test User",
+		Email: "test@example.com",
+	}
+
+	addedMember, err := memberSvc.Add(newMember)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, addedMember)
+	assert.Equal(t, newMember.Name, addedMember.Name)
+	assert.Equal(t, newMember.Email, addedMember.Email)
+	assert.NotEmpty(t, addedMember.ID)
 }
