@@ -3,6 +3,7 @@ package paypal
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -123,7 +124,11 @@ func (p Paypal) GetSubscription(subscriptionID string) (status string, lastPayme
 	lastPaymentAmount = s.BillingInfo.LastPayment.Amount.Value
 	lastPaymentTime = s.BillingInfo.LastPayment.Time
 
-	return status, lastPaymentAmount, lastPaymentTime, nil
+	if status == "" {
+		err = errors.New("did not receive a status for this subscription")
+	}
+
+	return status, lastPaymentAmount, lastPaymentTime, err
 }
 
 func (p Paypal) GetSubscriber(subscriptionID string) (name string, email string, err error) {
