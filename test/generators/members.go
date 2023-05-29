@@ -3,13 +3,13 @@ package generators
 import (
 	"math/rand"
 
-	"github.com/HackRVA/memberserver/internal/datastore"
-	"github.com/HackRVA/memberserver/internal/services/logger"
-	"github.com/HackRVA/memberserver/internal/services/member"
-	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
-	"github.com/HackRVA/memberserver/internal/services/scheduler/jobs"
+	"github.com/HackRVA/memberserver/pkg/membermgr/datastore"
+	"github.com/HackRVA/memberserver/pkg/membermgr/services/logger"
+	"github.com/HackRVA/memberserver/pkg/membermgr/services/member"
+	"github.com/HackRVA/memberserver/pkg/membermgr/services/resourcemanager"
+	"github.com/HackRVA/memberserver/pkg/membermgr/services/scheduler/jobs"
 
-	"github.com/HackRVA/memberserver/internal/models"
+	"github.com/HackRVA/memberserver/pkg/membermgr/models"
 
 	"strconv"
 	"time"

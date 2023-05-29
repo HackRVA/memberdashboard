@@ -6,22 +6,22 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	router "github.com/HackRVA/memberserver/internal/routes"
+	router "github.com/HackRVA/memberserver/pkg/membermgr/routes"
 	"github.com/HackRVA/memberserver/pkg/mqtt"
 	"github.com/HackRVA/memberserver/pkg/paypal"
 	"github.com/HackRVA/memberserver/pkg/slack"
 
 	config "github.com/HackRVA/memberserver/configs"
-	"github.com/HackRVA/memberserver/internal/controllers"
-	"github.com/HackRVA/memberserver/internal/controllers/auth"
-	"github.com/HackRVA/memberserver/internal/datastore"
-	"github.com/HackRVA/memberserver/internal/datastore/dbstore"
-	"github.com/HackRVA/memberserver/internal/datastore/in_memory"
-	"github.com/HackRVA/memberserver/internal/services/logger"
-	"github.com/HackRVA/memberserver/internal/services/member"
-	"github.com/HackRVA/memberserver/internal/services/resourcemanager"
-	"github.com/HackRVA/memberserver/internal/services/scheduler"
-	"github.com/HackRVA/memberserver/internal/services/scheduler/jobs"
+	"github.com/HackRVA/memberserver/pkg/membermgr/controllers"
+	"github.com/HackRVA/memberserver/pkg/membermgr/controllers/auth"
+	"github.com/HackRVA/memberserver/pkg/membermgr/datastore"
+	"github.com/HackRVA/memberserver/pkg/membermgr/datastore/dbstore"
+	"github.com/HackRVA/memberserver/pkg/membermgr/datastore/in_memory"
+	"github.com/HackRVA/memberserver/pkg/membermgr/services/logger"
+	"github.com/HackRVA/memberserver/pkg/membermgr/services/member"
+	"github.com/HackRVA/memberserver/pkg/membermgr/services/resourcemanager"
+	"github.com/HackRVA/memberserver/pkg/membermgr/services/scheduler"
+	"github.com/HackRVA/memberserver/pkg/membermgr/services/scheduler/jobs"
 )
 
 func init() {

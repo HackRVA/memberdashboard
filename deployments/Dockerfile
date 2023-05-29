@@ -29,6 +29,6 @@ FROM golang:1.18
 WORKDIR /app
 
 COPY --from=backend-build /membership/server .
-COPY --from=backend-build /membership/internal/templates ./templates
+COPY --from=backend-build /membership/pkg/membermgr/templates ./templates
 
 ENTRYPOINT [ "./server" ]

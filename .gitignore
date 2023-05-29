@@ -14,5 +14,5 @@ bin/mdbook
 .dist
 
 
-internal/ui/web/
-!internal/ui/web/_blank_
+pkg/membermgr/ui/web/*
+!pkg/membermgr/ui/web/_blank_

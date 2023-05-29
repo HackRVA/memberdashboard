@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/HackRVA/memberserver/internal/datastore/dbstore"
+	"github.com/HackRVA/memberserver/pkg/membermgr/datastore/dbstore"
 	"github.com/HackRVA/memberserver/test/generators"
 )
 
