@@ -67,7 +67,8 @@ func (j JobController) CheckMemberSubscriptions() {
 
 		status, lastPaymentAmount, lastPaymentTime, err := j.paymentProvider.GetSubscription(member.SubscriptionID)
 		if err != nil {
-			j.logger.Errorf("error getting subscription: %s (%s, %s)", err.Error(), member.Email, member.Name)
+			j.logger.Errorf("error getting subscription: %s (%s, %s) setting to inactive until status is investigated", err.Error(), member.Email, member.Name)
+			j.SetMemberLevel(models.SuspendedStatus, models.Payment{}, member)
 			continue
 		}
 
