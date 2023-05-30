@@ -67,7 +67,7 @@ func (j JobController) CheckMemberSubscriptions() {
 
 		status, lastPaymentAmount, lastPaymentTime, err := j.paymentProvider.GetSubscription(member.SubscriptionID)
 		if err != nil {
-			j.logger.Error(err)
+			j.logger.Errorf("error getting subscription: %s", err.Error())
 			continue
 		}
 
