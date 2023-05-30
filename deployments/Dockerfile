@@ -15,7 +15,7 @@ FROM golang:1.18 as backend-build
 WORKDIR /membership
 COPY . .
 # copy ui files so that we can embed frontend into the binary
-COPY --from=frontend-build /app/dist /membership/internal/ui/web
+COPY --from=frontend-build /app/dist /membership/pkg/membermgr/ui/web
 
 RUN go test -v ./...
 
