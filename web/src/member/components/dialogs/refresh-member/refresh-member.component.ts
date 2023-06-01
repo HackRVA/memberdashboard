@@ -6,6 +6,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { Inject } from '../../../../shared/di';
 import { Member } from '../../../types/api/member-response';
 import { MemberService } from '../../../services/member.service';
+import { displayMemberStatus } from '../../../functions';
 
 @customElement('refresh-member-status-form')
 export class RemoveResourceForm extends LitElement {
@@ -39,7 +40,7 @@ export class RemoveResourceForm extends LitElement {
       return this.errorMessage;
     }
 
-    return this.member.memberLevel;
+    return displayMemberStatus(this.member.memberLevel);
   }
   render(): TemplateResult {
     return html`
