@@ -70,8 +70,26 @@ func (member *MemberDatabaseMethod) getMemberByEmail() string {
 	return getMemberByEmailQuery
 }
 
+func (member *MemberDatabaseMethod) getMemberByEmailOrSubscriptionID() string {
+	return `SELECT id, name, LOWER(email), COALESCE(rfid,'notset'), member_tier_id,
+	ARRAY(
+	SELECT resource_id
+	FROM membership.member_resource
+	LEFT JOIN membership.resources 
+	ON membership.resources.id = membership.member_resource.resource_id
+	WHERE member_id = membership.members.id
+	) as resources
+	FROM membership.members
+	WHERE email = $1 OR subscription_id = $2
+	LIMIT 1;`
+}
+
 func (member *MemberDatabaseMethod) updateMemberByEmail() string {
 	return `UPDATE membership.members SET name=$1, subscription_id=$2 WHERE email=$3;`
+}
+
+func (member *MemberDatabaseMethod) updateMemberBySubscriptionID() string {
+	return `UPDATE membership.members SET name=$1, email=$2 WHERE subscription_id=$3;`
 }
 
 func (member *MemberDatabaseMethod) getMemberByRFID() string {

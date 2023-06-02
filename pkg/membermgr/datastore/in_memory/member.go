@@ -67,6 +67,20 @@ func (i *In_memory) UpdateMember(update models.Member) error {
 	return nil
 }
 
+func (i *In_memory) UpdateMemberBySubscriptionID(subscriptionID string, update models.Member) error {
+	for _, m := range i.Members {
+		if m.SubscriptionID != update.SubscriptionID {
+			continue
+		}
+
+		m.Email = update.Email
+		m.Name = update.Name
+		i.Members[m.Email] = m
+		return nil
+	}
+	return errors.New("unable to update member info")
+}
+
 func (i *In_memory) AddNewMember(newMember models.Member) (models.Member, error) {
 	i.allocMembers()
 	if newMember.ID == "" {
@@ -90,6 +104,18 @@ func (i *In_memory) ProcessMember(newMember models.Member) error {
 }
 
 func (i *In_memory) SetMemberLevel(memberId string, level models.MemberLevel) error {
+	for _, member := range i.Members {
+		if member.ID != memberId {
+			continue
+		}
+
+		update := member
+		update.Level = uint8(level)
+
+		delete(i.Members, update.Email)
+
+		i.Members[update.Email] = update
+	}
 	return nil
 }
 func (i *In_memory) ApplyMemberCredits() {}

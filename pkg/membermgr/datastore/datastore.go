@@ -32,6 +32,7 @@ type (
 		ProcessMember(newMember models.Member) error
 		GetMemberByRFID(rfid string) (models.Member, error)
 		UpdateMember(update models.Member) error
+		UpdateMemberBySubscriptionID(subscriptionID string, update models.Member) error
 		SetMemberLevel(memberId string, level models.MemberLevel) error
 		ApplyMemberCredits()
 		UpdateMemberTiers()

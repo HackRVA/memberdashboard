@@ -1,7 +1,6 @@
 package jobs
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	config "github.com/HackRVA/memberserver/configs"
@@ -10,8 +9,6 @@ import (
 	"github.com/HackRVA/memberserver/pkg/membermgr/services"
 	"github.com/HackRVA/memberserver/pkg/membermgr/services/mail"
 	"github.com/HackRVA/memberserver/pkg/paypal"
-
-	"github.com/HackRVA/memberserver/pkg/membermgr/models"
 
 	"net/http"
 	"os"
@@ -52,51 +49,7 @@ func (j JobController) CheckMemberSubscriptions() {
 	members := j.DataStore.GetMembers()
 
 	for _, member := range members {
-		if member.Level == uint8(models.Credited) {
-			// do nothing to credited members
-			continue
-		}
-		if member.SubscriptionID == "none" || len(member.SubscriptionID) == 0 {
-			howToMsg := "\nUpdate the member's subscriptionID in the webUI.  Or have a db admin update the subscriptionID manually.\n\ne.g."
-			exampleQuery := fmt.Sprintf("UPDATE membership.members\n\t\t\tSET subscription_id=<subscriptionID>\n\t\t\tWHERE email='%s';", member.Email)
-
-			j.logger.Errorf("deactivating member (name: %s email: %s) because no subscriptionID was found. \n%s\n\n%s\n\n", member.Name, member.Email, howToMsg, exampleQuery)
-			j.SetMemberLevel(models.SuspendedStatus, models.Payment{}, member)
-			continue
-		}
-
-		status, lastPaymentAmount, lastPaymentTime, err := j.paymentProvider.GetSubscription(member.SubscriptionID)
-		if err != nil {
-			if member.Level == uint8(models.Inactive) {
-				j.logger.Debugf("error getting subscription status for (%s, %s). However, member is already inactive. %s", member.Email, member.Name, err.Error())
-				continue
-			}
-			j.logger.Errorf("error getting subscription: %s (%s, %s) setting to inactive until status is investigated", err.Error(), member.Email, member.Name)
-			j.SetMemberLevel(models.SuspendedStatus, models.Payment{}, member)
-			continue
-		}
-
-		j.SetMemberLevel(status, models.Payment{
-			Amount: lastPaymentAmount,
-			Time:   lastPaymentTime,
-		}, member)
-	}
-}
-
-func (j JobController) SetMemberLevel(status string, lastPayment models.Payment, member models.Member) {
-	j.logger.Infof("[scheduled-job] setting member level: %s - %s - last payment amount: %s", member.Name, status, lastPayment.Amount)
-
-	switch status {
-	case models.ActiveStatus:
-		j.member.ActiveStatusHandler(member, lastPayment)
-		return
-	case models.CanceledStatus:
-		j.member.CancelStatusHandler(member, lastPayment)
-		return
-	case models.SuspendedStatus:
-		j.DataStore.SetMemberLevel(member.ID, models.Inactive)
-	default:
-		return
+		j.member.CheckStatus(member.SubscriptionID)
 	}
 }
 

@@ -10,7 +10,7 @@ COPY ./web /app
 # compile and bundle typescript
 RUN npm run build
 
-FROM golang:1.18 as backend-build
+FROM golang:1.20 as backend-build
 
 WORKDIR /membership
 COPY . .
@@ -24,7 +24,7 @@ RUN go mod vendor
 RUN go build -o server -ldflags "-X memberserver/pkg/membermgr/controllers.GitCommit=$(git rev-parse --short HEAD)" ./cmd/main
 
 # copy from build environments
-FROM golang:1.18
+FROM golang:1.20
 
 WORKDIR /app
 

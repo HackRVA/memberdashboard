@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -218,7 +219,7 @@ func (m *MemberServer) CheckStatus(w http.ResponseWriter, r *http.Request) {
 
 	member, err := m.MemberService.CheckStatus(id)
 	if err != nil {
-		http.Error(w, "error getting member by email", http.StatusNotFound)
+		http.Error(w, fmt.Sprintf("error getting member by status: %s", err.Error()), http.StatusNotFound)
 		return
 	}
 

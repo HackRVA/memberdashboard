@@ -4,10 +4,6 @@ import (
 	"math/rand"
 
 	"github.com/HackRVA/memberserver/pkg/membermgr/datastore"
-	"github.com/HackRVA/memberserver/pkg/membermgr/services/logger"
-	"github.com/HackRVA/memberserver/pkg/membermgr/services/member"
-	"github.com/HackRVA/memberserver/pkg/membermgr/services/resourcemanager"
-	"github.com/HackRVA/memberserver/pkg/membermgr/services/scheduler/jobs"
 
 	"github.com/HackRVA/memberserver/pkg/membermgr/models"
 
@@ -26,11 +22,6 @@ func Seed(db datastore.DataStore, numMembers int) {
 	rand.Seed(time.Now().UnixNano())
 	db.AddMembers([]models.Member{TestMember()})
 
-	jobManager := jobs.New(
-		db,
-		logger.New(),
-		member.New(db, resourcemanager.New(nil, db, nil, nil), nil, nil), nil)
-
 	for i := 0; i < numMembers; i++ {
 		member := FakeMember()
 		db.AddMembers([]models.Member{member})
@@ -38,10 +29,7 @@ func Seed(db datastore.DataStore, numMembers int) {
 		if member.Level > 1 {
 			member, _ = db.GetMemberByEmail(member.Email)
 			memberLevelID, _ := strconv.Atoi(faker.Number().Between(1, 5))
-			jobManager.SetMemberLevel(models.ActiveStatus, models.Payment{
-				Amount: strconv.Itoa(int(models.MemberLevelToAmount[models.MemberLevel(memberLevelID)])),
-				Time:   time.Now().AddDate(0, 0, -rand.Intn(70)),
-			}, member)
+			db.SetMemberLevel(member.ID, models.MemberLevel(memberLevelID))
 		}
 	}
 
@@ -129,25 +117,4 @@ func FakeMemberCounts(numberOfMonths int, db datastore.DataStore) {
 			Credited: faker.Number().NumberInt(3),
 		})
 	}
-
-	// var valStr []string
-
-	// 	sqlStr := `INSERT INTO membership.member_counts(month, classic, standard, premium, credited)
-	// VALUES `
-
-	// 	for _, p := range months {
-	// 		valStr = append(valStr, fmt.Sprintf("(TO_DATE('%s', 'YYYYMM'), %d, %d, %d, %d)", p.Month.Format("200601"), p.Classic, p.Standard, p.Premium, p.Credited))
-	// 	}
-
-	// 	str := strings.Join(valStr, ",")
-
-	// 	log.Infof("Adding %d months of member counts", len(months))
-
-	// commandTag, err := dbPool.Exec(context.Background(), sqlStr+str+" ON CONFLICT DO NOTHING;")
-	// if err != nil {
-	// 	log.Errorf("conn.Exec failed: %v", err)
-	// }
-	// if commandTag.RowsAffected() != 1 {
-	// 	log.Errorf("no row affected")
-	// }
 }

@@ -123,6 +123,16 @@ func (db *DatabaseStore) GetMembers() []models.Member {
 	return members
 }
 
+func (db *DatabaseStore) getMemberBySubscriptionID(subscriptionID string) (models.Member, error) {
+	for _, m := range db.GetMembers() {
+		if m.SubscriptionID == subscriptionID {
+			return m, nil
+		}
+	}
+
+	return models.Member{}, fmt.Errorf("could not find member with subscriptionID: %s", subscriptionID)
+}
+
 // GetMemberByEmail - lookup a member by their email address
 func (db *DatabaseStore) GetMemberByEmail(memberEmail string) (models.Member, error) {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
@@ -233,6 +243,42 @@ func (db *DatabaseStore) UpdateMember(update models.Member) error {
 	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.updateMemberByEmail(), update.Name, subID, member.Email)
 	if err != nil {
 		return fmt.Errorf("UpdateMemberByEmail failed: %v", err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return errors.New("no row affected")
+	}
+
+	return nil
+}
+
+func (db *DatabaseStore) UpdateMemberBySubscriptionID(subscriptionID string, update models.Member) error {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	member, err := db.getMemberBySubscriptionID(update.SubscriptionID)
+	if err != nil {
+		log.Errorf("error retrieving a member with that subscriptionID %s", err.Error())
+		return err
+	}
+
+	var name string
+	var email string
+
+	if member.Name == "" {
+		name = update.Name
+	}
+
+	if member.Email == "" {
+		email = update.Email
+	}
+
+	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.updateMemberBySubscriptionID(), name, email, member.SubscriptionID)
+	if err != nil {
+		return fmt.Errorf("UpdateMemberBySubscriptionID failed: %v", err)
 	}
 
 	if commandTag.RowsAffected() == 0 {

@@ -21,10 +21,8 @@ type (
 		AssignRFID(email string, rfid string) (models.Member, error)
 		GetTiers() []models.Tier
 		FindNonMembersOnSlack() []string
-		CancelStatusHandler(member models.Member, lastPayment models.Payment)
-		ActiveStatusHandler(member models.Member, lastPayment models.Payment)
 		GetMemberFromSubscription(subscriptionID string) (models.Member, error)
-		CheckStatus(id string) (models.Member, error)
+		CheckStatus(subscriptionID string) (models.Member, error)
 	}
 
 	MQTTHandler interface {
@@ -82,7 +80,6 @@ type (
 
 	Job interface {
 		CheckMemberSubscriptions()
-		SetMemberLevel(status string, lastPayment models.Payment, member models.Member)
 		CheckResourceInit()
 		CheckResourceInterval()
 		CheckIPAddressInterval()

@@ -8,13 +8,12 @@ import (
 
 	"github.com/HackRVA/memberserver/pkg/membermgr/datastore/in_memory"
 	"github.com/HackRVA/memberserver/pkg/membermgr/models"
-	"github.com/HackRVA/memberserver/pkg/membermgr/services/logger"
 	"github.com/HackRVA/memberserver/pkg/membermgr/services/member"
 )
 
 func TestPaymentBeforeOneMonthAgo(t *testing.T) {
 	store := &in_memory.In_memory{}
-	m := member.NewMemberService(store, models.Member{}, logger.New())
+	m := member.NewMemberService(store, models.Member{})
 
 	tests := []struct {
 		payment     models.Payment
@@ -97,7 +96,7 @@ func TestIsMemberActive(t *testing.T) {
 		m := member.NewMemberService(
 			store, models.Member{
 				Level: uint8(tt.currentMemberLevel),
-			}, logger.New())
+			})
 		if m.IsActive() != tt.expected {
 			t.Errorf("expected: %t, received: %t", tt.expected, m.IsActive())
 		}
