@@ -265,8 +265,8 @@ func (db *DatabaseStore) UpdateMemberBySubscriptionID(subscriptionID string, upd
 		return err
 	}
 
-	var name string
-	var email string
+	name := member.Name
+	email := member.Email
 
 	if member.Name == "" {
 		name = update.Name
