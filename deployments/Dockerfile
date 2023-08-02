@@ -21,7 +21,7 @@ RUN go test -v ./...
 
 RUN go mod vendor
 
-RUN go build -o server -ldflags "-X memberserver/pkg/membermgr/controllers.GitCommit=$(git rev-parse --short HEAD)" ./cmd/main
+RUN go build -o server -ldflags "-X github.com/HackRVA/memberserver/pkg/membermgr/controllers.GitCommit=$(git rev-parse --short HEAD)" ./cmd/main
 
 # copy from build environments
 FROM golang:1.20
