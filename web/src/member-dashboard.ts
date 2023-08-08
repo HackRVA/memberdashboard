@@ -64,23 +64,23 @@ export class MemberDashboard extends LitElement {
   }
 
   loadingAppContent(): TemplateResult {
-    return html`
-      <loading-content .finishedLoading=${this.finishedLoading}>
-        ${this.displayAppContent()}
-      </loading-content>
-    `;
+    if (this.isUserLogin()) {
+      return html`
+        <loading-content .finishedLoading=${this.finishedLoading}>
+          ${this.displayAppContent()}
+        </loading-content>
+      `;
+    }
+
+    return html`<login-page hide-form></login-page>`;
   }
 
   displayAppContent(): TemplateResult {
-    if (this.isUserLogin()) {
-      return html`
-        <md-content .email=${this.email}>
-          <slot></slot>
-        </md-content>
-      `;
-    } else {
-      return html`<login-page></login-page>`;
-    }
+    return html`
+      <md-content .email=${this.email}>
+        <slot></slot>
+      </md-content>
+    `;
   }
 
   render(): TemplateResult {

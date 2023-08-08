@@ -1,6 +1,6 @@
 // lit element
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { CSSResult, html, TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 // material
 import { TextField } from '@material/mwc-textfield/mwc-textfield';
@@ -15,12 +15,12 @@ import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { AuthService } from '../../services/auth.service';
 import { showComponent } from '../../../shared/functions';
 import { Inject } from '../../../shared/di/inject';
+import { LightElement } from '../../../shared/components/light-element';
 
 @customElement('login-form')
-export class LoginForm extends LitElement {
-  // form template
-  emailFieldTemplate: TextField;
-  passwordFieldTemplate: TextField;
+export class LoginForm extends LightElement {
+  email: string;
+  password: string;
 
   @Inject('auth')
   private authService: AuthService;
@@ -37,8 +37,8 @@ export class LoginForm extends LitElement {
   }
 
   firstUpdated(): void {
-    this.emailFieldTemplate = this.shadowRoot?.querySelector('#email');
-    this.passwordFieldTemplate = this.shadowRoot?.querySelector('#password');
+    this.email = '';
+    this.password = '';
   }
 
   handleSubmitOnEnter(event: KeyboardEvent): void {
@@ -56,16 +56,13 @@ export class LoginForm extends LitElement {
   }
 
   isValid(): boolean {
-    return (
-      this.emailFieldTemplate.validity.valid &&
-      this.passwordFieldTemplate.validity.valid
-    );
+    return true;
   }
 
   handleUserLogin(): void {
     const opts: LoginRequest = {
-      email: this.emailFieldTemplate?.value,
-      password: this.passwordFieldTemplate?.value,
+      email: this.email,
+      password: this.password,
     };
 
     this.authService.login(opts).subscribe({
@@ -86,32 +83,39 @@ export class LoginForm extends LitElement {
     showComponent('#toast-msg', this.shadowRoot);
   }
 
+  updateEmail(e) {
+    this.email = e.srcElement.value;
+    this.email = 'test@test.com';
+    this.requestUpdate();
+  }
+
+  updatePassword(e) {
+    this.password = e.srcElement.value;
+    this.password = 'test';
+    this.requestUpdate();
+  }
+
   render(): TemplateResult {
     return html`
-      <mwc-formfield>
-        <mwc-textfield
-          size="30"
-          id="email"
-          required
+      <form autocomplete="on" @submit="${this.handleUserLogin}">
+        <input
+          class="input"
           type="email"
-          label="Email"
-        ></mwc-textfield>
-      </mwc-formfield>
-      <mwc-formfield>
-        <mwc-textfield
-          size="30"
-          id="password"
-          required
+          autocomplete="email"
+          placeholder="Email Address"
+          id="username"
+          @change=${this.updateEmail}
+        />
+        <input
+          class="input"
           type="password"
-          label="Password"
-        ></mwc-textfield>
-      </mwc-formfield>
-      <mwc-button
-        unelevated
-        label="login"
-        @click=${this.handleSubmit}
-        class="login"
-      ></mwc-button>
+          autocomplete="current-password"
+          id="password"
+          placeholder="Password"
+          @change=${this.updatePassword}
+        />
+        <button class="input button" type="submit">Submit</button>
+      </form>
       <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
     `;
   }
