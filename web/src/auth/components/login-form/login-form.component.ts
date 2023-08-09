@@ -1,9 +1,6 @@
 // lit element
 import { CSSResult, html, TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-
-// material
-import { TextField } from '@material/mwc-textfield/mwc-textfield';
+import { customElement } from 'lit/decorators.js';
 
 // memberdashboard
 import '../../../shared/components/toast-msg';
@@ -16,6 +13,9 @@ import { AuthService } from '../../services/auth.service';
 import { showComponent } from '../../../shared/functions';
 import { Inject } from '../../../shared/di/inject';
 import { LightElement } from '../../../shared/components/light-element';
+import { authUser$ } from '../../auth-user';
+import { UserService } from '../../../user/services/user.service';
+import { UserResponse } from '../../../user/types/api/user-response';
 
 @customElement('login-form')
 export class LoginForm extends LightElement {
@@ -24,6 +24,9 @@ export class LoginForm extends LightElement {
 
   @Inject('auth')
   private authService: AuthService;
+
+  @Inject('user')
+  private userService: UserService;
 
   toastMsg: ToastMessage;
 
@@ -39,6 +42,8 @@ export class LoginForm extends LightElement {
   firstUpdated(): void {
     this.email = '';
     this.password = '';
+    this.getUser();
+    this.requestUpdate();
   }
 
   handleSubmitOnEnter(event: KeyboardEvent): void {
@@ -58,6 +63,21 @@ export class LoginForm extends LightElement {
 
   isValid(): boolean {
     return true;
+  }
+
+  getUser(): void {
+    this.userService
+      .getUser()
+      .toPromise()
+      .then((response: UserResponse) => {
+        const { email } = response;
+        authUser$.next({ login: true, email: email });
+        this.email = email;
+        this.requestUpdate();
+      })
+      .catch(() => {
+        this.requestUpdate();
+      });
   }
 
   handleUserLogin(): void {
@@ -97,6 +117,8 @@ export class LoginForm extends LightElement {
   }
 
   render(): TemplateResult {
+    if (authUser$.getValue().login) return html``;
+
     return html`
       <form autocomplete="on" @submit="${event => this.handleSubmit(event)}">
         <input
