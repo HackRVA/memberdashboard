@@ -43,11 +43,12 @@ export class LoginForm extends LightElement {
 
   handleSubmitOnEnter(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
-      this.handleSubmit();
+      this.handleSubmit(event);
     }
   }
 
-  handleSubmit(): void {
+  handleSubmit(event): void {
+    event.preventDefault();
     if (this.isValid()) {
       this.handleUserLogin();
     } else {
@@ -97,7 +98,7 @@ export class LoginForm extends LightElement {
 
   render(): TemplateResult {
     return html`
-      <form autocomplete="on" @submit="${this.handleUserLogin}">
+      <form autocomplete="on" @submit="${event => this.handleSubmit(event)}">
         <input
           class="input"
           type="email"
