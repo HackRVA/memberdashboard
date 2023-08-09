@@ -1,35 +1,33 @@
 // lit element
-import { CSSResult, html, LitElement, TemplateResult } from 'lit';
+import { html, TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
-
-// material
-import { TextField } from '@material/mwc-textfield/mwc-textfield';
 
 // memberdashboard
 import '../../../shared/components/toast-msg';
 import { AuthResponse } from './../../types/api/auth-response';
-import { coreStyle } from '../../../shared/styles';
 import { loginFormStyle } from './login-form.style';
 import { LoginRequest } from '../../types/api/login-request';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
 import { AuthService } from '../../services/auth.service';
 import { showComponent } from '../../../shared/functions';
 import { Inject } from '../../../shared/di/inject';
+import { LightElement } from '../../../shared/components/light-element';
+import { authUser$ } from '../../auth-user';
+import { UserService } from '../../../user/services/user.service';
+import { UserResponse } from '../../../user/types/api/user-response';
 
 @customElement('login-form')
-export class LoginForm extends LitElement {
-  // form template
-  emailFieldTemplate: TextField;
-  passwordFieldTemplate: TextField;
+export class LoginForm extends LightElement {
+  email: string;
+  password: string;
 
   @Inject('auth')
   private authService: AuthService;
 
-  toastMsg: ToastMessage;
+  @Inject('user')
+  private userService: UserService;
 
-  static get styles(): CSSResult[] {
-    return [loginFormStyle, coreStyle];
-  }
+  toastMsg: ToastMessage;
 
   constructor() {
     super();
@@ -37,17 +35,20 @@ export class LoginForm extends LitElement {
   }
 
   firstUpdated(): void {
-    this.emailFieldTemplate = this.shadowRoot?.querySelector('#email');
-    this.passwordFieldTemplate = this.shadowRoot?.querySelector('#password');
+    this.email = '';
+    this.password = '';
+    this.getUser();
+    this.requestUpdate();
   }
 
   handleSubmitOnEnter(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
-      this.handleSubmit();
+      this.handleSubmit(event);
     }
   }
 
-  handleSubmit(): void {
+  handleSubmit(event): void {
+    event.preventDefault();
     if (this.isValid()) {
       this.handleUserLogin();
     } else {
@@ -56,16 +57,28 @@ export class LoginForm extends LitElement {
   }
 
   isValid(): boolean {
-    return (
-      this.emailFieldTemplate.validity.valid &&
-      this.passwordFieldTemplate.validity.valid
-    );
+    return true;
+  }
+
+  getUser(): void {
+    this.userService
+      .getUser()
+      .toPromise()
+      .then((response: UserResponse) => {
+        const { email } = response;
+        authUser$.next({ login: true, email: email });
+        this.email = email;
+        this.requestUpdate();
+      })
+      .catch(() => {
+        this.requestUpdate();
+      });
   }
 
   handleUserLogin(): void {
     const opts: LoginRequest = {
-      email: this.emailFieldTemplate?.value,
-      password: this.passwordFieldTemplate?.value,
+      email: this.email,
+      password: this.password,
     };
 
     this.authService.login(opts).subscribe({
@@ -86,33 +99,57 @@ export class LoginForm extends LitElement {
     showComponent('#toast-msg', this.shadowRoot);
   }
 
+  updateEmail(e) {
+    this.email = e.srcElement.value;
+    this.requestUpdate();
+  }
+
+  updatePassword(e) {
+    this.password = e.srcElement.value;
+    this.requestUpdate();
+  }
+
   render(): TemplateResult {
+    if (authUser$.getValue().login) return html``;
+
     return html`
-      <mwc-formfield>
-        <mwc-textfield
-          size="30"
-          id="email"
-          required
-          type="email"
-          label="Email"
-        ></mwc-textfield>
-      </mwc-formfield>
-      <mwc-formfield>
-        <mwc-textfield
-          size="30"
-          id="password"
-          required
-          type="password"
-          label="Password"
-        ></mwc-textfield>
-      </mwc-formfield>
-      <mwc-button
-        unelevated
-        label="login"
-        @click=${this.handleSubmit}
-        class="login"
-      ></mwc-button>
+      <form autocomplete="on" @submit="${event => this.handleSubmit(event)}">
+        <div class="form__group">
+          <input
+            class="input form__field"
+            type="email"
+            autocomplete="email"
+            placeholder="Email Address"
+            id="username"
+            @change=${this.updateEmail}
+          />
+          <label for="Email Address" class="form__label">email</label>
+        </div>
+        <div class="form__group">
+          <input
+            class="input form__field"
+            type="password"
+            autocomplete="current-password"
+            id="password"
+            placeholder="Password"
+            @change=${this.updatePassword}
+          />
+          <label for="Password" class="form__label">password</label>
+        </div>
+        <div class="form__group">
+          <mwc-button
+            label="login"
+            unelevated
+            @click=${this.handleSubmit}
+            type="submit"
+          ></mwc-button>
+        </div>
+      </form>
       <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
+
+      <style>
+        ${loginFormStyle.cssText}
+      </style>
     `;
   }
 }

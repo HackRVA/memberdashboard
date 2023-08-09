@@ -5,8 +5,7 @@ import { html } from 'lit';
 import { fixture, expect, assert } from '@open-wc/testing';
 
 // memberdashboard
-import { MemberDashboard } from '../src/';
-import '../src/member-dashboard';
+import { MemberDashboard } from '../src/member-dashboard';
 
 describe('MemberDashboard', () => {
   let element: MemberDashboard;
@@ -20,8 +19,7 @@ describe('MemberDashboard', () => {
 
   it('should not be signed in', () => {
     // ARRANGE
-    const loadingContent = element.shadowRoot.querySelector('loading-content');
-    const loginPage = loadingContent.querySelector('login-page');
+    const loginPage = element.shadowRoot.querySelector('login-page');
     const header = loginPage.shadowRoot.querySelector('h1');
 
     // ASSERT

@@ -1,5 +1,5 @@
 // lit element
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { CSSResult, html, LitElement, TemplateResult } from 'lit';
 
 // memberdashboard
@@ -10,6 +10,12 @@ import { loginPageStyle } from './login-page.style';
 
 @customElement('login-page')
 export class LoginPage extends LitElement {
+  @property({
+    type: Boolean,
+    attribute: 'hide-form',
+  })
+  shouldHideForm;
+
   isRegister: boolean = false;
 
   static get styles(): CSSResult[] {
@@ -24,9 +30,13 @@ export class LoginPage extends LitElement {
   displayRegisterLoginForm(): TemplateResult {
     if (this.isRegister) {
       return html`<register-form></register-form>`;
-    } else {
-      return html`<login-form></login-form>`;
     }
+
+    if (this.shouldHideForm) {
+      return html``;
+    }
+
+    return html`<login-form></login-form>`;
   }
 
   toggleInfoText(): TemplateResult {
@@ -50,6 +60,7 @@ export class LoginPage extends LitElement {
   displayLoginHeaderText(): string {
     return this.isRegister ? 'Register' : 'Login';
   }
+
   render(): TemplateResult {
     return html`
       <mwc-top-app-bar-fixed centerTitle>
