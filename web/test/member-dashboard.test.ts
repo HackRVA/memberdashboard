@@ -5,8 +5,7 @@ import { html } from 'lit';
 import { fixture, expect, assert } from '@open-wc/testing';
 
 // memberdashboard
-import { MemberDashboard } from '../src/';
-import '../src/member-dashboard';
+import { MemberDashboard } from '../src/member-dashboard';
 
 describe('MemberDashboard', () => {
   let element: MemberDashboard;
