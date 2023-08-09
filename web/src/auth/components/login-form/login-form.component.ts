@@ -1,11 +1,10 @@
 // lit element
-import { CSSResult, html, TemplateResult } from 'lit';
+import { html, TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 // memberdashboard
 import '../../../shared/components/toast-msg';
 import { AuthResponse } from './../../types/api/auth-response';
-import { coreStyle } from '../../../shared/styles';
 import { loginFormStyle } from './login-form.style';
 import { LoginRequest } from '../../types/api/login-request';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
@@ -29,10 +28,6 @@ export class LoginForm extends LightElement {
   private userService: UserService;
 
   toastMsg: ToastMessage;
-
-  static get styles(): CSSResult[] {
-    return [loginFormStyle, coreStyle];
-  }
 
   constructor() {
     super();
@@ -106,13 +101,11 @@ export class LoginForm extends LightElement {
 
   updateEmail(e) {
     this.email = e.srcElement.value;
-    this.email = 'test@test.com';
     this.requestUpdate();
   }
 
   updatePassword(e) {
     this.password = e.srcElement.value;
-    this.password = 'test';
     this.requestUpdate();
   }
 
@@ -121,25 +114,42 @@ export class LoginForm extends LightElement {
 
     return html`
       <form autocomplete="on" @submit="${event => this.handleSubmit(event)}">
-        <input
-          class="input"
-          type="email"
-          autocomplete="email"
-          placeholder="Email Address"
-          id="username"
-          @change=${this.updateEmail}
-        />
-        <input
-          class="input"
-          type="password"
-          autocomplete="current-password"
-          id="password"
-          placeholder="Password"
-          @change=${this.updatePassword}
-        />
-        <button class="input button" type="submit">Submit</button>
+        <div class="form__group">
+          <input
+            class="input form__field"
+            type="email"
+            autocomplete="email"
+            placeholder="Email Address"
+            id="username"
+            @change=${this.updateEmail}
+          />
+          <label for="Email Address" class="form__label">email</label>
+        </div>
+        <div class="form__group">
+          <input
+            class="input form__field"
+            type="password"
+            autocomplete="current-password"
+            id="password"
+            placeholder="Password"
+            @change=${this.updatePassword}
+          />
+          <label for="Password" class="form__label">password</label>
+        </div>
+        <div class="form__group">
+          <mwc-button
+            label="login"
+            unelevated
+            @click=${this.handleSubmit}
+            type="submit"
+          ></mwc-button>
+        </div>
       </form>
       <toast-msg id="toast-msg" .toastMsg=${this.toastMsg}> </toast-msg>
+
+      <style>
+        ${loginFormStyle.cssText}
+      </style>
     `;
   }
 }
