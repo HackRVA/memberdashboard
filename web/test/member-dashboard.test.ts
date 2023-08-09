@@ -20,8 +20,7 @@ describe('MemberDashboard', () => {
 
   it('should not be signed in', () => {
     // ARRANGE
-    const loadingContent = element.shadowRoot.querySelector('loading-content');
-    const loginPage = loadingContent.querySelector('login-page');
+    const loginPage = element.shadowRoot.querySelector('login-page');
     const header = loginPage.shadowRoot.querySelector('h1');
 
     // ASSERT
