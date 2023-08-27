@@ -10,6 +10,7 @@ import { ResourceService } from './../../../resource/services/resource.service';
 import { OpenResourceRequest } from './../../../resource/types/api/open-resource-request';
 import { showComponent } from '../../../shared/functions';
 import { ToastMessage } from '../../../shared/types/custom/toast-msg';
+import '../../../shared/components/gigachad-boss';
 
 @customElement('home-detail')
 export class HomeDetail extends LitElement {
@@ -68,6 +69,9 @@ export class HomeDetail extends LitElement {
   render(): TemplateResult {
     return html`
       <div id="home-detail" class="center">
+        <section>
+          <gigachad-boss />
+        </section>
         <section>
           <mwc-button
             unelevated

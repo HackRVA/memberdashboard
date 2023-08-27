@@ -6,6 +6,7 @@ export const homeDetailStyle: CSSResult = css`
     display: flex;
     align-items: center;
     text-align: center;
+    flex-direction: column;
   }
 
   mwc-circular-progress {
