@@ -11,4 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './top-nav.component.html',
   styleUrl: './top-nav.component.scss',
 })
-export class TopNavComponent {}
+export class TopNavComponent {
+  toggleTheme(): void {
+    document.body.classList.toggle('dark-theme');
+  }
+}

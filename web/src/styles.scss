@@ -7,7 +7,7 @@
   --text-color: #{$md-primary-text};
 }
 
-[theme~="dark"] {
+.dark-theme {
   --background-color: #{$md-primary-bg-dark};
   --body-background-color: #{$md-secondary-bg-dark};
   --text-color: #{$md-primary-text-dark};

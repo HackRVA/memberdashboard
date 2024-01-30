@@ -1,0 +1,11 @@
+div {
+  display: grid;
+  place-items: center;
+  height: 50%;
+  font-size: 36px;
+
+  h2,
+  p:first-of-type {
+    font-size: 72px;
+  }
+}
