@@ -1,126 +1,40 @@
 {
-  "name": "member-dashboard",
-  "version": "1.0.0",
+  "name": "web-memberdashboard",
+  "version": "0.0.0",
   "scripts": {
-    "lint": "eslint --ext .ts,.html . --ignore-path .gitignore && prettier \"**/*.ts\" --check --ignore-path .gitignore",
-    "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore",
-    "test": "tsc && wtr --coverage",
-    "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\"",
-    "build": "rimraf dist && tsc && rollup -c rollup.config.js && npm run analyze -- --exclude dist",
-    "start:build": "web-dev-server --root-dir dist --app-index index.html --open",
-    "analyze": "cem analyze --litelement",
-    "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\""
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
   },
-  "author": "",
-  "license": "MIT",
+  "private": true,
   "dependencies": {
-    "@google-web-components/google-chart": "^5.0.0",
-    "@material/mwc-button": "^0.27.0",
-    "@material/mwc-checkbox": "^0.27.0",
-    "@material/mwc-circular-progress": "^0.27.0",
-    "@material/mwc-dialog": "^0.27.0",
-    "@material/mwc-drawer": "^0.27.0",
-    "@material/mwc-fab": "^0.27.0",
-    "@material/mwc-formfield": "^0.27.0",
-    "@material/mwc-icon": "^0.27.0",
-    "@material/mwc-icon-button": "^0.27.0",
-    "@material/mwc-list": "^0.27.0",
-    "@material/mwc-menu": "^0.27.0",
-    "@material/mwc-select": "^0.27.0",
-    "@material/mwc-snackbar": "^0.27.0",
-    "@material/mwc-tab-bar": "^0.27.0",
-    "@material/mwc-textfield": "^0.27.0",
-    "@material/mwc-top-app-bar-fixed": "^0.27.0",
-    "@polymer/paper-card": "^3.0.1",
-    "@polymer/paper-toggle-button": "^3.0.1",
-    "@polymer/paper-tooltip": "^3.0.1",
-    "@ungap/structured-clone": "^0.3.4",
-    "@vaadin/context-menu": "^23.0.5",
-    "@vaadin/dialog": "^23.0.5",
-    "@vaadin/grid": "^23.0.5",
-    "@vaadin/icon": "^23.0.5",
-    "@vaadin/icons": "^23.0.5",
-    "@vaadin/menu-bar": "^23.0.5",
-    "@vaadin/router": "^1.7.4",
-    "@vaadin/tabs": "^23.0.5",
-    "@vaadin/text-field": "^23.0.5",
-    "@vaadin/vaadin-lumo-styles": "^23.0.6",
-    "@webcomponents/webcomponentsjs": "^2.6.0",
-    "jwt-decode": "^3.1.2",
-    "koa-proxies": "^0.12.1",
-    "lit": "^2.0.0-rc.4",
-    "rxjs": "^6.6.3"
+    "@angular/animations": "^17.1.0",
+    "@angular/cdk": "^17.1.1",
+    "@angular/common": "^17.1.0",
+    "@angular/compiler": "^17.1.0",
+    "@angular/core": "^17.1.0",
+    "@angular/forms": "^17.1.0",
+    "@angular/material": "^17.1.1",
+    "@angular/platform-browser": "^17.1.0",
+    "@angular/platform-browser-dynamic": "^17.1.0",
+    "@angular/router": "^17.1.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.14.3"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.15.6",
-    "@custom-elements-manifest/analyzer": "^0.4.17",
-    "@open-wc/building-rollup": "^2.0.1",
-    "@open-wc/eslint-config": "^4.3.0",
-    "@open-wc/testing": "^3.0.0-next.5",
-    "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-node-resolve": "^13.0.4",
-    "@rollup/plugin-replace": "^2.4.2",
-    "@types/jest": "^27.4.1",
-    "@types/node": "^17.0.23",
-    "@typescript-eslint/eslint-plugin": "^4.31.0",
-    "@typescript-eslint/parser": "^4.31.0",
-    "@web/dev-server": "^0.1.22",
-    "@web/rollup-plugin-html": "^1.10.1",
-    "@web/rollup-plugin-import-meta-assets": "^1.0.7",
-    "@web/test-runner": "next",
-    "babel-plugin-template-html-minifier": "^4.1.0",
-    "concurrently": "^7.0.0",
-    "deepmerge": "^4.2.2",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "husky": "^4.3.8",
-    "lint-staged": "^10.5.4",
-    "prettier": "^2.4.0",
-    "rimraf": "^3.0.2",
-    "rollup": "^2.56.3",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-workbox": "^6.2.0",
-    "tslib": "^2.3.1",
-    "typescript": "^4.4.3"
-  },
-  "eslintConfig": {
-    "parser": "@typescript-eslint/parser",
-    "extends": [
-      "@open-wc",
-      "prettier"
-    ],
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "rules": {
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "error"
-      ],
-      "import/no-unresolved": "off",
-      "import/extensions": [
-        "error",
-        "always",
-        {
-          "ignorePackages": true
-        }
-      ]
-    }
-  },
-  "prettier": {
-    "singleQuote": true,
-    "arrowParens": "avoid"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.ts": [
-      "eslint --fix",
-      "prettier --write"
-    ]
-  },
-  "customElements": "custom-elements.json"
+    "@angular-devkit/build-angular": "^17.1.1",
+    "@angular/cli": "^17.1.1",
+    "@angular/compiler-cli": "^17.1.0",
+    "@types/jasmine": "~5.1.0",
+    "jasmine-core": "~5.1.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.3.2"
+  }
 }

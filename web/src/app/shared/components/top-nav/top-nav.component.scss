@@ -1,0 +1,20 @@
+mat-toolbar {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, 1fr);
+
+  section:first-of-type {
+    justify-self: left;
+  }
+
+  section:nth-child(2) {
+    justify-self: center;
+  }
+
+  section:last-of-type {
+    justify-self: right;
+  }
+
+  background-color: var(--background-color);
+  color: var(--text-color);
+}

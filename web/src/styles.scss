@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+@import "styles/core";
+
+:root {
+  --background-color: #{$md-primary-bg};
+  --body-background-color: #{$md-secondary-bg};
+  --text-color: #{$md-primary-text};
+}
+
+[theme~="dark"] {
+  --background-color: #{$md-primary-bg-dark};
+  --body-background-color: #{$md-secondary-bg-dark};
+  --text-color: #{$md-primary-text-dark};
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--body-background-color);
+}

@@ -1,0 +1,17 @@
+$top-nav-height: 64px;
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+main {
+  overflow: auto;
+  position: absolute;
+  top: $top-nav-height;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
