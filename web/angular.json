@@ -63,7 +63,8 @@
               "buildTarget": "web-memberdashboard:build:production"
             },
             "development": {
-              "buildTarget": "web-memberdashboard:build:development"
+              "buildTarget": "web-memberdashboard:build:development",
+              "proxyConfig": "src/proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

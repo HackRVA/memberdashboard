@@ -1,1 +1,42 @@
-<p>login works!</p>
+<div>
+  @if (!showRegisterForm) {
+  <h2>Login</h2>
+  <form>
+    <mat-form-field appearance="outline">
+      <mat-label>Email address</mat-label>
+      <input matInput />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput />
+    </mat-form-field>
+
+    <button type="submit" mat-raised-button>Submit</button>
+  </form>
+
+  <p>Are you new? Register <a (click)="toggleForm()"> here </a></p>
+  } @else {
+  <h2>Register</h2>
+  <form>
+    <mat-form-field appearance="outline">
+      <mat-label>Email address</mat-label>
+      <input matInput />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Retype password</mat-label>
+      <input matInput />
+    </mat-form-field>
+
+    <button type="submit" mat-raised-button>Submit</button>
+  </form>
+
+  <p>Already a member? Rock on! Login <a (click)="toggleForm()"> here </a></p>
+  }
+</div>
