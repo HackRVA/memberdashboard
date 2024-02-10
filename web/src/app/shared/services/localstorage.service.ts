@@ -12,8 +12,8 @@ export class LocalStorageService {
     });
   }
 
-  add<T>(key: string, value: T): void {
-    withSafeHandler('LocalStorageService_Add', () =>
+  upsert<T>(key: string, value: T): void {
+    withSafeHandler('LocalStorageService_Upsert', () =>
       localStorage.setItem(key, JSON.stringify(value))
     );
   }
@@ -23,12 +23,8 @@ export class LocalStorageService {
       const item: T = this.get(key);
 
       if (item) {
-        this.delete(key);
-        this.add(key, value);
-        return;
+        this.upsert(key, value);
       }
-
-      this.add(key, value);
     });
   }
 

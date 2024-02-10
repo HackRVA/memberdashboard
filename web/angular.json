@@ -12,6 +12,7 @@
       },
       "root": "",
       "sourceRoot": "src",
+      "prefix": "md",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
@@ -58,13 +59,15 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "src/proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "web-memberdashboard:build:production"
             },
             "development": {
-              "buildTarget": "web-memberdashboard:build:development",
-              "proxyConfig": "src/proxy.conf.json"
+              "buildTarget": "web-memberdashboard:build:development"
             }
           },
           "defaultConfiguration": "development"

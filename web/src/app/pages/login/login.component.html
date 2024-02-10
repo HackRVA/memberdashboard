@@ -1,40 +1,48 @@
 <div>
-  @if (!showRegisterForm) {
+  @if (showLoginForm) {
   <h2>Login</h2>
-  <form>
+  <form [formGroup]="loginFormGroup" (ngSubmit)="submit()">
     <mat-form-field appearance="outline">
       <mat-label>Email address</mat-label>
-      <input matInput />
+      <input matInput type="email" formControlName="email" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Password</mat-label>
-      <input matInput />
+      <input matInput type="password" formControlName="password" />
     </mat-form-field>
 
-    <button type="submit" mat-raised-button>Submit</button>
+    <button type="submit" mat-raised-button [disabled]="!loginFormGroup.valid">
+      Submit
+    </button>
   </form>
 
   <p>Are you new? Register <a (click)="toggleForm()"> here </a></p>
   } @else {
   <h2>Register</h2>
-  <form>
+  <form [formGroup]="registerFormGroup" (ngSubmit)="submit()">
     <mat-form-field appearance="outline">
       <mat-label>Email address</mat-label>
-      <input matInput />
+      <input matInput type="email" formControlName="email" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Password</mat-label>
-      <input matInput />
+      <input matInput type="password" formControlName="password" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Retype password</mat-label>
-      <input matInput />
+      <input matInput type="password" formControlName="retypePassword" />
     </mat-form-field>
 
-    <button type="submit" mat-raised-button>Submit</button>
+    <button
+      type="submit"
+      mat-raised-button
+      [disabled]="!registerFormGroup.valid"
+    >
+      Submit
+    </button>
   </form>
 
   <p>Already a member? Rock on! Login <a (click)="toggleForm()"> here </a></p>

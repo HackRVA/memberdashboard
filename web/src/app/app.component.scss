@@ -1,0 +1,11 @@
+mat-toolbar {
+  h1 {
+    margin: auto;
+  }
+}
+
+router-outlet {
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}

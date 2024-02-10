@@ -8,8 +8,33 @@
     <h1>Member Dashboard</h1>
   </section>
   <section>
-    <button mat-icon-button aria-label="profile">
+    <button
+      mat-icon-button
+      aria-label="profile"
+      [matMenuTriggerFor]="profileMenu"
+    >
       <mat-icon> account_circle</mat-icon>
     </button>
+    <mat-menu #profileMenu="matMenu">
+      <li (click)="$event.stopPropagation()">{{ username }}</li>
+      <li mat-menu-item (click)="logout()">
+        <mat-icon> logout</mat-icon> Logout
+      </li>
+    </mat-menu>
   </section>
 </mat-toolbar>
+<nav mat-tab-nav-bar [tabPanel]="tabPanel">
+  @for (link of navLinks; track $index) {
+  <a
+    mat-tab-link
+    [routerLink]="link.routeLink"
+    routerLinkActive
+    #rla="routerLinkActive"
+    [active]="rla.isActive"
+  >
+    <mat-icon> {{ link.routeIcon }}</mat-icon>
+    {{ link.routeName }}
+  </a>
+  }
+</nav>
+<mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>

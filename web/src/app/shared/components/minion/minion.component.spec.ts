@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MdLayoutComponent } from './md-layout.component';
+import { MinionComponent } from './minion.component';
 
-describe('MdLayoutComponent', () => {
-  let component: MdLayoutComponent;
-  let fixture: ComponentFixture<MdLayoutComponent>;
+describe('MinionComponent', () => {
+  let component: MinionComponent;
+  let fixture: ComponentFixture<MinionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MdLayoutComponent]
+      imports: [MinionComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(MdLayoutComponent);
+    fixture = TestBed.createComponent(MinionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

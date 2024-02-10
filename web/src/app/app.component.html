@@ -1,4 +1,11 @@
+@if (isLogin) {
 <md-layout>
   <top-nav header-content></top-nav>
   <router-outlet main-content></router-outlet>
 </md-layout>
+} @else {
+<mat-toolbar>
+  <h1>Member Dashboard</h1>
+</mat-toolbar>
+<router-outlet></router-outlet>
+}

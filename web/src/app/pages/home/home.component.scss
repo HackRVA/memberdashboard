@@ -1,0 +1,14 @@
+@import "colors";
+
+div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  button {
+    background-color: var(--button-background-color);
+    color: $md-plain-white;
+    margin-top: 40px;
+  }
+}

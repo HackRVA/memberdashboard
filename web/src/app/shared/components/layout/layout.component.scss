@@ -1,4 +1,5 @@
 $top-nav-height: 64px;
+$nav-height: 48px;
 
 header {
   position: fixed;
@@ -10,8 +11,11 @@ header {
 main {
   overflow: auto;
   position: absolute;
-  top: $top-nav-height;
+  top: $top-nav-height + $nav-height;
   left: 0;
   right: 0;
   bottom: 0;
+
+  max-width: 1200px;
+  margin: 0 auto;
 }

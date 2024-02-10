@@ -1,11 +1,12 @@
 // regular theme
 $md-primary: hsl(214, 100%, 48%);
+$md-plain-white: white;
 $md-primary-bg: $md-primary;
-$md-secondary-bg: white;
-$md-primary-text: white;
+$md-secondary-bg: $md-plain-white;
+$md-primary-text: black;
 
 // dark theme
 $md-primary-dark: #6f6cab;
 $md-primary-bg-dark: $md-primary-dark;
 $md-secondary-bg-dark: hsla(214, 40%, 16%, 0.94);
-$md-primary-text-dark: white;
+$md-primary-text-dark: $md-plain-white;

@@ -6,6 +6,7 @@ export type AuthUser = {
   token: string;
   isLogin: boolean;
   email: string;
+  isAdmin: boolean;
 };
 
 export type RegisterRequest = {

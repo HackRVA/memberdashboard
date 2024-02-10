@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'resource',
+  selector: 'md-resource',
   standalone: true,
   imports: [],
   templateUrl: './resource.component.html',
-  styleUrl: './resource.component.scss'
+  styleUrl: './resource.component.scss',
 })
-export class ResourceComponent {
-
-}
+export class ResourceComponent {}
