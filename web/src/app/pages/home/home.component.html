@@ -1,4 +1,8 @@
 <div>
   <md-minion></md-minion>
-  <button mat-raised-button>Open front door</button>
+  @if(isAdmin) {
+  <button mat-raised-button [disabled]="isProcessing" (click)="openDoor()">
+    Open front door
+  </button>
+  }
 </div>

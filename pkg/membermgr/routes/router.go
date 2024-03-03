@@ -21,10 +21,8 @@ package routes
 
 import (
 	_ "embed"
-	"io/fs"
 	"net/http"
 
-	"github.com/HackRVA/memberserver/api/openapi"
 	api "github.com/HackRVA/memberserver/pkg/membermgr/controllers"
 	"github.com/HackRVA/memberserver/pkg/membermgr/controllers/auth"
 	"github.com/HackRVA/memberserver/pkg/membermgr/middleware/rbac"
@@ -65,8 +63,7 @@ func New(api api.API, auth *auth.AuthController) Router {
 }
 
 func (r *Router) mountFS() {
-	web, _ := fs.Sub(ui.UI, "web")
-	r.UnAuthedRouter.PathPrefix("/").Handler(http.FileServer(http.FS(web)))
+	r.UnAuthedRouter.PathPrefix("/").Handler(spaRouter{ui.UI})
 }
 
 func (r *Router) RegisterRoutes(auth *auth.AuthController) *mux.Router {
@@ -77,8 +74,6 @@ func (r *Router) RegisterRoutes(auth *auth.AuthController) *mux.Router {
 	r.setupPaymentRoutes(r.api, accessControl)
 	r.setupReportsRoutes(r.api.ReportsServer, accessControl)
 	r.setupVersionRoutes(r.api.VersionServer)
-
-	openapi.ServeSwaggerUI(r.UnAuthedRouter)
 
 	r.mountFS()
 

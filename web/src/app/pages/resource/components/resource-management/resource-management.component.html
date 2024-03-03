@@ -1,0 +1,30 @@
+<div class="modal-container">
+  <header>
+    <h2>{{ title }}</h2>
+    <button mat-icon-button aria-label="close" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <form [formGroup]="resourceManagementGroup" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Address</mat-label>
+      <input matInput formControlName="address" />
+    </mat-form-field>
+
+    <mat-checkbox formControlName="isDefault"> Default </mat-checkbox>
+
+    <button
+      type="submit"
+      mat-raised-button
+      [disabled]="!resourceManagementGroup.valid"
+    >
+      Submit
+    </button>
+  </form>
+</div>

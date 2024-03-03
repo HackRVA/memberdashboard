@@ -6,8 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
-import { NavigationMenu } from '../../types';
-import { AuthService, LocalStorageService } from '../../services';
+import { NavigationLink } from '../../types/navigation-link';
+import { AuthService } from '../../services';
 
 @Component({
   selector: 'top-nav',
@@ -25,7 +25,7 @@ import { AuthService, LocalStorageService } from '../../services';
   styleUrl: './top-nav.component.scss',
 })
 export class TopNavComponent {
-  navLinks: NavigationMenu[] = [
+  private _adminNav: NavigationLink[] = [
     { routeName: 'Home', routeLink: 'home', routeIcon: 'home' },
     { routeName: 'User', routeLink: 'user', routeIcon: 'person' },
     { routeName: 'Reports', routeLink: 'report', routeIcon: 'show_chart' },
@@ -33,13 +33,15 @@ export class TopNavComponent {
     { routeName: 'Resources', routeLink: 'resource', routeIcon: 'devices' },
   ];
 
+  navLinks: NavigationLink[] = [
+    { routeName: 'Home', routeLink: 'home', routeIcon: 'home' },
+    { routeName: 'User', routeLink: 'user', routeIcon: 'person' },
+  ];
+
   username: string = '';
 
-  constructor(
-    private readonly authService: AuthService,
-    private readonly localStorageService: LocalStorageService
-  ) {
-    this.username = this.authService.user$.getValue().email;
+  constructor(private readonly authService: AuthService) {
+    this.runBeforeInit();
   }
 
   toggleTheme(): void {
@@ -50,5 +52,14 @@ export class TopNavComponent {
     this.authService.logout().subscribe((_) => {
       window.location.reload();
     });
+  }
+
+  private runBeforeInit(): void {
+    this.username = this.authService.user$.getValue().email;
+    const isAdmin: boolean = this.authService.user$.getValue().isAdmin;
+
+    if (isAdmin) {
+      this.navLinks = this._adminNav;
+    }
   }
 }

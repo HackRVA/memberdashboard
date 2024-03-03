@@ -23,12 +23,15 @@ export class AuthService {
   private readonly _userUrlSegment: string = '/api/user';
   private readonly _sessionAuthKey: string = 'memberdashboard';
 
-  user$ = new BehaviorSubject<AuthUser>({
+  private static readonly defaultUserState: AuthUser = {
     token: null,
     isLogin: false,
     email: null,
     isAdmin: false,
-  });
+  };
+
+  user$ = new BehaviorSubject<AuthUser>(AuthService.defaultUserState);
+
   constructor(
     private readonly http: HttpClient,
     private readonly localStorageService: LocalStorageService
@@ -82,6 +85,10 @@ export class AuthService {
     return this._sessionAuthKey;
   }
 
+  resetAndNext(): void {
+    this.user$.next(AuthService.defaultUserState);
+  }
+
   private rehydrateAuthUser(token: string): void {
     this.localStorageService.update(this._sessionAuthKey, token);
 
@@ -98,6 +105,7 @@ export class AuthService {
         isAdmin: claims.Groups?.includes('admin'),
       });
     } catch (error) {
+      this.resetAndNext();
       // fail quietly. no need to pollute the console
     }
   }

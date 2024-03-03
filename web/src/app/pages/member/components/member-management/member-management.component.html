@@ -1,0 +1,28 @@
+<div class="modal-container">
+  <header>
+    <h2>Manage Member</h2>
+    <button mat-icon-button aria-label="close" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <form [formGroup]="memberManagementGroup" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Full name</mat-label>
+      <input matInput formControlName="fullName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Subscription ID</mat-label>
+      <input matInput formControlName="subscriptionID" />
+    </mat-form-field>
+
+    <button
+      type="submit"
+      mat-raised-button
+      [disabled]="!memberManagementGroup.valid"
+    >
+      Submit
+    </button>
+  </form>
+</div>

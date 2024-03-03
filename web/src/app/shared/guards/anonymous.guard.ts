@@ -8,7 +8,7 @@ import {
 } from '@angular/router';
 import { AuthService } from '../services';
 import { Observable, map } from 'rxjs';
-import { AuthUser } from '../types/auth.type';
+import { AuthUser } from '../types/auth.types';
 
 export const anonymousGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,

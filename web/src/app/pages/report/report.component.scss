@@ -1,0 +1,36 @@
+@import "colors";
+@import "breakpoints";
+
+h2 {
+  text-align: center;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  color: var(--text-color);
+
+  .pos {
+    color: $md-success;
+  }
+
+  .neg {
+    color: $md-error;
+  }
+}
+
+.chart-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  button {
+    float: right;
+    margin-bottom: 24px;
+  }
+}
+
+::ng-deep button.mat-mdc-menu-item {
+  display: flex;
+  place-content: center;
+  width: 143px;
+}

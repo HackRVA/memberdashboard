@@ -1,0 +1,16 @@
+<div class="modal-container">
+  <header>
+    <h2>Remove resource</h2>
+    <button mat-icon-button aria-label="close" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+  <section>
+    <p>
+      Are you sure you want to remove <strong> {{ name }} </strong> ?
+    </p>
+    <p>Members will no longer have access to this resource if you remove it.</p>
+
+    <button mat-raised-button (click)="submit()">Submit</button>
+  </section>
+</div>

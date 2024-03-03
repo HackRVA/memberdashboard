@@ -1,1 +1,24 @@
-<p>user works!</p>
+<div>
+  <button mat-raised-button (click)="openSelfRFID()">Assign RFID</button>
+  <dl>
+    <dt>Name</dt>
+    <dd>{{ user.name }}</dd>
+    <dt>Email</dt>
+    <dd>{{ user.email }}</dd>
+    <dt>Status</dt>
+    <dd>{{ user.memberLevel | memberLevel }}</dd>
+    <dt>Subscription ID</dt>
+    <dd>{{ user.subscriptionID || "Not set" }}</dd>
+    <dt>RFID</dt>
+    <dd>{{ user.rfid !== "notset" ? user.rfid : "Not set" }}</dd>
+    <dt>Resources</dt>
+    <dd>
+      @if(user.resources) { @for (resource of user.resources; track $index) {
+      <ul>
+        <li>{{ resource.name }}</li>
+      </ul>
+      } } @else { No resources }
+    </dd>
+  </dl>
+  <button mat-raised-button (click)="openSelfRFID()">Assign RFID</button>
+</div>

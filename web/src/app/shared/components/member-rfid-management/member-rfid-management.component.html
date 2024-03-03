@@ -1,0 +1,37 @@
+<div class="modal-container">
+  <header>
+    <h2>{{ title }}</h2>
+    <button mat-icon-button aria-label="close" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <form [formGroup]="rfidManagementGroup" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Email address</mat-label>
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>RFID</mat-label>
+      <input matInput type="number" formControlName="rfid" />
+    </mat-form-field>
+
+    @if(memberRFIDType === rfidType.New) {
+    <p>
+      This is an option if the new member's info hasn't been sent from paypal
+      yet. Check the table before trying to add them manually.
+      <strong>Note:</strong> if you add the member with this method, their email
+      has to match what they use in paypal.
+    </p>
+    }
+
+    <button
+      type="submit"
+      mat-raised-button
+      [disabled]="!rfidManagementGroup.valid"
+    >
+      Submit
+    </button>
+  </form>
+</div>

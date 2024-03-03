@@ -1,7 +1,7 @@
 <div>
   @if (showLoginForm) {
   <h2>Login</h2>
-  <form [formGroup]="loginFormGroup" (ngSubmit)="submit()">
+  <form [formGroup]="loginFormGroup" (ngSubmit)="login()">
     <mat-form-field appearance="outline">
       <mat-label>Email address</mat-label>
       <input matInput type="email" formControlName="email" />
@@ -12,6 +12,10 @@
       <input matInput type="password" formControlName="password" />
     </mat-form-field>
 
+    @if(loginFormGroup.hasError('apiError')) {
+    <mat-error>{{ loginFormGroup.getError("apiError") }}</mat-error>
+    }
+
     <button type="submit" mat-raised-button [disabled]="!loginFormGroup.valid">
       Submit
     </button>
@@ -20,7 +24,7 @@
   <p>Are you new? Register <a (click)="toggleForm()"> here </a></p>
   } @else {
   <h2>Register</h2>
-  <form [formGroup]="registerFormGroup" (ngSubmit)="submit()">
+  <form [formGroup]="registerFormGroup" (ngSubmit)="register()">
     <mat-form-field appearance="outline">
       <mat-label>Email address</mat-label>
       <input matInput type="email" formControlName="email" />
@@ -35,6 +39,10 @@
       <mat-label>Retype password</mat-label>
       <input matInput type="password" formControlName="retypePassword" />
     </mat-form-field>
+
+    @if(registerFormGroup?.errors && registerFormGroup.errors['mismatch']) {
+    <mat-error> Passwords must match </mat-error>
+    }
 
     <button
       type="submit"

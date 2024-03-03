@@ -25,6 +25,10 @@ mat-icon {
   margin-right: 8px;
 }
 
+::ng-deep.mdc-tab__text-label {
+  color: var(--text-color) !important;
+}
+
 ::ng-deep.mat-mdc-menu-content {
   display: flex;
   flex-direction: column;

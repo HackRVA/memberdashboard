@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { anonymousGuard, authGuard } from './shared/guards';
+import { adminGuard, anonymousGuard, authGuard } from './shared/guards';
 
 export const routes: Routes = [
   {
@@ -28,16 +28,19 @@ export const routes: Routes = [
       },
       {
         path: 'report',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/report').then((m) => m.ReportComponent),
       },
       {
         path: 'member',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/member').then((m) => m.MemberComponent),
       },
       {
         path: 'resource',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/resource').then((m) => m.ResourceComponent),
       },

@@ -3,4 +3,9 @@
 </header>
 <main>
   <ng-content select="[main-content]"></ng-content>
+  @if (version) {
+  <p>
+    {{ version.major }}.<b>{{ version.build }} </b>
+  </p>
+  }
 </main>

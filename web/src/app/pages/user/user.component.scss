@@ -1,0 +1,35 @@
+@import "colors";
+
+div {
+  display: grid;
+  place-content: center;
+  margin-top: 40px;
+
+  dl,
+  dt,
+  dd {
+    place-self: center;
+  }
+
+  dl {
+    margin: 24px 0px;
+    display: inherit;
+    padding: 40px 20px;
+    border: 1px solid var(--background-color);
+    border-radius: 4px;
+    gap: 1.5rem;
+    width: 320px;
+    word-break: break-all;
+
+    dt {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    dd {
+      margin-left: 0px;
+      color: var(--text-color);
+    }
+  }
+}
