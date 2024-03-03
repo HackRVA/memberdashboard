@@ -41,7 +41,9 @@ export class MemberResourceManagementComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
   title: string = '';
   memberResourceManagementGroup: FormGroup = new FormGroup({
-    email: new FormControl<string>(null, [Validators.required]),
+    email: new FormControl<string>({ value: '', disabled: true }, [
+      Validators.required,
+    ]),
     resourceID: new FormControl<string>(null, [Validators.required]),
   });
   resourcesObs$: Observable<MemberResource[]>;
@@ -65,9 +67,10 @@ export class MemberResourceManagementComponent implements OnInit {
     let resourceService$: Observable<void> = null;
 
     if (this.dialogData.resources) {
-      resourceService$ = this.resourceService.removeMemberFromResource(
-        this.memberResourceManagementGroup.value
-      );
+      resourceService$ = this.resourceService.removeMemberFromResource({
+        email: this.memberResourceManagementGroup.get('email').value,
+        resourceID: this.memberResourceManagementGroup.get('resourceID').value,
+      });
     } else {
       resourceService$ = this.resourceService.bulkAddMembersToResource({
         emails: [this.memberResourceManagementGroup.get('email').value],

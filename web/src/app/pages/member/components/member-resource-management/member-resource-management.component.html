@@ -3,7 +3,7 @@
     <h2>{{ title }}</h2>
   </header>
 
-  <form [formGroup]="memberResourceManagementGroup" (ngSubmit)="submit()">
+  <form [formGroup]="memberResourceManagementGroup">
     <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
       <input matInput type="email" formControlName="email" />
@@ -22,6 +22,7 @@
     <button
       type="submit"
       mat-raised-button
+      (click)="submit()"
       [disabled]="!memberResourceManagementGroup.valid"
     >
       Submit
