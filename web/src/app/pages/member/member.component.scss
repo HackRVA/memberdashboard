@@ -20,6 +20,10 @@ action-bar {
   width: 100%;
   overflow-x: auto;
 
+  mat-tab-group {
+    margin-top: 32px;
+  }
+
   table {
     .mat-column-actions {
       display: flex;
@@ -41,7 +45,7 @@ action-bar {
   align-items: center;
   justify-content: flex-end;
   color: var(--text-color);
-  padding: 12px 16px;
+  padding: 12px 28px;
 
   span {
     margin-left: 12px;
