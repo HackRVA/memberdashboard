@@ -56,12 +56,16 @@ export class MemberComponent implements OnInit {
     currentPage: 0,
     count: 10,
   };
+
+  private static readonly defaultSearchRequest: MemberSearchRequest = {
+    page: 0,
+    count: 10,
+    active: true,
+  } as MemberSearchRequest;
   searchRequest$: BehaviorSubject<MemberSearchRequest> =
-    new BehaviorSubject<MemberSearchRequest>({
-      page: 0,
-      count: 10,
-      active: true,
-    } as MemberSearchRequest);
+    new BehaviorSubject<MemberSearchRequest>(
+      MemberComponent.defaultSearchRequest
+    );
   searchCtrl: FormControl<string> = new FormControl<string>('');
   memberFormGroup: FormGroup = new FormGroup({
     search: this.searchCtrl,
@@ -87,7 +91,11 @@ export class MemberComponent implements OnInit {
     this.searchCtrl.valueChanges
       .pipe(debounceTime(500), distinctUntilChanged())
       .subscribe((value: string) => {
-        this.searchRequest$.next({ search: value } as MemberSearchRequest);
+        this.searchRequest$.next(
+          value.length > 0
+            ? ({ search: value } as MemberSearchRequest)
+            : MemberComponent.defaultSearchRequest
+        );
       });
     this.fetchAndLoadMembers().subscribe();
   }
