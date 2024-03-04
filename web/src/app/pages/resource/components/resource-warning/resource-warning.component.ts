@@ -27,8 +27,8 @@ export class ResourceWarningComponent implements OnInit {
     this.name = this.dialogData.name;
   }
 
-  close(): void {
-    this.dialogRef.close();
+  close(refresh: boolean = false): void {
+    this.dialogRef.close(refresh);
   }
 
   submit(): void {
@@ -40,7 +40,7 @@ export class ResourceWarningComponent implements OnInit {
           '',
           { duration: 3000 }
         );
-        this.close();
+        this.close(true);
       });
   }
 }

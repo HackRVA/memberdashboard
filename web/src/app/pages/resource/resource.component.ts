@@ -55,7 +55,11 @@ export class ResourceComponent implements OnInit {
         data: this.generateManagementData(resource),
       })
       .afterClosed()
-      .pipe(switchMap(() => this.fetchAndLoadResources()))
+      .pipe(
+        switchMap((refresh: boolean) =>
+          refresh ? this.fetchAndLoadResources() : of(null)
+        )
+      )
       .subscribe();
   }
 
@@ -74,7 +78,11 @@ export class ResourceComponent implements OnInit {
         data: resource,
       })
       .afterClosed()
-      .pipe(switchMap(() => this.fetchAndLoadResources()))
+      .pipe(
+        switchMap((refresh: boolean) =>
+          refresh ? this.fetchAndLoadResources() : of(null)
+        )
+      )
       .subscribe();
   }
 

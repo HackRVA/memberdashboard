@@ -146,7 +146,11 @@ export class MemberComponent implements OnInit {
           : RFIDManagementFactory.createNewMemberData()
       )
       .afterClosed()
-      .pipe(switchMap(() => this.fetchAndLoadMembers()))
+      .pipe(
+        switchMap((refresh: boolean) =>
+          refresh ? this.fetchAndLoadMembers() : of(null)
+        )
+      )
       .subscribe();
   }
 
@@ -166,7 +170,11 @@ export class MemberComponent implements OnInit {
         } as Pick<MemberResponse, 'email' | 'name' | 'subscriptionID'>,
       })
       .afterClosed()
-      .pipe(switchMap(() => this.fetchAndLoadMembers()))
+      .pipe(
+        switchMap((refresh: boolean) =>
+          refresh ? this.fetchAndLoadMembers() : of(null)
+        )
+      )
       .subscribe();
   }
 
@@ -189,7 +197,11 @@ export class MemberComponent implements OnInit {
         } as MemberResourceManagementData,
       })
       .afterClosed()
-      .pipe(switchMap(() => this.fetchAndLoadMembers()))
+      .pipe(
+        switchMap((refresh: boolean) =>
+          refresh ? this.fetchAndLoadMembers() : of(null)
+        )
+      )
       .subscribe();
   }
 

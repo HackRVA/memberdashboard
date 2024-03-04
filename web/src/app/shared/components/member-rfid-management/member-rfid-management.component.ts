@@ -57,8 +57,8 @@ export class MemberRFIDManagementComponent implements OnInit {
     this.handleData(this.dialogData);
   }
 
-  close(): void {
-    this.dialogRef.close();
+  close(refresh: boolean = false): void {
+    this.dialogRef.close(refresh);
   }
 
   submit(): void {
@@ -84,7 +84,7 @@ export class MemberRFIDManagementComponent implements OnInit {
     }
     memberObs$.subscribe({
       next: () => {
-        this.close();
+        this.close(true);
       },
     });
   }

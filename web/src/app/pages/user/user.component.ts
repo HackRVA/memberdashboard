@@ -38,7 +38,11 @@ export class UserComponent implements OnInit {
         RFIDManagementFactory.createSelfData(this.user.email)
       )
       .afterClosed()
-      .pipe(switchMap(() => this.fetchAndLoadUser()))
+      .pipe(
+        switchMap((refresh: boolean) =>
+          refresh ? this.fetchAndLoadUser() : of(null)
+        )
+      )
       .subscribe();
   }
 

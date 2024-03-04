@@ -52,8 +52,8 @@ export class ResourceManagementComponent implements OnInit {
     this.handleData(this.dialogData);
   }
 
-  close(): void {
-    this.dialogRef.close();
+  close(refresh: boolean = false): void {
+    this.dialogRef.close(refresh);
   }
 
   submit(): void {
@@ -71,7 +71,7 @@ export class ResourceManagementComponent implements OnInit {
     }
 
     resourceObs$.subscribe(() => {
-      this.close();
+      this.close(true);
     });
   }
 
