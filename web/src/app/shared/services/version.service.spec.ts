@@ -8,6 +8,7 @@ import { of } from 'rxjs';
 describe('VersionService', () => {
   let service: VersionService;
   let http: jasmine.SpyObj<HttpClient>;
+  const versionUrlSegment: string = '/api/version';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,10 +26,12 @@ describe('VersionService', () => {
 
   it('should get version', () => {
     // ARRANGE
+    let mockResponse: VersionResponse = {
+      major: '1',
+      build: 'dev',
+    };
     let expectedResponse: VersionResponse = null;
-    http.get.and.returnValue(
-      of({ major: '1', build: 'dev' } as VersionResponse)
-    );
+    http.get.and.returnValue(of(mockResponse));
 
     // ACT
     service.getVersion().subscribe((response: VersionResponse) => {
@@ -37,7 +40,8 @@ describe('VersionService', () => {
 
     // ASSERT
     expect(expectedResponse).not.toBe(null);
-    expect(expectedResponse.major).toBe('1');
-    expect(expectedResponse.build).toBe('dev');
+    expect(expectedResponse.major).toBe(mockResponse.major);
+    expect(expectedResponse.build).toBe(mockResponse.build);
+    expect(http.get).toHaveBeenCalledWith(versionUrlSegment);
   });
 });

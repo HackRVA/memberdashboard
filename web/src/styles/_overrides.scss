@@ -1,5 +1,9 @@
 @import "colors";
 
+.mat-mdc-tab-header-pagination-chevron {
+  border-color: var(--text-color) !important;
+}
+
 button.mat-mdc-raised-button {
   background-color: var(--button-background-color) !important;
   color: $md-plain-white !important;
