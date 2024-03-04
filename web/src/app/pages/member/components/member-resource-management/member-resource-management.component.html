@@ -1,0 +1,31 @@
+<div class="modal-container">
+  <header>
+    <h2>{{ title }}</h2>
+  </header>
+
+  <form [formGroup]="memberResourceManagementGroup">
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Resources</mat-label>
+      <mat-select formControlName="resourceID">
+        <ng-container *ngFor="let resource of resourcesObs$ | async">
+          <mat-option [value]="resource.resourceID"
+            >{{ resource.name }}
+          </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+    <button mat-stroked-button (click)="close()">Cancel</button>
+    <button
+      type="submit"
+      mat-raised-button
+      (click)="submit()"
+      [disabled]="!memberResourceManagementGroup.valid"
+    >
+      Submit
+    </button>
+  </form>
+</div>

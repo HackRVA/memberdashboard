@@ -1,0 +1,10 @@
+<mat-toolbar [style.padding]="padding">
+  <mat-toolbar-row>
+    <section>
+      <ng-content select="[start]"></ng-content>
+    </section>
+    <section>
+      <ng-content select="[end]"></ng-content>
+    </section>
+  </mat-toolbar-row>
+</mat-toolbar>

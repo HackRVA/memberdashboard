@@ -1,0 +1,26 @@
+$top-nav-height: 64px;
+$nav-height: 48px;
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+main {
+  overflow: auto;
+  position: absolute;
+  top: $top-nav-height + $nav-height;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0 auto;
+
+  p {
+    margin-top: 32px;
+    float: right;
+    color: var(--text-color);
+    margin-right: 16px;
+  }
+}

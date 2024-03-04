@@ -1,0 +1,31 @@
+@import "breakpoints";
+
+mat-toolbar {
+  background-color: var(--body-background-color);
+
+  &.mat-toolbar-multiple-rows {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+
+  mat-toolbar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    section {
+      flex: 1;
+    }
+
+    section:last-child {
+      display: inherit;
+      justify-content: flex-end;
+    }
+  }
+}
+
+@media #{$XSmall, $Small} {
+  mat-toolbar-row {
+    flex-direction: column;
+  }
+}

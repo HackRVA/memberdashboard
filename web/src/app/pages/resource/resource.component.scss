@@ -1,0 +1,49 @@
+@import "colors";
+
+action-bar {
+  display: block;
+  margin-bottom: 24px;
+
+  div {
+    display: flex;
+    gap: 8px;
+  }
+
+  header {
+    color: var(--text-color);
+  }
+
+  button[mat-stroked-button]:first-child {
+    color: var(--button-background-color);
+    border-color: var(--button-background-color);
+  }
+
+  button[mat-stroked-button]:nth-child(2) {
+    color: $md-error;
+    border-color: $md-error;
+  }
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+
+  table {
+    .online {
+      color: $md-success;
+    }
+
+    .offline {
+      color: $md-error;
+    }
+
+    .mat-column-actions {
+      display: flex;
+      justify-content: flex-end;
+
+      mat-icon {
+        color: var(--primary-color);
+      }
+    }
+  }
+}

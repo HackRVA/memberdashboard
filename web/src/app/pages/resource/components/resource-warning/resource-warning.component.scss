@@ -1,0 +1,22 @@
+.modal-container {
+  padding: 24px;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h2 {
+      margin-bottom: 0px;
+    }
+  }
+
+  section {
+    text-align: center;
+
+    button {
+      margin-top: 40px;
+    }
+  }
+}

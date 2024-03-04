@@ -1,0 +1,31 @@
+@import "colors";
+
+.modal-container {
+  padding: 24px;
+
+  header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .mat-mdc-form-field {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+    }
+
+    button[mat-stroked-button] {
+      color: var(--button-background-color);
+      border-color: var(--button-background-color);
+      margin-top: 40px;
+    }
+  }
+}

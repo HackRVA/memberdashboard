@@ -1,0 +1,32 @@
+<h2>
+  Member Churn: @if (memberChurn > 0) {
+  <span class="pos"> {{ memberChurn }} </span>
+  } @else if(memberChurn < 0) {
+  <span class="neg"> {{ memberChurn }} </span>
+  } @else {
+  {{ memberChurn }}
+  }
+</h2>
+<div class="chart-container">
+  <section>
+    <button mat-raised-button [matMenuTriggerFor]="menu">Select a month</button>
+    <div #distribution></div>
+    <mat-menu #menu="matMenu">
+      <ng-template matMenuContent>
+        @for (monthlyDistributionData of membershipDistributionData; track
+        $index) {
+
+        <button
+          mat-menu-item
+          (click)="updateMembershipDistributionChart(monthlyDistributionData)"
+        >
+          {{ monthlyDistributionData.options.title }}
+        </button>
+        }
+      </ng-template>
+    </mat-menu>
+  </section>
+  <section>
+    <div #trend></div>
+  </section>
+</div>
