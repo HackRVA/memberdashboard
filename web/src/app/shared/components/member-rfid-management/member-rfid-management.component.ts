@@ -12,6 +12,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MemberService } from '../../services';
 import {
   AssignRFIDRequest,
@@ -30,6 +31,7 @@ import { Observable, of } from 'rxjs';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSnackBarModule,
     FormsModule,
     ReactiveFormsModule,
   ],
@@ -50,7 +52,8 @@ export class MemberRFIDManagementComponent implements OnInit {
     private readonly dialogRef: MatDialogRef<MemberRFIDManagementComponent>,
     private readonly memberService: MemberService,
     @Inject(MAT_DIALOG_DATA)
-    private readonly dialogData: RFIDManagementData
+    private readonly dialogData: RFIDManagementData,
+    private readonly snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -84,7 +87,12 @@ export class MemberRFIDManagementComponent implements OnInit {
     }
     memberObs$.subscribe({
       next: () => {
+        this.snackBar.open('Success', '', { duration: 3000 });
         this.close(true);
+      },
+      error: () => {
+        this.snackBar.open('Hrmmm, it failed', '', { duration: 3000 });
+        this.close(false);
       },
     });
   }

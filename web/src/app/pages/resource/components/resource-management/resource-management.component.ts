@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import { ResourceService } from '@md-shared/services';
 import { ResourceManagementData } from '../../types';
@@ -27,6 +28,7 @@ import { ResourceManagementData } from '../../types';
     MatFormFieldModule,
     MatInputModule,
     MatCheckboxModule,
+    MatSnackBarModule,
     FormsModule,
     ReactiveFormsModule,
   ],
@@ -45,7 +47,8 @@ export class ResourceManagementComponent implements OnInit {
     private readonly resourceService: ResourceService,
     private readonly dialogRef: MatDialogRef<ResourceManagementComponent>,
     @Inject(MAT_DIALOG_DATA)
-    private readonly dialogData: ResourceManagementData
+    private readonly dialogData: ResourceManagementData,
+    private readonly snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -70,8 +73,15 @@ export class ResourceManagementComponent implements OnInit {
       );
     }
 
-    resourceObs$.subscribe(() => {
-      this.close(true);
+    resourceObs$.subscribe({
+      next: () => {
+        this.snackBar.open('Success', '', { duration: 3000 });
+        this.close(true);
+      },
+      error: () => {
+        this.snackBar.open('Hrmmm, it failed', '', { duration: 3000 });
+        this.close(false);
+      },
     });
   }
 

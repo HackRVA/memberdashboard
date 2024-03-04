@@ -13,6 +13,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Observable, of, switchMap } from 'rxjs';
 import { ResourceService } from '@md-shared/services';
 import {
@@ -31,6 +32,7 @@ import { MemberResourceManagementData } from '../../types';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSnackBarModule,
     FormsModule,
     ReactiveFormsModule,
   ],
@@ -52,7 +54,8 @@ export class MemberResourceManagementComponent implements OnInit {
     private readonly dialogRef: MatDialogRef<MemberResourceManagementComponent>,
     private readonly resourceService: ResourceService,
     @Inject(MAT_DIALOG_DATA)
-    private readonly dialogData: MemberResourceManagementData
+    private readonly dialogData: MemberResourceManagementData,
+    private readonly snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -78,8 +81,15 @@ export class MemberResourceManagementComponent implements OnInit {
       } as BulkAddMembersToResourceRequest);
     }
 
-    resourceService$.subscribe(() => {
-      this.close(true);
+    resourceService$.subscribe({
+      next: () => {
+        this.snackBar.open('Success', '', { duration: 3000 });
+        this.close(true);
+      },
+      error: () => {
+        this.snackBar.open('Hrmmm, it failed', '', { duration: 3000 });
+        this.close(false);
+      },
     });
   }
 

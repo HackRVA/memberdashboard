@@ -11,6 +11,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MemberService } from '@md-shared/services';
 import { MemberResponse } from '@md-shared/types';
 
@@ -22,6 +23,7 @@ import { MemberResponse } from '@md-shared/types';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSnackBarModule,
     FormsModule,
     ReactiveFormsModule,
   ],
@@ -41,7 +43,8 @@ export class MemberManagementComponent implements OnInit {
     private readonly dialogData: Pick<
       MemberResponse,
       'name' | 'subscriptionID' | 'email'
-    >
+    >,
+    private readonly snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -58,8 +61,15 @@ export class MemberManagementComponent implements OnInit {
         this.dialogData.email,
         this.memberManagementGroup.value
       )
-      .subscribe(() => {
-        this.close(true);
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Success', '', { duration: 3000 });
+          this.close(true);
+        },
+        error: () => {
+          this.snackBar.open('Hrmmm, it failed', '', { duration: 3000 });
+          this.close(false);
+        },
       });
   }
 
