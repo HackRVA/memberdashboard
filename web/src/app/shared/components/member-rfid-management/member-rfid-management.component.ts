@@ -44,7 +44,10 @@ export class MemberRFIDManagementComponent implements OnInit {
   memberRFIDType: RFIDManagementType;
 
   rfidManagementGroup: FormGroup = new FormGroup({
-    email: new FormControl<string>(null, [Validators.required]),
+    email: new FormControl<string>(null, [
+      Validators.required,
+      Validators.email,
+    ]),
     rfid: new FormControl<number>(null, [Validators.required]),
   });
 
