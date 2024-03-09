@@ -47,16 +47,14 @@ export class ReportComponent implements OnInit {
   }
 
   private fetchAndLoadReport(): Observable<void> {
-    return this.breakPointObserver
-      .observe([Breakpoints.XSmall, Breakpoints.Small])
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        switchMap((result: BreakpointState) => {
-          this._isMobile = result.matches ? true : false;
-          this.removeAllGoogleCharts();
-          return this.fetchAndLoadCharts();
-        })
-      );
+    return this.breakPointObserver.observe([Breakpoints.XSmall]).pipe(
+      takeUntilDestroyed(this._destroyRef),
+      switchMap((result: BreakpointState) => {
+        this._isMobile = result.matches ? true : false;
+        this.removeAllGoogleCharts();
+        return this.fetchAndLoadCharts();
+      })
+    );
   }
 
   private fetchAndLoadCharts(): Observable<void> {
@@ -131,9 +129,11 @@ export class ReportComponent implements OnInit {
   ): void {
     const googleChart = this.renderer.createElement('google-chart');
 
-    if (this._isMobile) {
-      this.renderer.setStyle(googleChart, 'width', '320px');
-    }
+    this.renderer.setStyle(
+      googleChart,
+      'width',
+      this._isMobile ? '320px' : '600px'
+    );
 
     this.renderer.setAttribute(
       googleChart,
