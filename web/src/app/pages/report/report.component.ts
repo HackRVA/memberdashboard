@@ -8,6 +8,11 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
+import {
+  BreakpointObserver,
+  BreakpointState,
+  Breakpoints,
+} from '@angular/cdk/layout';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -29,10 +34,12 @@ export class ReportComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
   memberChurn: number = 0;
   membershipDistributionData: ReportChartResponse[] = [];
+  private _isMobile: boolean = false;
 
   constructor(
     private readonly reportService: ReportService,
-    private readonly renderer: Renderer2
+    private readonly renderer: Renderer2,
+    private readonly breakPointObserver: BreakpointObserver
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +47,19 @@ export class ReportComponent implements OnInit {
   }
 
   private fetchAndLoadReport(): Observable<void> {
+    return this.breakPointObserver
+      .observe([Breakpoints.XSmall, Breakpoints.Small])
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        switchMap((result: BreakpointState) => {
+          this._isMobile = result.matches ? true : false;
+          this.removeAllGoogleCharts();
+          return this.fetchAndLoadCharts();
+        })
+      );
+  }
+
+  private fetchAndLoadCharts(): Observable<void> {
     return forkJoin({
       churnResponse: this.reportService.getMemberChurn(),
       reportsResponse: this.reportService.getReportsCharts(),
@@ -65,15 +85,21 @@ export class ReportComponent implements OnInit {
   }
 
   updateMembershipDistributionChart(chartData: ReportChartResponse): void {
-    const existingGoogleChart =
-      this.distributionChart.nativeElement.querySelector('google-chart');
-    if (existingGoogleChart) {
-      this.renderer.removeChild(
-        this.distributionChart.nativeElement,
-        existingGoogleChart
-      );
-    }
+    this.removeGoogleChart(this.distributionChart);
     this.createMembershipDistributionChart(chartData);
+  }
+
+  private removeAllGoogleCharts(): void {
+    this.removeGoogleChart(this.distributionChart);
+    this.removeGoogleChart(this.trendChart);
+  }
+
+  private removeGoogleChart(el: ElementRef<any>): void {
+    const existingGoogleChart =
+      el?.nativeElement?.querySelector('google-chart');
+    if (existingGoogleChart) {
+      this.renderer.removeChild(el.nativeElement, existingGoogleChart);
+    }
   }
 
   private createMembershipDistributionChart(
@@ -104,6 +130,11 @@ export class ReportComponent implements OnInit {
     chartData: ReportChartResponse
   ): void {
     const googleChart = this.renderer.createElement('google-chart');
+
+    if (this._isMobile) {
+      this.renderer.setStyle(googleChart, 'width', '320px');
+    }
+
     this.renderer.setAttribute(
       googleChart,
       'options',

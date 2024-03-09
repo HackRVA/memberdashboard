@@ -6,13 +6,11 @@ div {
 
   h2 {
     font-size: 2em;
-    margin-top: 3em;
-    margin-bottom: 2.5em;
+    margin: 2.5em 0px;
   }
 
   form {
     max-width: 360px;
-
     button,
     .mat-mdc-form-field {
       width: 100%;
@@ -20,6 +18,10 @@ div {
 
     button {
       margin-top: 40px;
+    }
+
+    mat-icon {
+      cursor: pointer;
     }
   }
 

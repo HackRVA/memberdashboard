@@ -35,6 +35,7 @@ import { passwordMatchValidator } from './validator';
 export class LoginComponent {
   showLoginForm: boolean = true;
   hasFailed: boolean = false;
+  hide: boolean = true;
 
   loginFormGroup: FormGroup = new FormGroup({
     email: new FormControl<string>(null, [

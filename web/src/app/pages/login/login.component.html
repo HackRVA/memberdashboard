@@ -9,7 +9,14 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" />
+      <input
+        matInput
+        [type]="hide ? 'password' : 'text'"
+        formControlName="password"
+      />
+      <mat-icon matSuffix (click)="hide = !hide">{{
+        hide ? "visibility_off" : "visibility"
+      }}</mat-icon>
     </mat-form-field>
 
     @if(loginFormGroup.hasError('apiError')) {
