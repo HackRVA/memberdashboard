@@ -19,3 +19,7 @@ button.mat-mdc-raised-button {
     border-color: var(--text-color) !important;
   }
 }
+
+.mat-mdc-menu-content {
+  max-height: 400px;
+}
