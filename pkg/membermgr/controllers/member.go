@@ -225,3 +225,33 @@ func (m *MemberServer) CheckStatus(w http.ResponseWriter, r *http.Request) {
 
 	ok(w, member)
 }
+
+func (m *MemberServer) SetCredited(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id := params["id"]
+	if id == "" {
+		badRequest(w, "not a valid subscriptionID")
+		return
+	}
+
+	isCredited := params["isCredited"]
+	if isCredited != "true" || isCredited != "false" {
+		badRequest(w, "not a valid isCredited")
+		return
+	}
+	level := models.Classic
+
+	if isCredited == "true" {
+		level = models.Credited
+	}
+
+	err := m.MemberService.SetLevel(id, level)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error getting member by status: %s", err.Error()), http.StatusNotFound)
+		return
+	}
+
+	ok(w, models.InfoResponse{
+		Message: fmt.Sprintf("member %s set to level %s", id, level),
+	})
+}

@@ -18,6 +18,7 @@ type MemberHTTPHandler interface {
 	GetNonMembersOnSlackHandler(w http.ResponseWriter, r *http.Request)
 	AddNewMemberHandler(w http.ResponseWriter, r *http.Request)
 	CheckStatus(w http.ResponseWriter, r *http.Request)
+	SetCredited(w http.ResponseWriter, r *http.Request)
 }
 
 func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.AccessControl) {
@@ -203,4 +204,5 @@ func (r Router) setupMemberRoutes(member MemberHTTPHandler, accessControl rbac.A
 	//     Responses:
 	//       200: setRFIDResponse
 	r.authedRouter.HandleFunc("/member/assignRFID", accessControl.Restrict(member.AssignRFIDHandler, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
+	r.authedRouter.HandleFunc("/member/credit", accessControl.Restrict(member.SetCredited, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPut)
 }

@@ -202,3 +202,7 @@ func (m member) CheckStatus(paymentProvider integrations.PaymentProvider) error 
 	})
 	return nil
 }
+
+func (m member) SetLevel(memberID string, level models.MemberLevel) error {
+	return m.store.SetMemberLevel(memberID, level)
+}
