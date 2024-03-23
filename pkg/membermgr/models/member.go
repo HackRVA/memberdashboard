@@ -41,3 +41,7 @@ type Payment struct {
 	Amount string    `json:"amount"`
 	Time   time.Time `json:"time"`
 }
+
+type MemberShipCreditRequest struct {
+	IsCredited bool `json:"isCredited"`
+}

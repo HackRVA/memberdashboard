@@ -227,6 +227,7 @@ func (m *MemberServer) CheckStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *MemberServer) SetCredited(w http.ResponseWriter, r *http.Request) {
+	var creditRequest models.MemberShipCreditRequest
 	params := mux.Vars(r)
 	id := params["id"]
 	if id == "" {
@@ -234,18 +235,19 @@ func (m *MemberServer) SetCredited(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	isCredited := params["isCredited"]
-	if isCredited != "true" && isCredited != "false" {
-		badRequest(w, "not a valid isCredited")
+	err := json.NewDecoder(r.Body).Decode(&creditRequest)
+	if err != nil {
+		badRequest(w, err.Error())
 		return
 	}
-	level := models.Classic
 
-	if isCredited == "true" {
+	level := models.Standard
+
+	if creditRequest.IsCredited {
 		level = models.Credited
 	}
 
-	err := m.MemberService.SetLevel(id, level)
+	err = m.MemberService.SetLevel(id, level)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error getting member by status: %s", err.Error()), http.StatusNotFound)
 		return
