@@ -135,8 +135,8 @@ func (m memberService) FindNonMembersOnSlack() []string {
 	return nonMembers
 }
 
-func (ms memberService) SetMemberLevel(memberId string, level models.MemberLevel) error {
-	return ms.store.SetMemberLevel(memberId, level)
+func (ms memberService) SetLevel(memberID string, level models.MemberLevel) error {
+	return ms.store.SetMemberLevel(memberID, level)
 }
 
 func (ms memberService) GetMemberFromSubscription(subscriptionID string) (models.Member, error) {

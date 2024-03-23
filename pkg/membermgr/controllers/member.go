@@ -235,7 +235,7 @@ func (m *MemberServer) SetCredited(w http.ResponseWriter, r *http.Request) {
 	}
 
 	isCredited := params["isCredited"]
-	if isCredited != "true" || isCredited != "false" {
+	if isCredited != "true" && isCredited != "false" {
 		badRequest(w, "not a valid isCredited")
 		return
 	}
@@ -252,6 +252,6 @@ func (m *MemberServer) SetCredited(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ok(w, models.InfoResponse{
-		Message: fmt.Sprintf("member %s set to level %s", id, level),
+		Message: fmt.Sprintf("member %s set to level %s", id, models.MemberLevelToStr[level]),
 	})
 }
