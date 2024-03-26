@@ -1,22 +1,3 @@
-// Package Classification Member Server API.
-//
-//	 Schemes: http, https
-//	 Version: 0.0.1
-//	 License: MIT http://opensource.org/licenses/MIT
-//
-//	SecurityDefinitions:
-//	bearerAuth:
-//	  type: apiKey
-//	  in: header
-//	  name: Authorization
-//	  description: Enter your bearer token
-//	basicAuth:
-//	  type: basic
-//	  in: header
-//	  name: Authorization
-//	  description: Enter your basic auth credentials
-//
-// swagger:meta
 package routes
 
 import (
