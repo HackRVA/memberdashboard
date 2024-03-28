@@ -6,9 +6,7 @@
   <section>
     @if(member) {
     <p>
-      @if (member.subscriptionID) {
-      {{ member.subscriptionID }}
-      } @else { No Subscription ID }
+      {{ member.subscriptionID ?? "No Subscription ID" }}
     </p>
     <p>
       {{ member.memberLevel | memberLevel }}

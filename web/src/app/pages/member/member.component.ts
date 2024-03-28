@@ -221,9 +221,7 @@ export class MemberComponent implements OnInit {
     this.dialog.open(MemberSubscriptionStatusComponent, {
       autoFocus: false,
       width: '320px',
-      data: {
-        subscriptionID: member.subscriptionID,
-      } as Pick<MemberResponse, 'subscriptionID'>,
+      data: member,
     });
   }
 

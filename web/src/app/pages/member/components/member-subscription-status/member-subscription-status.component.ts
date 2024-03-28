@@ -22,7 +22,7 @@ export class MemberSubscriptionStatusComponent implements OnInit {
     private readonly dialogRef: MatDialogRef<MemberSubscriptionStatusComponent>,
     private readonly memberService: MemberService,
     @Inject(MAT_DIALOG_DATA)
-    private readonly dialogData: Pick<MemberResponse, 'subscriptionID'>
+    private readonly dialogData: MemberResponse
   ) {}
 
   ngOnInit(): void {
@@ -34,15 +34,27 @@ export class MemberSubscriptionStatusComponent implements OnInit {
   }
 
   private fetchAndLoadStatus(): Observable<void> {
-    return this.memberService
-      .checkMemberStatus(this.dialogData.subscriptionID)
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        switchMap((response: MemberResponse) => {
-          this.member = response ? response : ({} as MemberResponse);
+    return of(this.dialogData.subscriptionID).pipe(
+      switchMap((subscriptionID: string) => {
+        if (subscriptionID) {
+          return this.memberService
+            .checkMemberStatus(this.dialogData.subscriptionID)
+            .pipe(
+              takeUntilDestroyed(this._destroyRef),
+              switchMap((response: MemberResponse) => {
+                this.member = response ? response : ({} as MemberResponse);
 
-          return of(null);
-        })
-      );
+                return of(null);
+              })
+            );
+        }
+
+        this.member = {
+          memberLevel: this.dialogData.memberLevel,
+        } as MemberResponse;
+
+        return of(null);
+      })
+    );
   }
 }
