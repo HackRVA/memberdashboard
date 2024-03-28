@@ -17,7 +17,7 @@ import { Observable, of, switchMap } from 'rxjs';
 })
 export class MemberSubscriptionStatusComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
-  member: MemberResponse = {} as MemberResponse;
+  member: MemberResponse;
   constructor(
     private readonly dialogRef: MatDialogRef<MemberSubscriptionStatusComponent>,
     private readonly memberService: MemberService,
@@ -39,9 +39,7 @@ export class MemberSubscriptionStatusComponent implements OnInit {
       .pipe(
         takeUntilDestroyed(this._destroyRef),
         switchMap((response: MemberResponse) => {
-          if (response) {
-            this.member = response;
-          }
+          this.member = response ? response : ({} as MemberResponse);
 
           return of(null);
         })

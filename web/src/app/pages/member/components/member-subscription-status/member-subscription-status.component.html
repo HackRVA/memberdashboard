@@ -4,6 +4,7 @@
   </header>
 
   <section>
+    @if(member) {
     <p>
       @if (member.subscriptionID) {
       {{ member.subscriptionID }}
@@ -12,6 +13,9 @@
     <p>
       {{ member.memberLevel | memberLevel }}
     </p>
+    } @else {
+    <p>Loading ...</p>
+    }
     <button type="type" mat-raised-button (click)="close()">Close</button>
   </section>
 </div>
