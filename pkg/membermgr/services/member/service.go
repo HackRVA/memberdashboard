@@ -47,6 +47,7 @@ func (m memberService) GetByEmail(email string) (models.Member, error) {
 }
 
 func (m memberService) Update(member models.Member) error {
+	defer m.CheckStatus(member.SubscriptionID)
 	return m.store.UpdateMember(member)
 }
 
