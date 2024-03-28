@@ -72,4 +72,10 @@ export class MemberService {
   assignNewMemberRFID(request: CreateMemberRequest): Observable<void> {
     return this.http.post<void>(this._memberUrlSegment + '/new', request);
   }
+
+  checkMemberStatus(subscriptionID: string): Observable<MemberResponse> {
+    return this.http.get<MemberResponse>(
+      `${this._memberUrlSegment}/${subscriptionID}/status`
+    );
+  }
 }

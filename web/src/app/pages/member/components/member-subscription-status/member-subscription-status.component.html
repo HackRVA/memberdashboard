@@ -1,0 +1,17 @@
+<div class="modal-container">
+  <header>
+    <h2>Member Subscription Status</h2>
+  </header>
+
+  <section>
+    <p>
+      @if (member.subscriptionID) {
+      {{ member.subscriptionID }}
+      } @else { No Subscription ID }
+    </p>
+    <p>
+      {{ member.memberLevel | memberLevel }}
+    </p>
+    <button type="type" mat-raised-button (click)="close()">Close</button>
+  </section>
+</div>

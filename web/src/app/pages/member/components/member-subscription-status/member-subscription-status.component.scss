@@ -1,0 +1,19 @@
+@import "colors";
+
+.modal-container {
+  padding: 24px;
+
+  header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  section {
+    text-align: center;
+
+    button {
+      margin-top: 24px;
+    }
+  }
+}

@@ -213,6 +213,20 @@ export class MemberComponent implements OnInit {
       .subscribe();
   }
 
+  async openMemberSubscriptionStatus(member: MemberResponse): Promise<void> {
+    const { MemberSubscriptionStatusComponent } = await import(
+      './components/member-subscription-status'
+    );
+
+    this.dialog.open(MemberSubscriptionStatusComponent, {
+      autoFocus: false,
+      width: '320px',
+      data: {
+        subscriptionID: member.subscriptionID,
+      } as Pick<MemberResponse, 'subscriptionID'>,
+    });
+  }
+
   private paginate(pageInfo: { currentPage: number; count: number }): void {
     const currentRequest: MemberSearchRequest = this.searchRequest$.getValue();
     this.searchRequest$.next({

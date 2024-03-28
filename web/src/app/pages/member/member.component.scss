@@ -26,12 +26,19 @@ action-bar {
 
   table {
     .mat-column-actions {
-      display: flex;
-      justify-content: flex-end;
-
-      mat-icon {
-        color: var(--primary-color);
+      div {
+        display: flex;
+        justify-content: flex-end;
+        mat-icon {
+          color: var(--primary-color);
+        }
       }
+    }
+
+    a {
+      cursor: pointer;
+      text-decoration: underline;
+      color: var(--primary-color);
     }
 
     ul {
