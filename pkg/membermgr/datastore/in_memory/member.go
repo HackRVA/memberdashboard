@@ -12,15 +12,19 @@ func (i *In_memory) allocMembers() {
 		i.Members = map[string]models.Member{}
 	}
 }
+
 func (i *In_memory) GetTiers() []models.Tier {
 	return i.Tiers
 }
+
 func (i *In_memory) GetMembersWithLimit(limit int, offset int, active bool) []models.Member {
 	return MemberMapToSlice(i.Members)
 }
+
 func (i *In_memory) GetMembers() []models.Member {
 	return MemberMapToSlice(i.Members)
 }
+
 func (i *In_memory) GetMemberByEmail(email string) (models.Member, error) {
 	// i.Members = Members
 	println("Member len: ", len(i.Members))
@@ -89,6 +93,7 @@ func (i *In_memory) AddNewMember(newMember models.Member) (models.Member, error)
 	i.Members[newMember.Email] = newMember
 	return newMember, nil
 }
+
 func (i *In_memory) AddMembers(members []models.Member) error {
 	i.allocMembers()
 	for _, m := range members {
@@ -96,9 +101,11 @@ func (i *In_memory) AddMembers(members []models.Member) error {
 	}
 	return nil
 }
+
 func (i *In_memory) GetMembersWithCredit() []models.Member {
 	return []models.Member{}
 }
+
 func (i *In_memory) ProcessMember(newMember models.Member) error {
 	return nil
 }
@@ -120,6 +127,10 @@ func (i *In_memory) SetMemberLevel(memberId string, level models.MemberLevel) er
 }
 func (i *In_memory) ApplyMemberCredits() {}
 func (i *In_memory) UpdateMemberTiers()  {}
+
+func (i *In_memory) GetActiveMembersWithoutSubscription() []models.Member {
+	return nil
+}
 
 func MemberMapToSlice(m map[string]models.Member) []models.Member {
 	var members []models.Member

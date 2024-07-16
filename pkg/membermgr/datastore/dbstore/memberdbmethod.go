@@ -199,3 +199,8 @@ func (member *MemberDatabaseMethod) updateMemberTiers() string {
 	`
 	return sql
 }
+
+func (member *MemberDatabaseMethod) getActiveMembersWithoutSubscription() string {
+	return `SELECT id, name, email, rfid, member_tier_id, subscription_id
+	FROM membership.members_without_subscriptions;`
+}

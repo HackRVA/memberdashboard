@@ -9,6 +9,7 @@ import (
 	"github.com/HackRVA/memberserver/pkg/membermgr/integrations"
 	"github.com/HackRVA/memberserver/pkg/membermgr/services"
 	"github.com/HackRVA/memberserver/pkg/slack"
+	"github.com/sirupsen/logrus"
 
 	"github.com/HackRVA/memberserver/pkg/membermgr/models"
 )
@@ -38,6 +39,7 @@ func (m memberService) Add(newMember models.Member) (models.Member, error) {
 func (m memberService) GetMembersWithLimit(limit int, count int, active bool) []models.Member {
 	return m.store.GetMembersWithLimit(limit, count, active)
 }
+
 func (m memberService) Get() []models.Member {
 	return m.store.GetMembers()
 }
@@ -63,7 +65,6 @@ func (m memberService) AssignRFID(email string, rfid string) (models.Member, err
 
 func (ms memberService) GetMemberBySubscriptionID(subscriptionID string) (models.Member, error) {
 	_, email, err := ms.paymentProvider.GetSubscriber(subscriptionID)
-
 	if err != nil {
 		return models.Member{}, err
 	}
@@ -79,6 +80,11 @@ func (ms memberService) GetMemberBySubscriptionID(subscriptionID string) (models
 
 func (ms memberService) CheckStatus(subscriptionID string) (models.Member, error) {
 	var m models.Member
+
+	if subscriptionID == "none" {
+		logrus.Error("tried to lookup subscriptionID that was 'none'")
+		return m, errors.New("tried to lookup subscriptionID that was 'none'")
+	}
 
 	for _, el := range ms.store.GetMembers() {
 		if el.SubscriptionID != subscriptionID {
@@ -150,4 +156,8 @@ func (ms memberService) GetMemberFromSubscription(subscriptionID string) (models
 		Name:           name,
 		SubscriptionID: subscriptionID,
 	}, nil
+}
+
+func (ms memberService) GetActiveMembersWithoutSubscription() []models.Member {
+	return ms.store.GetActiveMembersWithoutSubscription()
 }

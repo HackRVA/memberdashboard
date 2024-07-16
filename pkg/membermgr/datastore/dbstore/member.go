@@ -229,7 +229,6 @@ func (db *DatabaseStore) UpdateMember(update models.Member) error {
 	defer dbPool.Close()
 
 	member, err := db.GetMemberByEmail(update.Email)
-
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())
 		return err
@@ -504,5 +503,32 @@ func (db *DatabaseStore) UpdateMemberTiers() {
 	if commandTag.RowsAffected() == 0 {
 		log.Errorf("no row affected")
 	}
+}
 
+func (db *DatabaseStore) GetActiveMembersWithoutSubscription() []models.Member {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	var members []models.Member
+	rows, err := dbPool.Query(db.ctx, memberDbMethod.getActiveMembersWithoutSubscription())
+	if err != nil {
+		log.Errorf("GetMembers failed: %v", err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var rIDs []string
+		var member models.Member
+		err = rows.Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs, &member.SubscriptionID)
+		if err != nil {
+			log.Errorf("error scanning row: %s", err)
+		}
+		members = append(members, member)
+	}
+
+	return members
 }

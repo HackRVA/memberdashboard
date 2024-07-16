@@ -1,7 +1,11 @@
 package jobs
 
 import (
+	"fmt"
 	"io/ioutil"
+	"net/http"
+	"os"
+	"strings"
 
 	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/pkg/membermgr/datastore"
@@ -9,10 +13,6 @@ import (
 	"github.com/HackRVA/memberserver/pkg/membermgr/services"
 	"github.com/HackRVA/memberserver/pkg/membermgr/services/mail"
 	"github.com/HackRVA/memberserver/pkg/paypal"
-
-	"net/http"
-	"os"
-	"strings"
 )
 
 type JobController struct {
@@ -51,6 +51,27 @@ func (j JobController) CheckMemberSubscriptions() {
 	for _, member := range members {
 		j.member.CheckStatus(member.SubscriptionID)
 	}
+	j.checkActiveMembersWithoutSubscription()
+}
+
+func (j JobController) checkActiveMembersWithoutSubscription() {
+	membersWithoutSubscription := j.member.GetActiveMembersWithoutSubscription()
+	if len(membersWithoutSubscription) == 0 {
+		return
+	}
+	var notification string
+	notification += "Found active members without subscription... this needs to be addressed:\n```\n"
+
+	for _, m := range membersWithoutSubscription {
+		notification += fmt.Sprintf(
+			"ID: %-20s Name: %-20s Email: %-30s RFID: %-15s Level: %-5d SubscriptionID: %-15s\n",
+			m.ID, m.Name, m.Email, m.RFID, m.Level, m.SubscriptionID,
+		)
+	}
+
+	notification += "```\n"
+
+	j.logger.Errorf("%s", notification)
 }
 
 func (j JobController) CheckResourceInit() {
@@ -107,7 +128,7 @@ func (j JobController) CheckIPAddressInterval() {
 
 	// create file if not exists
 	if os.IsNotExist(err) {
-		var file, err = os.Create(ipFileName)
+		file, err := os.Create(ipFileName)
 		if err != nil {
 			j.logger.Error(err)
 			return
@@ -148,14 +169,17 @@ func (j JobController) RemovedInvalidUIDs() {
 	j.logger.Infof("[scheduled-job] removing any invalid members from resources")
 	j.resourceManager.RemovedInvalidUIDs()
 }
+
 func (j JobController) EnableValidUIDs() {
 	j.logger.Infof("[scheduled-job] enabling valid members on resources")
 	j.resourceManager.EnableValidUIDs()
 }
+
 func (j JobController) UpdateResources() {
 	j.logger.Infof("[scheduled-job] updating resources")
 	j.resourceManager.UpdateResources()
 }
+
 func (j JobController) UpdateMemberCounts() {
 	j.logger.Infof("[scheduled-job] updating member counts")
 	j.DataStore.UpdateMemberCounts()

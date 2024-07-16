@@ -36,6 +36,7 @@ type (
 		SetMemberLevel(memberId string, level models.MemberLevel) error
 		ApplyMemberCredits()
 		UpdateMemberTiers()
+		GetActiveMembersWithoutSubscription() []models.Member
 	}
 
 	ResourceStore interface {

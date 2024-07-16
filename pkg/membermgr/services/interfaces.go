@@ -24,6 +24,7 @@ type (
 		GetMemberFromSubscription(subscriptionID string) (models.Member, error)
 		CheckStatus(subscriptionID string) (models.Member, error)
 		SetLevel(memberID string, level models.MemberLevel) error
+		GetActiveMembersWithoutSubscription() []models.Member
 	}
 
 	MQTTHandler interface {
