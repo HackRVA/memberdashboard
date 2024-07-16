@@ -51,26 +51,25 @@ func (j JobController) CheckMemberSubscriptions() {
 	for _, member := range members {
 		j.member.CheckStatus(member.SubscriptionID)
 	}
-	j.checkActiveMembersWithoutSubscription()
 }
 
-func (j JobController) checkActiveMembersWithoutSubscription() {
+func (j JobController) CheckActiveMembersWithoutSubscription() {
+	j.logger.Infof("[scheduled-job] checking active members without subscription")
 	membersWithoutSubscription := j.member.GetActiveMembersWithoutSubscription()
 	if len(membersWithoutSubscription) == 0 {
 		return
 	}
 	var notification string
-	notification += "Found active members without subscription... this needs to be addressed:\n```\n"
+	notification += "Found active members without subscription... this needs to be addressed:\n\n"
 
 	for _, m := range membersWithoutSubscription {
 		notification += fmt.Sprintf(
-			"ID: %-20s Name: %-20s Email: %-30s RFID: %-15s Level: %-5d SubscriptionID: %-15s\n",
-			m.ID, m.Name, m.Email, m.RFID, m.Level, m.SubscriptionID,
+			"ID: %-20s Name: %-20s Email: %-30s RFID: %-15s Level: %-5d \n",
+			m.ID, m.Name, m.Email, m.RFID, m.Level,
 		)
 	}
 
-	notification += "```\n"
-
+	notification += "\n"
 	j.logger.Errorf("%s", notification)
 }
 
@@ -148,8 +147,7 @@ func (j JobController) CheckIPAddressInterval() {
 		return
 	}
 
-	// if this is the first run, don't send an email,
-	//   but set the ip address
+	// if this is the first run, don't send an email, but set the ip address
 	previousIp := strings.TrimSpace(string(b))
 	if previousIp == "" || previousIp == currentIp {
 		return

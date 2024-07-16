@@ -521,14 +521,12 @@ func (db *DatabaseStore) GetActiveMembersWithoutSubscription() []models.Member {
 	defer rows.Close()
 
 	for rows.Next() {
-		var rIDs []string
 		var member models.Member
-		err = rows.Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs, &member.SubscriptionID)
+		err = rows.Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level)
 		if err != nil {
 			log.Errorf("error scanning row: %s", err)
 		}
 		members = append(members, member)
 	}
-
 	return members
 }

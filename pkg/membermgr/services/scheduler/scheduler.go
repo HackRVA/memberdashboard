@@ -39,6 +39,7 @@ type Task struct {
 //	The scheduler will make sure that happens
 func (s *Scheduler) Setup(j services.Job) {
 	tasks := []Task{
+		{interval: checkPaymentsInterval * time.Hour, initFunc: j.CheckActiveMembersWithoutSubscription, tickFunc: j.CheckActiveMembersWithoutSubscription},
 		{interval: checkPaymentsInterval * time.Hour, initFunc: j.CheckMemberSubscriptions, tickFunc: j.CheckMemberSubscriptions},
 		{interval: evaluateMemberStatusInterval * time.Hour, initFunc: j.RemovedInvalidUIDs, tickFunc: j.RemovedInvalidUIDs},
 		{interval: evaluateMemberStatusInterval * time.Hour, initFunc: j.EnableValidUIDs, tickFunc: j.EnableValidUIDs},

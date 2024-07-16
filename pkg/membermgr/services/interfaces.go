@@ -81,6 +81,7 @@ type (
 	}
 
 	Job interface {
+		CheckActiveMembersWithoutSubscription()
 		CheckMemberSubscriptions()
 		CheckResourceInit()
 		CheckResourceInterval()
