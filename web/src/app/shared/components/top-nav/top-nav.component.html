@@ -16,7 +16,7 @@
       <mat-icon> account_circle</mat-icon>
     </button>
     <mat-menu #profileMenu="matMenu">
-      <li (click)="$event.stopPropagation()">{{ username }}</li>
+      <li mat-menu-item (click)="$event.stopPropagation()">{{ username }}</li>
       <li mat-menu-item (click)="logout()">
         <mat-icon> logout</mat-icon> Logout
       </li>
