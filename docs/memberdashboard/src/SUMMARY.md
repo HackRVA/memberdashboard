@@ -17,7 +17,6 @@
 # Development
 - [Getting Started](development/getting_started.md)
 - [Setup](development/setup.md)
-- [Installing flutter](development/installing_flutter.md)
 - [Config](development/config.md)
 - [Development Tasks](development/development-tasks.md)
 - [Database Migrations](development/migratedb.md)
