@@ -16,7 +16,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MemberService } from '../../services';
 import {
   AssignRFIDRequest,
-  CreateMemberRequest,
   RFIDManagementData,
   RFIDManagementType,
 } from '../../types';
@@ -44,6 +43,7 @@ export class MemberRFIDManagementComponent implements OnInit {
   memberRFIDType: RFIDManagementType;
 
   rfidManagementGroup: FormGroup = new FormGroup({
+    name: new FormControl<string>(null, [Validators.required]),
     email: new FormControl<string>(null, [
       Validators.required,
       Validators.email,
@@ -69,7 +69,7 @@ export class MemberRFIDManagementComponent implements OnInit {
 
   submit(): void {
     let memberObs$: Observable<void> = null;
-    const request: CreateMemberRequest | AssignRFIDRequest = {
+    const request: AssignRFIDRequest = {
       email: this.rfidManagementGroup.get('email').value,
       rfid: this.rfidManagementGroup.get('rfid').value.toString(),
     };
@@ -79,7 +79,10 @@ export class MemberRFIDManagementComponent implements OnInit {
         memberObs$ = this.memberService.assignRFIDToSelf(request);
         break;
       case RFIDManagementType.New:
-        memberObs$ = this.memberService.assignNewMemberRFID(request);
+        memberObs$ = this.memberService.assignNewMemberRFID({
+          ...request,
+          name: this.rfidManagementGroup.get('name').value,
+        });
         break;
       case RFIDManagementType.Edit:
         memberObs$ = this.memberService.assignRFID(request);
@@ -101,11 +104,16 @@ export class MemberRFIDManagementComponent implements OnInit {
   }
 
   private handleData(data: RFIDManagementData): void {
+    if (data.name) {
+      this.rfidManagementGroup.get('name').setValue(data.name);
+    }
+
     if (data.email) {
       this.rfidManagementGroup.get('email').setValue(data.email);
     }
 
     if (data.shouldDisable) {
+      this.rfidManagementGroup.get('name').disable();
       this.rfidManagementGroup.get('email').disable();
     }
 
