@@ -150,7 +150,10 @@ export class MemberComponent implements OnInit {
       .open(
         MemberRFIDManagementComponent,
         member
-          ? RFIDManagementFactory.createEditMemberData(member.email)
+          ? RFIDManagementFactory.createEditMemberData(
+              member.name,
+              member.email
+            )
           : RFIDManagementFactory.createNewMemberData()
       )
       .afterClosed()

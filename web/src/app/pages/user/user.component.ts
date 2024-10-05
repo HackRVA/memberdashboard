@@ -35,7 +35,7 @@ export class UserComponent implements OnInit {
     this.dialog
       .open(
         MemberRFIDManagementComponent,
-        RFIDManagementFactory.createSelfData(this.user.email)
+        RFIDManagementFactory.createSelfData(this.user.name, this.user.email)
       )
       .afterClosed()
       .pipe(

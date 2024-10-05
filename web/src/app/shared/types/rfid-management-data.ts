@@ -1,4 +1,5 @@
 export type RFIDManagementData = {
+  name: string;
   title: string;
   email: string;
   shouldDisable: boolean;
