@@ -49,6 +49,7 @@ export class MemberRFIDManagementComponent implements OnInit {
       Validators.email,
     ]),
     rfid: new FormControl<number>(null, [Validators.required]),
+    subscriptionID: new FormControl<string>(null),
   });
 
   constructor(
@@ -82,6 +83,7 @@ export class MemberRFIDManagementComponent implements OnInit {
         memberObs$ = this.memberService.assignNewMemberRFID({
           ...request,
           name: this.rfidManagementGroup.get('name').value,
+          subscriptionID: this.rfidManagementGroup.get('subscriptionID').value,
         });
         break;
       case RFIDManagementType.Edit:
