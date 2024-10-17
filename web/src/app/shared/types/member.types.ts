@@ -33,7 +33,10 @@ export type AssignRFIDRequest = {
   rfid: string;
 };
 
-export type CreateMemberRequest = AssignRFIDRequest & { name: string };
+export type CreateMemberRequest = AssignRFIDRequest & {
+  name: string;
+  subscriptionID: string;
+};
 
 export type UpdateMemberRequest = {
   fullName: string;
