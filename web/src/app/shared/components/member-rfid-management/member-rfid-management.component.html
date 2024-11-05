@@ -25,7 +25,11 @@
     @if(memberRFIDType === rfidType.New) {
     <mat-form-field appearance="outline">
       <mat-label>Subscription ID</mat-label>
-      <input matInput formControlName="subscriptionID" />
+      <input
+        matInput
+        formControlName="subscriptionID"
+        [value]="rfidManagementGroup.get('subscriptionID').value | uppercase"
+      />
     </mat-form-field>
     }
 
