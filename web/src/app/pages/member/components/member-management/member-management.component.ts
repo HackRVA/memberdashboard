@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import {
   FormControl,
@@ -26,6 +27,7 @@ import { MemberResponse } from '@md-shared/types';
     MatSnackBarModule,
     FormsModule,
     ReactiveFormsModule,
+    CommonModule,
   ],
   templateUrl: './member-management.component.html',
   styleUrl: './member-management.component.scss',

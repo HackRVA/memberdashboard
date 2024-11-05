@@ -14,7 +14,11 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Subscription ID</mat-label>
-      <input matInput formControlName="subscriptionID" />
+      <input
+        matInput
+        formControlName="subscriptionID"
+        [value]="memberManagementGroup.get('subscriptionID').value | uppercase"
+      />
     </mat-form-field>
 
     <button
