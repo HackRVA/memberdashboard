@@ -46,9 +46,9 @@ func (m member) HasValidSubscriptionID() bool {
 	return m.model.SubscriptionID != "none" && len(m.model.SubscriptionID) > 0
 }
 
-func (m member) notifyGracePeriod() {
-	logger.Infof("[scheduled-job] %s notify about being in grace period", m.model.Name)
-	go slack.Send(config.Get().SlackAccessEvents, fmt.Sprintf("%s is in a grace period until their subscription ends", m.model.Name))
+func (m member) notifyGracePeriod(lastPayment models.Payment) {
+	logger.Infof("[scheduled-job] %s notify about being in grace period. Last payment date: %s", m.model.Name, lastPayment.Time.Format("2006-01-02"))
+	go slack.Send(config.Get().SlackAccessEvents, fmt.Sprintf("%s is in a grace period until their subscription ends. \n\tLast payment date: %s", m.model.Name, lastPayment.Time.Format("2006-01-02")))
 }
 
 func (m member) endGracePeriod() {
@@ -153,7 +153,7 @@ func (m member) cancelStatusHandler(lastPayment models.Payment) {
 
 		return
 	}
-	m.notifyGracePeriod()
+	m.notifyGracePeriod(lastPayment)
 }
 
 func (m member) setMemberLevelFromLastPayment(status string, lastPayment models.Payment) {
