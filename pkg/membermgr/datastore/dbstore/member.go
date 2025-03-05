@@ -373,7 +373,7 @@ VALUES `
 	var valStr []string
 	for _, m := range members {
 		// postgres doesn't like apostrophes
-		memberName := strings.Replace(m.Name, "'", "''", -1)
+		memberName := strings.ReplaceAll(m.Name, "'", "''")
 
 		// Give new members standard access at first
 		//   Their actual status will be evaluated the next day
@@ -396,7 +396,9 @@ VALUES `
 
 	for _, m := range members {
 		log.Info("Adding default resource")
-		db.AddUserToDefaultResources(m.Email)
+		if _, err := db.AddUserToDefaultResources(m.Email); err != nil {
+			log.Error(err)
+		}
 	}
 
 	return err

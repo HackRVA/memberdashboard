@@ -81,7 +81,6 @@ func (a *AuthController) buildValidator() func(ctx context.Context, r *http.Requ
 
 func (AuthController) getAuthCookie(request http.Request) string {
 	cookie, err := request.Cookie("memberserver")
-
 	if err != nil {
 		return ""
 	}
@@ -162,13 +161,15 @@ func (a *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 	println("attempting to login")
 
 	var body []byte
-	r.Body.Read(body)
+	_, err := r.Body.Read(body)
+	if err != nil {
+		log.Errorf("error reading body %s", err)
+	}
 	log.Debug(string(body))
 	exp := jwt.SetExpDuration(time.Hour * JWTExpireInterval)
 	u := auth.User(r)
 	u.SetUserName(strings.ToLower(u.GetUserName()))
 	token, err := jwt.IssueAccessToken(u, a.JWTSecretsKeeper, exp)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
@@ -203,7 +204,6 @@ func (a *AuthController) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		Email:    strings.ToLower(creds.Email),
 		Password: creds.Password,
 	})
-
 	if err != nil {
 		log.Error(err)
 		http.Error(w, "error registering user", http.StatusBadRequest)
@@ -217,5 +217,7 @@ func (a *AuthController) RegisterUser(w http.ResponseWriter, r *http.Request) {
 func ok(writer http.ResponseWriter, result interface{}) {
 	writer.Header().Set("Content-Type", "application/json")
 	response, _ := json.Marshal(result)
-	writer.Write(response)
+	if _, err := writer.Write(response); err != nil {
+		log.Errorf("error reading rsponse %s", err)
+	}
 }

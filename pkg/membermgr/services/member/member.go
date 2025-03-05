@@ -58,7 +58,9 @@ func (m member) endGracePeriod() {
 
 func (m member) setInactive() {
 	logger.Infof("[scheduled-job] %s setting member to inactive", m.model.Name)
-	m.store.SetMemberLevel(m.model.ID, models.Inactive)
+	if err := m.store.SetMemberLevel(m.model.ID, models.Inactive); err != nil {
+		logger.Errorf("error setting member level %s", err)
+	}
 }
 
 func (m member) UpdateName(name string) {
@@ -134,14 +136,20 @@ func (m member) activeStatusHandler(lastPayment models.Payment) {
 	}
 
 	if int64(lastPaymentAmount) == models.MemberLevelToAmount[models.Premium] {
-		m.store.SetMemberLevel(m.model.ID, models.Premium)
+		if err := m.store.SetMemberLevel(m.model.ID, models.Premium); err != nil {
+			logger.Error(err)
+		}
 		return
 	}
 	if int64(lastPaymentAmount) == models.MemberLevelToAmount[models.Classic] {
-		m.store.SetMemberLevel(m.model.ID, models.Classic)
+		if err := m.store.SetMemberLevel(m.model.ID, models.Classic); err != nil {
+			logger.Error(err)
+		}
 		return
 	}
-	m.store.SetMemberLevel(m.model.ID, models.Standard)
+	if err := m.store.SetMemberLevel(m.model.ID, models.Standard); err != nil {
+		logger.Error(err)
+	}
 }
 
 func (m member) cancelStatusHandler(lastPayment models.Payment) {
@@ -168,7 +176,9 @@ func (m member) setMemberLevelFromLastPayment(status string, lastPayment models.
 		m.cancelStatusHandler(lastPayment)
 		return
 	case models.SuspendedStatus:
-		m.store.SetMemberLevel(m.model.ID, models.Inactive)
+		if err := m.store.SetMemberLevel(m.model.ID, models.Inactive); err != nil {
+			logger.Error(err)
+		}
 	default:
 		return
 	}
@@ -180,7 +190,9 @@ func (m member) CheckStatus(paymentProvider integrations.PaymentProvider) error 
 	}
 
 	if !m.HasValidSubscriptionID() {
-		m.store.SetMemberLevel(m.model.ID, models.Inactive)
+		if err := m.store.SetMemberLevel(m.model.ID, models.Inactive); err != nil {
+			logger.Error(err)
+		}
 		return fmt.Errorf("deactivating member (name: %s email: %s) because no subscriptionID was found", m.model.Name, m.model.Email)
 	}
 
@@ -192,7 +204,9 @@ func (m member) CheckStatus(paymentProvider integrations.PaymentProvider) error 
 			logger.Debugf("error getting subscription status for (%s, %s). However, member is already inactive. %s", m.model.Email, m.model.Name, err.Error())
 			return fmt.Errorf("error getting member's subscription, but the member is already inactive")
 		}
-		m.store.SetMemberLevel(m.model.ID, models.Inactive)
+		if err := m.store.SetMemberLevel(m.model.ID, models.Inactive); err != nil {
+			logger.Error(err)
+		}
 		return fmt.Errorf("error getting subscription: %s (%s, %s) setting to inactive until status is investigated", err.Error(), m.model.Email, m.model.Name)
 	}
 

@@ -47,12 +47,18 @@ var testMemberStore = in_memory.In_memory{
 		},
 	},
 	Tiers: []models.Tier{
-		{ID: 0,
-			Name: "fake-inactive"},
-		{ID: 1,
-			Name: "fake-active"},
-		{ID: 2,
-			Name: "fake-premium"},
+		{
+			ID:   0,
+			Name: "fake-inactive",
+		},
+		{
+			ID:   1,
+			Name: "fake-active",
+		},
+		{
+			ID:   2,
+			Name: "fake-premium",
+		},
 	},
 }
 
@@ -65,6 +71,7 @@ type paymentProvider struct{}
 func (p paymentProvider) GetSubscription(subscriptionID string) (status string, lastPaymentAmount string, lastPaymentTime time.Time, err error) {
 	return
 }
+
 func (p paymentProvider) GetSubscriber(subscriptionID string) (name string, email string, err error) {
 	return
 }
@@ -315,11 +322,13 @@ func TestUpdateMemberSubscriptionID(t *testing.T) {
 		{
 			TestName: "should return a valid response for a valid email",
 			Setup: func() {
-				server.MemberService.Add(models.Member{
+				if _, err := server.MemberService.Add(models.Member{
 					Name:           "testUser",
 					Email:          "testUser@email.com",
 					SubscriptionID: "unmodified",
-				})
+				}); err != nil {
+					logrus.Error(err)
+				}
 			},
 			Expected: models.Member{
 				Name:           "testUser",

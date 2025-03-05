@@ -174,14 +174,12 @@ func (db *DatabaseStore) AddMultipleMembersToResource(emails []string, resourceI
 	var membersResource []models.MemberResourceRelation
 
 	resource, err := db.GetResourceByID(resourceID)
-
 	if err != nil {
 		return membersResource, err
 	}
 
 	for i := 0; i < len(emails); i++ {
 		member, err := db.GetMemberByEmail(emails[i])
-
 		if err != nil {
 			return membersResource, err
 		}
@@ -200,7 +198,6 @@ func (db *DatabaseStore) AddMultipleMembersToResource(emails []string, resourceI
 	}
 
 	return membersResource, nil
-
 }
 
 // AddUserToDefaultResources - grants a user access to default resources - untested
@@ -306,7 +303,9 @@ func (db *DatabaseStore) GetResourceACL(r models.Resource) ([]string, error) {
 
 	for rows.Next() {
 		var rfid string
-		rows.Scan(&rfid)
+		if err := rows.Scan(&rfid); err != nil {
+			log.Error(err)
+		}
 		accessList = append(accessList, rfid)
 	}
 
@@ -333,7 +332,9 @@ func (db *DatabaseStore) GetResourceACLWithMemberInfo(r models.Resource) ([]mode
 	for rows.Next() {
 		var member models.Member
 
-		rows.Scan(&member.ID, &member.Name, &member.RFID)
+		if err := rows.Scan(&member.ID, &member.Name, &member.RFID); err != nil {
+			log.Error(err)
+		}
 
 		accessList = append(accessList, member)
 	}
@@ -363,7 +364,9 @@ func (db *DatabaseStore) GetMembersAccess(m models.Member) ([]models.MemberAcces
 	for rows.Next() {
 		var resourceUpdate models.MemberAccess
 
-		rows.Scan(&resourceUpdate.Email, &resourceUpdate.ResourceAddress, &resourceUpdate.ResourceName, &resourceUpdate.Name, &resourceUpdate.RFID)
+		if err := rows.Scan(&resourceUpdate.Email, &resourceUpdate.ResourceAddress, &resourceUpdate.ResourceName, &resourceUpdate.Name, &resourceUpdate.RFID); err != nil {
+			log.Error(err)
+		}
 
 		memberAccess = append(memberAccess, resourceUpdate)
 	}
@@ -390,7 +393,9 @@ func (db *DatabaseStore) GetInactiveMembersByResource() ([]models.MemberAccess, 
 	for rows.Next() {
 		var resourceUpdate models.MemberAccess
 
-		rows.Scan(&resourceUpdate.Email, &resourceUpdate.ResourceAddress, &resourceUpdate.ResourceName, &resourceUpdate.Name, &resourceUpdate.RFID)
+		if err := rows.Scan(&resourceUpdate.Email, &resourceUpdate.ResourceAddress, &resourceUpdate.ResourceName, &resourceUpdate.Name, &resourceUpdate.RFID); err != nil {
+			log.Error(err)
+		}
 
 		memberAccess = append(memberAccess, resourceUpdate)
 	}
@@ -417,7 +422,9 @@ func (db *DatabaseStore) GetActiveMembersByResource() ([]models.MemberAccess, er
 	for rows.Next() {
 		var resourceUpdate models.MemberAccess
 
-		rows.Scan(&resourceUpdate.Email, &resourceUpdate.ResourceAddress, &resourceUpdate.ResourceName, &resourceUpdate.Name, &resourceUpdate.RFID)
+		if err := rows.Scan(&resourceUpdate.Email, &resourceUpdate.ResourceAddress, &resourceUpdate.ResourceName, &resourceUpdate.Name, &resourceUpdate.RFID); err != nil {
+			log.Error(err)
+		}
 
 		memberAccess = append(memberAccess, resourceUpdate)
 	}

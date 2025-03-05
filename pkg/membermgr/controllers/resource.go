@@ -70,7 +70,6 @@ func (rs resourceAPI) AddMultipleMembersToResource(w http.ResponseWriter, req *h
 	var membersResource models.MembersResourceRelation
 
 	err := json.NewDecoder(req.Body).Decode(&membersResource)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -115,7 +114,9 @@ func (rs resourceAPI) RemoveMember(w http.ResponseWriter, req *http.Request) {
 		rs.logger.Errorf("error getting resource to update when removing a member: %s", err)
 	}
 
-	rs.resourcemanager.UpdateResourceACL(resource)
+	if err := rs.resourcemanager.UpdateResourceACL(resource); err != nil {
+		rs.logger.Error(err)
+	}
 	rs.resourcemanager.UpdateResources()
 }
 

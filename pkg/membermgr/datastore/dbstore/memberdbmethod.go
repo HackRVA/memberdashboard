@@ -70,20 +70,6 @@ func (member *MemberDatabaseMethod) getMemberByEmail() string {
 	return getMemberByEmailQuery
 }
 
-func (member *MemberDatabaseMethod) getMemberByEmailOrSubscriptionID() string {
-	return `SELECT id, name, LOWER(email), COALESCE(rfid,'notset'), member_tier_id,
-	ARRAY(
-	SELECT resource_id
-	FROM membership.member_resource
-	LEFT JOIN membership.resources 
-	ON membership.resources.id = membership.member_resource.resource_id
-	WHERE member_id = membership.members.id
-	) as resources
-	FROM membership.members
-	WHERE email = $1 OR subscription_id = $2
-	LIMIT 1;`
-}
-
 func (member *MemberDatabaseMethod) updateMemberByEmail() string {
 	return `UPDATE membership.members SET name=$1, subscription_id=$2 WHERE email=$3;`
 }
@@ -130,25 +116,6 @@ func (member *MemberDatabaseMethod) updateMemberSubscriptionID() string {
 	RETURNING name;`
 }
 
-func (member *MemberDatabaseMethod) getPayments() string {
-	const getPaymentsQuery = `
-	SELECT id, date, amount
-	FROM membership.payments
-	ORDER BY date;`
-
-	return getPaymentsQuery
-}
-
-func (member *MemberDatabaseMethod) insertPayment() string {
-	const insertPaymentQuery = `
-	INSERT INTO membership.payments(
-	date, amount, member_id)
-	VALUES ($1, $2, $3)
-	RETURNING *;`
-
-	return insertPaymentQuery
-}
-
 func (member *MemberDatabaseMethod) updateMembershipLevel() string {
 	const updateMembershipLevelQuery = `
 	UPDATE membership.members
@@ -157,21 +124,6 @@ func (member *MemberDatabaseMethod) updateMembershipLevel() string {
 	RETURNING *;`
 
 	return updateMembershipLevelQuery
-}
-
-func (member *MemberDatabaseMethod) pastDuePayments() string {
-	const sql = `
-	SELECT m.id, m.name, m.email, COALESCE(max(p.date), '0001-01-01') as lastPaymentDate,
-		current_date - COALESCE(max(p.date), '0001-01-01') as daysSinceLastPayment
-	FROM membership.members m
-	INNER JOIN membership.member_tiers t
-	on m.member_tier_id = t.id
-	LEFT JOIN membership.payments p
-	on m.id = p.member_id
-	WHERE t.description not in ('Inactive', 'Credited')
-	GROUP BY m.id, m.name, m.email
-	HAVING MAX(p.date) is null or MAX(p.date) < current_date - interval '1 month';`
-	return sql
 }
 
 func (member *MemberDatabaseMethod) updateMemberTiers() string {

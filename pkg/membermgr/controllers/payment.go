@@ -37,5 +37,7 @@ func (api API) PaypalSubscriptionWebHookHandler(err error, n *listener.Subscript
 
 	api.logger.Printf("member: %v", newMember)
 
-	api.db.ProcessMember(newMember)
+	if err := api.db.ProcessMember(newMember); err != nil {
+		api.logger.Error(err)
+	}
 }

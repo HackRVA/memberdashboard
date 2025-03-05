@@ -29,7 +29,6 @@ func (mqtt *stubMQTTServer) Publish(address string, topic string, payload interf
 }
 
 func (mqtt *stubMQTTServer) Subscribe(address string, topic string, handler mqtt.MessageHandler) {
-
 }
 
 // TestUpdateResourceACL we just want to test that the mqtt message looks reasonable
@@ -43,7 +42,9 @@ func TestUpdateResourceACL(t *testing.T) {
 	acl := `{"acl":[]}`
 	want := "should just straight up send it/update\"" + base64.RawStdEncoding.EncodeToString([]byte(acl)) + "==\""
 
-	resourceManager.UpdateResourceACL(resource)
+	if err := resourceManager.UpdateResourceACL(resource); err != nil {
+		t.Errorf("error updating resource acl %s", err)
+	}
 	if pub[0] != want {
 		t.Errorf("did not succeed. got: %s want: %s", pub[0], want)
 	}
@@ -70,7 +71,9 @@ func TestUpdateResources(t *testing.T) {
 
 	// add some stuff to the store
 	for _, v := range resources {
-		resourceManager.RegisterResource(v.Name, v.Address, v.IsDefault)
+		if _, err := resourceManager.RegisterResource(v.Name, v.Address, v.IsDefault); err != nil {
+			t.Errorf("error registering resource %s", err)
+		}
 	}
 
 	want := `should just straight up send it"{\"doorip\":\"\",\"cmd\":\"adduser\",\"user\":\"test\",\"uid\":\"\",\"acctype\":1,\"validuntil\":-86400}"`

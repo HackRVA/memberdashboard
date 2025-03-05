@@ -3,7 +3,7 @@ package listener
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -20,7 +20,7 @@ func New(debug bool) *Listener {
 // Listen for webhooks
 func (l *Listener) WebhooksHandler(cb func(err error, n *Subscription)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			cb(fmt.Errorf("failed to read body: %s", err), nil)
 			return

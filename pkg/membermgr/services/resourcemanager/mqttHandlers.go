@@ -87,14 +87,18 @@ func (rm *ResourceManager) OnAccessEventHandler(payload models.LogMessage) {
 
 	defer func(m models.Member, p models.LogMessage) {
 		go rm.notifier.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", m.Name, p.RFID, p.Door, p.EventTime))
-		go rm.LogAccessEvent(models.LogMessage{
-			Type:      p.Type,
-			EventTime: p.EventTime,
-			IsKnown:   p.IsKnown,
-			Username:  m.Name,
-			RFID:      p.RFID,
-			Door:      p.Door,
-		})
+		go func() {
+			if err := rm.LogAccessEvent(models.LogMessage{
+				Type:      p.Type,
+				EventTime: p.EventTime,
+				IsKnown:   p.IsKnown,
+				Username:  m.Name,
+				RFID:      p.RFID,
+				Door:      p.Door,
+			}); err != nil {
+				rm.logger.Errorf("error logging access event %s", err)
+			}
+		}()
 	}(m, payload)
 }
 

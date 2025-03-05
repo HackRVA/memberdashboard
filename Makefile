@@ -1,7 +1,8 @@
-## ----------------------------------------------------------------------
-## The purpose of this Makefile is to simplify common development tasks.
-## ----------------------------------------------------------------------
-##
+
+GO ?= go
+
+GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.6
+
 
 .PHONY:help
 help: ## Show this help.
@@ -164,6 +165,14 @@ serve-docs: ## serve-docs locally
 deploy-docs: ## deploy-docs to gh-pages
 ##   Usage: make deploy-docs
 	bash ./scripts/deploy-docs.sh
+
+.PHONY: deps-tools
+deps-tools: ## install tool dependencies
+	$(GO) install $(GOLANGCI_LINT_PACKAGE)
+
+.PHONY: lint-backend
+lint-backend: ## lints go code
+	$(GO) run $(GOLANGCI_LINT_PACKAGE) run
 
 clean:
 	rm -rf ./internal/ui/web/

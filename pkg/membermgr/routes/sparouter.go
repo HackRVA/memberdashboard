@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/HackRVA/memberserver/pkg/membermgr/ui"
+	"github.com/sirupsen/logrus"
 )
 
 type spaRouter struct {
@@ -22,10 +23,11 @@ func (s spaRouter) isStaticFile(path string) bool {
 	return err == nil
 }
 
-
-func (s spaRouter) notFoundHandler(w http.ResponseWriter, r *http.Request) {
+func (s spaRouter) notFoundHandler(w http.ResponseWriter, _ *http.Request) {
 	index, _ := s.ReadFileFS.ReadFile("web/index.html")
-	w.Write(index)
+	if _, err := w.Write(index); err != nil {
+		logrus.Error(err)
+	}
 }
 
 func (s spaRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {

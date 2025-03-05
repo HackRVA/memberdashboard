@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -88,7 +87,7 @@ func Load() (Config, error) {
 		return c, nil
 	}
 
-	file, err := ioutil.ReadFile(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
+	file, err := os.ReadFile(os.Getenv("MEMBER_SERVER_CONFIG_FILE"))
 	if err != nil {
 		log.Debugf("error reading in the config file: %s", err)
 	}

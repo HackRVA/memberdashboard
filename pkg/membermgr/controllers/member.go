@@ -10,6 +10,7 @@ import (
 
 	"github.com/HackRVA/memberserver/pkg/membermgr/models"
 	"github.com/HackRVA/memberserver/pkg/membermgr/services"
+	"github.com/sirupsen/logrus"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/mux"
@@ -93,7 +94,6 @@ func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http
 		Name:           request.FullName,
 		SubscriptionID: request.SubscriptionID,
 	})
-
 	if err != nil {
 		notFound(w, "error getting member by email")
 		return
@@ -102,7 +102,6 @@ func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http
 	ok(w, models.EndpointSuccess{
 		Ack: true,
 	})
-
 }
 
 func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +113,6 @@ func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	member, err := m.MemberService.GetByEmail(memberEmail)
-
 	if err != nil {
 		notFound(w, "error getting member by email")
 		return
@@ -127,7 +125,6 @@ func (m *MemberServer) GetCurrentUserHandler(w http.ResponseWriter, r *http.Requ
 	_, user, _ := m.AuthStrategy.AuthenticateRequest(r)
 
 	member, err := m.MemberService.GetByEmail(user.GetUserName())
-
 	if err != nil {
 		notFound(w, "error getting member by email")
 		return
@@ -187,7 +184,9 @@ func (m *MemberServer) GetNonMembersOnSlackHandler(w http.ResponseWriter, r *htt
 	buf := bytes.NewBufferString(strings.Join(nonMembers[:], "\n"))
 	w.Header().Set("Content-Type", "text/csv")
 	w.Header().Set("Content-Disposition", "attachment; filename=nonmembersOnSlack.csv")
-	w.Write(buf.Bytes())
+	if _, err := w.Write(buf.Bytes()); err != nil {
+		logrus.Error(err)
+	}
 }
 
 func (m *MemberServer) AddNewMemberHandler(w http.ResponseWriter, r *http.Request) {
@@ -206,7 +205,6 @@ func (m *MemberServer) AddNewMemberHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	ok(w, addedMember)
-
 }
 
 func (m *MemberServer) CheckStatus(w http.ResponseWriter, r *http.Request) {

@@ -13,21 +13,21 @@ type MQTTServer interface {
 	Subscribe(address string, topic string, handler mqtt.MessageHandler)
 }
 
-type server struct{}
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
+type server struct {
+	rng *rand.Rand
 }
 
 func New() *server {
-	return &server{}
+	return &server{
+		rng: rand.New(rand.NewSource(time.Now().UnixNano())),
+	}
 }
 
-func randStringRunes(n int) string {
+func (m *server) randStringRunes(n int) string {
 	letterRunes := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+		b[i] = letterRunes[m.rng.Intn(len(letterRunes))]
 	}
 	return string(b)
 }
@@ -39,7 +39,7 @@ func (m *server) Subscribe(address string, topic string, handler mqtt.MessageHan
 		return
 	}
 	opts := mqtt.NewClientOptions().AddBroker(address)
-	opts.SetClientID("member-server-subscriber-" + randStringRunes(12))
+	opts.SetClientID("member-server-subscriber-" + m.randStringRunes(12))
 
 	opts.OnConnect = func(c mqtt.Client) {
 		if token := c.Subscribe(topic, 0, handler); token.Wait() && token.Error() != nil {
@@ -62,7 +62,7 @@ func (m *server) Publish(address string, topic string, payload interface{}) {
 		return
 	}
 	opts := mqtt.NewClientOptions().AddBroker(address)
-	opts.SetClientID("member-server-publisher-" + randStringRunes(12))
+	opts.SetClientID("member-server-publisher-" + m.randStringRunes(12))
 
 	client := mqtt.NewClient(opts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {

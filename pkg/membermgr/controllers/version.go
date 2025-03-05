@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/HackRVA/memberserver/pkg/membermgr/models"
+	"github.com/sirupsen/logrus"
 )
 
 // GitCommit is populated by a golang build arg
@@ -16,8 +17,7 @@ func NewInMemoryVersionStore() *InMemoryVersionStore {
 	return &InMemoryVersionStore{}
 }
 
-type InMemoryVersionStore struct {
-}
+type InMemoryVersionStore struct{}
 
 func (i *InMemoryVersionStore) GetVersion() []byte {
 	if len(GitCommit) == 0 {
@@ -62,10 +62,14 @@ func (v *VersionServer) showVersion(w http.ResponseWriter, version string) {
 	if len(versionInfo.Major) == 0 || len(versionInfo.Build) == 0 {
 		w.WriteHeader(http.StatusNotFound)
 		w.Header().Set("Content-Type", "application/text")
-		w.Write([]byte("some issue getting the version"))
+		if _, err := w.Write([]byte("some issue getting the version")); err != nil {
+			logrus.Error(err)
+		}
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(v.store.GetVersion())
+	if _, err := w.Write(v.store.GetVersion()); err != nil {
+		logrus.Error(err)
+	}
 }

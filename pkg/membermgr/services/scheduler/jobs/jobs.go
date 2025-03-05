@@ -2,7 +2,7 @@ package jobs
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -49,7 +49,9 @@ func (j JobController) CheckMemberSubscriptions() {
 	members := j.DataStore.GetMembers()
 
 	for _, member := range members {
-		j.member.CheckStatus(member.SubscriptionID)
+		if _, err := j.member.CheckStatus(member.SubscriptionID); err != nil {
+			j.logger.Errorf("unable to check member status: ", err)
+		}
 	}
 }
 
@@ -112,7 +114,7 @@ func (j JobController) CheckIPAddressInterval() {
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		j.logger.Error(err)
 		return
@@ -135,13 +137,13 @@ func (j JobController) CheckIPAddressInterval() {
 		defer file.Close()
 	}
 
-	b, err := ioutil.ReadFile(ipFileName)
+	b, err := os.ReadFile(ipFileName)
 	if err != nil {
 		j.logger.Error(err)
 		return
 	}
 
-	err = ioutil.WriteFile(ipFileName, body, 0644)
+	err = os.WriteFile(ipFileName, body, 0o644)
 	if err != nil {
 		j.logger.Error(err)
 		return
@@ -160,7 +162,9 @@ func (j JobController) CheckIPAddressInterval() {
 	}
 
 	mailer := mail.NewMailer(j.DataStore, j.mailAPI, j.config)
-	mailer.SendCommunication(mail.IpChanged, j.config.AdminEmail, ipModel)
+	if _, err := mailer.SendCommunication(mail.IpChanged, j.config.AdminEmail, ipModel); err != nil {
+		j.logger.Error(err)
+	}
 }
 
 func (j JobController) RemovedInvalidUIDs() {

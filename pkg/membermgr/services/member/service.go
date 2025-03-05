@@ -32,7 +32,11 @@ func New(store datastore.MemberStore, rm services.Resource, pp integrations.Paym
 
 func (m memberService) Add(newMember models.Member) (models.Member, error) {
 	// assignRFID needs to run after the member has been added to the DB
-	defer m.AssignRFID(newMember.Email, newMember.RFID)
+	defer func() {
+		if _, err := m.AssignRFID(newMember.Email, newMember.RFID); err != nil {
+			logrus.Error(err)
+		}
+	}()
 	return m.store.AddNewMember(newMember)
 }
 
@@ -49,7 +53,11 @@ func (m memberService) GetByEmail(email string) (models.Member, error) {
 }
 
 func (m memberService) Update(member models.Member) error {
-	defer m.CheckStatus(member.SubscriptionID)
+	defer func() {
+		if _, err := m.CheckStatus(member.SubscriptionID); err != nil {
+			logrus.Error(err)
+		}
+	}()
 	return m.store.UpdateMember(member)
 }
 

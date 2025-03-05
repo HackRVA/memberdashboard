@@ -4,12 +4,16 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 )
 
 func ok(writer http.ResponseWriter, result interface{}) {
 	writer.Header().Set("Content-Type", "application/json")
 	response, _ := json.Marshal(result)
-	writer.Write(response)
+	if _, err := writer.Write(response); err != nil {
+		logrus.Error(err)
+	}
 }
 
 // preconditionFailed -- validation error response message function

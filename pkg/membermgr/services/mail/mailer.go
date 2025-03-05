@@ -52,7 +52,8 @@ func NewMailer(db CommunicationDal, m MailApi, config config.Config) *mailer {
 		db,
 		m,
 		config,
-		fileTemplateGenerator{}}
+		fileTemplateGenerator{},
+	}
 	return &mailer
 }
 
@@ -103,14 +104,15 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 	}
 
 	if memberExists {
-		m.db.LogCommunication(c.ID, member.ID)
+		if err := m.db.LogCommunication(c.ID, member.ID); err != nil {
+			log.Error(err)
+		}
 	}
 
 	return true, nil
 }
 
 func (m *mailer) IsThrottled(c models.Communication, member models.Member) bool {
-
 	if c.FrequencyThrottle > 0 {
 		last, err := m.db.GetMostRecentCommunicationToMember(member.ID, c.ID)
 		if err != nil {
