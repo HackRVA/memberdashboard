@@ -43,7 +43,6 @@ func main() {
 	lookupResource()
 
 	// serve up a frontend that we can test rfid values on
-	r.HandleFunc("/gui", serveFiles)
 	r.HandleFunc("/", getACLHash)
 	// have an enpoint that accepts acls
 	r.HandleFunc("/update", updateHandler)
@@ -54,7 +53,6 @@ func main() {
 
 	log.Print("Server listening on http://localhost:3001/gui")
 	log.Fatal(http.ListenAndServe("0.0.0.0:3001", nil))
-
 }
 
 func serveFiles(w http.ResponseWriter, r *http.Request) {
@@ -64,9 +62,6 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 		p = "./index.html"
 	}
 
-	if p == "./gui" {
-		p = "./index.html"
-	}
 	http.ServeFile(w, r, p)
 }
 

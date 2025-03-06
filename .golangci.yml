@@ -1,4 +1,4 @@
 
 issues:
   exclude-dirs:
-    - pkg/membermgr/models/swagger
+    - models/swagger

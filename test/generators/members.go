@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/HackRVA/memberserver/pkg/membermgr/datastore"
-	"github.com/HackRVA/memberserver/pkg/membermgr/models"
+	"github.com/HackRVA/memberserver/datastore"
+	"github.com/HackRVA/memberserver/models"
 
 	log "github.com/sirupsen/logrus"
 	"syreclabs.com/go/faker"

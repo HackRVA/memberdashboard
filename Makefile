@@ -19,7 +19,7 @@ backend: ## run the app in dev mode
 ##     run the app
 ##   Example:
 ##     make run
-	go run ./cmd/main
+	$(GO) run ./cmd/main
 
 .PHONY: frontend
 frontend: ## builds the ui
@@ -117,7 +117,7 @@ seed: ## Seed the db with member data and a test user
 ##   Example:
 ##     make seed
 ##
-	go run ./test/generators/members.go 50
+	$(GO) run ./test/generators/members.go 50
 
 .PHONY:run-sql
 run-sql: ## Run a sql script
@@ -183,7 +183,7 @@ deps-tools: ## install tool dependencies
 lint-backend: ## lints go code
 	$(GO) run $(GOLANGCI_LINT_PACKAGE) run
 
-clean:
-	rm -rf ./internal/ui/web/
-	mkdir ./internal/ui/web/
-	echo "this is a placeholder file/nthe ui should be copied to this dir" >> ./internal/ui/web/_blank_
+.PHONY: test-backend
+test-backend: ## run go tests
+	$(GO) test ./...
+
