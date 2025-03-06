@@ -4,12 +4,16 @@ GO ?= go
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.6
 
 
+.PHONY:all
+all: frontend backend
+
 .PHONY:help
 help: ## Show this help.
 ##
 	@sed -ne '/@sed/!s/##//p' $(MAKEFILE_LIST)
 
-run: ## run the app in dev mode
+.PHONY:backend
+backend: ## run the app in dev mode
 ##
 ##   Usage:
 ##     run the app
@@ -17,7 +21,8 @@ run: ## run the app in dev mode
 ##     make run
 	go run ./cmd/main
 
-build-ui: ## builds the ui
+.PHONY: frontend
+frontend: ## builds the ui
 ## allows for embedding the ui in the shippable binary
 	bash ./scripts/build_ui.sh
 
@@ -165,6 +170,10 @@ serve-docs: ## serve-docs locally
 deploy-docs: ## deploy-docs to gh-pages
 ##   Usage: make deploy-docs
 	bash ./scripts/deploy-docs.sh
+
+.PHONY: deps-frontend
+deps-frontend:
+	npm ci --prefix=web
 
 .PHONY: deps-tools
 deps-tools: ## install tool dependencies

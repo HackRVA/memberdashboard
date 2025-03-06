@@ -24,11 +24,8 @@ If a member has made a payment in the past 30 days, they will be considered an a
 
 ```bash
 # install frontend deps
-npm ci --prefix=web
-# build the frontend
-make build-ui
-# run the server
-make run
+make deps-frontend
+make
 ```
 
 > note that this doesn't setup the mqtt server and it doesn't communicate with any mqtt devices
