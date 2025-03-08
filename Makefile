@@ -3,7 +3,7 @@ GO ?= go
 
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.6
 GOFUMPT_PACKAGE ?= mvdan.cc/gofumpt@latest
-
+GODOC_PACKAGE ?= golang.org/x/tools/cmd/godoc@latest
 
 .PHONY:all
 all: frontend backend
@@ -171,6 +171,11 @@ serve-docs: ## serve-docs locally
 deploy-docs: ## deploy-docs to gh-pages
 ##   Usage: make deploy-docs
 	bash ./scripts/deploy-docs.sh
+
+.PHONY: go-docs
+go-docs: ## serve up the go-docs
+	@echo "go docs serve up at http://localhost:6060/pkg/github.com/HackRVA/memberserver/"
+	$(GO) run $(GODOC_PACKAGE) -http=:6060
 
 .PHONY: deps-frontend
 deps-frontend:
