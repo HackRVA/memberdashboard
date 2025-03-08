@@ -20,7 +20,7 @@ backend: ## run the app in dev mode
 ##     run the app
 ##   Example:
 ##     make run
-	$(GO) run ./cmd/main
+	$(GO) run .
 
 .PHONY: frontend
 frontend: ## builds the ui
