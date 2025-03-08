@@ -40,14 +40,14 @@ func New(store datastore.DataStore, auth *auth.AuthController, rm services.Resou
 			resourcemanager: rm,
 			logger:          log,
 		},
-		VersionServer: &VersionServer{NewInMemoryVersionStore()},
-		ReportsServer: &ReportsServer{report.Report{Store: store}, log},
-		MemberServer:  &MemberServer{rm, member.New(store, rm, pp, log), auth.AuthStrategy},
-		UserServer:    &userServer,
-		AuthStrategy:  auth.AuthStrategy,
-		JWTKeeper:     auth.JWTSecretsKeeper,
-		logger:        log,
-    AuthController: auth,
+		VersionServer:  &VersionServer{NewInMemoryVersionStore()},
+		ReportsServer:  &ReportsServer{report.Report{Store: store}, log},
+		MemberServer:   &MemberServer{rm, member.New(store, rm, pp, log), auth.AuthStrategy},
+		UserServer:     &userServer,
+		AuthStrategy:   auth.AuthStrategy,
+		JWTKeeper:      auth.JWTSecretsKeeper,
+		logger:         log,
+		AuthController: auth,
 	}
 }
 

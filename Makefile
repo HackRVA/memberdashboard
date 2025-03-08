@@ -2,6 +2,7 @@
 GO ?= go
 
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.6
+GOFUMPT_PACKAGE ?= mvdan.cc/gofumpt@latest
 
 
 .PHONY:all
@@ -178,6 +179,11 @@ deps-frontend:
 .PHONY: deps-tools
 deps-tools: ## install tool dependencies
 	$(GO) install $(GOLANGCI_LINT_PACKAGE)
+	$(GO) install $(GOFUMPT_PACKAGE)
+
+.PHONY: format-backend
+format-backend: ## checks formatting on backend code
+	gofumpt -l -w .
 
 .PHONY: lint-backend
 lint-backend: ## lints go code

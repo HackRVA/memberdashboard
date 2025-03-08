@@ -94,5 +94,5 @@ func (r *Router) registerRoutes() {
 	r.UnAuthedRouter.HandleFunc("/api/auth/register", r.RegisterUser)
 	r.UnAuthedRouter.HandleFunc("/api/version", r.V1Router.ServeHTTP)
 
-  r.mountFS()
+	r.mountFS()
 }
