@@ -1,4 +1,4 @@
-package controllers
+package v1
 
 import (
 	"bytes"
@@ -24,17 +24,17 @@ type MemberServer struct {
 	AuthStrategy    union.Union
 }
 
-func (m *MemberServer) MemberEmailHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) MemberEmail(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		m.GetByEmailHandler(w, r)
+		m.GetByEmail(w, r)
 	}
 
 	if r.Method == http.MethodPut {
-		m.UpdateMemberByEmailHandler(w, r)
+		m.UpdateMemberByEmail(w, r)
 	}
 }
 
-func (m *MemberServer) GetMembersHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	search := r.URL.Query().Get("search")
 	if search != "" {
 		results := []models.Member{}
@@ -68,7 +68,7 @@ func (m *MemberServer) GetMembersHandler(w http.ResponseWriter, r *http.Request)
 	ok(w, m.MemberService.GetMembersWithLimit(count, page, active == "true"))
 }
 
-func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) UpdateMemberByEmail(w http.ResponseWriter, r *http.Request) {
 	memberEmail := strings.TrimPrefix(r.URL.Path, "/api/member/email/")
 
 	var request models.UpdateMemberRequest
@@ -104,7 +104,7 @@ func (m *MemberServer) UpdateMemberByEmailHandler(w http.ResponseWriter, r *http
 	})
 }
 
-func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) GetByEmail(w http.ResponseWriter, r *http.Request) {
 	memberEmail := strings.TrimPrefix(r.URL.Path, "/api/member/email/")
 
 	if len(memberEmail) == 0 || !govalidator.IsEmail(memberEmail) {
@@ -121,7 +121,7 @@ func (m *MemberServer) GetByEmailHandler(w http.ResponseWriter, r *http.Request)
 	ok(w, member)
 }
 
-func (m *MemberServer) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	_, user, _ := m.AuthStrategy.AuthenticateRequest(r)
 
 	member, err := m.MemberService.GetByEmail(user.GetUserName())
@@ -133,7 +133,7 @@ func (m *MemberServer) GetCurrentUserHandler(w http.ResponseWriter, r *http.Requ
 	ok(w, member)
 }
 
-func (m *MemberServer) AssignRFIDHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) AssignRFID(w http.ResponseWriter, r *http.Request) {
 	var assignRFIDRequest models.AssignRFIDRequest
 
 	err := json.NewDecoder(r.Body).Decode(&assignRFIDRequest)
@@ -155,7 +155,7 @@ func (m *MemberServer) AssignRFIDHandler(w http.ResponseWriter, r *http.Request)
 	ok(w, member)
 }
 
-func (m *MemberServer) AssignRFIDSelfHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) AssignRFIDSelf(w http.ResponseWriter, r *http.Request) {
 	var assignRFIDRequest models.AssignRFIDRequest
 
 	err := json.NewDecoder(r.Body).Decode(&assignRFIDRequest)
@@ -175,11 +175,11 @@ func (m *MemberServer) AssignRFIDSelfHandler(w http.ResponseWriter, r *http.Requ
 	ok(w, member)
 }
 
-func (m *MemberServer) GetTiersHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) GetTiers(w http.ResponseWriter, r *http.Request) {
 	ok(w, m.MemberService.GetTiers())
 }
 
-func (m *MemberServer) GetNonMembersOnSlackHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) GetNonMembersOnSlack(w http.ResponseWriter, r *http.Request) {
 	nonMembers := m.MemberService.FindNonMembersOnSlack()
 	buf := bytes.NewBufferString(strings.Join(nonMembers[:], "\n"))
 	w.Header().Set("Content-Type", "text/csv")
@@ -189,7 +189,7 @@ func (m *MemberServer) GetNonMembersOnSlackHandler(w http.ResponseWriter, r *htt
 	}
 }
 
-func (m *MemberServer) AddNewMemberHandler(w http.ResponseWriter, r *http.Request) {
+func (m *MemberServer) AddNewMember(w http.ResponseWriter, r *http.Request) {
 	var newMember models.Member
 
 	err := json.NewDecoder(r.Body).Decode(&newMember)

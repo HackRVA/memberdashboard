@@ -1,11 +1,21 @@
-package controllers
+package v1
 
 import (
 	"encoding/json"
 	"net/http"
 
+	config "github.com/HackRVA/memberserver/configs"
+	"github.com/HackRVA/memberserver/datastore"
 	"github.com/HackRVA/memberserver/models"
+	"github.com/HackRVA/memberserver/services"
 )
+
+type resourceAPI struct {
+	db              datastore.DataStore
+	config          config.Config
+	resourcemanager services.Resource
+	logger          Logger
+}
 
 // Resource http handlers for resources
 func (rs resourceAPI) Resource(w http.ResponseWriter, req *http.Request) {

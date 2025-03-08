@@ -9,11 +9,8 @@ import (
 	"github.com/HackRVA/memberserver/pkg/mqtt"
 	"github.com/HackRVA/memberserver/pkg/paypal"
 	"github.com/HackRVA/memberserver/pkg/slack"
-	router "github.com/HackRVA/memberserver/routes"
 
 	config "github.com/HackRVA/memberserver/configs"
-	"github.com/HackRVA/memberserver/controllers"
-	"github.com/HackRVA/memberserver/controllers/auth"
 	"github.com/HackRVA/memberserver/datastore"
 	"github.com/HackRVA/memberserver/datastore/dbstore"
 	"github.com/HackRVA/memberserver/datastore/in_memory"
@@ -22,6 +19,9 @@ import (
 	"github.com/HackRVA/memberserver/services/resourcemanager"
 	"github.com/HackRVA/memberserver/services/scheduler"
 	"github.com/HackRVA/memberserver/services/scheduler/jobs"
+	httprouter "github.com/HackRVA/memberserver/transport/http"
+	"github.com/HackRVA/memberserver/transport/http/middleware/auth"
+	v1 "github.com/HackRVA/memberserver/transport/http/v1"
 )
 
 func init() {
@@ -52,8 +52,9 @@ func main() {
 	pp := paypal.Setup(c.PaypalURL, c.PaypalClientID, c.PaypalClientSecret, log)
 
 	auth := auth.New(db)
-	api := controllers.Setup(db, auth, rm, pp, log)
-	router := router.New(api, auth)
+	v1Router := v1.New(db, auth, rm, pp, log)
+	router := httprouter.New(v1Router, auth)
+	// router := router.New(api, auth)
 
 	srv := &http.Server{
 		Handler: router.UnAuthedRouter,

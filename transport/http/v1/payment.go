@@ -1,4 +1,4 @@
-package controllers
+package v1
 
 import (
 	"github.com/HackRVA/memberserver/models"
@@ -9,7 +9,7 @@ import (
 //
 //	We can use this to add a member to our database.  We don't have to give them
 //	access to anything at this time, but it will make it easier to assign them an RFID fob
-func (api API) PaypalSubscriptionWebHookHandler(err error, n *listener.Subscription) {
+func (api API) PaypalSubscriptionWebHook(err error, n *listener.Subscription) {
 	if err != nil {
 		api.logger.Printf("IPN error: %v", err)
 		return

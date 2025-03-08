@@ -1,4 +1,4 @@
-package controllers
+package v1
 
 import (
 	"bytes"
@@ -111,7 +111,7 @@ func TestGetMember(t *testing.T) {
 			request := newGetMembersRequest()
 			response := httptest.NewRecorder()
 
-			server.GetMembersHandler(response, request)
+			server.GetMembers(response, request)
 
 			assertStatus(t, response.Code, tt.expectedHTTPStatus)
 			assertResponseBody(t, response.Body.String(), tt.expectedResponse)
@@ -165,7 +165,7 @@ func TestGetMemberByEmail(t *testing.T) {
 			request := newGetMemberByEmailRequest(tt.Email)
 			response := httptest.NewRecorder()
 
-			server.GetByEmailHandler(response, request)
+			server.GetByEmail(response, request)
 
 			assertStatus(t, response.Code, tt.expectedHTTPStatus)
 			assertResponseBody(t, response.Body.String(), tt.expectedResponse)
@@ -216,7 +216,7 @@ func TestAssignRFID(t *testing.T) {
 			request := newAssignRFIDRequest(tt.Email, tt.RFID)
 			response := httptest.NewRecorder()
 
-			server.AssignRFIDHandler(response, request)
+			server.AssignRFID(response, request)
 
 			assertStatus(t, response.Code, tt.expectedHTTPStatus)
 			assertResponseBody(t, response.Body.String(), tt.expectedResponse)
@@ -250,7 +250,7 @@ func TestGetTiers(t *testing.T) {
 			request := newGetTiersRequest()
 			response := httptest.NewRecorder()
 
-			server.GetTiersHandler(response, request)
+			server.GetTiers(response, request)
 
 			assertStatus(t, response.Code, tt.expectedHTTPStatus)
 			assertResponseBody(t, response.Body.String(), tt.expectedResponse)
@@ -295,7 +295,7 @@ func TestNewMember(t *testing.T) {
 			request := newNewMemberRequest(tt.Member)
 			response := httptest.NewRecorder()
 
-			server.AddNewMemberHandler(response, request)
+			server.AddNewMember(response, request)
 
 			assertStatus(t, response.Code, tt.expectedHTTPStatus)
 			assertResponseBody(t, response.Body.String(), tt.expectedResponse)
@@ -365,7 +365,7 @@ func TestUpdateMemberSubscriptionID(t *testing.T) {
 			request := newUpdateMemberRequest(tt.Update, tt.Expected.Email)
 			response := httptest.NewRecorder()
 
-			server.UpdateMemberByEmailHandler(response, request)
+			server.UpdateMemberByEmail(response, request)
 
 			assertStatus(t, response.Code, tt.expectedHTTPStatus)
 			assertResponseBody(t, response.Body.String(), tt.expectedResponse)

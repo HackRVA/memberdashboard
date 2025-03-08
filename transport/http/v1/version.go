@@ -1,9 +1,8 @@
-package controllers
+package v1
 
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/HackRVA/memberserver/models"
 	"github.com/sirupsen/logrus"
@@ -43,14 +42,13 @@ type VersionServer struct {
 }
 
 func (v *VersionServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	version := strings.TrimPrefix(r.URL.Path, "version")
 	switch r.Method {
 	case http.MethodGet:
-		v.showVersion(w, version)
+		v.showVersion(w)
 	}
 }
 
-func (v *VersionServer) showVersion(w http.ResponseWriter, version string) {
+func (v *VersionServer) showVersion(w http.ResponseWriter) {
 	var versionInfo models.VersionResponse
 
 	err := json.Unmarshal(v.store.GetVersion(), &versionInfo)

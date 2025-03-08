@@ -1,47 +1,40 @@
-package controllers
+package v1
 
 import (
 	config "github.com/HackRVA/memberserver/configs"
-	"github.com/HackRVA/memberserver/controllers/auth"
 	"github.com/HackRVA/memberserver/datastore"
 	"github.com/HackRVA/memberserver/integrations"
 	"github.com/HackRVA/memberserver/services"
 	"github.com/HackRVA/memberserver/services/member"
 	"github.com/HackRVA/memberserver/services/report"
+	"github.com/HackRVA/memberserver/transport/http/middleware/auth"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/jwt"
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 )
 
-// API endpoints
 type API struct {
-	db             datastore.DataStore
-	ResourceServer resourceAPI
-	VersionServer  *VersionServer
-	MemberServer   *MemberServer
-	ReportsServer  *ReportsServer
-	UserServer     *UserServer
-	AuthStrategy   union.Union
-	JWTKeeper      jwt.SecretsKeeper
-	logger         Logger
-}
-
-type resourceAPI struct {
-	db              datastore.DataStore
-	config          config.Config
-	resourcemanager services.Resource
-	logger          Logger
+	db datastore.DataStore
+	resourceAPI
+	*VersionServer
+	*MemberServer
+	*ReportsServer
+	*UserServer
+	*auth.AuthController
+	AuthStrategy union.Union
+	JWTKeeper    jwt.SecretsKeeper
+	logger       Logger
 }
 
 // Setup - setup us up the routes
-func Setup(store datastore.DataStore, auth *auth.AuthController, rm services.Resource, pp integrations.PaymentProvider, log services.Logger) API {
+func New(store datastore.DataStore, auth *auth.AuthController, rm services.Resource, pp integrations.PaymentProvider, log services.Logger) API {
 	c := config.Get()
 
 	userServer := NewUserServer(store, c)
 
 	return API{
 		db: store,
-		ResourceServer: resourceAPI{
+		resourceAPI: resourceAPI{
 			db:              store,
 			config:          c,
 			resourcemanager: rm,
@@ -54,5 +47,9 @@ func Setup(store datastore.DataStore, auth *auth.AuthController, rm services.Res
 		AuthStrategy:  auth.AuthStrategy,
 		JWTKeeper:     auth.JWTSecretsKeeper,
 		logger:        log,
+    AuthController: auth,
 	}
 }
+
+// func (a *API) setupRoutes() {
+// }
