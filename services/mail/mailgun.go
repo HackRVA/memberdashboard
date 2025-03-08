@@ -25,7 +25,6 @@ type Provider struct {
 func Setup() (*Provider, error) {
 	mp := &Provider{}
 	c, err := config.Load()
-
 	if err != nil {
 		log.Fatal(err)
 	}

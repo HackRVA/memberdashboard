@@ -2,7 +2,8 @@
 GO ?= go
 
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.6
-
+GOFUMPT_PACKAGE ?= mvdan.cc/gofumpt@latest
+GODOC_PACKAGE ?= golang.org/x/tools/cmd/godoc@latest
 
 .PHONY:all
 all: frontend backend
@@ -19,7 +20,7 @@ backend: ## run the app in dev mode
 ##     run the app
 ##   Example:
 ##     make run
-	$(GO) run ./cmd/main
+	$(GO) run .
 
 .PHONY: frontend
 frontend: ## builds the ui
@@ -171,6 +172,11 @@ deploy-docs: ## deploy-docs to gh-pages
 ##   Usage: make deploy-docs
 	bash ./scripts/deploy-docs.sh
 
+.PHONY: go-docs
+go-docs: ## serve up the go-docs
+	@echo "go docs serve up at http://localhost:6060/pkg/github.com/HackRVA/memberserver/"
+	$(GO) run $(GODOC_PACKAGE) -http=:6060
+
 .PHONY: deps-frontend
 deps-frontend:
 	npm ci --prefix=web
@@ -178,6 +184,11 @@ deps-frontend:
 .PHONY: deps-tools
 deps-tools: ## install tool dependencies
 	$(GO) install $(GOLANGCI_LINT_PACKAGE)
+	$(GO) install $(GOFUMPT_PACKAGE)
+
+.PHONY: format-backend
+format-backend: ## checks formatting on backend code
+	gofumpt -l -w .
 
 .PHONY: lint-backend
 lint-backend: ## lints go code

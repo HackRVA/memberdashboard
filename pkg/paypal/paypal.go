@@ -90,7 +90,6 @@ func (p Paypal) requestAccessToken() (string, error) {
 
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", p.config.url+"/v1/oauth2/token", payload)
-
 	if err != nil {
 		return token, err
 	}

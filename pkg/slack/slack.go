@@ -72,7 +72,6 @@ func Send(slackWebHook string, msg string) {
 
 	c := &http.Client{}
 	req, err := http.NewRequest("POST", slackWebHook, bytes.NewBuffer(jsonStr))
-
 	if err != nil {
 		log.Errorf("some error sending to slack hook: %s", err)
 		return
@@ -81,7 +80,6 @@ func Send(slackWebHook string, msg string) {
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := c.Do(req)
-
 	if err != nil {
 		log.Errorf("some error sending to slack hook: %s", err)
 		return

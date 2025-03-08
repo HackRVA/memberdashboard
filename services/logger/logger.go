@@ -54,39 +54,51 @@ func (l *Logger) SetLevel(level log.Level) {
 func (l *Logger) Println(args ...interface{}) {
 	Println(args...)
 }
+
 func (l *Logger) Printf(format string, args ...interface{}) {
 	Printf(format, args...)
 }
+
 func (l *Logger) Errorf(format string, args ...interface{}) {
 	Errorf(format, args...)
 }
+
 func (l *Logger) Debugf(format string, args ...interface{}) {
 	Debugf(format, args...)
 }
+
 func (l *Logger) Infof(format string, args ...interface{}) {
 	Infof(format, args...)
 }
+
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	Fatalf(format, args...)
 }
+
 func (l *Logger) Tracef(format string, args ...interface{}) {
 	Tracef(format, args...)
 }
+
 func (l *Logger) Print(args ...interface{}) {
 	Print(args...)
 }
+
 func (l *Logger) Error(args ...interface{}) {
 	Error(args...)
 }
+
 func (l *Logger) Debug(args ...interface{}) {
 	Debug(args...)
 }
+
 func (l *Logger) Info(args ...interface{}) {
 	Info(args...)
 }
+
 func (l *Logger) Fatal(args ...interface{}) {
 	Fatal(args...)
 }
+
 func (l *Logger) Trace(args ...interface{}) {
 	Trace(args...)
 }
