@@ -17,11 +17,6 @@
       <input matInput type="email" formControlName="email" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>RFID</mat-label>
-      <input matInput type="number" formControlName="rfid" />
-    </mat-form-field>
-
     @if(memberRFIDType === rfidType.New) {
     <mat-form-field appearance="outline">
       <mat-label>Subscription ID</mat-label>
@@ -32,6 +27,11 @@
       />
     </mat-form-field>
     }
+
+    <mat-form-field appearance="outline">
+      <mat-label>RFID</mat-label>
+      <input matInput type="number" formControlName="rfid" />
+    </mat-form-field>
 
     <button
       type="submit"
