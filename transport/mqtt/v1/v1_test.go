@@ -1,4 +1,4 @@
-package resourcemanager_test
+package v1_test
 
 import (
 	"encoding/base64"
@@ -6,12 +6,11 @@ import (
 	"testing"
 
 	"github.com/HackRVA/memberserver/datastore/in_memory"
-	"github.com/HackRVA/memberserver/services/resourcemanager"
+	v1 "github.com/HackRVA/memberserver/transport/mqtt/v1"
 
 	"github.com/HackRVA/memberserver/models"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/sirupsen/logrus"
 )
 
 var pub []string
@@ -33,7 +32,7 @@ func (mqtt *stubMQTTServer) Subscribe(address string, topic string, handler mqtt
 
 // TestUpdateResourceACL we just want to test that the mqtt message looks reasonable
 func TestUpdateResourceACL(t *testing.T) {
-	resourceManager := resourcemanager.New(&stubMQTTServer{}, &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	resourceManager := v1.New(&stubMQTTServer{}, &in_memory.In_memory{}, slackNotifier{})
 	resource := models.Resource{
 		ID:   "0",
 		Name: "should just straight up send it",
@@ -53,7 +52,7 @@ func TestUpdateResourceACL(t *testing.T) {
 
 // TestUpdateResources we just want to test that the mqtt message looks reasonable
 func TestUpdateResources(t *testing.T) {
-	resourceManager := resourcemanager.New(&stubMQTTServer{}, &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	resourceManager := v1.New(&stubMQTTServer{}, &in_memory.In_memory{}, slackNotifier{})
 	resources := []models.Resource{
 		{
 			ID:   "0",

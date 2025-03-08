@@ -13,7 +13,7 @@ import (
 	"github.com/HackRVA/memberserver/models"
 	"github.com/HackRVA/memberserver/pkg/mqtt"
 	"github.com/HackRVA/memberserver/services/member"
-	"github.com/HackRVA/memberserver/services/resourcemanager"
+	resourcemanager "github.com/HackRVA/memberserver/transport/mqtt/v1"
 
 	"github.com/shaj13/go-guardian/v2/auth/strategies/union"
 	"github.com/sirupsen/logrus"
@@ -77,7 +77,7 @@ func (p paymentProvider) GetSubscriber(subscriptionID string) (name string, emai
 }
 
 func TestGetMember(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	// convert all members from the store to a json byte array
@@ -120,7 +120,7 @@ func TestGetMember(t *testing.T) {
 }
 
 func TestGetMemberByEmail(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	// convert all members from the store to a json byte array
@@ -174,7 +174,7 @@ func TestGetMemberByEmail(t *testing.T) {
 }
 
 func TestAssignRFID(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	tests := []struct {
@@ -225,7 +225,7 @@ func TestAssignRFID(t *testing.T) {
 }
 
 func TestGetTiers(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	// convert all members from the store to a json byte array
@@ -259,7 +259,7 @@ func TestGetTiers(t *testing.T) {
 }
 
 func TestNewMember(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	newMember := models.Member{
@@ -304,7 +304,7 @@ func TestNewMember(t *testing.T) {
 }
 
 func TestUpdateMemberSubscriptionID(t *testing.T) {
-	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{}, logrus.New())
+	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
 	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
 
 	expectedResponse, _ := json.Marshal(models.EndpointSuccess{

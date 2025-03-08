@@ -17,12 +17,12 @@ import (
 	"github.com/HackRVA/memberserver/datastore/in_memory"
 	"github.com/HackRVA/memberserver/services/logger"
 	"github.com/HackRVA/memberserver/services/member"
-	"github.com/HackRVA/memberserver/services/resourcemanager"
 	"github.com/HackRVA/memberserver/services/scheduler"
 	"github.com/HackRVA/memberserver/services/scheduler/jobs"
 	httprouter "github.com/HackRVA/memberserver/transport/http"
 	"github.com/HackRVA/memberserver/transport/http/middleware/auth"
 	v1 "github.com/HackRVA/memberserver/transport/http/v1"
+	mqtthandler "github.com/HackRVA/memberserver/transport/mqtt/v1"
 )
 
 func init() {
@@ -49,12 +49,12 @@ func main() {
 	c := config.Get()
 
 	log := logger.New()
-	rm := resourcemanager.New(mqtt.New(), db, slack.Notifier{WebHookURL: c.SlackAccessEvents}, log)
+	mqttHandler := mqtthandler.New(mqtt.New(), db, slack.Notifier{WebHookURL: c.SlackAccessEvents})
 	pp := paypal.Setup(c.PaypalURL, c.PaypalClientID, c.PaypalClientSecret, log)
 
 	auth := auth.New(db)
 	muxRouter := mux.NewRouter()
-	v1Router := v1.New(muxRouter, db, auth, rm, pp, log)
+	v1Router := v1.New(muxRouter, db, auth, mqttHandler, pp, log)
 	router := httprouter.New(muxRouter, []httprouter.MemberServerRouter{v1Router})
 
 	srv := &http.Server{
@@ -65,7 +65,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	j := jobs.New(db, log, member.New(db, rm, pp, log), rm)
+	j := jobs.New(db, log, member.New(db, mqttHandler, pp, log), mqttHandler)
 	s := scheduler.Scheduler{}
 
 	go s.Setup(j)
