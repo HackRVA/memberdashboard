@@ -68,7 +68,7 @@ func TestVersion(t *testing.T) {
 			request := newGetVersionRequest()
 			response := httptest.NewRecorder()
 
-			server.ServeHTTP(response, request)
+			server.Version(response, request)
 
 			assertStatus(t, response.Code, tt.expectedHTTPStatus)
 			assertResponseBody(t, response.Body.String(), tt.expectedResponse)

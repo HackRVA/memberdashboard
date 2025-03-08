@@ -41,7 +41,7 @@ type VersionServer struct {
 	store VersionStore
 }
 
-func (v *VersionServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (v *VersionServer) Version(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		v.showVersion(w)

@@ -7,6 +7,7 @@ import (
 )
 
 type V1Router interface {
+	SetupRoutes()
 	MemberHTTPHandler
 	ReportsHTTPHandler
 	ResourceHTTPHandler
@@ -72,7 +73,7 @@ type AuthHTTPHandler interface {
 }
 
 type VersionHTTPHandler interface {
-	ServeHTTP(http.ResponseWriter, *http.Request)
+	Version(http.ResponseWriter, *http.Request)
 }
 
 type PaymentHTTPHandler interface {

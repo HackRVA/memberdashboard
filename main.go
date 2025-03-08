@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/HackRVA/memberserver/pkg/mqtt"
@@ -52,9 +53,9 @@ func main() {
 	pp := paypal.Setup(c.PaypalURL, c.PaypalClientID, c.PaypalClientSecret, log)
 
 	auth := auth.New(db)
-	v1Router := v1.New(db, auth, rm, pp, log)
-	router := httprouter.New(v1Router, auth)
-	// router := router.New(api, auth)
+	muxRouter := mux.NewRouter()
+	v1Router := v1.New(muxRouter, db, auth, rm, pp, log)
+	router := httprouter.New(muxRouter, []httprouter.MemberServerRouter{v1Router})
 
 	srv := &http.Server{
 		Handler: router.UnAuthedRouter,
