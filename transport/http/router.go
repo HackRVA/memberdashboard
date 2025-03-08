@@ -11,19 +11,18 @@ import (
 )
 
 type MemberServerRouter interface {
-  SetupRoutes()
+	SetupRoutes()
 }
 
 type Router struct {
 	UnAuthedRouter *mux.Router
-  routers []MemberServerRouter
-
+	routers        []MemberServerRouter
 }
 
 func New(unAuthedRouter *mux.Router, routers []MemberServerRouter) Router {
 	router := Router{
 		UnAuthedRouter: unAuthedRouter,
-    routers: routers,
+		routers:        routers,
 	}
 
 	router.registerRoutes()
@@ -41,8 +40,8 @@ func (r *Router) mountFS() {
 }
 
 func (r *Router) registerRoutes() {
-  for _, router := range r.routers {
-  router.SetupRoutes()
-  }
+	for _, router := range r.routers {
+		router.SetupRoutes()
+	}
 	r.mountFS()
 }
