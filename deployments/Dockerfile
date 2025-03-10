@@ -10,7 +10,7 @@ COPY ./web /app
 # compile and bundle typescript
 RUN npm run build
 
-FROM golang:1.22 as backend-build
+FROM golang:1.24 as backend-build
 
 WORKDIR /membership
 COPY . .
