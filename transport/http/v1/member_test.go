@@ -78,7 +78,7 @@ func (p paymentProvider) GetSubscriber(subscriptionID string) (name string, emai
 
 func TestGetMember(t *testing.T) {
 	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
-	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(in_memory.MemberMapToSlice(testMemberStore.Members))
@@ -121,7 +121,7 @@ func TestGetMember(t *testing.T) {
 
 func TestGetMemberByEmail(t *testing.T) {
 	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
-	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Members["test@test.com"])
@@ -175,7 +175,7 @@ func TestGetMemberByEmail(t *testing.T) {
 
 func TestAssignRFID(t *testing.T) {
 	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
-	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	tests := []struct {
 		TestName           string
@@ -191,7 +191,7 @@ func TestAssignRFID(t *testing.T) {
 			RFID:               "newrfid",
 			Resources:          []models.MemberResource{},
 			expectedHTTPStatus: http.StatusOK,
-			expectedResponse:   "{\"id\":\"0\",\"name\":\"testuser\",\"email\":\"test@test.com\",\"rfid\":\"rfid1\",\"memberLevel\":0,\"resources\":[],\"subscriptionID\":\"\"}",
+			expectedResponse:   "{\"id\":\"0\",\"name\":\"testuser\",\"email\":\"test@test.com\",\"rfid\":\"newrfid\",\"memberLevel\":0,\"resources\":[],\"subscriptionID\":\"\"}",
 		},
 		{
 			TestName:           "should return bad request if we don't send a valid email",
@@ -226,7 +226,7 @@ func TestAssignRFID(t *testing.T) {
 
 func TestGetTiers(t *testing.T) {
 	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
-	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	// convert all members from the store to a json byte array
 	jsonByte, _ := json.Marshal(testMemberStore.Tiers)
@@ -260,7 +260,7 @@ func TestGetTiers(t *testing.T) {
 
 func TestNewMember(t *testing.T) {
 	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
-	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	newMember := models.Member{
 		ID:    "testID",
@@ -305,7 +305,7 @@ func TestNewMember(t *testing.T) {
 
 func TestUpdateMemberSubscriptionID(t *testing.T) {
 	rm := resourcemanager.New(mqtt.New(), &in_memory.In_memory{}, slackNotifier{})
-	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}, logrus.New()), union.New()}
+	server := &MemberServer{rm, member.New(&testMemberStore, rm, paymentProvider{}), union.New()}
 
 	expectedResponse, _ := json.Marshal(models.EndpointSuccess{
 		Ack: true,

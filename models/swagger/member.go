@@ -63,5 +63,5 @@ type getPaymentRefreshResponse struct {
 // swagger:parameters addNewMemberRequest
 type addNewMemberRequest struct {
 	// in: body
-	Body models.NewMember
+	Body models.NewMemberRequest
 }

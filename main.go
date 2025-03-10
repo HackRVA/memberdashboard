@@ -65,7 +65,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	j := jobs.New(db, log, member.New(db, mqttHandler, pp, log), mqttHandler)
+	j := jobs.New(db, log, member.New(db, mqttHandler, pp), mqttHandler)
 	s := scheduler.Scheduler{}
 
 	go s.Setup(j)

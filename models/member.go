@@ -3,7 +3,7 @@ package models
 import "time"
 
 // NewMember - add a new member
-type NewMember struct {
+type NewMemberRequest struct {
 	Email string `json:"email"`
 	RFID  string `json:"rfid"`
 }

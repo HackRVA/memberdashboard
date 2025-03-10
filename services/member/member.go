@@ -1,10 +1,8 @@
 package member
 
 import (
+	"errors"
 	"fmt"
-	"strconv"
-	"strings"
-	"time"
 
 	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/datastore"
@@ -12,207 +10,161 @@ import (
 	"github.com/HackRVA/memberserver/pkg/slack"
 	"github.com/HackRVA/memberserver/services"
 	"github.com/HackRVA/memberserver/services/logger"
+	"github.com/sirupsen/logrus"
 
 	"github.com/HackRVA/memberserver/models"
 )
 
-type member struct {
-	model   models.Member
-	store   datastore.MemberStore
-	service services.Member
+type memberService struct {
+	store           datastore.MemberStore
+	resourceManager services.ResourceUpdater
+	paymentProvider integrations.PaymentProvider
 }
 
-func NewMemberService(s datastore.MemberStore, m models.Member) member {
-	return member{
-		model: m,
-		store: s,
+func New(store datastore.MemberStore, rm services.ResourceUpdater, pp integrations.PaymentProvider) memberService {
+	return memberService{
+		store:           store,
+		resourceManager: rm,
+		paymentProvider: pp,
 	}
 }
 
-func (m member) PaymentIsBeforeOneMonthAgo(payment models.Payment) bool {
-	oneMonthAgo := (time.Hour * 24) * -30
-	return payment.Time.Before(time.Now().Add(oneMonthAgo))
-}
-
-func (m member) IsActive() bool {
-	return m.model.Level == uint8(models.Standard) || m.model.Level == uint8(models.Classic) || m.model.Level == uint8(models.Premium)
-}
-
-func (m member) IsCredited() bool {
-	return m.model.Level == uint8(models.Credited)
-}
-
-func (m member) HasValidSubscriptionID() bool {
-	return m.model.SubscriptionID != "none" && len(m.model.SubscriptionID) > 0
-}
-
-func (m member) notifyGracePeriod(lastPayment models.Payment) {
-	logger.Infof("[scheduled-job] %s notify about being in grace period. Last payment date: %s", m.model.Name, lastPayment.Time.Format("2006-01-02"))
-	go slack.Send(config.Get().SlackAccessEvents, fmt.Sprintf("%s is in a grace period until their subscription ends. \n\tLast payment date: %s", m.model.Name, lastPayment.Time.Format("2006-01-02")))
-}
-
-func (m member) endGracePeriod() {
-	logger.Infof("[scheduled-job] %s notify about grace period ending", m.model.Name)
-	go slack.Send(config.Get().SlackAccessEvents, fmt.Sprintf("%s grace period has ended. Setting membership level to inactive.", m.model.Name))
-}
-
-func (m member) setInactive() {
-	logger.Infof("[scheduled-job] %s setting member to inactive", m.model.Name)
-	if err := m.store.SetMemberLevel(m.model.ID, models.Inactive); err != nil {
-		logger.Errorf("error setting member level %s", err)
+func (m memberService) Add(newMember models.Member) (models.Member, error) {
+	// assignRFID needs to run after the member has been added to the DB
+	if _, err := m.AssignRFID(newMember.Email, newMember.RFID); err != nil {
+		logrus.Error(err)
 	}
+	return m.store.AddNewMember(newMember)
 }
 
-func (m member) UpdateName(name string) {
-	if strings.TrimSpace(m.model.Name) != "" {
-		return
-	}
-
-	if strings.TrimSpace(name) == "" {
-		return
-	}
-
-	logger.Infof("attempting to update name [%s] from payment provider", name)
-
-	if err := m.service.Update(models.Member{
-		ID:   m.model.ID,
-		Name: name,
-	}); err != nil {
-		logger.Error(err)
-	}
-}
-
-func (m member) UpdateEmail(email string) {
-	if strings.TrimSpace(m.model.Email) != "" {
-		return
-	}
-
-	if strings.TrimSpace(email) == "" {
-		return
-	}
-
-	logger.Infof("attempting to update email [%s] from payment provider", email)
-	if err := m.service.Update(models.Member{
-		ID:    m.model.ID,
-		Email: email,
-	}); err != nil {
-		logger.Error(err)
-	}
-}
-
-func (m member) UpdateInfo(paymentProvider integrations.PaymentProvider) {
-	name, email, err := paymentProvider.GetSubscriber(m.model.SubscriptionID)
+func (m memberService) GetMembersPaginated(limit int, count int, active bool) []models.Member {
+	members, err := m.store.GetMembersPaginated(limit, count, active)
 	if err != nil {
-		logger.Error(err)
-		return
+		logrus.Error(err)
+	}
+	return members
+}
+
+func (m memberService) Get() []models.Member {
+	return m.store.GetMembers()
+}
+
+func (m memberService) GetByEmail(email string) (models.Member, error) {
+	return m.store.GetMemberByEmail(email)
+}
+
+func (m memberService) Update(member models.Member) error {
+	if _, err := m.CheckStatus(member.SubscriptionID); err != nil {
+		logrus.Error(err)
+	}
+	return m.store.UpdateMember(member)
+}
+
+func (m memberService) AssignRFID(email string, rfid string) (models.Member, error) {
+	if len(rfid) == 0 {
+		return models.Member{}, errors.New("not a valid rfid")
 	}
 
-	if strings.TrimSpace(email) == "" {
-		logger.Debugf("did not receive email from payment provider subscription_id: %s", m.model.SubscriptionID)
-		return
+	// we need to push to resources after we add rfid to DB
+	defer m.resourceManager.PushOne(models.Member{Email: email})
+	return m.store.AssignRFID(email, rfid)
+}
+
+func (ms memberService) GetMemberBySubscriptionID(subscriptionID string) (models.Member, error) {
+	_, email, err := ms.paymentProvider.GetSubscriber(subscriptionID)
+	if err != nil {
+		return models.Member{}, err
 	}
 
-	if strings.TrimSpace(name) == "" {
-		logger.Debugf("did not receive name from payment provider subscription_id: %s", m.model.SubscriptionID)
-		return
+	m, err := ms.GetByEmail(email)
+	if err != nil {
+		return models.Member{}, err
 	}
 
-	logger.Infof("attempting to update member name and email: %s, %s", name, email)
+	if m.SubscriptionID != subscriptionID {
+		logrus.Errorf("subscriptionID doesn't match with member: %s, %s", m.Email, m.Name)
+		return m, fmt.Errorf("subscriptionID doesn't match with member: %s, %s", m.Email, m.Name)
+	}
 
-	if err := m.store.UpdateMemberBySubscriptionID(m.model.SubscriptionID, models.Member{
-		SubscriptionID: m.model.SubscriptionID,
-		Name:           name,
+	return m, nil
+}
+
+func (ms memberService) CheckStatus(subscriptionID string) (models.Member, error) {
+	var m models.Member
+
+	if subscriptionID == "none" {
+		logrus.Error("tried to lookup subscriptionID that was 'none'")
+		return m, errors.New("tried to lookup subscriptionID that was 'none'")
+	}
+
+	for _, el := range ms.store.GetMembers() {
+		if el.SubscriptionID != subscriptionID {
+			continue
+		}
+
+		m = el
+	}
+
+	if m.SubscriptionID != subscriptionID {
+		return m, fmt.Errorf("could not find a member with subscriptionID: %s", subscriptionID)
+	}
+
+	statusChecker := NewStatusChecker(m, ms.store, ms.paymentProvider)
+
+	return m, statusChecker.CheckStatus()
+}
+
+func (m memberService) GetTiers() []models.Tier {
+	return m.store.GetTiers()
+}
+
+func (m memberService) FindNonMembersOnSlack() []string {
+	var nonMembers []string
+	users, err := slack.GetUsers(config.Get().SlackToken)
+	if err != nil {
+		logger.Errorf("error fetching slack users: %s", err)
+	}
+
+	members := m.Get()
+	memberMap := make(map[string]models.Member)
+
+	for _, m := range members {
+		memberMap[m.Email] = m
+	}
+
+	for _, u := range users {
+		if u.IsBot {
+			continue
+		}
+
+		if u.Deleted {
+			continue
+		}
+
+		_, ok := memberMap[u.Profile.Email]
+		if !ok {
+			nonMembers = append(nonMembers, u.RealName+", "+u.Profile.Email)
+		}
+	}
+	return nonMembers
+}
+
+func (ms memberService) SetLevel(memberID string, level models.MemberLevel) error {
+	return ms.store.SetMemberLevel(memberID, level)
+}
+
+func (ms memberService) GetMemberFromSubscription(subscriptionID string) (models.Member, error) {
+	name, email, err := ms.paymentProvider.GetSubscriber(subscriptionID)
+	if err != nil {
+		return models.Member{}, err
+	}
+	return models.Member{
 		Email:          email,
-	}); err != nil {
-		logger.Error(err)
-	}
+		Name:           name,
+		SubscriptionID: subscriptionID,
+	}, nil
 }
 
-func (m member) activeStatusHandler(lastPayment models.Payment) {
-	lastPaymentAmount, err := strconv.ParseFloat(lastPayment.Amount, 32)
-	if err != nil {
-		logger.Error(err)
-		return
-	}
-
-	if int64(lastPaymentAmount) == models.MemberLevelToAmount[models.Premium] {
-		if err := m.store.SetMemberLevel(m.model.ID, models.Premium); err != nil {
-			logger.Error(err)
-		}
-		return
-	}
-	if int64(lastPaymentAmount) == models.MemberLevelToAmount[models.Classic] {
-		if err := m.store.SetMemberLevel(m.model.ID, models.Classic); err != nil {
-			logger.Error(err)
-		}
-		return
-	}
-	if err := m.store.SetMemberLevel(m.model.ID, models.Standard); err != nil {
-		logger.Error(err)
-	}
-}
-
-func (m member) cancelStatusHandler(lastPayment models.Payment) {
-	if m.PaymentIsBeforeOneMonthAgo(lastPayment) {
-		if m.IsActive() {
-			m.endGracePeriod()
-		}
-		m.setInactive()
-
-		return
-	}
-	m.notifyGracePeriod(lastPayment)
-}
-
-func (m member) setMemberLevelFromLastPayment(status string, lastPayment models.Payment) {
-	logger.Infof("[scheduled-job] setting member level: %s - %s - last payment amount: %s", m.model.Name, status, lastPayment.Amount)
-
-	println(status)
-	switch status {
-	case models.ActiveStatus:
-		m.activeStatusHandler(lastPayment)
-		return
-	case models.CanceledStatus:
-		m.cancelStatusHandler(lastPayment)
-		return
-	case models.SuspendedStatus:
-		if err := m.store.SetMemberLevel(m.model.ID, models.Inactive); err != nil {
-			logger.Error(err)
-		}
-	default:
-		return
-	}
-}
-
-func (m member) CheckStatus(paymentProvider integrations.PaymentProvider) error {
-	if m.IsCredited() {
-		return nil
-	}
-
-	if !m.HasValidSubscriptionID() {
-		if err := m.store.SetMemberLevel(m.model.ID, models.Inactive); err != nil {
-			logger.Error(err)
-		}
-		return fmt.Errorf("deactivating member (name: %s email: %s) because no subscriptionID was found", m.model.Name, m.model.Email)
-	}
-
-	m.UpdateInfo(paymentProvider)
-
-	status, lastPaymentAmount, lastPaymentTime, err := paymentProvider.GetSubscription(m.model.SubscriptionID)
-	if err != nil {
-		if !m.IsActive() {
-			logger.Debugf("error getting subscription status for (%s, %s). However, member is already inactive. %s", m.model.Email, m.model.Name, err.Error())
-			return fmt.Errorf("error getting member's subscription, but the member is already inactive")
-		}
-		if err := m.store.SetMemberLevel(m.model.ID, models.Inactive); err != nil {
-			logger.Error(err)
-		}
-		return fmt.Errorf("error getting subscription: %s (%s, %s) setting to inactive until status is investigated", err.Error(), m.model.Email, m.model.Name)
-	}
-
-	m.setMemberLevelFromLastPayment(status, models.Payment{
-		Amount: lastPaymentAmount,
-		Time:   lastPaymentTime,
-	})
-	return nil
+func (ms memberService) GetActiveMembersWithoutSubscription() []models.Member {
+	return ms.store.GetActiveMembersWithoutSubscription()
 }

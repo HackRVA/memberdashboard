@@ -61,11 +61,7 @@ func (m *MemberServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if active == "true" {
-		println("get active")
-	}
-
-	ok(w, m.MemberService.GetMembersWithLimit(count, page, active == "true"))
+	ok(w, m.MemberService.GetMembersPaginated(count, page, active == "true"))
 }
 
 func (m *MemberServer) UpdateMemberByEmail(w http.ResponseWriter, r *http.Request) {

@@ -118,7 +118,7 @@ seed: ## Seed the db with member data and a test user
 ##   Example:
 ##     make seed
 ##
-	$(GO) run ./test/generators/members.go 50
+	$(GO) run ./test/cmd/ 50
 
 .PHONY:run-sql
 run-sql: ## Run a sql script
@@ -185,6 +185,7 @@ deps-frontend:
 deps-tools: ## install tool dependencies
 	$(GO) install $(GOLANGCI_LINT_PACKAGE)
 	$(GO) install $(GOFUMPT_PACKAGE)
+	$(GO) install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 
 .PHONY: format-backend
 format-backend: ## checks formatting on backend code
@@ -196,5 +197,4 @@ lint-backend: ## lints go code
 
 .PHONY: test-backend
 test-backend: ## run go tests
-	$(GO) test ./...
-
+	$(GO) test -cover ./...

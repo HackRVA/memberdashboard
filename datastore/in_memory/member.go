@@ -17,8 +17,28 @@ func (i *In_memory) GetTiers() []models.Tier {
 	return i.Tiers
 }
 
-func (i *In_memory) GetMembersWithLimit(limit int, offset int, active bool) []models.Member {
-	return MemberMapToSlice(i.Members)
+func (i *In_memory) GetMembersPaginated(limit int, offset int, active bool) ([]models.Member, error) {
+	members := MemberMapToSlice(i.Members)
+	var filteredMembers []models.Member
+
+	for _, member := range members {
+		if active && member.Level == 0 {
+			continue
+		}
+		filteredMembers = append(filteredMembers, member)
+	}
+
+	start := offset
+	if start > len(filteredMembers) {
+		start = len(filteredMembers)
+	}
+
+	end := start + limit
+	if end > len(filteredMembers) {
+		end = len(filteredMembers)
+	}
+
+	return filteredMembers[start:end], nil
 }
 
 func (i *In_memory) GetMembers() []models.Member {
@@ -26,7 +46,6 @@ func (i *In_memory) GetMembers() []models.Member {
 }
 
 func (i *In_memory) GetMemberByEmail(email string) (models.Member, error) {
-	// i.Members = Members
 	println("Member len: ", len(i.Members))
 	for _, k := range i.Members {
 		println(k.Email)
@@ -50,6 +69,8 @@ func (i *In_memory) AssignRFID(email string, rfid string) (models.Member, error)
 		if member.Email != email {
 			continue
 		}
+		member.RFID = rfid
+		i.Members[email] = member
 		return member, nil
 	}
 	return models.Member{}, errors.New("user not found")
@@ -68,6 +89,7 @@ func (i *In_memory) UpdateMember(update models.Member) error {
 		return errors.New("not found")
 	}
 
+	i.Members[update.Email] = update
 	return nil
 }
 

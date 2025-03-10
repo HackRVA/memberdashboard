@@ -61,7 +61,7 @@ func New(unAuthedRouter *mux.Router, store datastore.DataStore, authController *
 		},
 		VersionServer:  &VersionServer{NewInMemoryVersionStore()},
 		ReportsServer:  &ReportsServer{report.Report{Store: store}, log},
-		MemberServer:   &MemberServer{rm, member.New(store, rm, pp, log), authController.AuthStrategy},
+		MemberServer:   &MemberServer{rm, member.New(store, rm, pp), authController.AuthStrategy},
 		UserServer:     &userServer,
 		AuthStrategy:   authController.AuthStrategy,
 		JWTKeeper:      authController.JWTSecretsKeeper,

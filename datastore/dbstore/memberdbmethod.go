@@ -5,27 +5,27 @@ import "fmt"
 // MemberDatabaseMethod -- method container that holds the extension methods to query the members, credit, and resource tables
 type MemberDatabaseMethod struct{}
 
-func (member *MemberDatabaseMethod) getMemberWithLimit(limit int, offset int, active bool) string {
+func (member *MemberDatabaseMethod) getMembersPaginated(active bool) string {
 	const getMemberQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
 	ARRAY(
 	SELECT resource_id
 	FROM membership.member_resource
-	LEFT JOIN membership.resources 
+	LEFT JOIN membership.resources
 	ON membership.resources.id = membership.member_resource.resource_id
 	WHERE member_id = membership.members.id
 	) as resources, COALESCE(subscription_id,'none')
 	FROM membership.members
 	%s
 	ORDER BY name
-	LIMIT %d
-	OFFSET %d;
+	LIMIT $1
+	OFFSET $2;
 	`
 
 	if active {
-		return fmt.Sprintf(getMemberQuery, "WHERE member_tier_id != 1", limit, offset)
+		return fmt.Sprintf(getMemberQuery, "WHERE member_tier_id != 1")
 	}
 
-	return fmt.Sprintf(getMemberQuery, "WHERE member_tier_id = 1", limit, offset)
+	return fmt.Sprintf(getMemberQuery, "WHERE member_tier_id = 1")
 }
 
 func (member *MemberDatabaseMethod) getMember() string {
@@ -33,7 +33,7 @@ func (member *MemberDatabaseMethod) getMember() string {
 	ARRAY(
 	SELECT resource_id
 	FROM membership.member_resource
-	LEFT JOIN membership.resources 
+	LEFT JOIN membership.resources
 	ON membership.resources.id = membership.member_resource.resource_id
 	WHERE member_id = membership.members.id
 	) as resources, COALESCE(subscription_id,'none')
@@ -60,7 +60,7 @@ func (member *MemberDatabaseMethod) getMemberByEmail() string {
 	ARRAY(
 	SELECT resource_id
 	FROM membership.member_resource
-	LEFT JOIN membership.resources 
+	LEFT JOIN membership.resources
 	ON membership.resources.id = membership.member_resource.resource_id
 	WHERE member_id = membership.members.id
 	) as resources
@@ -83,7 +83,7 @@ func (member *MemberDatabaseMethod) getMemberByRFID() string {
 	ARRAY(
 	SELECT resource_id
 	FROM membership.member_resource
-	LEFT JOIN membership.resources 
+	LEFT JOIN membership.resources
 	ON membership.resources.id = membership.member_resource.resource_id
 	WHERE member_id = membership.members.id
 	) as resources

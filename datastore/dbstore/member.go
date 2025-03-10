@@ -15,19 +15,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (db *DatabaseStore) GetMembersWithLimit(limit int, offset int, active bool) []models.Member {
+func (db *DatabaseStore) GetMembersPaginated(limit int, page int, active bool) ([]models.Member, error) {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {
-		log.Printf("got error: %v\n", err)
+		log.Errorf("failed to connect to database: %v", err)
+		return nil, err
 	}
 	defer dbPool.Close()
 
 	var members []models.Member
-	rows, err := dbPool.Query(db.ctx, memberDbMethod.getMemberWithLimit(limit, offset, active))
+	query := memberDbMethod.getMembersPaginated(active)
+	rows, err := dbPool.Query(db.ctx, query, limit, page*limit)
 	if err != nil {
-		log.Errorf("GetMembers failed: %v", err)
+		log.Errorf("GetMembersPaginated query failed: %v", err)
+		return nil, err
 	}
-
 	defer rows.Close()
 
 	resourceMemo := make(map[string]models.MemberResource)
@@ -38,20 +40,18 @@ func (db *DatabaseStore) GetMembersWithLimit(limit int, offset int, active bool)
 		err = rows.Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs, &member.SubscriptionID)
 		if err != nil {
 			log.Errorf("error scanning row: %s", err)
+			return nil, err
 		}
 
-		// having issues with unmarshalling a jsonb object array from pgx
-		// using a less efficient approach for now
-		// TODO: fix this on the query level
 		for _, rID := range rIDs {
-			if _, exist := resourceMemo[rID]; exist {
-				member.Resources = append(member.Resources, models.MemberResource{ResourceID: rID, Name: resourceMemo[rID].Name})
+			if resource, exist := resourceMemo[rID]; exist {
+				member.Resources = append(member.Resources, resource)
 				continue
 			}
 
 			resource, err := db.GetResourceByID(rID)
 			if err != nil {
-				logger.Errorf("error getting resource by id in memberResource lookup: %s %s_\n", err.Error(), rID)
+				logger.Errorf("error getting resource by id in memberResource lookup: %s %s\n", err.Error(), rID)
 				continue
 			}
 
@@ -60,13 +60,18 @@ func (db *DatabaseStore) GetMembersWithLimit(limit int, offset int, active bool)
 				Name:       resource.Name,
 			}
 
-			member.Resources = append(member.Resources, models.MemberResource{ResourceID: rID, Name: resource.Name})
+			member.Resources = append(member.Resources, resourceMemo[rID])
 		}
 
 		members = append(members, member)
 	}
 
-	return members
+	if rows.Err() != nil {
+		log.Errorf("error iterating rows: %v", rows.Err())
+		return nil, rows.Err()
+	}
+
+	return members, nil
 }
 
 func (db *DatabaseStore) GetMembers() []models.Member {

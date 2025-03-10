@@ -15,7 +15,7 @@ type (
 	Member interface {
 		Add(models.Member) (models.Member, error)
 		Get() []models.Member
-		GetMembersWithLimit(limit int, offset int, active bool) []models.Member
+		GetMembersPaginated(limit int, offset int, active bool) []models.Member
 		GetByEmail(email string) (models.Member, error)
 		Update(models.Member) error
 		AssignRFID(email string, rfid string) (models.Member, error)
@@ -36,6 +36,9 @@ type (
 		OnRemoveInvalidRequestHandler(client go_mqtt.Client, msg go_mqtt.Message)
 	}
 
+	ResourceUpdater interface {
+		PushOne(m models.Member)
+	}
 	Resource interface {
 		MQTTHandler
 		UpdateResourceACL(r models.Resource) error
