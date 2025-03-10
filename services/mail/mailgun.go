@@ -51,7 +51,7 @@ func (mp Provider) SendSMTP(address, subject, text string) (string, error) {
 
 func (mp Provider) SendPlainTextMail(address, subject, text string) (string, error) {
 	mg := mailgun.NewMailgun(mp.URL, mp.Key)
-	m := mg.NewMessage(
+	m := mailgun.NewMessage(
 		"noreply <"+mp.from+">",
 		subject,
 		text,
@@ -67,7 +67,7 @@ func (mp Provider) SendPlainTextMail(address, subject, text string) (string, err
 
 func (mp Provider) SendHtmlMail(address, subject, html string) (string, error) {
 	mg := mailgun.NewMailgun(mp.URL, mp.Key)
-	m := mg.NewMessage(
+	m := mailgun.NewMessage(
 		"noreply <"+mp.from+">",
 		subject,
 		"Testing some Mailgun awesomeness!",
@@ -75,7 +75,7 @@ func (mp Provider) SendHtmlMail(address, subject, html string) (string, error) {
 	)
 	// m.AddCC("info@hackrva.org")
 	// m.AddBCC("bar@example.com")
-	m.SetHtml(html)
+	m.SetHTML(html)
 	// m.AddAttachment("files/test.jpg")
 	// m.AddAttachment("files/test.txt")
 
