@@ -154,6 +154,18 @@ func (i *In_memory) GetActiveMembersWithoutSubscription() []models.Member {
 	return nil
 }
 
+func (i *In_memory) GetMemberCount(isActive bool) (int, error) {
+	count := 0
+	for _, member := range i.Members {
+		if isActive && member.Level != 1 {
+			count++
+		} else if !isActive && member.Level == 1 {
+			count++
+		}
+	}
+	return count, nil
+}
+
 func MemberMapToSlice(m map[string]models.Member) []models.Member {
 	var members []models.Member
 

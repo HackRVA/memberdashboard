@@ -61,7 +61,18 @@ func (m *MemberServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok(w, m.MemberService.GetMembersPaginated(count, page, active == "true"))
+	getActive := active == "true"
+
+	memberCount, err := m.MemberService.GetMemberCount(getActive)
+	if err != nil {
+		badRequest(w, err.Error())
+		return
+	}
+
+	ok(w, models.MembersPaginatedResponse{
+		Members: m.MemberService.GetMembersPaginated(count, page, active == "true"),
+		Count:   uint(memberCount),
+	})
 }
 
 func (m *MemberServer) UpdateMemberByEmail(w http.ResponseWriter, r *http.Request) {

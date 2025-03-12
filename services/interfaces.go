@@ -16,6 +16,7 @@ type (
 		Add(models.Member) (models.Member, error)
 		Get() []models.Member
 		GetMembersPaginated(limit int, offset int, active bool) []models.Member
+		GetMemberCount(isActive bool) (int, error)
 		GetByEmail(email string) (models.Member, error)
 		Update(models.Member) error
 		AssignRFID(email string, rfid string) (models.Member, error)

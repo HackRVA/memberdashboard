@@ -45,3 +45,8 @@ type Payment struct {
 type MemberShipCreditRequest struct {
 	IsCredited bool `json:"isCredited"`
 }
+
+type MembersPaginatedResponse struct {
+	Members []Member
+	Count   uint
+}

@@ -70,6 +70,11 @@ func (db *DatabaseStore) UserSignin(email string, password string) error {
 		return fmt.Errorf("Unauthorized")
 	}
 
+	println()
+	println()
+	println(storedCreds.Password)
+	println()
+
 	// Compare the stored hashed password, with the hashed version of the password that was received
 	if err := bcrypt.CompareHashAndPassword([]byte(storedCreds.Password), []byte(password)); err != nil {
 		// If the two passwords don't match, return a 401 status

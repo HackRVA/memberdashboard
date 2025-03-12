@@ -15,6 +15,25 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func (db *DatabaseStore) GetMemberCount(isActive bool) (int, error) {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Errorf("failed to connect to database: %v", err)
+		return 0, err
+	}
+	defer dbPool.Close()
+
+	var count int
+	query := memberDbMethod.getMemberCount(isActive)
+	err = dbPool.QueryRow(db.ctx, query).Scan(&count)
+	if err != nil {
+		log.Errorf("GetMemberCount query failed: %v", err)
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (db *DatabaseStore) GetMembersPaginated(limit int, page int, active bool) ([]models.Member, error) {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {
