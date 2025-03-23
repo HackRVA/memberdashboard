@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	// "github.com/HackRVA/memberserver/web"
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,7 +14,6 @@ type spaRouter struct {
 }
 
 func (s spaRouter) isStaticFile(path string) bool {
-	// web, _ := fs.Sub(s.ReadFileFS, "web")
 	p := strings.TrimLeft(filepath.Clean(path), "/")
 	_, err := fs.Stat(s.FS, p)
 
@@ -38,7 +36,6 @@ func (s spaRouter) notFoundHandler(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (s spaRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// web, _ := fs.Sub(web.UI, "web")
 	if !s.isStaticFile(r.URL.Path) {
 		s.notFoundHandler(w, r)
 		return
