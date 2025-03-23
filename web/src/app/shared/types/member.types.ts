@@ -28,6 +28,11 @@ export type MemberResponse = {
   resources: MemberResource[];
 };
 
+export type MembersPaginatedResponse = {
+  members: MemberResponse[];
+  count: number;
+};
+
 export type AssignRFIDRequest = {
   email: string;
   rfid: string;

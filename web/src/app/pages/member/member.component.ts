@@ -14,6 +14,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import {
   BehaviorSubject,
@@ -24,7 +25,11 @@ import {
   switchMap,
 } from 'rxjs';
 import { MemberService, ResourceService } from '@md-shared/services';
-import { MemberResponse, MemberSearchRequest } from '@md-shared/types';
+import {
+  MemberResponse,
+  MemberSearchRequest,
+  MembersPaginatedResponse,
+} from '@md-shared/types';
 import { ActionBarComponent } from '@md-shared/components/action-bar';
 import { MemberLevelPipe } from '@md-shared/pipes';
 import { RFIDManagementFactory } from '@md-shared/functions';
@@ -41,6 +46,7 @@ import { MemberResourceManagementData } from './types';
     MatIconModule,
     MatTabsModule,
     MatMenuModule,
+    MatPaginatorModule,
     MatSnackBarModule,
     FormsModule,
     ReactiveFormsModule,
@@ -52,10 +58,7 @@ import { MemberResourceManagementData } from './types';
 })
 export class MemberComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
-  pageInfo: { currentPage: number; count: number } = {
-    currentPage: 0,
-    count: 10,
-  };
+  pageInfo: PageEvent = { pageSize: 10 } as PageEvent;
 
   private static readonly defaultSearchRequest: MemberSearchRequest = {
     page: 0,
@@ -117,26 +120,12 @@ export class MemberComponent implements OnInit {
   }
 
   handleTabChange(event: number): void {
-    this.pageInfo.currentPage = 0;
+    this.pageInfo.pageIndex = 0;
     this.searchRequest$.next({
       active: event === 0 ? true : false,
-      page: this.pageInfo.currentPage,
-      count: this.pageInfo.count,
+      page: this.pageInfo.pageIndex,
+      count: this.pageInfo.pageSize,
     } as MemberSearchRequest);
-  }
-
-  incrementPage(): void {
-    this.pageInfo.currentPage++;
-    this.paginate(this.pageInfo);
-  }
-
-  decrementPage(): void {
-    if (this.pageInfo.currentPage == 0) {
-      return;
-    }
-
-    this.pageInfo.currentPage--;
-    this.paginate(this.pageInfo);
   }
 
   async openAssignMemberRFIDManagement(
@@ -228,12 +217,12 @@ export class MemberComponent implements OnInit {
     });
   }
 
-  private paginate(pageInfo: { currentPage: number; count: number }): void {
+  paginate(pageInfo: PageEvent): void {
     const currentRequest: MemberSearchRequest = this.searchRequest$.getValue();
     this.searchRequest$.next({
       active: currentRequest.active,
-      page: pageInfo.currentPage,
-      count: pageInfo.count,
+      page: pageInfo.pageIndex,
+      count: pageInfo.pageSize,
     } as MemberSearchRequest);
   }
 
@@ -243,9 +232,13 @@ export class MemberComponent implements OnInit {
         if (request) {
           return this.memberService.getMembers(request).pipe(
             takeUntilDestroyed(this._destroyRef),
-            switchMap((members: MemberResponse[]) => {
-              if (members) {
-                this.dataSource = members;
+            switchMap((response: MembersPaginatedResponse) => {
+              if (response) {
+                this.dataSource = response.members;
+                this.pageInfo = Object.assign({}, this.pageInfo, {
+                  pageIndex: request.page,
+                  length: response.count,
+                } as PageEvent);
               }
 
               return of(null);

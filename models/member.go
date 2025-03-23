@@ -47,6 +47,6 @@ type MemberShipCreditRequest struct {
 }
 
 type MembersPaginatedResponse struct {
-	Members []Member
-	Count   uint
+	Members []Member `json:"members"`
+	Count   uint `json:"count"`
 }

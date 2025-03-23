@@ -46,15 +46,3 @@ action-bar {
     }
   }
 }
-
-.paginator {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  color: var(--text-color);
-  padding: 12px 28px;
-
-  span {
-    margin-left: 12px;
-  }
-}

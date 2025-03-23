@@ -6,6 +6,7 @@ import {
   CreateMemberRequest,
   MemberResponse,
   MemberSearchRequest,
+  MembersPaginatedResponse,
   UpdateMemberRequest,
 } from '../types';
 import { Observable } from 'rxjs';
@@ -17,7 +18,9 @@ export class MemberService {
   private readonly _memberUrlSegment: string = '/api/member';
   constructor(private readonly http: HttpClient) {}
 
-  getMembers(request: MemberSearchRequest): Observable<MemberResponse[]> {
+  getMembers(
+    request: MemberSearchRequest
+  ): Observable<MembersPaginatedResponse> {
     const params: URLSearchParams = new URLSearchParams();
 
     if (typeof request.page === 'number') {
@@ -36,7 +39,7 @@ export class MemberService {
       params.append('search', request.search);
     }
 
-    return this.http.get<MemberResponse[]>(
+    return this.http.get<MembersPaginatedResponse>(
       `${this._memberUrlSegment}?${params.toString()}`
     );
   }

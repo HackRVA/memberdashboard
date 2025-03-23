@@ -99,12 +99,11 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 </div>
-<div class="paginator">
-  <button mat-icon-button aria-label="previous" (click)="decrementPage()">
-    <mat-icon>arrow_back</mat-icon>
-  </button>
-  <button mat-icon-button aria-label="next" (click)="incrementPage()">
-    <mat-icon>arrow_forward</mat-icon>
-  </button>
-  <span> {{ pageInfo.currentPage }}</span>
-</div>
+<mat-paginator
+  showFirstLastButtons
+  (page)="paginate($event)"
+  [length]="pageInfo.length"
+  [pageSize]="pageInfo.pageSize"
+  [pageIndex]="pageInfo.pageIndex"
+>
+</mat-paginator>
