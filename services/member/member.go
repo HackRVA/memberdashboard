@@ -45,6 +45,10 @@ func (m memberService) GetMembersPaginated(limit int, count int, active bool) []
 	return members
 }
 
+func (m memberService) GetMemberCount(isActive bool) (int, error) {
+	return m.store.GetMemberCount(isActive)
+}
+
 func (m memberService) Get() []models.Member {
 	return m.store.GetMembers()
 }

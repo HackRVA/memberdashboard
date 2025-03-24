@@ -5,6 +5,13 @@ import "fmt"
 // MemberDatabaseMethod -- method container that holds the extension methods to query the members, credit, and resource tables
 type MemberDatabaseMethod struct{}
 
+func (MemberDatabaseMethod) getMemberCount(isActive bool) string {
+	if !isActive {
+		return `SELECT COUNT(*) FROM membership.members WHERE member_tier_id = 1`
+	}
+	return `SELECT COUNT(*) FROM membership.members WHERE member_tier_id != 1`
+}
+
 func (member *MemberDatabaseMethod) getMembersPaginated(active bool) string {
 	const getMemberQuery = `SELECT id, name, email, COALESCE(rfid,'notset'), member_tier_id,
 	ARRAY(

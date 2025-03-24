@@ -1,10 +1,9 @@
 package http
 
 import (
-	_ "embed"
+	"embed"
 	"io/fs"
 
-	"github.com/HackRVA/memberserver/web"
 	"github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
@@ -17,12 +16,14 @@ type MemberServerRouter interface {
 type Router struct {
 	UnAuthedRouter *mux.Router
 	routers        []MemberServerRouter
+	staticWebFS    embed.FS
 }
 
-func New(unAuthedRouter *mux.Router, routers []MemberServerRouter) Router {
+func New(unAuthedRouter *mux.Router, routers []MemberServerRouter, staticWebFS embed.FS) Router {
 	router := Router{
 		UnAuthedRouter: unAuthedRouter,
 		routers:        routers,
+		staticWebFS:    staticWebFS,
 	}
 
 	router.registerRoutes()
@@ -31,7 +32,7 @@ func New(unAuthedRouter *mux.Router, routers []MemberServerRouter) Router {
 }
 
 func (r *Router) mountFS() {
-	subFS, err := fs.Sub(web.UI, "dist/web-memberdashboard/browser")
+	subFS, err := fs.Sub(r.staticWebFS, "web/dist/web-memberdashboard/browser")
 	if err != nil {
 		logrus.Fatal("Failed to mount static assets:", err)
 	}

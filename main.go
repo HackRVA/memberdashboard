@@ -55,7 +55,7 @@ func main() {
 	auth := auth.New(db)
 	muxRouter := mux.NewRouter()
 	v1Router := v1.New(muxRouter, db, auth, mqttHandler, pp, log)
-	router := httprouter.New(muxRouter, []httprouter.MemberServerRouter{v1Router})
+	router := httprouter.New(muxRouter, []httprouter.MemberServerRouter{v1Router}, UI)
 
 	srv := &http.Server{
 		Handler: router.UnAuthedRouter,

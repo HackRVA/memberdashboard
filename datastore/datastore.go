@@ -23,6 +23,7 @@ type (
 	MemberStore interface {
 		GetTiers() []models.Tier // update where this is
 		GetMembers() []models.Member
+		GetMemberCount(isActive bool) (int, error)
 		GetMembersPaginated(limit int, page int, active bool) ([]models.Member, error)
 		GetMemberByEmail(email string) (models.Member, error)
 		AssignRFID(email string, rfid string) (models.Member, error)
