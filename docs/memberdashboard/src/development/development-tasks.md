@@ -22,16 +22,6 @@ Migrations can be applied using the CLI
 make migrate-up
 ```
 
-## Generating Swagger Docs
-
-When using Remote-Containers, swagger documentation can be updated using.
-
-```
-make swagger
-```
-
-Otherwise, follow instructions in [./docs/README.md](./docs/README.md) to install swagger first.
-
 ## Querying Postgres
 
 The following options are available if using Remote-Containers.

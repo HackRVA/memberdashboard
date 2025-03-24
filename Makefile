@@ -156,11 +156,6 @@ else
 	@echo "  make run-sql-command command=\"\\\copy membership.member_credit FROM 'test/postgres/seedData/member_credit.csv' DELIMITER ',' CSV HEADER;\""
 endif
 
-.PHONY:swagger
-swagger: ## Generate swagger doc
-	swagger generate spec -o ./api/openapi/swagger.json --scan-models
-
-
 watch-ui: ## run ui in watch mode
 ##   Usage: make watch-ui
 	npm --prefix=web start
