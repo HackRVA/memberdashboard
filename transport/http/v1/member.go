@@ -46,7 +46,14 @@ func (m *MemberServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 				results = append(results, member)
 			}
 		}
-		ok(w, results)
+		limit := 10
+		if len(results) > limit {
+			results = results[:limit]
+		}
+		ok(w, models.MembersPaginatedResponse{
+			Members: results,
+			Count:   uint(len(results)),
+		})
 		return
 	}
 	active := r.URL.Query().Get("active")
