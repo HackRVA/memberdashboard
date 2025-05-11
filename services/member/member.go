@@ -30,11 +30,20 @@ func New(store datastore.MemberStore, rm services.ResourceUpdater, pp integratio
 }
 
 func (m memberService) Add(newMember models.Member) (models.Member, error) {
-	// assignRFID needs to run after the member has been added to the DB
-	if _, err := m.AssignRFID(newMember.Email, newMember.RFID); err != nil {
+	createdMember, err := m.store.AddNewMember(newMember)
+	if err != nil {
 		logrus.Error(err)
 	}
-	return m.store.AddNewMember(newMember)
+
+	// assignRFID needs to run after the member has been added to the DB
+	memberWithRFID, err := m.AssignRFID(createdMember.Email, createdMember.RFID) 
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	createdMember.RFID = memberWithRFID.RFID
+
+	return createdMember, nil
 }
 
 func (m memberService) GetMembersPaginated(limit int, count int, active bool) []models.Member {
