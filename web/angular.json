@@ -29,6 +29,14 @@
               "src/styles.scss"
             ],
             "stylePreprocessorOptions": {
+              "sass": {
+                "silenceDeprecations": [
+                  "color-functions",
+                  "global-builtin",
+                  "import",
+                  "mixed-decls"
+                ]
+              },
               "includePaths": [".", "src/styles"]
             },
             "scripts": []
