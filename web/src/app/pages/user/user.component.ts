@@ -9,11 +9,10 @@ import { MemberLevelPipe } from '@md-shared/pipes';
 import { RFIDManagementFactory } from '@md-shared/functions';
 
 @Component({
-  selector: 'md-user',
-  standalone: true,
-  imports: [MatButtonModule, MatDialogModule, MemberLevelPipe],
-  templateUrl: './user.component.html',
-  styleUrl: './user.component.scss',
+    selector: 'md-user',
+    imports: [MatButtonModule, MatDialogModule, MemberLevelPipe],
+    templateUrl: './user.component.html',
+    styleUrl: './user.component.scss'
 })
 export class UserComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);

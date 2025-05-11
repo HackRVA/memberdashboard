@@ -19,21 +19,20 @@ import { ResourceService } from '@md-shared/services';
 import { ResourceManagementData } from '../../types';
 
 @Component({
-  selector: 'resource-management',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCheckboxModule,
-    MatSnackBarModule,
-    FormsModule,
-    ReactiveFormsModule,
-  ],
-  templateUrl: './resource-management.component.html',
-  styleUrl: './resource-management.component.scss',
+    selector: 'resource-management',
+    imports: [
+        CommonModule,
+        MatIconModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatCheckboxModule,
+        MatSnackBarModule,
+        FormsModule,
+        ReactiveFormsModule,
+    ],
+    templateUrl: './resource-management.component.html',
+    styleUrl: './resource-management.component.scss'
 })
 export class ResourceManagementComponent implements OnInit {
   title: string = '';

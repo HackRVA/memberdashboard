@@ -21,12 +21,11 @@ import { ReportService } from './services';
 import { ChartOptions, ReportChartResponse } from './types';
 
 @Component({
-  selector: 'md-report',
-  standalone: true,
-  imports: [MatButtonModule, MatMenuModule],
-  providers: [ReportService],
-  templateUrl: './report.component.html',
-  styleUrl: './report.component.scss',
+    selector: 'md-report',
+    imports: [MatButtonModule, MatMenuModule],
+    providers: [ReportService],
+    templateUrl: './report.component.html',
+    styleUrl: './report.component.scss'
 })
 export class ReportComponent implements OnInit {
   @ViewChild('distribution') distributionChart: ElementRef;

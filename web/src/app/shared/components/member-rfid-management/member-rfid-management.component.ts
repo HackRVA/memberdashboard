@@ -22,20 +22,19 @@ import {
 import { Observable, of } from 'rxjs';
 
 @Component({
-  selector: 'member-rfid-management',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSnackBarModule,
-    FormsModule,
-    ReactiveFormsModule,
-  ],
-  templateUrl: './member-rfid-management.component.html',
-  styleUrl: './member-rfid-management.component.scss',
+    selector: 'member-rfid-management',
+    imports: [
+        CommonModule,
+        MatIconModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSnackBarModule,
+        FormsModule,
+        ReactiveFormsModule,
+    ],
+    templateUrl: './member-rfid-management.component.html',
+    styleUrl: './member-rfid-management.component.scss'
 })
 export class MemberRFIDManagementComponent implements OnInit {
   title: string = '';

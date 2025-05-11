@@ -36,25 +36,24 @@ import { RFIDManagementFactory } from '@md-shared/functions';
 import { MemberResourceManagementData } from './types';
 
 @Component({
-  selector: 'md-member',
-  standalone: true,
-  imports: [
-    MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatTableModule,
-    MatIconModule,
-    MatTabsModule,
-    MatMenuModule,
-    MatPaginatorModule,
-    MatSnackBarModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ActionBarComponent,
-    MemberLevelPipe,
-  ],
-  templateUrl: './member.component.html',
-  styleUrl: './member.component.scss',
+    selector: 'md-member',
+    imports: [
+        MatButtonModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatTableModule,
+        MatIconModule,
+        MatTabsModule,
+        MatMenuModule,
+        MatPaginatorModule,
+        MatSnackBarModule,
+        FormsModule,
+        ReactiveFormsModule,
+        ActionBarComponent,
+        MemberLevelPipe,
+    ],
+    templateUrl: './member.component.html',
+    styleUrl: './member.component.scss'
 })
 export class MemberComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);

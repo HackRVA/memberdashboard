@@ -7,11 +7,10 @@ import { ResourceService } from '@md-shared/services';
 import { ResourceResponse } from '@md-shared/types';
 
 @Component({
-  selector: 'resource-warning',
-  templateUrl: './resource-warning.component.html',
-  standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatSnackBarModule],
-  styleUrl: './resource-warning.component.scss',
+    selector: 'resource-warning',
+    templateUrl: './resource-warning.component.html',
+    imports: [MatButtonModule, MatIconModule, MatSnackBarModule],
+    styleUrl: './resource-warning.component.scss'
 })
 export class ResourceWarningComponent implements OnInit {
   name: string = '';

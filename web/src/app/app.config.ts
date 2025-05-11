@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -16,11 +16,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(withInterceptors([authInterceptor])),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: appInitSession,
-      deps: [AuthService],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+        const initializerFn = (appInitSession)(inject(AuthService));
+        return initializerFn();
+      }),
   ],
 };

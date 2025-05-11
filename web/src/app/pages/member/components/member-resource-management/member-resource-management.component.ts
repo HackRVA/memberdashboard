@@ -24,20 +24,19 @@ import {
 import { MemberResourceManagementData } from '../../types';
 
 @Component({
-  selector: 'member-resource-management',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSnackBarModule,
-    FormsModule,
-    ReactiveFormsModule,
-  ],
-  templateUrl: './member-resource-management.component.html',
-  styleUrl: './member-resource-management.component.scss',
+    selector: 'member-resource-management',
+    imports: [
+        CommonModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSnackBarModule,
+        FormsModule,
+        ReactiveFormsModule,
+    ],
+    templateUrl: './member-resource-management.component.html',
+    styleUrl: './member-resource-management.component.scss'
 })
 export class MemberResourceManagementComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
