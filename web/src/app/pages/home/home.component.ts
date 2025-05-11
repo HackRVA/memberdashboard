@@ -6,12 +6,11 @@ import { MinionComponent } from '@md-shared/components/minion';
 import { HomeService } from './services';
 
 @Component({
-  selector: 'md-home',
-  standalone: true,
-  imports: [MatButtonModule, MatSnackBarModule, MinionComponent],
-  providers: [HomeService],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+    selector: 'md-home',
+    imports: [MatButtonModule, MatSnackBarModule, MinionComponent],
+    providers: [HomeService],
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss'
 })
 export class HomeComponent {
   isAdmin: boolean = false;

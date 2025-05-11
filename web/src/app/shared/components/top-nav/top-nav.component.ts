@@ -10,19 +10,18 @@ import { NavigationLink } from '../../types/navigation-link';
 import { AuthService } from '../../services';
 
 @Component({
-  selector: 'top-nav',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatToolbarModule,
-    MatTabsModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-  ],
-  templateUrl: './top-nav.component.html',
-  styleUrl: './top-nav.component.scss',
+    selector: 'top-nav',
+    imports: [
+        CommonModule,
+        RouterModule,
+        MatToolbarModule,
+        MatTabsModule,
+        MatButtonModule,
+        MatIconModule,
+        MatMenuModule,
+    ],
+    templateUrl: './top-nav.component.html',
+    styleUrl: './top-nav.component.scss'
 })
 export class TopNavComponent {
   private _adminNav: NavigationLink[] = [

@@ -5,11 +5,10 @@ import { Observable, of, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'md-layout',
-  standalone: true,
-  imports: [],
-  templateUrl: './layout.component.html',
-  styleUrl: './layout.component.scss',
+    selector: 'md-layout',
+    imports: [],
+    templateUrl: './layout.component.html',
+    styleUrl: './layout.component.scss'
 })
 export class LayoutComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);

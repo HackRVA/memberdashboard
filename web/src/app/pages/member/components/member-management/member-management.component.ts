@@ -17,20 +17,19 @@ import { MemberService } from '@md-shared/services';
 import { MemberResponse } from '@md-shared/types';
 
 @Component({
-  selector: 'member-management',
-  standalone: true,
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSnackBarModule,
-    FormsModule,
-    ReactiveFormsModule,
-    CommonModule,
-  ],
-  templateUrl: './member-management.component.html',
-  styleUrl: './member-management.component.scss',
+    selector: 'member-management',
+    imports: [
+        MatButtonModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSnackBarModule,
+        FormsModule,
+        ReactiveFormsModule,
+        CommonModule,
+    ],
+    templateUrl: './member-management.component.html',
+    styleUrl: './member-management.component.scss'
 })
 export class MemberManagementComponent implements OnInit {
   memberManagementGroup: FormGroup = new FormGroup({

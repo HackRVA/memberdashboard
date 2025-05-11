@@ -6,11 +6,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { AuthService } from './shared/services';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, LayoutComponent, TopNavComponent, MatToolbarModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+    selector: 'app-root',
+    imports: [RouterOutlet, LayoutComponent, TopNavComponent, MatToolbarModule],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
   isLogin: boolean = false;

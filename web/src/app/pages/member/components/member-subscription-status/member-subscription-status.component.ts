@@ -9,11 +9,10 @@ import { MemberResponse } from '@md-shared/types';
 import { Observable, of, switchMap } from 'rxjs';
 
 @Component({
-  selector: 'member-status',
-  standalone: true,
-  imports: [MatButtonModule, MatIconModule, MemberLevelPipe],
-  templateUrl: './member-subscription-status.component.html',
-  styleUrl: './member-subscription-status.component.scss',
+    selector: 'member-status',
+    imports: [MatButtonModule, MatIconModule, MemberLevelPipe],
+    templateUrl: './member-subscription-status.component.html',
+    styleUrl: './member-subscription-status.component.scss'
 })
 export class MemberSubscriptionStatusComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);

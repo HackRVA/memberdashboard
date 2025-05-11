@@ -13,17 +13,16 @@ import { ActionBarComponent } from '@md-shared/components/action-bar';
 import { ResourceManagementData } from './types';
 
 @Component({
-  selector: 'md-resource',
-  standalone: true,
-  imports: [
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    ActionBarComponent,
-  ],
-  templateUrl: './resource.component.html',
-  styleUrl: './resource.component.scss',
+    selector: 'md-resource',
+    imports: [
+        MatTableModule,
+        MatButtonModule,
+        MatIconModule,
+        MatMenuModule,
+        ActionBarComponent,
+    ],
+    templateUrl: './resource.component.html',
+    styleUrl: './resource.component.scss'
 })
 export class ResourceComponent implements OnInit {
   private _destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
