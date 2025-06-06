@@ -109,7 +109,7 @@ func (m *MemberServer) UpdateMemberByEmail(w http.ResponseWriter, r *http.Reques
 		SubscriptionID: request.SubscriptionID,
 	})
 	if err != nil {
-		notFound(w, "error getting member by email")
+		notFound(w, fmt.Sprintf("error updating member: %s", err))
 		return
 	}
 
