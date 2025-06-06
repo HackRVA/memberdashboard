@@ -355,7 +355,7 @@ func TestUpdateMemberSubscriptionID(t *testing.T) {
 				SubscriptionID: "",
 			},
 			expectedHTTPStatus: http.StatusNotFound,
-			expectedResponse:   "error getting member by email\n",
+			expectedResponse:   "error updating member: not found\n",
 		},
 	}
 
