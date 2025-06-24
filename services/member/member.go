@@ -30,7 +30,7 @@ func New(store datastore.MemberStore, rm services.ResourceUpdater, pp integratio
 }
 
 func (m memberService) Add(newMember models.Member) (models.Member, error) {
-	createdMember, err := m.store.AddNewMember(newMember)
+	createdMember, err := m.store.AddNewMember(newMember.EnsureUpperSubscriptionID())
 	if err != nil {
 		logrus.Error(err)
 	}

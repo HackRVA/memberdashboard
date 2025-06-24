@@ -1,3 +1,4 @@
+// Package paypal is used to fetch subscription info from the paypal api
 package paypal
 
 import (
@@ -13,8 +14,8 @@ import (
 )
 
 type Logger interface {
-	Errorf(format string, args ...interface{})
-	Debugf(format string, args ...interface{})
+	Errorf(format string, args ...any)
+	Debugf(format string, args ...any)
 }
 
 type Paypal struct {
@@ -114,7 +115,7 @@ func (p Paypal) requestAccessToken() (string, error) {
 }
 
 func (p Paypal) GetSubscription(subscriptionID string) (status string, lastPaymentAmount string, lastPaymentTime time.Time, err error) {
-	s, err := p.getSubscription(subscriptionID)
+	s, err := p.getSubscription(strings.ToUpper(subscriptionID))
 	if err != nil {
 		return status, lastPaymentAmount, lastPaymentTime, err
 	}
@@ -131,7 +132,7 @@ func (p Paypal) GetSubscription(subscriptionID string) (status string, lastPayme
 }
 
 func (p Paypal) GetSubscriber(subscriptionID string) (name string, email string, err error) {
-	s, err := p.getSubscription(subscriptionID)
+	s, err := p.getSubscription(strings.ToUpper(subscriptionID))
 	if err != nil {
 		return name, email, err
 	}
@@ -150,7 +151,7 @@ func (p Paypal) getSubscription(subscriptionID string) (response subscriptionRes
 			return response, err
 		}
 	}
-	url := fmt.Sprintf("%s/v1/billing/subscriptions/%s", p.config.url, subscriptionID)
+	url := fmt.Sprintf("%s/v1/billing/subscriptions/%s", p.config.url, strings.ToUpper(subscriptionID))
 	token, err := p.requestAccessToken()
 	if err != nil {
 		p.logger.Errorf("error getting paypal access token %s\n", err.Error())

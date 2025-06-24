@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // NewMember - add a new member
 type NewMemberRequest struct {
@@ -23,6 +26,20 @@ type Member struct {
 	Level          uint8            `json:"memberLevel"`
 	Resources      []MemberResource `json:"resources"`
 	SubscriptionID string           `json:"subscriptionID"`
+}
+
+// EnsureUpperSubscriptionID returns a copy of a Member with `strings.ToUpper`
+//   called on `SubscriptionID`.
+func (m Member) EnsureUpperSubscriptionID() Member {
+	return Member{
+		ID: m.ID,
+		Name: m.Name,
+		Email: m.Email,
+		RFID: m.RFID,
+		Level: m.Level,
+		Resources: m.Resources,
+		SubscriptionID: strings.ToUpper(m.SubscriptionID),
+	}
 }
 
 // AssignRFIDRequest -- request to associate an rfid to a member
