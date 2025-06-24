@@ -3,6 +3,7 @@ package member_test
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -20,14 +21,14 @@ func (m *stubResourceManager) PushOne(member models.Member) {}
 type MockPaymentProvider struct{}
 
 func (m *MockPaymentProvider) GetSubscriber(subscriptionID string) (string, string, error) {
-	if subscriptionID == "testSubID" {
+	if strings.EqualFold(subscriptionID, "testSubID") {
 		return "Test User", "test@example.com", nil
 	}
 	return "", "", fmt.Errorf("subscriber not found")
 }
 
 func (m *MockPaymentProvider) GetSubscription(subscriptionID string) (string, string, time.Time, error) {
-	if subscriptionID == "testSubID" {
+	if strings.EqualFold(subscriptionID, "testSubID") {
 		return models.ActiveStatus, "10.00", time.Now(), nil
 	}
 	return "", "", time.Time{}, fmt.Errorf("subscription not found")

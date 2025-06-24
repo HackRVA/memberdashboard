@@ -3,6 +3,7 @@ package member
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/datastore"
@@ -94,7 +95,7 @@ func (ms memberService) GetMemberBySubscriptionID(subscriptionID string) (models
 		return models.Member{}, err
 	}
 
-	if m.SubscriptionID != subscriptionID {
+	if !strings.EqualFold(m.SubscriptionID, subscriptionID) {
 		logrus.Errorf("subscriptionID doesn't match with member: %s, %s", m.Email, m.Name)
 		return m, fmt.Errorf("subscriptionID doesn't match with member: %s, %s", m.Email, m.Name)
 	}
@@ -111,14 +112,14 @@ func (ms memberService) CheckStatus(subscriptionID string) (models.Member, error
 	}
 
 	for _, el := range ms.store.GetMembers() {
-		if el.SubscriptionID != subscriptionID {
+		if !strings.EqualFold(el.SubscriptionID, subscriptionID) {
 			continue
 		}
 
 		m = el
 	}
 
-	if m.SubscriptionID != subscriptionID {
+	if !strings.EqualFold(m.SubscriptionID, subscriptionID) {
 		return m, fmt.Errorf("could not find a member with subscriptionID: %s", subscriptionID)
 	}
 

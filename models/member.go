@@ -29,17 +29,11 @@ type Member struct {
 }
 
 // EnsureUpperSubscriptionID returns a copy of a Member with `strings.ToUpper`
-//   called on `SubscriptionID`.
+// called on `SubscriptionID`.
 func (m Member) EnsureUpperSubscriptionID() Member {
-	return Member{
-		ID: m.ID,
-		Name: m.Name,
-		Email: m.Email,
-		RFID: m.RFID,
-		Level: m.Level,
-		Resources: m.Resources,
-		SubscriptionID: strings.ToUpper(m.SubscriptionID),
-	}
+	mem := m
+	mem.SubscriptionID = strings.ToUpper(m.SubscriptionID)
+	return mem
 }
 
 // AssignRFIDRequest -- request to associate an rfid to a member
