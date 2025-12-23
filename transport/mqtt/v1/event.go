@@ -37,7 +37,8 @@ func (v1 mqttHandler) ReceiveHandler(client mqtt.Client, msg mqtt.Message) {
 func (v1 mqttHandler) OnAccessEventHandler(payload models.LogMessage) {
 	m, err := v1.GetMemberByRFID(payload.RFID)
 	if err != nil {
-		logger.Errorf("swipe on %s of unknown fob: %s", payload.Door, payload.RFID)
+		logger.Debugf("error with access event: %s \n %v", err.Error(), m)
+		// logger.Errorf("swipe on %s of unknown fob: %s", payload.Door, payload.RFID)
 		return
 	}
 
