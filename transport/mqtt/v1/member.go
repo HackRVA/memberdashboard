@@ -49,7 +49,7 @@ func (v1 mqttHandler) RemoveMember(memberAccess models.MemberAccess) {
 		RFID:            memberAccess.RFID,
 	})
 
-	v1.mqtt.Publish(config.Get().MQTTBrokerAddress, memberAccess.ResourceName, string(b))
+	v1.mqtt.Publish(config.Get().MQTTBrokerAddress, memberAccess.ResourceName+"/cmd", string(b))
 	logger.Debugf("attempting to remove member %s from rfid device %s : %s", memberAccess.Email, memberAccess.ResourceName, memberAccess.ResourceAddress)
 }
 
@@ -70,7 +70,7 @@ func (v1 mqttHandler) PushOne(m models.Member) {
 			AccessType:      1,
 			ValidUntil:      -86400,
 		})
-		v1.mqtt.Publish(config.Get().MQTTBrokerAddress, m.ResourceName, string(b))
+		v1.mqtt.Publish(config.Get().MQTTBrokerAddress, m.ResourceName+"/cmd", string(b))
 	}
 }
 

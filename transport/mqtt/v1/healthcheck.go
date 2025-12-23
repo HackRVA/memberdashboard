@@ -66,7 +66,11 @@ func hash(accessList []string) string {
 }
 
 type HeartBeat struct {
-	ResourceName string `json:"door"`
+	Type         string `json:"type"`
+	Time         int64  `json:"time"`
+	Uptime       int64  `json:"uptime"`
+	IP           string `json:"ip"`
+	ResourceName string `json:"hostname"`
 }
 
 // OnHeartBeat handles heartbeats from

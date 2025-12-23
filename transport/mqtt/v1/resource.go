@@ -11,12 +11,11 @@ import (
 
 func (v1 mqttHandler) Open(resource models.Resource) {
 	b, _ := json.Marshal(models.MQTTRequest{
-		Door:    resource.Name,
 		Command: commandOpenDoor,
 		Address: resource.Address,
 	})
 
-	v1.mqtt.Publish(config.Get().MQTTBrokerAddress, resource.Name, string(b))
+	v1.mqtt.Publish(config.Get().MQTTBrokerAddress, resource.Name+"/cmd", string(b))
 }
 
 // UpdateResourceACL pulls a resource's accesslist from the DB and pushes it to the resource
@@ -50,7 +49,7 @@ func (v1 mqttHandler) DeleteResourceACL() {
 			ResourceAddress: r.Address,
 			Command:         "deletusers", // not a type-o this is how the command is defined in the rfid reader
 		})
-		v1.mqtt.Publish(config.Get().MQTTBrokerAddress, r.Name, string(b))
+		v1.mqtt.Publish(config.Get().MQTTBrokerAddress, r.Name+"/cmd", string(b))
 	}
 }
 
@@ -82,7 +81,7 @@ func (v1 mqttHandler) UpdateResources() {
 				AccessType:      1,
 				ValidUntil:      -86400,
 			})
-			v1.mqtt.Publish(config.Get().MQTTBrokerAddress, r.Name, string(b))
+			v1.mqtt.Publish(config.Get().MQTTBrokerAddress, r.Name+"/cmd", string(b))
 
 			time.Sleep(2 * time.Second)
 		}

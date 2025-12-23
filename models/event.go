@@ -6,5 +6,5 @@ type LogMessage struct {
 	IsKnown   string `json:"isKnown"`
 	Username  string `json:"username"`
 	RFID      string `json:"uid"`
-	Door      string `json:"door"`
+	Door      string `json:"hostname"`
 }
