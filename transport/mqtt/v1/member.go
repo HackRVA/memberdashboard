@@ -68,7 +68,7 @@ func (v1 mqttHandler) PushOne(m models.Member) {
 			UserName:        m.Name,
 			RFID:            m.RFID,
 			AccessType:      1,
-			ValidUntil:      -86400,
+			ValidUntil:      2208988800, // Jan 1, 2040
 		})
 		v1.mqtt.Publish(config.Get().MQTTBrokerAddress, m.ResourceName+"/cmd", string(b))
 	}
