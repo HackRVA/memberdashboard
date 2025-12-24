@@ -30,6 +30,11 @@ func (v1 mqttHandler) ReceiveHandler(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 
+	if payload.Type == "heartbeat" {
+		v1.OnHeartBeatHandler(client, msg)
+		return
+	}
+
 	v1.OnAccessEventHandler(payload)
 }
 
