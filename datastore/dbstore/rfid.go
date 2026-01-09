@@ -6,13 +6,15 @@ import (
 )
 
 func encodeRFID(id string) string {
+	// This probably doesn't matter, since leading zeros don't change
+	// the parsed integer value. -PMW
 	if id[0] == '0' {
 		// remove the leading zero
 		id = id[1:]
 	}
 
-	// Parse to int
-	i, _ := strconv.ParseInt(id, 10, 64)
+	// Parse to 32 bit integer
+	i, _ := strconv.ParseInt(id, 10, 32)
 
 	// convert to base16
 	idStr := strconv.FormatInt(i, 16)
@@ -20,7 +22,7 @@ func encodeRFID(id string) string {
 	// for some reason the bytes are backwards in the rfid reader
 	//  let's reverse the bytes
 	// the rfid reader also trims out any zero chars
-	return strings.Join(trimZeros(reverse(chunks(idStr, 2))), "")
+	return strings.Join(reverse(chunks(idStr, 2)), "")
 }
 
 func chunks(s string, chunkSize int) []string {
@@ -52,16 +54,3 @@ func reverse(arr []string) []string {
 	return newArr
 }
 
-// trimZeros we must trim all leading zeros to match how the rfid reader has the IDs encoded
-func trimZeros(arr []string) []string {
-	var newArr []string
-	for _, v := range arr {
-		elem := v
-		if elem[0] == 48 { // if the first char is zero
-			elem = elem[1:] // drop the first char
-		}
-		newArr = append(newArr, elem)
-	}
-
-	return newArr
-}
