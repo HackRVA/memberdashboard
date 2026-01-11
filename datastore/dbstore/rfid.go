@@ -1,6 +1,7 @@
 package dbstore
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -14,10 +15,10 @@ func encodeRFID(id string) string {
 	}
 
 	// Parse to 32 bit integer
-	i, _ := strconv.ParseInt(id, 10, 32)
+	i, _ := strconv.ParseInt(id, 10, 64)
 
 	// convert to base16
-	idStr := strconv.FormatInt(i, 16)
+	idStr := fmt.Sprintf("%08x", i)
 
 	// for some reason the bytes are backwards in the rfid reader
 	//  let's reverse the bytes
@@ -53,4 +54,3 @@ func reverse(arr []string) []string {
 	}
 	return newArr
 }
-
