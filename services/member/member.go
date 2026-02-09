@@ -37,7 +37,7 @@ func (m memberService) Add(newMember models.Member) (models.Member, error) {
 	}
 
 	// assignRFID needs to run after the member has been added to the DB
-	memberWithRFID, err := m.AssignRFID(createdMember.Email, createdMember.RFID) 
+	memberWithRFID, err := m.AssignRFID(createdMember.Email, createdMember.RFID)
 	if err != nil {
 		logrus.Error(err)
 	}
@@ -72,6 +72,10 @@ func (m memberService) Update(member models.Member) error {
 		logrus.Error(err)
 	}
 	return m.store.UpdateMember(member)
+}
+
+func (m memberService) UpdateMemberByID(memberID string, update models.Member) error {
+	return m.store.UpdateMemberByID(memberID, update)
 }
 
 func (m memberService) AssignRFID(email string, rfid string) (models.Member, error) {

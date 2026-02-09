@@ -19,6 +19,7 @@ type (
 		GetMemberCount(isActive bool) (int, error)
 		GetByEmail(email string) (models.Member, error)
 		Update(models.Member) error
+		UpdateMemberByID(memberID string, update models.Member) error
 		AssignRFID(email string, rfid string) (models.Member, error)
 		GetTiers() []models.Tier
 		FindNonMembersOnSlack() []string

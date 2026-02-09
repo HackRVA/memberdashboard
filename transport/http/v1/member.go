@@ -82,6 +82,48 @@ func (m *MemberServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (m *MemberServer) UpdateMemberByID(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	memberID := params["id"]
+
+	var request models.UpdateMemberRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+
+	if len(memberID) == 0 {
+		preconditionFailed(w, "invalid member id")
+		return
+	}
+
+	if err != nil {
+		badRequest(w, err.Error())
+		return
+	}
+
+	if len(request.FullName) == 0 {
+		preconditionFailed(w, "fullName is required")
+		return
+	}
+
+	if len(request.Email) == 0 || !govalidator.IsEmail(request.Email) {
+		preconditionFailed(w, "invalid email")
+		return
+	}
+
+	err = m.MemberService.UpdateMemberByID(memberID, models.Member{
+		Email:          request.Email,
+		Name:           request.FullName,
+		SubscriptionID: request.SubscriptionID,
+	})
+	if err != nil {
+		notFound(w, fmt.Sprintf("error updating member: %s", err))
+		return
+	}
+
+	ok(w, models.EndpointSuccess{
+		Ack: true,
+	})
+}
+
 func (m *MemberServer) UpdateMemberByEmail(w http.ResponseWriter, r *http.Request) {
 	memberEmail := strings.TrimPrefix(r.URL.Path, "/api/member/email/")
 

@@ -1,4 +1,3 @@
-
 package dbstore
 
 import (
@@ -10,7 +9,7 @@ func Test_encodeRFID_SingleLeadingZero(t *testing.T) {
 	want := "7dca0b06"
 	result := encodeRFID(id)
 	if want != result {
-		t.Errorf(`encodeRFID(%q) = %q, want %q`, id, result, want);
+		t.Errorf(`encodeRFID(%q) = %q, want %q`, id, result, want)
 	}
 }
 
@@ -19,7 +18,7 @@ func Test_encodeRFID_EmbeddedLeadingZero(t *testing.T) {
 	want := "c70cccaf"
 	result := encodeRFID(id)
 	if want != result {
-		t.Errorf(`encodeRFID(%q) = %q, want %q`, id, result, want);
+		t.Errorf(`encodeRFID(%q) = %q, want %q`, id, result, want)
 	}
 }
 

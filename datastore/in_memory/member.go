@@ -3,6 +3,7 @@ package in_memory
 import (
 	"errors"
 	"sort"
+	"strconv"
 
 	"github.com/HackRVA/memberserver/models"
 )
@@ -93,9 +94,25 @@ func (i *In_memory) UpdateMember(update models.Member) error {
 	return nil
 }
 
+func (i *In_memory) UpdateMemberByID(memberID string, update models.Member) error {
+	for key, m := range i.Members {
+		if m.ID != memberID {
+			continue
+		}
+
+		m.Email = update.Email
+		m.Name = update.Name
+		m.SubscriptionID = update.SubscriptionID
+		delete(i.Members, key)
+		i.Members[m.Email] = m
+		return nil
+	}
+	return errors.New("unable to update member info")
+}
+
 func (i *In_memory) UpdateMemberBySubscriptionID(subscriptionID string, update models.Member) error {
 	for _, m := range i.Members {
-		if m.SubscriptionID != update.SubscriptionID {
+		if m.SubscriptionID != subscriptionID {
 			continue
 		}
 
@@ -110,7 +127,7 @@ func (i *In_memory) UpdateMemberBySubscriptionID(subscriptionID string, update m
 func (i *In_memory) AddNewMember(newMember models.Member) (models.Member, error) {
 	i.allocMembers()
 	if newMember.ID == "" {
-		newMember.ID = string(rune(len(i.Members)))
+		newMember.ID = strconv.Itoa(len(i.Members) + 1)
 	}
 	i.Members[newMember.Email] = newMember
 	return newMember, nil
@@ -119,7 +136,10 @@ func (i *In_memory) AddNewMember(newMember models.Member) (models.Member, error)
 func (i *In_memory) AddMembers(members []models.Member) error {
 	i.allocMembers()
 	for _, m := range members {
-		i.Members[m.Name] = m
+		if m.ID == "" {
+			m.ID = strconv.Itoa(len(i.Members) + 1)
+		}
+		i.Members[m.Email] = m
 	}
 	return nil
 }

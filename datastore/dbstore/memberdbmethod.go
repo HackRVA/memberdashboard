@@ -81,6 +81,10 @@ func (member *MemberDatabaseMethod) updateMemberByEmail() string {
 	return `UPDATE membership.members SET name=$1, subscription_id=$2 WHERE email=$3;`
 }
 
+func (member *MemberDatabaseMethod) updateMemberByID() string {
+	return `UPDATE membership.members SET name=$1, email=$2, subscription_id=$3 WHERE id=$4;`
+}
+
 func (member *MemberDatabaseMethod) updateMemberBySubscriptionID() string {
 	return `UPDATE membership.members SET name=$1, email=$2 WHERE subscription_id=$3;`
 }

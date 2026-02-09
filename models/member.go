@@ -45,6 +45,7 @@ type AssignRFIDRequest struct {
 // UpdateMemberRequest -- request to update a member
 type UpdateMemberRequest struct {
 	FullName       string `json:"fullName"`
+	Email          string `json:"email"`
 	SubscriptionID string `json:"subscriptionID"`
 }
 
@@ -59,5 +60,5 @@ type MemberShipCreditRequest struct {
 
 type MembersPaginatedResponse struct {
 	Members []Member `json:"members"`
-	Count   uint `json:"count"`
+	Count   uint     `json:"count"`
 }

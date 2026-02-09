@@ -275,6 +275,25 @@ func (db *DatabaseStore) UpdateMember(update models.Member) error {
 	return nil
 }
 
+func (db *DatabaseStore) UpdateMemberByID(memberID string, update models.Member) error {
+	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
+	if err != nil {
+		log.Printf("got error: %v\n", err)
+	}
+	defer dbPool.Close()
+
+	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.updateMemberByID(), update.Name, update.Email, update.SubscriptionID, memberID)
+	if err != nil {
+		return fmt.Errorf("UpdateMemberByID failed: %v", err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("no member found with id: %s", memberID)
+	}
+
+	return nil
+}
+
 func (db *DatabaseStore) UpdateMemberBySubscriptionID(subscriptionID string, update models.Member) error {
 	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
 	if err != nil {
@@ -282,30 +301,13 @@ func (db *DatabaseStore) UpdateMemberBySubscriptionID(subscriptionID string, upd
 	}
 	defer dbPool.Close()
 
-	member, err := db.getMemberBySubscriptionID(update.SubscriptionID)
-	if err != nil {
-		log.Errorf("error retrieving a member with that subscriptionID %s", err.Error())
-		return err
-	}
-
-	name := member.Name
-	email := member.Email
-
-	if member.Name == "" {
-		name = update.Name
-	}
-
-	if member.Email == "" {
-		email = update.Email
-	}
-
-	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.updateMemberBySubscriptionID(), name, email, member.SubscriptionID)
+	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.updateMemberBySubscriptionID(), update.Name, update.Email, subscriptionID)
 	if err != nil {
 		return fmt.Errorf("UpdateMemberBySubscriptionID failed: %v", err)
 	}
 
 	if commandTag.RowsAffected() == 0 {
-		return errors.New("no row affected")
+		return fmt.Errorf("no member found with subscriptionID: %s", subscriptionID)
 	}
 
 	return nil

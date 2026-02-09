@@ -75,6 +75,7 @@ func (r API) SetupRoutes() {
 	r.authedRouter.HandleFunc("/member/new", r.Restrict(r.AddNewMember, []rbac.UserRole{rbac.Admin}))
 	r.authedRouter.HandleFunc("/member/self", r.GetCurrentUser)
 	r.authedRouter.HandleFunc("/member/{id}/status", r.Restrict(r.CheckStatus, []rbac.UserRole{rbac.Admin}))
+	r.authedRouter.HandleFunc("/member/{id}", r.Restrict(r.UpdateMemberByID, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPut)
 	r.authedRouter.HandleFunc("/member/email/{email}", r.Restrict(r.MemberEmail, []rbac.UserRole{rbac.Admin})).Methods(http.MethodGet, http.MethodPut)
 	r.authedRouter.HandleFunc("/member/slack/nonmembers", r.Restrict(r.GetNonMembersOnSlack, []rbac.UserRole{rbac.Admin}))
 	r.authedRouter.HandleFunc("/member/tier", r.Restrict(r.GetTiers, []rbac.UserRole{rbac.Admin}))
