@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
 })
 export class MemberService {
   private readonly _memberUrlSegment: string = '/api/member';
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   getMembers(
     request: MemberSearchRequest
@@ -46,6 +46,16 @@ export class MemberService {
 
   getMemberSelf(): Observable<MemberResponse> {
     return this.http.get<MemberResponse>(this._memberUrlSegment + '/self');
+  }
+
+  updateMember(
+    memberID: string,
+    request: UpdateMemberRequest
+  ): Observable<AckResponse> {
+    return this.http.put<AckResponse>(
+      `${this._memberUrlSegment}/${memberID}`,
+      request
+    );
   }
 
   updateMemberByEmail(

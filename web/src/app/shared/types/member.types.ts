@@ -45,6 +45,7 @@ export type CreateMemberRequest = AssignRFIDRequest & {
 
 export type UpdateMemberRequest = {
   fullName: string;
+  email: string;
   subscriptionID: string;
 };
 

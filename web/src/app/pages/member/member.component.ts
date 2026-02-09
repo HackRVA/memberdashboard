@@ -163,10 +163,11 @@ export class MemberComponent implements OnInit {
         autoFocus: false,
         width: '320px',
         data: {
+          id: member.id,
           email: member.email,
           name: member.name,
           subscriptionID: member.subscriptionID,
-        } as Pick<MemberResponse, 'email' | 'name' | 'subscriptionID'>,
+        } as Pick<MemberResponse, 'id' | 'email' | 'name' | 'subscriptionID'>,
       })
       .afterClosed()
       .pipe(

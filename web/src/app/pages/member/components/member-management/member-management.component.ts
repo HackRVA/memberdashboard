@@ -17,24 +17,25 @@ import { MemberService } from '@md-shared/services';
 import { MemberResponse } from '@md-shared/types';
 
 @Component({
-    selector: 'member-management',
-    imports: [
-        MatButtonModule,
-        MatIconModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSnackBarModule,
-        FormsModule,
-        ReactiveFormsModule,
-        CommonModule,
-    ],
-    templateUrl: './member-management.component.html',
-    styleUrl: './member-management.component.scss'
+  selector: 'member-management',
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSnackBarModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+  ],
+  templateUrl: './member-management.component.html',
+  styleUrl: './member-management.component.scss'
 })
 export class MemberManagementComponent implements OnInit {
   memberManagementGroup: FormGroup = new FormGroup({
     fullName: new FormControl<string>(null, [Validators.required]),
-    subscriptionID: new FormControl<string>(null, [Validators.required]),
+    subscriptionID: new FormControl<string>(null),
+    email: new FormControl<string>(null, [Validators.required, Validators.email]),
   });
 
   constructor(
@@ -43,10 +44,10 @@ export class MemberManagementComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA)
     private readonly dialogData: Pick<
       MemberResponse,
-      'name' | 'subscriptionID' | 'email'
+      'id' | 'name' | 'subscriptionID' | 'email'
     >,
     private readonly snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.handleData(this.dialogData);
@@ -58,8 +59,8 @@ export class MemberManagementComponent implements OnInit {
 
   submit(): void {
     this.memberService
-      .updateMemberByEmail(
-        this.dialogData.email,
+      .updateMember(
+        this.dialogData.id,
         this.memberManagementGroup.value
       )
       .subscribe({
@@ -75,9 +76,10 @@ export class MemberManagementComponent implements OnInit {
   }
 
   private handleData(
-    data: Pick<MemberResponse, 'name' | 'subscriptionID' | 'email'>
+    data: Pick<MemberResponse, 'id' | 'name' | 'subscriptionID' | 'email'>
   ) {
     this.memberManagementGroup.get('fullName').setValue(data.name);
+    this.memberManagementGroup.get('email').setValue(data.email);
     this.memberManagementGroup
       .get('subscriptionID')
       .setValue(data.subscriptionID);
