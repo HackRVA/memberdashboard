@@ -182,6 +182,10 @@ func (s *StatusChecker) setMemberLevelFromLastPayment(status string, lastPayment
 	}
 }
 
+// CheckStatus looks at the embedded Member on `StatusChecker`
+// it will verify that they have a valid subscriptionID.
+// it will determine the appropriate member status based on
+// last payment date and subscription status.
 func (s *StatusChecker) CheckStatus() error {
 	if s.IsCredited() {
 		return nil
@@ -194,7 +198,7 @@ func (s *StatusChecker) CheckStatus() error {
 		return fmt.Errorf("deactivating member (name: %s email: %s) because no subscriptionID was found", s.member.Name, s.member.Email)
 	}
 
-	s.UpdateInfo()
+	// s.UpdateInfo()
 
 	status, lastPaymentAmount, lastPaymentTime, err := s.paymentProvider.GetSubscription(s.member.SubscriptionID)
 	if err != nil {
