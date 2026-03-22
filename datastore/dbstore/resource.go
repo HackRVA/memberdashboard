@@ -3,6 +3,7 @@ package dbstore
 import (
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/HackRVA/memberserver/models"
@@ -15,19 +16,24 @@ import (
 
 var resourceDbMethod ResourceDatabaseMethod
 
-var resourceHeartBeatCache map[string]time.Time
+var (
+	resourceHeartBeatCache = make(map[string]time.Time)
+	resourceHeartBeatMu    sync.Mutex
+)
 
 // ResourceHeartbeat stores the most recent timestamp that a resource checked in
 func ResourceHeartbeat(r models.Resource) {
-	if resourceHeartBeatCache == nil {
-		resourceHeartBeatCache = make(map[string]time.Time)
-	}
+	resourceHeartBeatMu.Lock()
 	resourceHeartBeatCache[r.Name] = time.Now()
+	resourceHeartBeatMu.Unlock()
 }
 
 // GetLastHeartbeat get the last heart beat
 func GetLastHeartbeat(r models.Resource) time.Time {
-	return resourceHeartBeatCache[r.Name]
+	resourceHeartBeatMu.Lock()
+	t := resourceHeartBeatCache[r.Name]
+	resourceHeartBeatMu.Unlock()
+	return t
 }
 
 // GetResources - gets the status from DB
