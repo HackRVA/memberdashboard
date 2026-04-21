@@ -2,8 +2,6 @@ package v1
 
 import (
 	"net/http"
-
-	"github.com/HackRVA/memberserver/pkg/paypal/listener"
 )
 
 type V1Router interface {
@@ -14,7 +12,6 @@ type V1Router interface {
 	UserHTTPHandler
 	AuthHTTPHandler
 	VersionHTTPHandler
-	PaymentHTTPHandler
 }
 
 type Logger interface {
@@ -74,8 +71,4 @@ type AuthHTTPHandler interface {
 
 type VersionHTTPHandler interface {
 	Version(http.ResponseWriter, *http.Request)
-}
-
-type PaymentHTTPHandler interface {
-	PaypalSubscriptionWebHook(err error, n *listener.Subscription)
 }

@@ -6,7 +6,6 @@ import (
 	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/datastore"
 	"github.com/HackRVA/memberserver/integrations"
-	"github.com/HackRVA/memberserver/pkg/paypal/listener"
 	"github.com/HackRVA/memberserver/services"
 	"github.com/HackRVA/memberserver/services/member"
 	"github.com/HackRVA/memberserver/services/report"
@@ -82,8 +81,6 @@ func (r API) SetupRoutes() {
 	r.authedRouter.HandleFunc("/member/assignRFID/self", r.AssignRFIDSelf).Methods(http.MethodPost)
 	r.authedRouter.HandleFunc("/member/assignRFID", r.Restrict(r.AssignRFID, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPost)
 	r.authedRouter.HandleFunc("/member/{id}/credit", r.Restrict(r.SetCredited, []rbac.UserRole{rbac.Admin})).Methods(http.MethodPut)
-	webhook := listener.New(true)
-	r.unAuthedRouter.HandleFunc("/api/paypal/subscription/new", webhook.WebhooksHandler(r.PaypalSubscriptionWebHook))
 
 	r.authedRouter.HandleFunc("/reports/membercounts", r.Restrict(r.GetMemberCountsCharts, []rbac.UserRole{rbac.Admin}))
 	r.authedRouter.HandleFunc("/reports/access", r.Restrict(r.GetAccessStatsChart, []rbac.UserRole{rbac.Admin}))
