@@ -83,8 +83,7 @@ func (m memberService) AssignRFID(email string, rfid string) (models.Member, err
 		return models.Member{}, errors.New("not a valid rfid")
 	}
 
-	// we need to push to resources after we add rfid to DB
-	defer m.resourceManager.PushOne(models.Member{Email: email})
+	m.resourceManager.PushOne(models.Member{Email: email})
 	return m.store.AssignRFID(email, rfid)
 }
 

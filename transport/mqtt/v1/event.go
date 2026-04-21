@@ -47,7 +47,7 @@ func (v1 mqttHandler) OnAccessEventHandler(payload models.LogMessage) {
 		return
 	}
 
-	defer func(m models.Member, p models.LogMessage) {
+	func(m models.Member, p models.LogMessage) {
 		go v1.notifier.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", m.Name, p.RFID, p.Door, p.EventTime))
 		go func() {
 			if err := v1.LogAccessEvent(models.LogMessage{
