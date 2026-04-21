@@ -6,11 +6,18 @@ import (
 	"github.com/HackRVA/memberserver/models"
 )
 
-var Resources = map[string]models.Resource{}
+// ensureResources initializes the map if it's nil. Caller must hold the write lock.
+func (store *In_memory) ensureResources() {
+	if store.resources == nil {
+		store.resources = map[string]models.Resource{}
+	}
+}
 
 func (store *In_memory) GetResources(ctx context.Context) []models.Resource {
+	store.mu.RLock()
+	defer store.mu.RUnlock()
 	resources := []models.Resource{}
-	for _, v := range Resources {
+	for _, v := range store.resources {
 		resources = append(resources, v)
 	}
 	return resources
@@ -40,13 +47,16 @@ func (store *In_memory) GetActiveMembersByResource(ctx context.Context) ([]model
 }
 
 func (store *In_memory) RegisterResource(ctx context.Context, name string, address string, isDefault bool) (models.Resource, error) {
-	Resources[name] = models.Resource{
+	store.mu.Lock()
+	defer store.mu.Unlock()
+	store.ensureResources()
+	store.resources[name] = models.Resource{
 		Name:      name,
 		Address:   address,
 		IsDefault: isDefault,
 	}
 
-	return Resources[name], nil
+	return store.resources[name], nil
 }
 
 func (store *In_memory) GetResourceByID(ctx context.Context, ID string) (models.Resource, error) {

@@ -9,20 +9,25 @@ import (
 	"github.com/HackRVA/memberserver/models"
 )
 
-func (i *In_memory) allocMembers() {
+// ensureMembers initializes the map if it's nil. Caller must hold the write lock.
+func (i *In_memory) ensureMembers() {
 	if i.Members == nil {
 		i.Members = map[string]models.Member{}
 	}
 }
 
 func (i *In_memory) GetTiers(ctx context.Context) []models.Tier {
+	i.mu.RLock()
+	defer i.mu.RUnlock()
 	return i.Tiers
 }
 
 func (i *In_memory) GetMembersPaginated(ctx context.Context, limit int, offset int, active bool) ([]models.Member, error) {
+	i.mu.RLock()
 	members := MemberMapToSlice(i.Members)
-	var filteredMembers []models.Member
+	i.mu.RUnlock()
 
+	var filteredMembers []models.Member
 	for _, member := range members {
 		if active && member.Level == 0 {
 			continue
@@ -44,13 +49,15 @@ func (i *In_memory) GetMembersPaginated(ctx context.Context, limit int, offset i
 }
 
 func (i *In_memory) GetMembers(ctx context.Context) []models.Member {
+	i.mu.RLock()
+	defer i.mu.RUnlock()
 	return MemberMapToSlice(i.Members)
 }
 
 func (i *In_memory) GetMemberByEmail(ctx context.Context, email string) (models.Member, error) {
-	println("Member len: ", len(i.Members))
+	i.mu.RLock()
+	defer i.mu.RUnlock()
 	for _, k := range i.Members {
-		println(k.Email)
 		if k.Email == email {
 			return k, nil
 		}
@@ -67,6 +74,8 @@ func (i *In_memory) AssignRFID(ctx context.Context, email string, rfid string) (
 		return models.Member{}, errors.New("not a valid rfid")
 	}
 
+	i.mu.Lock()
+	defer i.mu.Unlock()
 	for _, member := range i.Members {
 		if member.Email != email {
 			continue
@@ -87,6 +96,8 @@ func (i *In_memory) UpdateMember(ctx context.Context, update models.Member) erro
 		return errors.New("email is required")
 	}
 
+	i.mu.Lock()
+	defer i.mu.Unlock()
 	if _, ok := i.Members[update.Email]; !ok {
 		return errors.New("not found")
 	}
@@ -96,6 +107,8 @@ func (i *In_memory) UpdateMember(ctx context.Context, update models.Member) erro
 }
 
 func (i *In_memory) UpdateMemberByID(ctx context.Context, memberID string, update models.Member) error {
+	i.mu.Lock()
+	defer i.mu.Unlock()
 	for key, m := range i.Members {
 		if m.ID != memberID {
 			continue
@@ -112,6 +125,8 @@ func (i *In_memory) UpdateMemberByID(ctx context.Context, memberID string, updat
 }
 
 func (i *In_memory) UpdateMemberBySubscriptionID(ctx context.Context, subscriptionID string, update models.Member) error {
+	i.mu.Lock()
+	defer i.mu.Unlock()
 	for _, m := range i.Members {
 		if m.SubscriptionID != subscriptionID {
 			continue
@@ -126,7 +141,9 @@ func (i *In_memory) UpdateMemberBySubscriptionID(ctx context.Context, subscripti
 }
 
 func (i *In_memory) AddNewMember(ctx context.Context, newMember models.Member) (models.Member, error) {
-	i.allocMembers()
+	i.mu.Lock()
+	defer i.mu.Unlock()
+	i.ensureMembers()
 	if newMember.ID == "" {
 		newMember.ID = strconv.Itoa(len(i.Members) + 1)
 	}
@@ -143,6 +160,8 @@ func (i *In_memory) ProcessMember(ctx context.Context, newMember models.Member) 
 }
 
 func (i *In_memory) SetMemberLevel(ctx context.Context, memberId string, level models.MemberLevel) error {
+	i.mu.Lock()
+	defer i.mu.Unlock()
 	for _, member := range i.Members {
 		if member.ID != memberId {
 			continue
@@ -165,6 +184,8 @@ func (i *In_memory) GetActiveMembersWithoutSubscription(ctx context.Context) []m
 }
 
 func (i *In_memory) GetMemberCount(ctx context.Context, isActive bool) (int, error) {
+	i.mu.RLock()
+	defer i.mu.RUnlock()
 	count := 0
 	for _, member := range i.Members {
 		if isActive && member.Level != 1 {
