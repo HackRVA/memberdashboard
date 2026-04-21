@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"context"
 	"time"
 
 	"github.com/HackRVA/memberserver/models"
@@ -17,65 +18,65 @@ type (
 	}
 
 	AccessEvent interface {
-		LogAccessEvent(event models.LogMessage) error
+		LogAccessEvent(ctx context.Context, event models.LogMessage) error
 	}
 
 	MemberStore interface {
-		GetTiers() []models.Tier // update where this is
-		GetMembers() []models.Member
-		GetMemberCount(isActive bool) (int, error)
-		GetMembersPaginated(limit int, page int, active bool) ([]models.Member, error)
-		GetMemberByEmail(email string) (models.Member, error)
-		AssignRFID(email string, rfid string) (models.Member, error)
-		AddNewMember(newMember models.Member) (models.Member, error)
-		AddMembers(members []models.Member) error
-		GetMembersWithCredit() []models.Member
-		ProcessMember(newMember models.Member) error
-		GetMemberByRFID(rfid string) (models.Member, error)
-		UpdateMember(update models.Member) error
-		UpdateMemberByID(memberID string, update models.Member) error
-		UpdateMemberBySubscriptionID(subscriptionID string, update models.Member) error
-		SetMemberLevel(memberId string, level models.MemberLevel) error
-		ApplyMemberCredits()
-		UpdateMemberTiers()
-		GetActiveMembersWithoutSubscription() []models.Member
+		GetTiers(ctx context.Context) []models.Tier
+		GetMembers(ctx context.Context) []models.Member
+		GetMemberCount(ctx context.Context, isActive bool) (int, error)
+		GetMembersPaginated(ctx context.Context, limit int, page int, active bool) ([]models.Member, error)
+		GetMemberByEmail(ctx context.Context, email string) (models.Member, error)
+		AssignRFID(ctx context.Context, email string, rfid string) (models.Member, error)
+		AddNewMember(ctx context.Context, newMember models.Member) (models.Member, error)
+		AddMembers(ctx context.Context, members []models.Member) error
+		GetMembersWithCredit(ctx context.Context) []models.Member
+		ProcessMember(ctx context.Context, newMember models.Member) error
+		GetMemberByRFID(ctx context.Context, rfid string) (models.Member, error)
+		UpdateMember(ctx context.Context, update models.Member) error
+		UpdateMemberByID(ctx context.Context, memberID string, update models.Member) error
+		UpdateMemberBySubscriptionID(ctx context.Context, subscriptionID string, update models.Member) error
+		SetMemberLevel(ctx context.Context, memberId string, level models.MemberLevel) error
+		ApplyMemberCredits(ctx context.Context)
+		UpdateMemberTiers(ctx context.Context)
+		GetActiveMembersWithoutSubscription(ctx context.Context) []models.Member
 	}
 
 	ResourceStore interface {
-		GetResources() []models.Resource
-		GetResourceByID(ID string) (models.Resource, error)
-		GetResourceByName(resourceName string) (models.Resource, error)
-		RegisterResource(name string, address string, isDefault bool) (models.Resource, error)
-		UpdateResource(res models.Resource) (*models.Resource, error)
-		DeleteResource(id string) error
-		AddMultipleMembersToResource(emails []string, resourceID string) ([]models.MemberResourceRelation, error)
-		AddUserToDefaultResources(email string) ([]models.MemberResourceRelation, error)
-		RemoveUserFromResource(email string, resourceID string) error
-		GetResourceACL(r models.Resource) ([]string, error)
-		GetResourceACLWithMemberInfo(r models.Resource) ([]models.Member, error)
-		GetMembersAccess(m models.Member) ([]models.MemberAccess, error)
-		GetInactiveMembersByResource() ([]models.MemberAccess, error)
-		GetActiveMembersByResource() ([]models.MemberAccess, error)
+		GetResources(ctx context.Context) []models.Resource
+		GetResourceByID(ctx context.Context, ID string) (models.Resource, error)
+		GetResourceByName(ctx context.Context, resourceName string) (models.Resource, error)
+		RegisterResource(ctx context.Context, name string, address string, isDefault bool) (models.Resource, error)
+		UpdateResource(ctx context.Context, res models.Resource) (*models.Resource, error)
+		DeleteResource(ctx context.Context, id string) error
+		AddMultipleMembersToResource(ctx context.Context, emails []string, resourceID string) ([]models.MemberResourceRelation, error)
+		AddUserToDefaultResources(ctx context.Context, email string) ([]models.MemberResourceRelation, error)
+		RemoveUserFromResource(ctx context.Context, email string, resourceID string) error
+		GetResourceACL(ctx context.Context, r models.Resource) ([]string, error)
+		GetResourceACLWithMemberInfo(ctx context.Context, r models.Resource) ([]models.Member, error)
+		GetMembersAccess(ctx context.Context, m models.Member) ([]models.MemberAccess, error)
+		GetInactiveMembersByResource(ctx context.Context) ([]models.MemberAccess, error)
+		GetActiveMembersByResource(ctx context.Context) ([]models.MemberAccess, error)
 	}
 
 	CommunicationStore interface {
-		GetCommunications() []models.Communication
-		GetCommunication(name string) (models.Communication, error)
-		GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error)
-		LogCommunication(communicationId int, memberId string) error
+		GetCommunications(ctx context.Context) []models.Communication
+		GetCommunication(ctx context.Context, name string) (models.Communication, error)
+		GetMostRecentCommunicationToMember(ctx context.Context, memberId string, commId int) (time.Time, error)
+		LogCommunication(ctx context.Context, communicationId int, memberId string) error
 	}
 
 	UserStore interface {
-		GetUser(email string) (models.UserResponse, error)
-		UserSignin(email string, password string) error
-		RegisterUser(creds models.Credentials) error
+		GetUser(ctx context.Context, email string) (models.UserResponse, error)
+		UserSignin(ctx context.Context, email string, password string) error
+		RegisterUser(ctx context.Context, creds models.Credentials) error
 	}
 
 	ReportStore interface {
-		UpdateMemberCounts()
-		GetMemberCounts() ([]models.MemberCount, error)
-		GetMemberCountByMonth(month time.Time) (models.MemberCount, error)
-		GetAccessStats(date time.Time, resourceName string) ([]models.AccessStats, error)
-		GetMemberChurn() (int, error)
+		UpdateMemberCounts(ctx context.Context)
+		GetMemberCounts(ctx context.Context) ([]models.MemberCount, error)
+		GetMemberCountByMonth(ctx context.Context, month time.Time) (models.MemberCount, error)
+		GetAccessStats(ctx context.Context, date time.Time, resourceName string) ([]models.AccessStats, error)
+		GetMemberChurn(ctx context.Context) (int, error)
 	}
 )

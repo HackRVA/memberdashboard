@@ -33,7 +33,7 @@ func (rs resourceAPI) Resource(w http.ResponseWriter, req *http.Request) {
 }
 
 func (rs resourceAPI) get(w http.ResponseWriter, req *http.Request) {
-	resources := rs.db.GetResources()
+	resources := rs.db.GetResources(req.Context())
 	ok(w, resources)
 }
 
@@ -46,7 +46,7 @@ func (rs resourceAPI) update(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	r, err := rs.db.UpdateResource(updateResourceReq)
+	r, err := rs.db.UpdateResource(req.Context(), updateResourceReq)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -65,7 +65,7 @@ func (rs resourceAPI) delete(w http.ResponseWriter, req *http.Request) {
 	}
 	rs.logger.Printf("attempting to delete %s", deleteResourceReq.ID)
 
-	err = rs.db.DeleteResource(deleteResourceReq.ID)
+	err = rs.db.DeleteResource(req.Context(), deleteResourceReq.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -85,9 +85,10 @@ func (rs resourceAPI) AddMultipleMembersToResource(w http.ResponseWriter, req *h
 		return
 	}
 
-	resource, err := rs.db.AddMultipleMembersToResource(membersResource.Emails, membersResource.ID)
+	ctx := req.Context()
+	resource, err := rs.db.AddMultipleMembersToResource(ctx, membersResource.Emails, membersResource.ID)
 	for _, email := range membersResource.Emails {
-		member, _ := rs.db.GetMemberByEmail(email)
+		member, _ := rs.db.GetMemberByEmail(ctx, email)
 		rs.logger.Info("pushing member to resource", member.Email, member.Resources)
 		rs.resourcemanager.PushOne(member)
 	}
@@ -109,7 +110,8 @@ func (rs resourceAPI) RemoveMember(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = rs.db.RemoveUserFromResource(update.Email, update.ID)
+	ctx := req.Context()
+	err = rs.db.RemoveUserFromResource(ctx, update.Email, update.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -119,7 +121,7 @@ func (rs resourceAPI) RemoveMember(w http.ResponseWriter, req *http.Request) {
 		Ack: true,
 	})
 
-	resource, err := rs.db.GetResourceByID(update.ID)
+	resource, err := rs.db.GetResourceByID(ctx, update.ID)
 	if err != nil {
 		rs.logger.Errorf("error getting resource to update when removing a member: %s", err)
 	}
@@ -139,7 +141,7 @@ func (rs resourceAPI) Register(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	r, err := rs.db.RegisterResource(register.Name, register.Address, register.IsDefault)
+	r, err := rs.db.RegisterResource(req.Context(), register.Name, register.Address, register.IsDefault)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -149,7 +151,7 @@ func (rs resourceAPI) Register(w http.ResponseWriter, req *http.Request) {
 }
 
 func (rs resourceAPI) Status(w http.ResponseWriter, req *http.Request) {
-	resources := rs.db.GetResources()
+	resources := rs.db.GetResources(req.Context())
 	// statusMap := make(map[string]uint8)
 
 	for _, r := range resources {
@@ -191,7 +193,7 @@ func (rs resourceAPI) Open(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	resource, err := rs.db.GetResourceByName(openResourceRequest.Name)
+	resource, err := rs.db.GetResourceByName(req.Context(), openResourceRequest.Name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

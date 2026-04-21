@@ -35,10 +35,11 @@ func (m *MemberServer) MemberEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *MemberServer) GetMembers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	search := r.URL.Query().Get("search")
 	if search != "" {
 		results := []models.Member{}
-		for _, member := range m.MemberService.Get() {
+		for _, member := range m.MemberService.Get(ctx) {
 			if fuzzy.Match(strings.ToLower(search), strings.ToLower(member.Name)) ||
 				fuzzy.Match(strings.ToLower(search), strings.ToLower(member.Email)) ||
 				fuzzy.Match(strings.ToLower(search), strings.ToLower(member.RFID)) ||
@@ -59,25 +60,25 @@ func (m *MemberServer) GetMembers(w http.ResponseWriter, r *http.Request) {
 	active := r.URL.Query().Get("active")
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	if err != nil {
-		ok(w, m.MemberService.Get())
+		ok(w, m.MemberService.Get(ctx))
 		return
 	}
 	count, err := strconv.Atoi(r.URL.Query().Get("count"))
 	if err != nil {
-		ok(w, m.MemberService.Get())
+		ok(w, m.MemberService.Get(ctx))
 		return
 	}
 
 	getActive := active == "true"
 
-	memberCount, err := m.MemberService.GetMemberCount(getActive)
+	memberCount, err := m.MemberService.GetMemberCount(ctx, getActive)
 	if err != nil {
 		badRequest(w, err.Error())
 		return
 	}
 
 	ok(w, models.MembersPaginatedResponse{
-		Members: m.MemberService.GetMembersPaginated(count, page, active == "true"),
+		Members: m.MemberService.GetMembersPaginated(ctx, count, page, active == "true"),
 		Count:   uint(memberCount),
 	})
 }
@@ -109,7 +110,7 @@ func (m *MemberServer) UpdateMemberByID(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = m.MemberService.UpdateMemberByID(memberID, models.Member{
+	err = m.MemberService.UpdateMemberByID(r.Context(), memberID, models.Member{
 		Email:          request.Email,
 		Name:           request.FullName,
 		SubscriptionID: request.SubscriptionID,
@@ -145,7 +146,7 @@ func (m *MemberServer) UpdateMemberByEmail(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = m.MemberService.Update(models.Member{
+	err = m.MemberService.Update(r.Context(), models.Member{
 		Email:          memberEmail,
 		Name:           request.FullName,
 		SubscriptionID: request.SubscriptionID,
@@ -168,7 +169,7 @@ func (m *MemberServer) GetByEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	member, err := m.MemberService.GetByEmail(memberEmail)
+	member, err := m.MemberService.GetByEmail(r.Context(), memberEmail)
 	if err != nil {
 		notFound(w, "error getting member by email")
 		return
@@ -180,7 +181,7 @@ func (m *MemberServer) GetByEmail(w http.ResponseWriter, r *http.Request) {
 func (m *MemberServer) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	_, user, _ := m.AuthStrategy.AuthenticateRequest(r)
 
-	member, err := m.MemberService.GetByEmail(user.GetUserName())
+	member, err := m.MemberService.GetByEmail(r.Context(), user.GetUserName())
 	if err != nil {
 		notFound(w, "error getting member by email")
 		return
@@ -202,7 +203,7 @@ func (m *MemberServer) AssignRFID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	member, err := m.MemberService.AssignRFID(assignRFIDRequest.Email, assignRFIDRequest.RFID)
+	member, err := m.MemberService.AssignRFID(r.Context(), assignRFIDRequest.Email, assignRFIDRequest.RFID)
 	if err != nil {
 		notFound(w, "unable to assign rfid")
 		return
@@ -222,7 +223,7 @@ func (m *MemberServer) AssignRFIDSelf(w http.ResponseWriter, r *http.Request) {
 
 	_, user, _ := m.AuthStrategy.AuthenticateRequest(r)
 
-	member, err := m.MemberService.AssignRFID(user.GetUserName(), assignRFIDRequest.RFID)
+	member, err := m.MemberService.AssignRFID(r.Context(), user.GetUserName(), assignRFIDRequest.RFID)
 	if err != nil {
 		notFound(w, "unable to assign rfid")
 		return
@@ -232,11 +233,11 @@ func (m *MemberServer) AssignRFIDSelf(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *MemberServer) GetTiers(w http.ResponseWriter, r *http.Request) {
-	ok(w, m.MemberService.GetTiers())
+	ok(w, m.MemberService.GetTiers(r.Context()))
 }
 
 func (m *MemberServer) GetNonMembersOnSlack(w http.ResponseWriter, r *http.Request) {
-	nonMembers := m.MemberService.FindNonMembersOnSlack()
+	nonMembers := m.MemberService.FindNonMembersOnSlack(r.Context())
 	buf := bytes.NewBufferString(strings.Join(nonMembers[:], "\n"))
 	w.Header().Set("Content-Type", "text/csv")
 	w.Header().Set("Content-Disposition", "attachment; filename=nonmembersOnSlack.csv")
@@ -254,7 +255,7 @@ func (m *MemberServer) AddNewMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	addedMember, err := m.MemberService.Add(newMember)
+	addedMember, err := m.MemberService.Add(r.Context(), newMember)
 	if err != nil {
 		http.Error(w, "error getting member by email", http.StatusNotFound)
 		return
@@ -271,7 +272,7 @@ func (m *MemberServer) CheckStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	member, err := m.MemberService.CheckStatus(id)
+	member, err := m.MemberService.CheckStatus(r.Context(), id)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error getting member by status: %s", err.Error()), http.StatusNotFound)
 		return
@@ -301,7 +302,7 @@ func (m *MemberServer) SetCredited(w http.ResponseWriter, r *http.Request) {
 		level = models.Credited
 	}
 
-	err = m.MemberService.SetLevel(id, level)
+	err = m.MemberService.SetLevel(r.Context(), id, level)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error getting member by status: %s", err.Error()), http.StatusNotFound)
 		return

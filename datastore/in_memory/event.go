@@ -1,7 +1,11 @@
 package in_memory
 
-import "github.com/HackRVA/memberserver/models"
+import (
+	"context"
 
-func (store *In_memory) LogAccessEvent(event models.LogMessage) error {
+	"github.com/HackRVA/memberserver/models"
+)
+
+func (store *In_memory) LogAccessEvent(ctx context.Context, event models.LogMessage) error {
 	return nil
 }

@@ -29,14 +29,14 @@ func expectResourceByID(mock pgxmock.PgxPoolIface, id string, r models.Resource)
 }
 
 func TestGetMemberByEmail_NoResources(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	expectMemberByEmailRows(mock, "alice@example.com",
 		models.Member{ID: "mem-1", Name: "Alice", Email: "alice@example.com", RFID: "notset", Level: 4},
 		[]string{})
 
-	got, err := db.GetMemberByEmail("alice@example.com")
+	got, err := db.GetMemberByEmail(ctx, "alice@example.com")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -49,7 +49,7 @@ func TestGetMemberByEmail_NoResources(t *testing.T) {
 }
 
 func TestGetMemberByEmail_WithResources(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	expectMemberByEmailRows(mock, "alice@example.com",
@@ -58,7 +58,7 @@ func TestGetMemberByEmail_WithResources(t *testing.T) {
 	expectResourceByID(mock, "res-1", models.Resource{ID: "res-1", Name: "Lasers"})
 	expectResourceByID(mock, "res-2", models.Resource{ID: "res-2", Name: "3D Printer"})
 
-	got, err := db.GetMemberByEmail("alice@example.com")
+	got, err := db.GetMemberByEmail(ctx, "alice@example.com")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -74,35 +74,35 @@ func TestGetMemberByEmail_WithResources(t *testing.T) {
 }
 
 func TestGetMemberByEmail_NoRows(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.members\s+WHERE LOWER\(email\) = LOWER\(\$1\)`).
 		WithArgs("ghost@example.com").
 		WillReturnError(pgx.ErrNoRows)
 
-	_, err := db.GetMemberByEmail("ghost@example.com")
+	_, err := db.GetMemberByEmail(ctx, "ghost@example.com")
 	if err != pgx.ErrNoRows {
 		t.Fatalf("err = %v, want pgx.ErrNoRows", err)
 	}
 }
 
 func TestGetMemberByEmail_QueryError(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.members\s+WHERE LOWER\(email\) = LOWER\(\$1\)`).
 		WithArgs("alice@example.com").
 		WillReturnError(errors.New("conn refused"))
 
-	_, err := db.GetMemberByEmail("alice@example.com")
+	_, err := db.GetMemberByEmail(ctx, "alice@example.com")
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestGetMembers_EmptyResources(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	cols := []string{"id", "name", "email", "rfid", "member_tier_id", "resources", "subscription_id"}
@@ -111,7 +111,7 @@ func TestGetMembers_EmptyResources(t *testing.T) {
 			AddRow("mem-1", "Alice", "alice@example.com", "notset", uint8(4), []string{}, "sub-1").
 			AddRow("mem-2", "Bob", "bob@example.com", "notset", uint8(4), []string{}, "sub-2"))
 
-	got := db.GetMembers()
+	got := db.GetMembers(ctx)
 	if len(got) != 2 {
 		t.Fatalf("len = %d, want 2", len(got))
 	}
@@ -121,7 +121,7 @@ func TestGetMembers_EmptyResources(t *testing.T) {
 }
 
 func TestGetMembersPaginated_EmptyResources(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	cols := []string{"id", "name", "email", "rfid", "member_tier_id", "resources", "subscription_id"}
@@ -130,7 +130,7 @@ func TestGetMembersPaginated_EmptyResources(t *testing.T) {
 		WillReturnRows(pgxmock.NewRows(cols).
 			AddRow("mem-3", "Carol", "c@example.com", "notset", uint8(4), []string{}, "sub-3"))
 
-	got, err := db.GetMembersPaginated(10, 2, true)
+	got, err := db.GetMembersPaginated(ctx, 10, 2, true)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -140,20 +140,20 @@ func TestGetMembersPaginated_EmptyResources(t *testing.T) {
 }
 
 func TestGetMembersPaginated_QueryError(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.members`).
 		WillReturnError(errors.New("db down"))
 
-	_, err := db.GetMembersPaginated(10, 0, false)
+	_, err := db.GetMembersPaginated(ctx, 10, 0, false)
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestAssignRFID_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	// 1. GetMemberByEmail lookup
@@ -166,7 +166,7 @@ func TestAssignRFID_Success(t *testing.T) {
 		WithArgs("alice@example.com", encodeRFID("0101436029")).
 		WillReturnRows(pgxmock.NewRows([]string{"rfid"}).AddRow(encodeRFID("0101436029")))
 
-	got, err := db.AssignRFID("alice@example.com", "0101436029")
+	got, err := db.AssignRFID(ctx, "alice@example.com", "0101436029")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -179,21 +179,21 @@ func TestAssignRFID_Success(t *testing.T) {
 }
 
 func TestAssignRFID_MemberNotFound(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.members\s+WHERE LOWER\(email\) = LOWER\(\$1\)`).
 		WithArgs("ghost@example.com").
 		WillReturnError(pgx.ErrNoRows)
 
-	_, err := db.AssignRFID("ghost@example.com", "0101436029")
+	_, err := db.AssignRFID(ctx, "ghost@example.com", "0101436029")
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestUpdateMember_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	// Lookup returns existing subscription ID; update carries a new one.
@@ -205,7 +205,7 @@ func TestUpdateMember_Success(t *testing.T) {
 		WithArgs("Alice Updated", "sub-new", "alice@example.com").
 		WillReturnResult(pgxmock.NewResult("UPDATE", 1))
 
-	err := db.UpdateMember(models.Member{
+	err := db.UpdateMember(ctx, models.Member{
 		Name:           "Alice Updated",
 		Email:          "alice@example.com",
 		SubscriptionID: "sub-new",
@@ -219,7 +219,7 @@ func TestUpdateMember_Success(t *testing.T) {
 }
 
 func TestUpdateMember_NoRowsAffected(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	expectMemberByEmailRows(mock, "alice@example.com",
@@ -229,21 +229,21 @@ func TestUpdateMember_NoRowsAffected(t *testing.T) {
 	mock.ExpectExec(`UPDATE membership\.members`).
 		WillReturnResult(pgxmock.NewResult("UPDATE", 0))
 
-	err := db.UpdateMember(models.Member{Name: "Alice", Email: "alice@example.com"})
+	err := db.UpdateMember(ctx, models.Member{Name: "Alice", Email: "alice@example.com"})
 	if err == nil {
 		t.Fatal("expected error when no rows affected")
 	}
 }
 
 func TestUpdateMember_LookupFails(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.members\s+WHERE LOWER\(email\) = LOWER\(\$1\)`).
 		WithArgs("ghost@example.com").
 		WillReturnError(pgx.ErrNoRows)
 
-	err := db.UpdateMember(models.Member{Email: "ghost@example.com"})
+	err := db.UpdateMember(ctx, models.Member{Email: "ghost@example.com"})
 	if err == nil {
 		t.Fatal("expected error when member lookup fails")
 	}

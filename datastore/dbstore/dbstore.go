@@ -21,21 +21,16 @@ type pgxConn interface {
 }
 
 type DatabaseStore struct {
-	ctx  context.Context
 	pool pgxConn
 }
 
 func Setup() (*DatabaseStore, error) {
 	conf, _ := config.Load()
 
-	ctx := context.Background()
-	pool, err := pgxpool.Connect(ctx, conf.DBConnectionString)
+	pool, err := pgxpool.Connect(context.Background(), conf.DBConnectionString)
 	if err != nil {
 		return nil, err
 	}
 
-	return &DatabaseStore{
-		ctx:  ctx,
-		pool: pool,
-	}, nil
+	return &DatabaseStore{pool: pool}, nil
 }

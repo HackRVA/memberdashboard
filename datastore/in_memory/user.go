@@ -1,12 +1,13 @@
 package in_memory
 
 import (
+	"context"
 	"errors"
 
 	"github.com/HackRVA/memberserver/models"
 )
 
-func (i *In_memory) GetUser(email string) (models.UserResponse, error) {
+func (i *In_memory) GetUser(ctx context.Context, email string) (models.UserResponse, error) {
 	for _, k := range i.Members {
 		if k.Email == email {
 			resources := []models.Resource{}
@@ -25,11 +26,11 @@ func (i *In_memory) GetUser(email string) (models.UserResponse, error) {
 	return models.UserResponse{}, errors.New("error getting user: not found")
 }
 
-func (i *In_memory) UserSignin(email string, password string) error {
+func (i *In_memory) UserSignin(ctx context.Context, email string, password string) error {
 	return nil
 }
 
-func (i *In_memory) RegisterUser(creds models.Credentials) error {
+func (i *In_memory) RegisterUser(ctx context.Context, creds models.Credentials) error {
 	if _, ok := i.Members[creds.Email]; ok {
 		return errors.New("error registering user")
 	}

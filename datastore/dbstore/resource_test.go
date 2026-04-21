@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetResourceByID_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	cols := []string{"id", "description", "device_identifier", "is_default"}
@@ -18,7 +18,7 @@ func TestGetResourceByID_Success(t *testing.T) {
 		WithArgs("res-1").
 		WillReturnRows(pgxmock.NewRows(cols).AddRow("res-1", "Lasers", "192.168.1.2", true))
 
-	got, err := db.GetResourceByID("res-1")
+	got, err := db.GetResourceByID(ctx, "res-1")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -28,21 +28,21 @@ func TestGetResourceByID_Success(t *testing.T) {
 }
 
 func TestGetResourceByID_Error(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.resources\s+WHERE id = \$1`).
 		WithArgs("missing").
 		WillReturnError(errors.New("no rows"))
 
-	_, err := db.GetResourceByID("missing")
+	_, err := db.GetResourceByID(ctx, "missing")
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestGetResourceByName_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	cols := []string{"id", "description", "device_identifier", "is_default"}
@@ -50,7 +50,7 @@ func TestGetResourceByName_Success(t *testing.T) {
 		WithArgs("Lasers").
 		WillReturnRows(pgxmock.NewRows(cols).AddRow("res-1", "Lasers", "192.168.1.2", false))
 
-	got, err := db.GetResourceByName("Lasers")
+	got, err := db.GetResourceByName(ctx, "Lasers")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -60,14 +60,14 @@ func TestGetResourceByName_Success(t *testing.T) {
 }
 
 func TestRegisterResource_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectExec(`INSERT INTO membership\.resources`).
 		WithArgs("Lasers", "1.2.3.4", true).
 		WillReturnResult(pgxmock.NewResult("INSERT", 1))
 
-	got, err := db.RegisterResource("Lasers", "1.2.3.4", true)
+	got, err := db.RegisterResource(ctx, "Lasers", "1.2.3.4", true)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -77,68 +77,68 @@ func TestRegisterResource_Success(t *testing.T) {
 }
 
 func TestRegisterResource_NoRows(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectExec(`INSERT INTO membership\.resources`).
 		WillReturnResult(pgxmock.NewResult("INSERT", 0))
 
-	_, err := db.RegisterResource("Lasers", "1.2.3.4", false)
+	_, err := db.RegisterResource(ctx, "Lasers", "1.2.3.4", false)
 	if err == nil {
 		t.Fatal("expected error when no rows affected")
 	}
 }
 
 func TestRegisterResource_ExecError(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectExec(`INSERT INTO membership\.resources`).
 		WillReturnError(errors.New("unique violation"))
 
-	_, err := db.RegisterResource("Lasers", "1.2.3.4", false)
+	_, err := db.RegisterResource(ctx, "Lasers", "1.2.3.4", false)
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestUpdateResource_EmptyID(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
-	_, err := db.UpdateResource(models.Resource{ID: ""})
+	_, err := db.UpdateResource(ctx, models.Resource{ID: ""})
 	if err == nil {
 		t.Fatal("expected error for empty resource ID")
 	}
 }
 
 func TestDeleteResource_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`DELETE FROM membership\.resources`).
 		WithArgs("res-1").
 		WillReturnRows(pgxmock.NewRows([]string{}))
 
-	if err := db.DeleteResource("res-1"); err != nil {
+	if err := db.DeleteResource(ctx, "res-1"); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
 
 func TestDeleteResource_QueryError(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`DELETE FROM membership\.resources`).
 		WillReturnError(errors.New("fk violation"))
 
-	if err := db.DeleteResource("res-1"); err == nil {
+	if err := db.DeleteResource(ctx, "res-1"); err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestGetResources_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	cols := []string{"id", "description", "device_identifier", "is_default"}
@@ -147,14 +147,14 @@ func TestGetResources_Success(t *testing.T) {
 			AddRow("res-1", "Lasers", "1.1.1.1", true).
 			AddRow("res-2", "3D Printer", "1.1.1.2", false))
 
-	got := db.GetResources()
+	got := db.GetResources(ctx)
 	if len(got) != 2 {
 		t.Fatalf("len = %d, want 2", len(got))
 	}
 }
 
 func TestGetResourceACL_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.member_resource`).
@@ -163,7 +163,7 @@ func TestGetResourceACL_Success(t *testing.T) {
 			AddRow("aaa").
 			AddRow("bbb"))
 
-	got, err := db.GetResourceACL(models.Resource{ID: "res-1"})
+	got, err := db.GetResourceACL(ctx, models.Resource{ID: "res-1"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -173,20 +173,20 @@ func TestGetResourceACL_Success(t *testing.T) {
 }
 
 func TestGetResourceACL_QueryError(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.member_resource`).
 		WillReturnError(errors.New("db down"))
 
-	_, err := db.GetResourceACL(models.Resource{ID: "res-1"})
+	_, err := db.GetResourceACL(ctx, models.Resource{ID: "res-1"})
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestRemoveUserFromResource_DeleteSucceeds(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	resCols := []string{"id", "description", "device_identifier", "is_default"}
@@ -209,7 +209,7 @@ func TestRemoveUserFromResource_DeleteSucceeds(t *testing.T) {
 		WithArgs("mem-1", "res-1").
 		WillReturnResult(pgxmock.NewResult("DELETE", 1))
 
-	if err := db.RemoveUserFromResource("alice@example.com", "res-1"); err != nil {
+	if err := db.RemoveUserFromResource(ctx, "alice@example.com", "res-1"); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {

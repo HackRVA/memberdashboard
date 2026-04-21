@@ -1,6 +1,7 @@
 package v1_test
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"testing"
@@ -70,7 +71,7 @@ func TestUpdateResources(t *testing.T) {
 
 	// add some stuff to the store
 	for _, v := range resources {
-		if _, err := resourceManager.RegisterResource(v.Name, v.Address, v.IsDefault); err != nil {
+		if _, err := resourceManager.RegisterResource(context.Background(), v.Name, v.Address, v.IsDefault); err != nil {
 			t.Errorf("error registering resource %s", err)
 		}
 	}

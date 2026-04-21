@@ -1,6 +1,7 @@
 package generators
 
 import (
+	"context"
 	"math/rand"
 	"strconv"
 	"time"
@@ -13,24 +14,25 @@ import (
 )
 
 func Seed(db datastore.DataStore, numMembers int) {
+	ctx := context.Background()
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	FakeResources(db)
 
-	if err := db.AddMembers([]models.Member{TestMember()}); err != nil {
+	if err := db.AddMembers(ctx, []models.Member{TestMember()}); err != nil {
 		log.Errorf("error adding test members: %s", err)
 	}
 
 	for i := 0; i < numMembers; i++ {
 		member := FakeMember(rng)
-		if err := db.AddMembers([]models.Member{member}); err != nil {
+		if err := db.AddMembers(ctx, []models.Member{member}); err != nil {
 			log.Errorf("error adding test members: %s", err)
 		}
 		log.Printf("Added member %v", member.Name)
 		if member.Level > 1 {
-			member, _ = db.GetMemberByEmail(member.Email)
+			member, _ = db.GetMemberByEmail(ctx, member.Email)
 			memberLevelID, _ := strconv.Atoi(faker.Number().Between(1, 5))
-			if err := db.SetMemberLevel(member.ID, models.MemberLevel(memberLevelID)); err != nil {
+			if err := db.SetMemberLevel(ctx, member.ID, models.MemberLevel(memberLevelID)); err != nil {
 				log.Errorf("error setting member level: %s", err)
 			}
 		}
@@ -42,7 +44,8 @@ func Seed(db datastore.DataStore, numMembers int) {
 }
 
 func FakeAccessEvents(numOfEvents int, db datastore.DataStore) {
-	resources := db.GetResources()
+	ctx := context.Background()
+	resources := db.GetResources(ctx)
 
 	for resourceIndex, r := range resources {
 		if resourceIndex == 5 {
@@ -58,7 +61,7 @@ func FakeAccessEvents(numOfEvents int, db datastore.DataStore) {
 				RFID:      string(faker.Internet().IpV4Address()),
 				Door:      r.Name,
 			}
-			if err := db.LogAccessEvent(logMsg); err != nil {
+			if err := db.LogAccessEvent(ctx, logMsg); err != nil {
 				log.Errorf("error logging event: %s", err)
 			}
 			log.Infof("Added log event for %s time: %s", logMsg.Username, eventTime)
@@ -96,7 +99,7 @@ func TestMember() models.Member {
 }
 
 func RegisterTestUser(db datastore.DataStore) {
-	if err := db.RegisterUser(models.Credentials{
+	if err := db.RegisterUser(context.Background(), models.Credentials{
 		Email:    "test@test.com",
 		Password: "test",
 	}); err != nil {
@@ -105,10 +108,11 @@ func RegisterTestUser(db datastore.DataStore) {
 }
 
 func FakeResources(db datastore.DataStore) {
-	if _, err := db.RegisterResource(faker.App().Name(), string(faker.Internet().IpV4Address()), false); err != nil {
+	ctx := context.Background()
+	if _, err := db.RegisterResource(ctx, faker.App().Name(), string(faker.Internet().IpV4Address()), false); err != nil {
 		log.Error(err)
 	}
-	if _, err := db.RegisterResource(faker.App().Name(), string(faker.Internet().IpV4Address()), true); err != nil {
+	if _, err := db.RegisterResource(ctx, faker.App().Name(), string(faker.Internet().IpV4Address()), true); err != nil {
 		log.Error(err)
 	}
 }

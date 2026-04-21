@@ -11,7 +11,7 @@ import (
 )
 
 func TestAddUserToDefaultResources_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	expectMemberByEmailRows(mock, "alice@example.com",
@@ -24,7 +24,7 @@ func TestAddUserToDefaultResources_Success(t *testing.T) {
 			AddRow("rel-1", "mem-1", "res-1").
 			AddRow("rel-2", "mem-1", "res-2"))
 
-	got, err := db.AddUserToDefaultResources("alice@example.com")
+	got, err := db.AddUserToDefaultResources(ctx, "alice@example.com")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -40,14 +40,14 @@ func TestAddUserToDefaultResources_Success(t *testing.T) {
 }
 
 func TestAddUserToDefaultResources_MemberNotFound(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.members\s+WHERE LOWER\(email\) = LOWER\(\$1\)`).
 		WithArgs("ghost@example.com").
 		WillReturnError(pgx.ErrNoRows)
 
-	got, err := db.AddUserToDefaultResources("ghost@example.com")
+	got, err := db.AddUserToDefaultResources(ctx, "ghost@example.com")
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -57,7 +57,7 @@ func TestAddUserToDefaultResources_MemberNotFound(t *testing.T) {
 }
 
 func TestAddMultipleMembersToResource_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	// 1. GetResourceByID
@@ -77,7 +77,7 @@ func TestAddMultipleMembersToResource_Success(t *testing.T) {
 		WithArgs("mem-1", "res-1").
 		WillReturnRows(pgxmock.NewRows(relCols).AddRow("rel-1", "mem-1", "res-1"))
 
-	got, err := db.AddMultipleMembersToResource([]string{"alice@example.com"}, "res-1")
+	got, err := db.AddMultipleMembersToResource(ctx, []string{"alice@example.com"}, "res-1")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -90,21 +90,21 @@ func TestAddMultipleMembersToResource_Success(t *testing.T) {
 }
 
 func TestAddMultipleMembersToResource_ResourceNotFound(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.resources\s+WHERE id = \$1`).
 		WithArgs("missing").
 		WillReturnError(errors.New("not found"))
 
-	_, err := db.AddMultipleMembersToResource([]string{"alice@example.com"}, "missing")
+	_, err := db.AddMultipleMembersToResource(ctx, []string{"alice@example.com"}, "missing")
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestAddMultipleMembersToResource_MemberNotFound(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	resCols := []string{"id", "description", "device_identifier", "is_default"}
@@ -116,14 +116,14 @@ func TestAddMultipleMembersToResource_MemberNotFound(t *testing.T) {
 		WithArgs("ghost@example.com").
 		WillReturnError(pgx.ErrNoRows)
 
-	_, err := db.AddMultipleMembersToResource([]string{"ghost@example.com"}, "res-1")
+	_, err := db.AddMultipleMembersToResource(ctx, []string{"ghost@example.com"}, "res-1")
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestGetResourceACLWithMemberInfo_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	cols := []string{"member_id", "name", "rfid"}
@@ -133,7 +133,7 @@ func TestGetResourceACLWithMemberInfo_Success(t *testing.T) {
 			AddRow("mem-1", "Alice", "aaa").
 			AddRow("mem-2", "Bob", "bbb"))
 
-	got, err := db.GetResourceACLWithMemberInfo(models.Resource{ID: "res-1"})
+	got, err := db.GetResourceACLWithMemberInfo(ctx, models.Resource{ID: "res-1"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -143,7 +143,7 @@ func TestGetResourceACLWithMemberInfo_Success(t *testing.T) {
 }
 
 func TestGetMembersAccess_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	cols := []string{"email", "device_identifier", "description", "name", "rfid"}
@@ -152,7 +152,7 @@ func TestGetMembersAccess_Success(t *testing.T) {
 		WillReturnRows(pgxmock.NewRows(cols).
 			AddRow("alice@example.com", "1.1.1.1", "Lasers", "Alice", "aaa"))
 
-	got, err := db.GetMembersAccess(models.Member{Email: "alice@example.com"})
+	got, err := db.GetMembersAccess(ctx, models.Member{Email: "alice@example.com"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -162,7 +162,7 @@ func TestGetMembersAccess_Success(t *testing.T) {
 }
 
 func TestGetActiveMembersByResource_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	cols := []string{"email", "device_identifier", "description", "name", "rfid"}
@@ -170,7 +170,7 @@ func TestGetActiveMembersByResource_Success(t *testing.T) {
 		WillReturnRows(pgxmock.NewRows(cols).
 			AddRow("a@example.com", "1.1.1.1", "Lasers", "Alice", "aaa"))
 
-	got, err := db.GetActiveMembersByResource()
+	got, err := db.GetActiveMembersByResource(ctx)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -180,7 +180,7 @@ func TestGetActiveMembersByResource_Success(t *testing.T) {
 }
 
 func TestGetInactiveMembersByResource_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	cols := []string{"email", "device_identifier", "description", "name", "rfid"}
@@ -188,7 +188,7 @@ func TestGetInactiveMembersByResource_Success(t *testing.T) {
 		WillReturnRows(pgxmock.NewRows(cols).
 			AddRow("inactive@example.com", "1.1.1.1", "Lasers", "Ghost", "xxx"))
 
-	got, err := db.GetInactiveMembersByResource()
+	got, err := db.GetInactiveMembersByResource(ctx)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

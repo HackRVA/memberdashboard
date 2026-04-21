@@ -1,6 +1,7 @@
 package report
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -12,10 +13,10 @@ import (
 )
 
 type ReportService interface {
-	GetAccessStatsChart(date time.Time, resourceName string) (models.ReportChart, error)
-	GetMemberChurn() (int, error)
-	GetMemberCountsCharts(chartType string) ([]models.ReportChart, error)
-	GetMemberCountsChartByMonth(date time.Time) models.ReportChart
+	GetAccessStatsChart(ctx context.Context, date time.Time, resourceName string) (models.ReportChart, error)
+	GetMemberChurn(ctx context.Context) (int, error)
+	GetMemberCountsCharts(ctx context.Context, chartType string) ([]models.ReportChart, error)
+	GetMemberCountsChartByMonth(ctx context.Context, date time.Time) models.ReportChart
 }
 
 type Report struct {
@@ -24,8 +25,8 @@ type Report struct {
 
 var errNotFound = errors.New("not found")
 
-func (r Report) GetAccessStatsChart(date time.Time, resourceName string) (models.ReportChart, error) {
-	accessStats, err := r.Store.GetAccessStats(date, resourceName)
+func (r Report) GetAccessStatsChart(ctx context.Context, date time.Time, resourceName string) (models.ReportChart, error) {
+	accessStats, err := r.Store.GetAccessStats(ctx, date, resourceName)
 	if err != nil {
 		return models.ReportChart{}, err
 	}
@@ -33,17 +34,17 @@ func (r Report) GetAccessStatsChart(date time.Time, resourceName string) (models
 	return makeAccessTrendChart(accessStats, resourceName), nil
 }
 
-func (r Report) GetMemberChurn() (int, error) {
-	return r.Store.GetMemberChurn()
+func (r Report) GetMemberChurn(ctx context.Context) (int, error) {
+	return r.Store.GetMemberChurn(ctx)
 }
 
-func (r Report) GetMemberCountsChartByMonth(date time.Time) models.ReportChart {
-	return makeDistritutionChartByMonth(date, r.Store)
+func (r Report) GetMemberCountsChartByMonth(ctx context.Context, date time.Time) models.ReportChart {
+	return makeDistritutionChartByMonth(ctx, date, r.Store)
 }
 
-func (r Report) GetMemberCountsCharts(chartType string) ([]models.ReportChart, error) {
+func (r Report) GetMemberCountsCharts(ctx context.Context, chartType string) ([]models.ReportChart, error) {
 	var charts []models.ReportChart
-	memberCounts, err := r.Store.GetMemberCounts()
+	memberCounts, err := r.Store.GetMemberCounts(ctx)
 	if err != nil {
 		return []models.ReportChart{}, errNotFound
 	}
@@ -84,9 +85,9 @@ func makeMemberTrendChart(counts []models.MemberCount) models.ReportChart {
 	return chart
 }
 
-func makeDistritutionChartByMonth(month time.Time, store datastore.ReportStore) models.ReportChart {
+func makeDistritutionChartByMonth(ctx context.Context, month time.Time, store datastore.ReportStore) models.ReportChart {
 	var distributionChart models.ReportChart
-	memberCount, err := store.GetMemberCountByMonth(month)
+	memberCount, err := store.GetMemberCountByMonth(ctx, month)
 	if err != nil {
 		logrus.Errorf("error getting member counts")
 		return distributionChart

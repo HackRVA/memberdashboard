@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
@@ -29,14 +30,15 @@ func (v1 mqttHandler) HealthCheckHandler(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 
+	ctx := context.Background()
 	logger.Infof("name from resource: %s", acl.Name)
 	// get resourceByName
-	r, err := v1.GetResourceByName(acl.Name)
+	r, err := v1.GetResourceByName(ctx, acl.Name)
 	if err != nil {
 		logger.Errorf("error fetching resource: %s", err)
 		return
 	}
-	accessList, err := v1.GetResourceACL(r)
+	accessList, err := v1.GetResourceACL(ctx, r)
 	if err != nil {
 		logger.Error(err)
 		return

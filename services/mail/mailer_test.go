@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 )
 
 func TestSendMessageToNonMemberWithoutLogging(t *testing.T) {
+	ctx := context.Background()
 	db := dbMock{}
 	m := mailApiMock{}
 	c, _ := config.Load()
@@ -21,7 +23,7 @@ func TestSendMessageToNonMemberWithoutLogging(t *testing.T) {
 
 	db.memberError = pgx.ErrNoRows
 
-	sent, err := mailer.SendCommunication(AccessRevokedLeadership, c.AdminEmail, memberModel)
+	sent, err := mailer.SendCommunication(ctx, AccessRevokedLeadership, c.AdminEmail, memberModel)
 	if err != nil {
 		t.Errorf("Error sending communication %v", err)
 	}
@@ -35,6 +37,7 @@ func TestSendMessageToNonMemberWithoutLogging(t *testing.T) {
 }
 
 func TestSendMessageToMemberShouldLog(t *testing.T) {
+	ctx := context.Background()
 	db := dbMock{}
 	m := mailApiMock{}
 	c, _ := config.Load()
@@ -43,7 +46,7 @@ func TestSendMessageToMemberShouldLog(t *testing.T) {
 	mailer := NewMailer(&db, &m, c)
 	mailer.generator = generatorMock{}
 
-	sent, err := mailer.SendCommunication(AccessRevokedLeadership, "member@hackrva.org", memberModel)
+	sent, err := mailer.SendCommunication(ctx, AccessRevokedLeadership, "member@hackrva.org", memberModel)
 	if err != nil {
 		t.Errorf("Error sending communication %v", err)
 	}
@@ -57,6 +60,7 @@ func TestSendMessageToMemberShouldLog(t *testing.T) {
 }
 
 func TestSendMessageToShouldThrottle(t *testing.T) {
+	ctx := context.Background()
 	db := dbMock{}
 	c, _ := config.Load()
 	c.EnableNotificationEmailsToMembers = true
@@ -67,7 +71,7 @@ func TestSendMessageToShouldThrottle(t *testing.T) {
 	db.communicationResult.FrequencyThrottle = 10
 	db.mostRecentCommResult = time.Now().AddDate(0, 0, -5)
 
-	sent, err := mailer.SendCommunication(AccessRevokedLeadership, c.AdminEmail, memberModel)
+	sent, err := mailer.SendCommunication(ctx, AccessRevokedLeadership, c.AdminEmail, memberModel)
 	if err != nil {
 		t.Errorf("Error sending communication %v", err)
 	}
@@ -81,6 +85,7 @@ func TestSendMessageToShouldThrottle(t *testing.T) {
 }
 
 func TestEnableMemberEmailsSetShouldSendMemberEmails(t *testing.T) {
+	ctx := context.Background()
 	db := dbMock{}
 	m := mailApiMock{}
 	c, _ := config.Load()
@@ -89,7 +94,7 @@ func TestEnableMemberEmailsSetShouldSendMemberEmails(t *testing.T) {
 	mailer := NewMailer(&db, &m, c)
 	mailer.generator = generatorMock{}
 
-	sent, err := mailer.SendCommunication(AccessRevokedMember, "member@email.com", memberModel)
+	sent, err := mailer.SendCommunication(ctx, AccessRevokedMember, "member@email.com", memberModel)
 	if err != nil {
 		t.Errorf("Error sending communication %v", err)
 	}
@@ -102,6 +107,7 @@ func TestEnableMemberEmailsSetShouldSendMemberEmails(t *testing.T) {
 }
 
 func TestEnableMemberEmailsUnsetShouldNotSendMemberEmails(t *testing.T) {
+	ctx := context.Background()
 	db := dbMock{}
 	m := mailApiMock{}
 	c, _ := config.Load()
@@ -110,7 +116,7 @@ func TestEnableMemberEmailsUnsetShouldNotSendMemberEmails(t *testing.T) {
 	mailer := NewMailer(&db, &m, c)
 	mailer.generator = generatorMock{}
 
-	sent, err := mailer.SendCommunication(AccessRevokedMember, "member@email.com", memberModel)
+	sent, err := mailer.SendCommunication(ctx, AccessRevokedMember, "member@email.com", memberModel)
 	if err != nil {
 		t.Errorf("Error sending communication %v", err)
 	}
@@ -123,6 +129,7 @@ func TestEnableMemberEmailsUnsetShouldNotSendMemberEmails(t *testing.T) {
 }
 
 func TestEnableInfoEmailsSetShouldSendInfoEmails(t *testing.T) {
+	ctx := context.Background()
 	db := dbMock{}
 	m := mailApiMock{}
 	c, _ := config.Load()
@@ -132,7 +139,7 @@ func TestEnableInfoEmailsSetShouldSendInfoEmails(t *testing.T) {
 	mailer := NewMailer(&db, &m, c)
 	mailer.generator = generatorMock{}
 
-	sent, err := mailer.SendCommunication(AccessRevokedMember, c.AdminEmail, memberModel)
+	sent, err := mailer.SendCommunication(ctx, AccessRevokedMember, c.AdminEmail, memberModel)
 	if err != nil {
 		t.Errorf("Error sending communication %v", err)
 	}
@@ -145,6 +152,7 @@ func TestEnableInfoEmailsSetShouldSendInfoEmails(t *testing.T) {
 }
 
 func TestEnableInfoEmailsUnsetShouldNotSendInfoEmails(t *testing.T) {
+	ctx := context.Background()
 	db := dbMock{}
 	m := mailApiMock{}
 	c, _ := config.Load()
@@ -154,7 +162,7 @@ func TestEnableInfoEmailsUnsetShouldNotSendInfoEmails(t *testing.T) {
 	mailer := NewMailer(&db, &m, c)
 	mailer.generator = generatorMock{}
 
-	sent, err := mailer.SendCommunication(AccessRevokedMember, c.AdminEmail, memberModel)
+	sent, err := mailer.SendCommunication(ctx, AccessRevokedMember, c.AdminEmail, memberModel)
 	if err != nil {
 		t.Errorf("Error sending communication %v", err)
 	}
@@ -176,20 +184,20 @@ type dbMock struct {
 	logCommunicationCalled bool
 }
 
-func (m *dbMock) GetMemberByEmail(memberEmail string) (models.Member, error) {
+func (m *dbMock) GetMemberByEmail(ctx context.Context, memberEmail string) (models.Member, error) {
 	return m.memberResult, m.memberError
 }
 
-func (m *dbMock) GetCommunication(communication string) (models.Communication, error) {
+func (m *dbMock) GetCommunication(ctx context.Context, communication string) (models.Communication, error) {
 	return m.communicationResult, m.communicatonError
 }
 
-func (m *dbMock) LogCommunication(communicationId int, memberId string) error {
+func (m *dbMock) LogCommunication(ctx context.Context, communicationId int, memberId string) error {
 	m.logCommunicationCalled = true
 	return nil
 }
 
-func (m *dbMock) GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error) {
+func (m *dbMock) GetMostRecentCommunicationToMember(ctx context.Context, memberId string, commId int) (time.Time, error) {
 	return m.mostRecentCommResult, m.mostRecentCommError
 }
 

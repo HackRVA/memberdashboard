@@ -14,10 +14,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (db *DatabaseStore) GetMemberCount(isActive bool) (int, error) {
+func (db *DatabaseStore) GetMemberCount(ctx context.Context, isActive bool) (int, error) {
 	var count int
 	query := memberDbMethod.getMemberCount(isActive)
-	err := db.pool.QueryRow(db.ctx, query).Scan(&count)
+	err := db.pool.QueryRow(ctx, query).Scan(&count)
 	if err != nil {
 		log.Errorf("GetMemberCount query failed: %v", err)
 		return 0, err
@@ -26,10 +26,10 @@ func (db *DatabaseStore) GetMemberCount(isActive bool) (int, error) {
 	return count, nil
 }
 
-func (db *DatabaseStore) GetMembersPaginated(limit int, page int, active bool) ([]models.Member, error) {
+func (db *DatabaseStore) GetMembersPaginated(ctx context.Context, limit int, page int, active bool) ([]models.Member, error) {
 	var members []models.Member
 	query := memberDbMethod.getMembersPaginated(active)
-	rows, err := db.pool.Query(db.ctx, query, limit, page*limit)
+	rows, err := db.pool.Query(ctx, query, limit, page*limit)
 	if err != nil {
 		log.Errorf("GetMembersPaginated query failed: %v", err)
 		return nil, err
@@ -53,7 +53,7 @@ func (db *DatabaseStore) GetMembersPaginated(limit int, page int, active bool) (
 				continue
 			}
 
-			resource, err := db.GetResourceByID(rID)
+			resource, err := db.GetResourceByID(ctx, rID)
 			if err != nil {
 				logger.Errorf("error getting resource by id in memberResource lookup: %s %s\n", err.Error(), rID)
 				continue
@@ -78,9 +78,9 @@ func (db *DatabaseStore) GetMembersPaginated(limit int, page int, active bool) (
 	return members, nil
 }
 
-func (db *DatabaseStore) GetMembers() []models.Member {
+func (db *DatabaseStore) GetMembers(ctx context.Context) []models.Member {
 	var members []models.Member
-	rows, err := db.pool.Query(db.ctx, memberDbMethod.getMember())
+	rows, err := db.pool.Query(ctx, memberDbMethod.getMember())
 	if err != nil {
 		log.Errorf("GetMembers failed: %v", err)
 	}
@@ -106,7 +106,7 @@ func (db *DatabaseStore) GetMembers() []models.Member {
 				continue
 			}
 
-			resource, err := db.GetResourceByID(rID)
+			resource, err := db.GetResourceByID(ctx, rID)
 			if err != nil {
 				logger.Errorf("error getting resource by id in memberResource lookup: %s %s_\n", err.Error(), rID)
 				continue
@@ -126,8 +126,8 @@ func (db *DatabaseStore) GetMembers() []models.Member {
 	return members
 }
 
-func (db *DatabaseStore) getMemberBySubscriptionID(subscriptionID string) (models.Member, error) {
-	for _, m := range db.GetMembers() {
+func (db *DatabaseStore) getMemberBySubscriptionID(ctx context.Context, subscriptionID string) (models.Member, error) {
+	for _, m := range db.GetMembers(ctx) {
 		if m.SubscriptionID == subscriptionID {
 			return m, nil
 		}
@@ -137,11 +137,11 @@ func (db *DatabaseStore) getMemberBySubscriptionID(subscriptionID string) (model
 }
 
 // GetMemberByEmail - lookup a member by their email address
-func (db *DatabaseStore) GetMemberByEmail(memberEmail string) (models.Member, error) {
+func (db *DatabaseStore) GetMemberByEmail(ctx context.Context, memberEmail string) (models.Member, error) {
 	var member models.Member
 	var rIDs []string
 
-	err := db.pool.QueryRow(context.Background(), memberDbMethod.getMemberByEmail(), memberEmail).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
+	err := db.pool.QueryRow(ctx, memberDbMethod.getMemberByEmail(), memberEmail).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
 	if err == pgx.ErrNoRows {
 		return member, err
 	}
@@ -160,7 +160,7 @@ func (db *DatabaseStore) GetMemberByEmail(memberEmail string) (models.Member, er
 			member.Resources = append(member.Resources, models.MemberResource{ResourceID: rID, Name: resourceMemo[rID].Name})
 			continue
 		}
-		resource, err := db.GetResourceByID(rID)
+		resource, err := db.GetResourceByID(ctx, rID)
 		if err != nil {
 			logger.Errorf("error getting resource by id in memberResource lookup: %s %s\n", err.Error(), rID)
 		}
@@ -175,11 +175,11 @@ func (db *DatabaseStore) GetMemberByEmail(memberEmail string) (models.Member, er
 	return member, nil
 }
 
-func (db *DatabaseStore) GetMemberByRFID(rfid string) (models.Member, error) {
+func (db *DatabaseStore) GetMemberByRFID(ctx context.Context, rfid string) (models.Member, error) {
 	var member models.Member
 	var rIDs []string
 
-	err := db.pool.QueryRow(context.Background(), memberDbMethod.getMemberByRFID(), rfid).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
+	err := db.pool.QueryRow(ctx, memberDbMethod.getMemberByRFID(), rfid).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
 	if err == pgx.ErrNoRows {
 		return member, err
 	}
@@ -191,14 +191,14 @@ func (db *DatabaseStore) GetMemberByRFID(rfid string) (models.Member, error) {
 	return member, nil
 }
 
-func (db *DatabaseStore) AssignRFID(email string, rfid string) (models.Member, error) {
-	member, err := db.GetMemberByEmail(email)
+func (db *DatabaseStore) AssignRFID(ctx context.Context, email string, rfid string) (models.Member, error) {
+	member, err := db.GetMemberByEmail(ctx, email)
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())
 		return member, err
 	}
 
-	err = db.pool.QueryRow(context.Background(), memberDbMethod.setMemberRFIDTag(), email, encodeRFID(rfid)).Scan(&member.RFID)
+	err = db.pool.QueryRow(ctx, memberDbMethod.setMemberRFIDTag(), email, encodeRFID(rfid)).Scan(&member.RFID)
 	if err != nil {
 		return member, fmt.Errorf("AssignRFID failed: %v", err)
 	}
@@ -206,8 +206,8 @@ func (db *DatabaseStore) AssignRFID(email string, rfid string) (models.Member, e
 	return member, err
 }
 
-func (db *DatabaseStore) UpdateMember(update models.Member) error {
-	member, err := db.GetMemberByEmail(update.Email)
+func (db *DatabaseStore) UpdateMember(ctx context.Context, update models.Member) error {
+	member, err := db.GetMemberByEmail(ctx, update.Email)
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())
 		return err
@@ -218,7 +218,7 @@ func (db *DatabaseStore) UpdateMember(update models.Member) error {
 		subID = update.SubscriptionID
 	}
 
-	commandTag, err := db.pool.Exec(context.Background(), memberDbMethod.updateMemberByEmail(), update.Name, subID, member.Email)
+	commandTag, err := db.pool.Exec(ctx, memberDbMethod.updateMemberByEmail(), update.Name, subID, member.Email)
 	if err != nil {
 		return fmt.Errorf("UpdateMemberByEmail failed: %v", err)
 	}
@@ -230,8 +230,8 @@ func (db *DatabaseStore) UpdateMember(update models.Member) error {
 	return nil
 }
 
-func (db *DatabaseStore) UpdateMemberByID(memberID string, update models.Member) error {
-	commandTag, err := db.pool.Exec(context.Background(), memberDbMethod.updateMemberByID(), update.Name, update.Email, update.SubscriptionID, memberID)
+func (db *DatabaseStore) UpdateMemberByID(ctx context.Context, memberID string, update models.Member) error {
+	commandTag, err := db.pool.Exec(ctx, memberDbMethod.updateMemberByID(), update.Name, update.Email, update.SubscriptionID, memberID)
 	if err != nil {
 		return fmt.Errorf("UpdateMemberByID failed: %v", err)
 	}
@@ -243,8 +243,8 @@ func (db *DatabaseStore) UpdateMemberByID(memberID string, update models.Member)
 	return nil
 }
 
-func (db *DatabaseStore) UpdateMemberBySubscriptionID(subscriptionID string, update models.Member) error {
-	commandTag, err := db.pool.Exec(context.Background(), memberDbMethod.updateMemberBySubscriptionID(), update.Name, update.Email, subscriptionID)
+func (db *DatabaseStore) UpdateMemberBySubscriptionID(ctx context.Context, subscriptionID string, update models.Member) error {
+	commandTag, err := db.pool.Exec(ctx, memberDbMethod.updateMemberBySubscriptionID(), update.Name, update.Email, subscriptionID)
 	if err != nil {
 		return fmt.Errorf("UpdateMemberBySubscriptionID failed: %v", err)
 	}
@@ -256,8 +256,8 @@ func (db *DatabaseStore) UpdateMemberBySubscriptionID(subscriptionID string, upd
 	return nil
 }
 
-func (db *DatabaseStore) AddNewMember(newMember models.Member) (models.Member, error) {
-	err := db.AddMembers([]models.Member{newMember})
+func (db *DatabaseStore) AddNewMember(ctx context.Context, newMember models.Member) (models.Member, error) {
+	err := db.AddMembers(ctx, []models.Member{newMember})
 	if err != nil {
 		return models.Member{}, err
 	}
@@ -265,8 +265,8 @@ func (db *DatabaseStore) AddNewMember(newMember models.Member) (models.Member, e
 }
 
 // GetMemberTiers - gets the member tiers from DB
-func (db *DatabaseStore) GetTiers() []models.Tier {
-	rows, err := db.pool.Query(context.Background(), tierDbMethod.getMemberTiers())
+func (db *DatabaseStore) GetTiers(ctx context.Context) []models.Tier {
+	rows, err := db.pool.Query(ctx, tierDbMethod.getMemberTiers())
 	if err != nil {
 		log.Errorf("GetTiers failed: %v", err)
 	}
@@ -292,8 +292,8 @@ var memberDbMethod MemberDatabaseMethod
 //
 //	if a member exists in the member_credits table
 //	they are credited a membership
-func (db *DatabaseStore) GetMembersWithCredit() []models.Member {
-	rows, err := db.pool.Query(db.ctx, memberDbMethod.getMembersWithCredit())
+func (db *DatabaseStore) GetMembersWithCredit(ctx context.Context) []models.Member {
+	rows, err := db.pool.Query(ctx, memberDbMethod.getMembersWithCredit())
 	if err != nil {
 		log.Errorf("error getting credited members: %v", err)
 	}
@@ -316,7 +316,7 @@ func (db *DatabaseStore) GetMembersWithCredit() []models.Member {
 }
 
 // AddMembers adds multiple members to the DatabaseStore
-func (db *DatabaseStore) AddMembers(members []models.Member) error {
+func (db *DatabaseStore) AddMembers(ctx context.Context, members []models.Member) error {
 	sqlStr := `INSERT INTO membership.members(
 name, email, member_tier_id, subscription_id)
 VALUES `
@@ -337,7 +337,7 @@ VALUES `
 
 	str := strings.Join(valStr, ",")
 
-	commandTag, err := db.pool.Exec(context.Background(), sqlStr+str+"ON CONFLICT DO NOTHING;")
+	commandTag, err := db.pool.Exec(ctx, sqlStr+str+"ON CONFLICT DO NOTHING;")
 	if err != nil {
 		return fmt.Errorf("add members query failed: %v", err)
 	}
@@ -347,7 +347,7 @@ VALUES `
 
 	for _, m := range members {
 		log.Info("Adding default resource")
-		if _, err := db.AddUserToDefaultResources(m.Email); err != nil {
+		if _, err := db.AddUserToDefaultResources(ctx, m.Email); err != nil {
 			log.Error(err)
 		}
 	}
@@ -356,31 +356,31 @@ VALUES `
 }
 
 // ProcessMember - add them member if they don't already exist.  Otherwise, make sure we have their name
-func (db *DatabaseStore) ProcessMember(newMember models.Member) error {
-	member, err := db.GetMemberByEmail(newMember.Email)
+func (db *DatabaseStore) ProcessMember(ctx context.Context, newMember models.Member) error {
+	member, err := db.GetMemberByEmail(ctx, newMember.Email)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return db.AddMembers([]models.Member{newMember})
+			return db.AddMembers(ctx, []models.Member{newMember})
 		}
 		return err
 	}
 
 	if member.Name == "" {
-		return db.updateMemberName(member.ID, newMember)
+		return db.updateMemberName(ctx, member.ID, newMember)
 	}
 
 	if member.SubscriptionID != newMember.SubscriptionID {
-		return db.updateSubscriptionID(member.ID, newMember)
+		return db.updateSubscriptionID(ctx, member.ID, newMember)
 	}
 
 	return nil
 }
 
-func (db *DatabaseStore) updateMemberName(memberID string, newMember models.Member) error {
+func (db *DatabaseStore) updateMemberName(ctx context.Context, memberID string, newMember models.Member) error {
 	var member models.Member
 
 	// if the member already exists, we might want to update their name.
-	err := db.pool.QueryRow(context.Background(), memberDbMethod.updateMemberName(), memberID, newMember.Name).Scan(&member.Name)
+	err := db.pool.QueryRow(ctx, memberDbMethod.updateMemberName(), memberID, newMember.Name).Scan(&member.Name)
 	if err != nil {
 		return fmt.Errorf("updateMemberName failed: %v", err)
 	}
@@ -388,11 +388,11 @@ func (db *DatabaseStore) updateMemberName(memberID string, newMember models.Memb
 	return nil
 }
 
-func (db *DatabaseStore) updateSubscriptionID(memberID string, newMember models.Member) error {
+func (db *DatabaseStore) updateSubscriptionID(ctx context.Context, memberID string, newMember models.Member) error {
 	var member models.Member
 
 	// if the member already exists, we might want to update their name.
-	err := db.pool.QueryRow(context.Background(), memberDbMethod.updateMemberSubscriptionID(), memberID, newMember.SubscriptionID).Scan(&member.SubscriptionID)
+	err := db.pool.QueryRow(ctx, memberDbMethod.updateMemberSubscriptionID(), memberID, newMember.SubscriptionID).Scan(&member.SubscriptionID)
 	if err != nil {
 		return fmt.Errorf("updateSubscriptionID failed: %v", err)
 	}
@@ -401,8 +401,8 @@ func (db *DatabaseStore) updateSubscriptionID(memberID string, newMember models.
 }
 
 // SetMemberLevel sets a member's membership tier
-func (db *DatabaseStore) SetMemberLevel(memberId string, level models.MemberLevel) error {
-	rows, err := db.pool.Query(context.Background(), memberDbMethod.updateMembershipLevel(), memberId, level)
+func (db *DatabaseStore) SetMemberLevel(ctx context.Context, memberId string, level models.MemberLevel) error {
+	rows, err := db.pool.Query(ctx, memberDbMethod.updateMembershipLevel(), memberId, level)
 	if err != nil {
 		log.Errorf("Set member level failed: %v", err)
 		return err
@@ -412,11 +412,11 @@ func (db *DatabaseStore) SetMemberLevel(memberId string, level models.MemberLeve
 }
 
 // ApplyMemberCredits updates members tiers for all members with credit to Credited
-func (db *DatabaseStore) ApplyMemberCredits() {
+func (db *DatabaseStore) ApplyMemberCredits(ctx context.Context) {
 	//	Member credits are currently managed by DB commands.  #102 will address this.
-	memberCredits := db.GetMembersWithCredit()
+	memberCredits := db.GetMembersWithCredit(ctx)
 	for _, m := range memberCredits {
-		err := db.SetMemberLevel(m.ID, models.Credited)
+		err := db.SetMemberLevel(ctx, m.ID, models.Credited)
 		if err != nil {
 			log.Errorf("member credit failed: %v", err)
 		}
@@ -424,8 +424,8 @@ func (db *DatabaseStore) ApplyMemberCredits() {
 }
 
 // UpdateMemberTiers updates member tiers based on the most recent payment amount
-func (db *DatabaseStore) UpdateMemberTiers() {
-	commandTag, err := db.pool.Exec(context.Background(), memberDbMethod.updateMemberTiers())
+func (db *DatabaseStore) UpdateMemberTiers(ctx context.Context) {
+	commandTag, err := db.pool.Exec(ctx, memberDbMethod.updateMemberTiers())
 	if err != nil {
 		log.Errorf("add members query failed: %v", err)
 	}
@@ -434,9 +434,9 @@ func (db *DatabaseStore) UpdateMemberTiers() {
 	}
 }
 
-func (db *DatabaseStore) GetActiveMembersWithoutSubscription() []models.Member {
+func (db *DatabaseStore) GetActiveMembersWithoutSubscription(ctx context.Context) []models.Member {
 	var members []models.Member
-	rows, err := db.pool.Query(db.ctx, memberDbMethod.getActiveMembersWithoutSubscription())
+	rows, err := db.pool.Query(ctx, memberDbMethod.getActiveMembersWithoutSubscription())
 	if err != nil {
 		log.Errorf("GetMembers failed: %v", err)
 	}

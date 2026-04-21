@@ -1,6 +1,7 @@
 package member_test
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -35,6 +36,7 @@ func (m *MockPaymentProvider) GetSubscription(subscriptionID string) (string, st
 }
 
 func TestMemberService_Add(t *testing.T) {
+	ctx := context.Background()
 	mockStore := &in_memory.In_memory{}
 	memberService := member.New(mockStore, nil, nil)
 
@@ -43,7 +45,7 @@ func TestMemberService_Add(t *testing.T) {
 		Email: "test@example.com",
 	}
 
-	addedMember, err := memberService.Add(newMember)
+	addedMember, err := memberService.Add(ctx, newMember)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, addedMember)
 	assert.Equal(t, newMember.Name, addedMember.Name)
@@ -52,11 +54,12 @@ func TestMemberService_Add(t *testing.T) {
 }
 
 func TestMemberService_GetMembersPaginated(t *testing.T) {
+	ctx := context.Background()
 	mockStore := &in_memory.In_memory{}
 	stubResourceManager := &stubResourceManager{}
 	memberService := member.New(mockStore, stubResourceManager, nil)
 	for i := 0; i < 10; i++ {
-		if _, err := memberService.Add(models.Member{
+		if _, err := memberService.Add(ctx, models.Member{
 			Name:           "Test User",
 			Email:          "test" + strconv.Itoa(i) + "@example.com",
 			RFID:           "abc1234" + strconv.Itoa(i),
@@ -67,11 +70,12 @@ func TestMemberService_GetMembersPaginated(t *testing.T) {
 		}
 	}
 
-	members := memberService.GetMembersPaginated(5, 0, true)
+	members := memberService.GetMembersPaginated(ctx, 5, 0, true)
 	assert.Len(t, members, 5)
 }
 
 func TestMemberService_GetByEmail(t *testing.T) {
+	ctx := context.Background()
 	mockStore := &in_memory.In_memory{}
 	memberService := member.New(mockStore, nil, nil)
 
@@ -80,15 +84,16 @@ func TestMemberService_GetByEmail(t *testing.T) {
 		Email: "test@example.com",
 	}
 
-	if _, err := memberService.Add(newMember); err != nil {
+	if _, err := memberService.Add(ctx, newMember); err != nil {
 		t.Error(err)
 	}
-	member, err := memberService.GetByEmail("test@example.com")
+	member, err := memberService.GetByEmail(ctx, "test@example.com")
 	assert.NoError(t, err)
 	assert.Equal(t, newMember.Email, member.Email)
 }
 
 func TestMemberService_Update(t *testing.T) {
+	ctx := context.Background()
 	mockStore := &in_memory.In_memory{}
 	mockPaymentProvider := &MockPaymentProvider{}
 	stubResourceManager := &stubResourceManager{}
@@ -101,16 +106,17 @@ func TestMemberService_Update(t *testing.T) {
 		RFID:           "abc1234",
 	}
 
-	addedMember, _ := memberService.Add(newMember)
+	addedMember, _ := memberService.Add(ctx, newMember)
 	addedMember.Name = "Updated User"
-	err := memberService.Update(addedMember)
+	err := memberService.Update(ctx, addedMember)
 	assert.NoError(t, err)
 
-	updatedMember, _ := memberService.GetByEmail("test@example.com")
+	updatedMember, _ := memberService.GetByEmail(ctx, "test@example.com")
 	assert.Equal(t, "Updated User", updatedMember.Name)
 }
 
 func TestMemberService_AssignRFID(t *testing.T) {
+	ctx := context.Background()
 	mockStore := &in_memory.In_memory{}
 	stubResourceManager := &stubResourceManager{}
 	memberService := member.New(mockStore, stubResourceManager, nil)
@@ -121,15 +127,16 @@ func TestMemberService_AssignRFID(t *testing.T) {
 		RFID:  "abc1234",
 	}
 
-	if _, err := memberService.Add(newMember); err != nil {
+	if _, err := memberService.Add(ctx, newMember); err != nil {
 		t.Error(err)
 	}
-	assignedMember, err := memberService.AssignRFID("test@example.com", "123456")
+	assignedMember, err := memberService.AssignRFID(ctx, "test@example.com", "123456")
 	assert.NoError(t, err)
 	assert.Equal(t, "123456", assignedMember.RFID)
 }
 
 func TestMemberService_GetMemberBySubscriptionID(t *testing.T) {
+	ctx := context.Background()
 	mockStore := &in_memory.In_memory{}
 	mockPaymentProvider := &MockPaymentProvider{}
 	memberService := member.New(mockStore, nil, mockPaymentProvider)
@@ -140,16 +147,17 @@ func TestMemberService_GetMemberBySubscriptionID(t *testing.T) {
 		SubscriptionID: "testSubID",
 	}
 
-	if _, err := memberService.Add(newMember); err != nil {
+	if _, err := memberService.Add(ctx, newMember); err != nil {
 		t.Error(err)
 	}
 
-	member, err := memberService.GetMemberBySubscriptionID("testSubID")
+	member, err := memberService.GetMemberBySubscriptionID(ctx, "testSubID")
 	assert.NoError(t, err)
 	assert.Equal(t, newMember.Email, member.Email)
 }
 
 func TestMemberService_CheckStatus(t *testing.T) {
+	ctx := context.Background()
 	mockStore := &in_memory.In_memory{}
 	mockPaymentProvider := &MockPaymentProvider{}
 	memberService := member.New(mockStore, nil, mockPaymentProvider)
@@ -161,11 +169,11 @@ func TestMemberService_CheckStatus(t *testing.T) {
 		Level:          uint8(models.Standard),
 	}
 
-	if _, err := memberService.Add(newMember); err != nil {
+	if _, err := memberService.Add(ctx, newMember); err != nil {
 		t.Error(err)
 	}
 
-	member, err := memberService.CheckStatus("testSubID")
+	member, err := memberService.CheckStatus(ctx, "testSubID")
 	assert.NoError(t, err)
 	assert.Equal(t, newMember.Email, member.Email)
 }
@@ -176,6 +184,7 @@ func TestMemberService_FindNonMembersOnSlack(t *testing.T) {
 }
 
 func TestMemberService_SetLevel(t *testing.T) {
+	ctx := context.Background()
 	mockStore := &in_memory.In_memory{}
 	memberService := member.New(mockStore, nil, nil)
 
@@ -184,13 +193,13 @@ func TestMemberService_SetLevel(t *testing.T) {
 		Email: "test@example.com",
 	}
 
-	addedMember, err := memberService.Add(newMember)
+	addedMember, err := memberService.Add(ctx, newMember)
 	assert.NoError(t, err)
 
-	err = memberService.SetLevel(addedMember.ID, models.Premium)
+	err = memberService.SetLevel(ctx, addedMember.ID, models.Premium)
 	assert.NoError(t, err)
 
-	updatedMember, _ := memberService.GetByEmail("test@example.com")
+	updatedMember, _ := memberService.GetByEmail(ctx, "test@example.com")
 	assert.Equal(t, uint8(models.Premium), updatedMember.Level)
 }
 

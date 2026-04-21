@@ -13,8 +13,8 @@ import (
 var communicationDbMethod CommunicationDatabaseMethod
 
 // GetCommunnications returns all communications from the database
-func (db *DatabaseStore) GetCommunications() []models.Communication {
-	rows, err := db.pool.Query(context.Background(), communicationDbMethod.getCommunications())
+func (db *DatabaseStore) GetCommunications(ctx context.Context) []models.Communication {
+	rows, err := db.pool.Query(ctx, communicationDbMethod.getCommunications())
 	if err != nil {
 		log.Errorf("GetCommunications failed: %v", err)
 	}
@@ -34,9 +34,9 @@ func (db *DatabaseStore) GetCommunications() []models.Communication {
 }
 
 // GetCommunnication returns all the requested communication from the database
-func (db *DatabaseStore) GetCommunication(name string) (models.Communication, error) {
+func (db *DatabaseStore) GetCommunication(ctx context.Context, name string) (models.Communication, error) {
 	var c models.Communication
-	err := db.pool.QueryRow(context.Background(), communicationDbMethod.getCommunication(), name).
+	err := db.pool.QueryRow(ctx, communicationDbMethod.getCommunication(), name).
 		Scan(&c.ID, &c.Name, &c.Subject, &c.FrequencyThrottle, &c.Template)
 	if err != nil {
 		return c, err
@@ -44,17 +44,17 @@ func (db *DatabaseStore) GetCommunication(name string) (models.Communication, er
 	return c, nil
 }
 
-func (db *DatabaseStore) GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error) {
+func (db *DatabaseStore) GetMostRecentCommunicationToMember(ctx context.Context, memberId string, commId int) (time.Time, error) {
 	var d time.Time
-	err := db.pool.QueryRow(context.Background(), communicationDbMethod.getLastCommunication(), memberId, commId).Scan(&d)
+	err := db.pool.QueryRow(ctx, communicationDbMethod.getLastCommunication(), memberId, commId).Scan(&d)
 	if err != nil {
 		return d, err
 	}
 	return d, nil
 }
 
-func (db *DatabaseStore) LogCommunication(communicationId int, memberId string) error {
-	commandTag, err := db.pool.Exec(context.Background(), communicationDbMethod.insertCommunicationLog(), memberId, communicationId)
+func (db *DatabaseStore) LogCommunication(ctx context.Context, communicationId int, memberId string) error {
+	commandTag, err := db.pool.Exec(ctx, communicationDbMethod.insertCommunicationLog(), memberId, communicationId)
 	if err != nil {
 		return err
 	}

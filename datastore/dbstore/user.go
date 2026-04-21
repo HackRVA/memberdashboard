@@ -12,7 +12,7 @@ import (
 )
 
 // RegisterUser register a user in the db
-func (db *DatabaseStore) RegisterUser(creds models.Credentials) error {
+func (db *DatabaseStore) RegisterUser(ctx context.Context, creds models.Credentials) error {
 	if len(creds.Password) == 0 {
 		return fmt.Errorf("not a valid password")
 	}
@@ -22,7 +22,7 @@ func (db *DatabaseStore) RegisterUser(creds models.Credentials) error {
 	}
 
 	// require the user to be a member
-	_, err := db.GetMemberByEmail(creds.Email)
+	_, err := db.GetMemberByEmail(ctx, creds.Email)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (db *DatabaseStore) RegisterUser(creds models.Credentials) error {
 	}
 
 	// Next, insert the email, along with the hashed password into the database
-	rows, err := db.pool.Query(context.Background(), userDbMethod.registerUser(), creds.Email, string(hashedPassword))
+	rows, err := db.pool.Query(ctx, userDbMethod.registerUser(), creds.Email, string(hashedPassword))
 	if err != nil {
 		return fmt.Errorf("registerUser failed: %s", err)
 	}
@@ -46,12 +46,12 @@ func (db *DatabaseStore) RegisterUser(creds models.Credentials) error {
 }
 
 // UserSignin - user login
-func (db *DatabaseStore) UserSignin(email string, password string) error {
+func (db *DatabaseStore) UserSignin(ctx context.Context, email string, password string) error {
 	// We create another instance of `Credentials` to store the credentials we get from the database
 	storedCreds := &models.Credentials{}
 
 	// Get the existing entry present in the database for the given user
-	row := db.pool.QueryRow(context.Background(), userDbMethod.getUserPassword(), strings.ToLower(email)).Scan(&storedCreds.Password)
+	row := db.pool.QueryRow(ctx, userDbMethod.getUserPassword(), strings.ToLower(email)).Scan(&storedCreds.Password)
 	if row == pgx.ErrNoRows {
 		return fmt.Errorf("Unauthorized")
 	}
@@ -66,10 +66,10 @@ func (db *DatabaseStore) UserSignin(email string, password string) error {
 }
 
 // GetUser returns the currently logged in user
-func (db *DatabaseStore) GetUser(email string) (models.UserResponse, error) {
+func (db *DatabaseStore) GetUser(ctx context.Context, email string) (models.UserResponse, error) {
 	var userResponse models.UserResponse
 
-	row := db.pool.QueryRow(context.Background(), userDbMethod.getUser(), strings.ToLower(email)).Scan(&userResponse.Email)
+	row := db.pool.QueryRow(ctx, userDbMethod.getUser(), strings.ToLower(email)).Scan(&userResponse.Email)
 	if row == pgx.ErrNoRows {
 		return userResponse, fmt.Errorf("error getting user")
 	}

@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
@@ -21,7 +22,7 @@ func (v1 mqttHandler) Open(resource models.Resource) {
 // UpdateResourceACL pulls a resource's accesslist from the DB and pushes it to the resource
 func (v1 mqttHandler) UpdateResourceACL(r models.Resource) error {
 	// get acl for that resource
-	accessList, err := v1.GetResourceACL(r)
+	accessList, err := v1.GetResourceACL(context.Background(), r)
 	if err != nil {
 		return err
 	}
@@ -42,7 +43,7 @@ func (v1 mqttHandler) UpdateResourceACL(r models.Resource) error {
 }
 
 func (v1 mqttHandler) DeleteResourceACL() {
-	resources := v1.GetResources()
+	resources := v1.GetResources(context.Background())
 
 	for _, r := range resources {
 		b, _ := json.Marshal(&models.DeleteMemberRequest{
@@ -64,10 +65,11 @@ func (v1 mqttHandler) CheckStatus(r models.Resource) {
 
 // UpdateResources - publish an MQTT message to add a member to the actual device
 func (v1 mqttHandler) UpdateResources() {
-	resources := v1.GetResources()
+	ctx := context.Background()
+	resources := v1.GetResources(ctx)
 
 	for _, r := range resources {
-		members, _ := v1.GetResourceACLWithMemberInfo(r)
+		members, _ := v1.GetResourceACLWithMemberInfo(ctx, r)
 		for _, m := range members {
 			if m.Level == uint8(models.Inactive) {
 				continue

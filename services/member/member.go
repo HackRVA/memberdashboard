@@ -1,6 +1,7 @@
 package member
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -30,14 +31,14 @@ func New(store datastore.MemberStore, rm services.ResourceUpdater, pp integratio
 	}
 }
 
-func (m memberService) Add(newMember models.Member) (models.Member, error) {
-	createdMember, err := m.store.AddNewMember(newMember.EnsureUpperSubscriptionID())
+func (m memberService) Add(ctx context.Context, newMember models.Member) (models.Member, error) {
+	createdMember, err := m.store.AddNewMember(ctx, newMember.EnsureUpperSubscriptionID())
 	if err != nil {
 		logrus.Error(err)
 	}
 
 	// assignRFID needs to run after the member has been added to the DB
-	memberWithRFID, err := m.AssignRFID(createdMember.Email, createdMember.RFID)
+	memberWithRFID, err := m.AssignRFID(ctx, createdMember.Email, createdMember.RFID)
 	if err != nil {
 		logrus.Error(err)
 	}
@@ -47,53 +48,53 @@ func (m memberService) Add(newMember models.Member) (models.Member, error) {
 	return createdMember, nil
 }
 
-func (m memberService) GetMembersPaginated(limit int, count int, active bool) []models.Member {
-	members, err := m.store.GetMembersPaginated(limit, count, active)
+func (m memberService) GetMembersPaginated(ctx context.Context, limit int, count int, active bool) []models.Member {
+	members, err := m.store.GetMembersPaginated(ctx, limit, count, active)
 	if err != nil {
 		logrus.Error(err)
 	}
 	return members
 }
 
-func (m memberService) GetMemberCount(isActive bool) (int, error) {
-	return m.store.GetMemberCount(isActive)
+func (m memberService) GetMemberCount(ctx context.Context, isActive bool) (int, error) {
+	return m.store.GetMemberCount(ctx, isActive)
 }
 
-func (m memberService) Get() []models.Member {
-	return m.store.GetMembers()
+func (m memberService) Get(ctx context.Context) []models.Member {
+	return m.store.GetMembers(ctx)
 }
 
-func (m memberService) GetByEmail(email string) (models.Member, error) {
-	return m.store.GetMemberByEmail(email)
+func (m memberService) GetByEmail(ctx context.Context, email string) (models.Member, error) {
+	return m.store.GetMemberByEmail(ctx, email)
 }
 
-func (m memberService) Update(member models.Member) error {
-	if _, err := m.CheckStatus(member.SubscriptionID); err != nil {
+func (m memberService) Update(ctx context.Context, member models.Member) error {
+	if _, err := m.CheckStatus(ctx, member.SubscriptionID); err != nil {
 		logrus.Error(err)
 	}
-	return m.store.UpdateMember(member)
+	return m.store.UpdateMember(ctx, member)
 }
 
-func (m memberService) UpdateMemberByID(memberID string, update models.Member) error {
-	return m.store.UpdateMemberByID(memberID, update)
+func (m memberService) UpdateMemberByID(ctx context.Context, memberID string, update models.Member) error {
+	return m.store.UpdateMemberByID(ctx, memberID, update)
 }
 
-func (m memberService) AssignRFID(email string, rfid string) (models.Member, error) {
+func (m memberService) AssignRFID(ctx context.Context, email string, rfid string) (models.Member, error) {
 	if len(rfid) == 0 {
 		return models.Member{}, errors.New("not a valid rfid")
 	}
 
 	m.resourceManager.PushOne(models.Member{Email: email})
-	return m.store.AssignRFID(email, rfid)
+	return m.store.AssignRFID(ctx, email, rfid)
 }
 
-func (ms memberService) GetMemberBySubscriptionID(subscriptionID string) (models.Member, error) {
+func (ms memberService) GetMemberBySubscriptionID(ctx context.Context, subscriptionID string) (models.Member, error) {
 	_, email, err := ms.paymentProvider.GetSubscriber(subscriptionID)
 	if err != nil {
 		return models.Member{}, err
 	}
 
-	m, err := ms.GetByEmail(email)
+	m, err := ms.GetByEmail(ctx, email)
 	if err != nil {
 		return models.Member{}, err
 	}
@@ -106,7 +107,7 @@ func (ms memberService) GetMemberBySubscriptionID(subscriptionID string) (models
 	return m, nil
 }
 
-func (ms memberService) CheckStatus(subscriptionID string) (models.Member, error) {
+func (ms memberService) CheckStatus(ctx context.Context, subscriptionID string) (models.Member, error) {
 	var m models.Member
 
 	if subscriptionID == "none" {
@@ -114,7 +115,7 @@ func (ms memberService) CheckStatus(subscriptionID string) (models.Member, error
 		return m, errors.New("tried to lookup subscriptionID that was 'none'")
 	}
 
-	for _, el := range ms.store.GetMembers() {
+	for _, el := range ms.store.GetMembers(ctx) {
 		if !strings.EqualFold(el.SubscriptionID, subscriptionID) {
 			continue
 		}
@@ -128,21 +129,21 @@ func (ms memberService) CheckStatus(subscriptionID string) (models.Member, error
 
 	statusChecker := NewStatusChecker(m, ms.store, ms.paymentProvider)
 
-	return m, statusChecker.CheckStatus()
+	return m, statusChecker.CheckStatus(ctx)
 }
 
-func (m memberService) GetTiers() []models.Tier {
-	return m.store.GetTiers()
+func (m memberService) GetTiers(ctx context.Context) []models.Tier {
+	return m.store.GetTiers(ctx)
 }
 
-func (m memberService) FindNonMembersOnSlack() []string {
+func (m memberService) FindNonMembersOnSlack(ctx context.Context) []string {
 	var nonMembers []string
 	users, err := slack.GetUsers(config.Get().SlackToken)
 	if err != nil {
 		logger.Errorf("error fetching slack users: %s", err)
 	}
 
-	members := m.Get()
+	members := m.Get(ctx)
 	memberMap := make(map[string]models.Member)
 
 	for _, m := range members {
@@ -166,8 +167,8 @@ func (m memberService) FindNonMembersOnSlack() []string {
 	return nonMembers
 }
 
-func (ms memberService) SetLevel(memberID string, level models.MemberLevel) error {
-	return ms.store.SetMemberLevel(memberID, level)
+func (ms memberService) SetLevel(ctx context.Context, memberID string, level models.MemberLevel) error {
+	return ms.store.SetMemberLevel(ctx, memberID, level)
 }
 
 func (ms memberService) GetMemberFromSubscription(subscriptionID string) (models.Member, error) {
@@ -182,6 +183,6 @@ func (ms memberService) GetMemberFromSubscription(subscriptionID string) (models
 	}, nil
 }
 
-func (ms memberService) GetActiveMembersWithoutSubscription() []models.Member {
-	return ms.store.GetActiveMembersWithoutSubscription()
+func (ms memberService) GetActiveMembersWithoutSubscription(ctx context.Context) []models.Member {
+	return ms.store.GetActiveMembersWithoutSubscription(ctx)
 }

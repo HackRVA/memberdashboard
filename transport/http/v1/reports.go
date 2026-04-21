@@ -32,7 +32,7 @@ func (r *ReportsServer) GetAccessStatsChart(w http.ResponseWriter, req *http.Req
 		}
 	}
 
-	charts, err := r.service.GetAccessStatsChart(d, resourceName)
+	charts, err := r.service.GetAccessStatsChart(req.Context(), d, resourceName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -52,11 +52,11 @@ func (r *ReportsServer) GetMemberCountsCharts(w http.ResponseWriter, req *http.R
 			return
 		}
 
-		ok(w, r.service.GetMemberCountsChartByMonth(date))
+		ok(w, r.service.GetMemberCountsChartByMonth(req.Context(), date))
 		return
 	}
 
-	charts, err := r.service.GetMemberCountsCharts(chartType)
+	charts, err := r.service.GetMemberCountsCharts(req.Context(), chartType)
 	if err != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func (r *ReportsServer) GetMemberCountsCharts(w http.ResponseWriter, req *http.R
 }
 
 func (r *ReportsServer) GetMemberChurn(w http.ResponseWriter, req *http.Request) {
-	churn, err := r.service.GetMemberChurn()
+	churn, err := r.service.GetMemberChurn(req.Context())
 	if err != nil {
 		internalServerError(w, "error getting member churn")
 		return

@@ -12,8 +12,8 @@ import (
 
 var reportsDbMethod ReportsDatabaseMethod
 
-func (db *DatabaseStore) UpdateMemberCounts() {
-	err := db.pool.QueryRow(context.Background(), reportsDbMethod.updateMemberCounts()).Scan()
+func (db *DatabaseStore) UpdateMemberCounts(ctx context.Context) {
+	err := db.pool.QueryRow(ctx, reportsDbMethod.updateMemberCounts()).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
 			log.Errorf("updateMemberCounts failed: %v", err)
@@ -21,10 +21,10 @@ func (db *DatabaseStore) UpdateMemberCounts() {
 	}
 }
 
-func (db *DatabaseStore) GetMemberCounts() ([]models.MemberCount, error) {
+func (db *DatabaseStore) GetMemberCounts(ctx context.Context) ([]models.MemberCount, error) {
 	var memberCounts []models.MemberCount
 
-	rows, err := db.pool.Query(db.ctx, reportsDbMethod.getMemberCounts())
+	rows, err := db.pool.Query(ctx, reportsDbMethod.getMemberCounts())
 	if err != nil {
 		log.Errorf("error getting member counts: %v", err)
 		return memberCounts, err
@@ -45,10 +45,10 @@ func (db *DatabaseStore) GetMemberCounts() ([]models.MemberCount, error) {
 	return memberCounts, nil
 }
 
-func (db *DatabaseStore) GetMemberCountByMonth(month time.Time) (models.MemberCount, error) {
+func (db *DatabaseStore) GetMemberCountByMonth(ctx context.Context, month time.Time) (models.MemberCount, error) {
 	var memberCount models.MemberCount
 
-	err := db.pool.QueryRow(context.Background(), reportsDbMethod.getMemberCountByMonth(), month).Scan(&memberCount.Classic, &memberCount.Standard, &memberCount.Premium, &memberCount.Credited)
+	err := db.pool.QueryRow(ctx, reportsDbMethod.getMemberCountByMonth(), month).Scan(&memberCount.Classic, &memberCount.Standard, &memberCount.Premium, &memberCount.Credited)
 	if err != nil {
 		log.Errorf("etMemberCountByMonth failed: %v", err)
 	}
@@ -56,10 +56,10 @@ func (db *DatabaseStore) GetMemberCountByMonth(month time.Time) (models.MemberCo
 	return memberCount, nil
 }
 
-func (db *DatabaseStore) GetAccessStats(date time.Time, resourceName string) ([]models.AccessStats, error) {
+func (db *DatabaseStore) GetAccessStats(ctx context.Context, date time.Time, resourceName string) ([]models.AccessStats, error) {
 	var stats []models.AccessStats
 
-	rows, err := db.pool.Query(db.ctx, reportsDbMethod.getAccessStats(date, resourceName))
+	rows, err := db.pool.Query(ctx, reportsDbMethod.getAccessStats(date, resourceName))
 	if err != nil {
 		log.Errorf("error getting member counts: %v", err)
 		return stats, err
@@ -80,8 +80,8 @@ func (db *DatabaseStore) GetAccessStats(date time.Time, resourceName string) ([]
 	return stats, nil
 }
 
-func (db *DatabaseStore) GetMemberChurn() (int, error) {
-	rows, err := db.pool.Query(db.ctx, reportsDbMethod.getMemberChurn())
+func (db *DatabaseStore) GetMemberChurn(ctx context.Context) (int, error) {
+	rows, err := db.pool.Query(ctx, reportsDbMethod.getMemberChurn())
 	if err != nil {
 		return -1, fmt.Errorf("error running query: %s", err)
 	}

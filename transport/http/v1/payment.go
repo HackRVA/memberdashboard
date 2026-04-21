@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"context"
+
 	"github.com/HackRVA/memberserver/models"
 	"github.com/HackRVA/memberserver/pkg/paypal/listener"
 )
@@ -37,7 +39,7 @@ func (api API) PaypalSubscriptionWebHook(err error, n *listener.Subscription) {
 
 	api.logger.Printf("member: %v", newMember)
 
-	if err := api.db.ProcessMember(newMember); err != nil {
+	if err := api.db.ProcessMember(context.Background(), newMember); err != nil {
 		api.logger.Error(err)
 	}
 }

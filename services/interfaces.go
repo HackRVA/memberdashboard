@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"time"
 
 	"github.com/HackRVA/memberserver/models"
@@ -13,20 +14,20 @@ import (
 
 type (
 	Member interface {
-		Add(models.Member) (models.Member, error)
-		Get() []models.Member
-		GetMembersPaginated(limit int, offset int, active bool) []models.Member
-		GetMemberCount(isActive bool) (int, error)
-		GetByEmail(email string) (models.Member, error)
-		Update(models.Member) error
-		UpdateMemberByID(memberID string, update models.Member) error
-		AssignRFID(email string, rfid string) (models.Member, error)
-		GetTiers() []models.Tier
-		FindNonMembersOnSlack() []string
+		Add(ctx context.Context, m models.Member) (models.Member, error)
+		Get(ctx context.Context) []models.Member
+		GetMembersPaginated(ctx context.Context, limit int, offset int, active bool) []models.Member
+		GetMemberCount(ctx context.Context, isActive bool) (int, error)
+		GetByEmail(ctx context.Context, email string) (models.Member, error)
+		Update(ctx context.Context, m models.Member) error
+		UpdateMemberByID(ctx context.Context, memberID string, update models.Member) error
+		AssignRFID(ctx context.Context, email string, rfid string) (models.Member, error)
+		GetTiers(ctx context.Context) []models.Tier
+		FindNonMembersOnSlack(ctx context.Context) []string
 		GetMemberFromSubscription(subscriptionID string) (models.Member, error)
-		CheckStatus(subscriptionID string) (models.Member, error)
-		SetLevel(memberID string, level models.MemberLevel) error
-		GetActiveMembersWithoutSubscription() []models.Member
+		CheckStatus(ctx context.Context, subscriptionID string) (models.Member, error)
+		SetLevel(ctx context.Context, memberID string, level models.MemberLevel) error
+		GetActiveMembersWithoutSubscription(ctx context.Context) []models.Member
 	}
 
 	MQTTHandler interface {
@@ -74,15 +75,15 @@ type (
 	}
 
 	Mailer interface {
-		SendCommunication(communication mail.CommunicationTemplate, recipient string, model interface{}) (bool, error)
-		IsThrottled(c models.Communication, member models.Member) bool
+		SendCommunication(ctx context.Context, communication mail.CommunicationTemplate, recipient string, model interface{}) (bool, error)
+		IsThrottled(ctx context.Context, c models.Communication, member models.Member) bool
 	}
 
 	Report interface {
-		GetAccessStatsChart(date time.Time, resourceName string) (models.ReportChart, error)
-		GetMemberChurn() (int, error)
-		GetMemberCountsChartByMonth(date time.Time) models.ReportChart
-		GetMemberCountsCharts(chartType string) ([]models.ReportChart, error)
+		GetAccessStatsChart(ctx context.Context, date time.Time, resourceName string) (models.ReportChart, error)
+		GetMemberChurn(ctx context.Context) (int, error)
+		GetMemberCountsChartByMonth(ctx context.Context, date time.Time) models.ReportChart
+		GetMemberCountsCharts(ctx context.Context, chartType string) ([]models.ReportChart, error)
 	}
 
 	Job interface {

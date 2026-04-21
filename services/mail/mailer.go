@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -41,10 +42,10 @@ type MailApi interface {
 }
 
 type CommunicationDal interface {
-	GetMemberByEmail(memberEmail string) (models.Member, error)
-	GetCommunication(communication string) (models.Communication, error)
-	LogCommunication(communicationId int, memberId string) error
-	GetMostRecentCommunicationToMember(memberId string, commId int) (time.Time, error)
+	GetMemberByEmail(ctx context.Context, memberEmail string) (models.Member, error)
+	GetCommunication(ctx context.Context, communication string) (models.Communication, error)
+	LogCommunication(ctx context.Context, communicationId int, memberId string) error
+	GetMostRecentCommunicationToMember(ctx context.Context, memberId string, commId int) (time.Time, error)
 }
 
 func NewMailer(db CommunicationDal, m MailApi, config config.Config) *mailer {
@@ -57,9 +58,9 @@ func NewMailer(db CommunicationDal, m MailApi, config config.Config) *mailer {
 	return &mailer
 }
 
-func (m *mailer) SendCommunication(communication CommunicationTemplate, recipient string, model interface{}) (bool, error) {
+func (m *mailer) SendCommunication(ctx context.Context, communication CommunicationTemplate, recipient string, model interface{}) (bool, error) {
 	memberExists := true
-	member, err := m.db.GetMemberByEmail(recipient)
+	member, err := m.db.GetMemberByEmail(ctx, recipient)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			memberExists = false
@@ -76,13 +77,13 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 		return false, nil
 	}
 
-	c, err := m.db.GetCommunication(communication.String())
+	c, err := m.db.GetCommunication(ctx, communication.String())
 	if err != nil {
 		log.Printf("%v not found. Err: %v", communication.String(), err)
 		return false, err
 	}
 
-	if memberExists && m.IsThrottled(c, member) {
+	if memberExists && m.IsThrottled(ctx, c, member) {
 		log.Printf("Communication %v not sent to %v due to throttling", communication.String(), recipient)
 		return false, nil
 	}
@@ -104,7 +105,7 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 	}
 
 	if memberExists {
-		if err := m.db.LogCommunication(c.ID, member.ID); err != nil {
+		if err := m.db.LogCommunication(ctx, c.ID, member.ID); err != nil {
 			log.Error(err)
 		}
 	}
@@ -112,9 +113,9 @@ func (m *mailer) SendCommunication(communication CommunicationTemplate, recipien
 	return true, nil
 }
 
-func (m *mailer) IsThrottled(c models.Communication, member models.Member) bool {
+func (m *mailer) IsThrottled(ctx context.Context, c models.Communication, member models.Member) bool {
 	if c.FrequencyThrottle > 0 {
-		last, err := m.db.GetMostRecentCommunicationToMember(member.ID, c.ID)
+		last, err := m.db.GetMostRecentCommunicationToMember(ctx, member.ID, c.ID)
 		if err != nil {
 			return false
 		}

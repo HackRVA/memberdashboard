@@ -10,13 +10,13 @@ import (
 )
 
 func TestLogAccessEvent_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectExec(`INSERT INTO membership\.access_events`).
 		WillReturnResult(pgxmock.NewResult("INSERT", 1))
 
-	err := db.LogAccessEvent(models.LogMessage{
+	err := db.LogAccessEvent(ctx, models.LogMessage{
 		Type:      "access",
 		EventTime: 1700000000,
 		IsKnown:   "true",
@@ -33,26 +33,26 @@ func TestLogAccessEvent_Success(t *testing.T) {
 }
 
 func TestLogAccessEvent_NoRows(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectExec(`INSERT INTO membership\.access_events`).
 		WillReturnResult(pgxmock.NewResult("INSERT", 0))
 
-	err := db.LogAccessEvent(models.LogMessage{Type: "access"})
+	err := db.LogAccessEvent(ctx, models.LogMessage{Type: "access"})
 	if err == nil {
 		t.Fatal("expected error when no rows affected")
 	}
 }
 
 func TestLogAccessEvent_ExecError(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectExec(`INSERT INTO membership\.access_events`).
 		WillReturnError(errors.New("constraint violation"))
 
-	err := db.LogAccessEvent(models.LogMessage{Type: "access"})
+	err := db.LogAccessEvent(ctx, models.LogMessage{Type: "access"})
 	if err == nil {
 		t.Fatal("expected error")
 	}

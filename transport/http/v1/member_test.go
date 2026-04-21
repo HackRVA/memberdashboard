@@ -2,6 +2,7 @@ package v1
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -322,7 +323,7 @@ func TestUpdateMemberSubscriptionID(t *testing.T) {
 		{
 			TestName: "should return a valid response for a valid email",
 			Setup: func() {
-				if _, err := server.MemberService.Add(models.Member{
+				if _, err := server.MemberService.Add(context.Background(), models.Member{
 					Name:           "testUser",
 					Email:          "testUser@email.com",
 					SubscriptionID: "unmodified",

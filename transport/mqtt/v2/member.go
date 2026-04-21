@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
@@ -11,7 +12,8 @@ import (
 )
 
 func (v1 mqttHandler) EnableValidUIDs() {
-	activeMembers, err := v1.GetActiveMembersByResource()
+	ctx := context.Background()
+	activeMembers, err := v1.GetActiveMembersByResource(ctx)
 	if err != nil {
 		logger.Errorf("error getting active members from db %s", err.Error())
 		return
@@ -27,7 +29,7 @@ func (v1 mqttHandler) EnableValidUIDs() {
 }
 
 func (v1 mqttHandler) RemovedInvalidUIDs() {
-	inactiveMembers, err := v1.GetInactiveMembersByResource()
+	inactiveMembers, err := v1.GetInactiveMembersByResource(context.Background())
 	if err != nil {
 		logger.Errorf("error getting inactive members from db %s", err.Error())
 		return
@@ -60,7 +62,7 @@ func (v1 *mqttHandler) OnRemoveInvalidRequestHandler(client mqtt.Client, msg mqt
 
 // PushOne - update one user on the resources
 func (v1 mqttHandler) PushOne(m models.Member) {
-	memberAccess, _ := v1.GetMembersAccess(m)
+	memberAccess, _ := v1.GetMembersAccess(context.Background(), m)
 	for _, m := range memberAccess {
 		b, _ := json.Marshal(&models.MemberRequest{
 			ResourceAddress: m.ResourceAddress,
@@ -76,13 +78,14 @@ func (v1 mqttHandler) PushOne(m models.Member) {
 
 // RemoveOne - remove a member from all resources
 func (v1 mqttHandler) RemoveOne(member models.Member) {
-	member, err := v1.GetMemberByEmail(member.Email)
+	ctx := context.Background()
+	member, err := v1.GetMemberByEmail(ctx, member.Email)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
-	memberAccess, _ := v1.GetMembersAccess(member)
+	memberAccess, _ := v1.GetMembersAccess(ctx, member)
 
 	for _, m := range memberAccess {
 		v1.RemoveMember(models.MemberAccess{

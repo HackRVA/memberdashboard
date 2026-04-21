@@ -1,10 +1,14 @@
 package in_memory
 
-import "github.com/HackRVA/memberserver/models"
+import (
+	"context"
+
+	"github.com/HackRVA/memberserver/models"
+)
 
 var Resources = map[string]models.Resource{}
 
-func (store *In_memory) GetResources() []models.Resource {
+func (store *In_memory) GetResources(ctx context.Context) []models.Resource {
 	resources := []models.Resource{}
 	for _, v := range Resources {
 		resources = append(resources, v)
@@ -12,30 +16,30 @@ func (store *In_memory) GetResources() []models.Resource {
 	return resources
 }
 
-func (store *In_memory) GetResourceACL(models.Resource) ([]string, error) {
+func (store *In_memory) GetResourceACL(ctx context.Context, r models.Resource) ([]string, error) {
 	return []string{}, nil
 }
 
-func (store *In_memory) GetResourceACLWithMemberInfo(models.Resource) ([]models.Member, error) {
+func (store *In_memory) GetResourceACLWithMemberInfo(ctx context.Context, r models.Resource) ([]models.Member, error) {
 	return []models.Member{{
 		ID:   "123",
 		Name: "test",
 	}}, nil
 }
 
-func (store *In_memory) GetMembersAccess(models.Member) ([]models.MemberAccess, error) {
+func (store *In_memory) GetMembersAccess(ctx context.Context, m models.Member) ([]models.MemberAccess, error) {
 	return []models.MemberAccess{}, nil
 }
 
-func (store *In_memory) GetInactiveMembersByResource() ([]models.MemberAccess, error) {
+func (store *In_memory) GetInactiveMembersByResource(ctx context.Context) ([]models.MemberAccess, error) {
 	return []models.MemberAccess{}, nil
 }
 
-func (store *In_memory) GetActiveMembersByResource() ([]models.MemberAccess, error) {
+func (store *In_memory) GetActiveMembersByResource(ctx context.Context) ([]models.MemberAccess, error) {
 	return []models.MemberAccess{}, nil
 }
 
-func (store *In_memory) RegisterResource(name string, address string, isDefault bool) (models.Resource, error) {
+func (store *In_memory) RegisterResource(ctx context.Context, name string, address string, isDefault bool) (models.Resource, error) {
 	Resources[name] = models.Resource{
 		Name:      name,
 		Address:   address,
@@ -45,30 +49,30 @@ func (store *In_memory) RegisterResource(name string, address string, isDefault 
 	return Resources[name], nil
 }
 
-func (store *In_memory) GetResourceByID(ID string) (models.Resource, error) {
+func (store *In_memory) GetResourceByID(ctx context.Context, ID string) (models.Resource, error) {
 	return models.Resource{}, nil
 }
 
-func (store *In_memory) GetResourceByName(resourceName string) (models.Resource, error) {
+func (store *In_memory) GetResourceByName(ctx context.Context, resourceName string) (models.Resource, error) {
 	return models.Resource{}, nil
 }
 
-func (store *In_memory) UpdateResource(res models.Resource) (*models.Resource, error) {
+func (store *In_memory) UpdateResource(ctx context.Context, res models.Resource) (*models.Resource, error) {
 	return &models.Resource{}, nil
 }
 
-func (store *In_memory) DeleteResource(id string) error {
+func (store *In_memory) DeleteResource(ctx context.Context, id string) error {
 	return nil
 }
 
-func (store *In_memory) AddMultipleMembersToResource(emails []string, resourceID string) ([]models.MemberResourceRelation, error) {
+func (store *In_memory) AddMultipleMembersToResource(ctx context.Context, emails []string, resourceID string) ([]models.MemberResourceRelation, error) {
 	return []models.MemberResourceRelation{}, nil
 }
 
-func (store *In_memory) AddUserToDefaultResources(email string) ([]models.MemberResourceRelation, error) {
+func (store *In_memory) AddUserToDefaultResources(ctx context.Context, email string) ([]models.MemberResourceRelation, error) {
 	return []models.MemberResourceRelation{}, nil
 }
 
-func (store *In_memory) RemoveUserFromResource(email string, resourceID string) error {
+func (store *In_memory) RemoveUserFromResource(ctx context.Context, email string, resourceID string) error {
 	return nil
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetMemberCounts_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	jan := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -20,7 +20,7 @@ func TestGetMemberCounts_Success(t *testing.T) {
 			AddRow(jan, 1, 2, 3, 4).
 			AddRow(feb, 5, 6, 7, 8))
 
-	got, err := db.GetMemberCounts()
+	got, err := db.GetMemberCounts(ctx)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -33,20 +33,20 @@ func TestGetMemberCounts_Success(t *testing.T) {
 }
 
 func TestGetMemberCounts_QueryError(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.member_counts`).
 		WillReturnError(errors.New("db down"))
 
-	_, err := db.GetMemberCounts()
+	_, err := db.GetMemberCounts(ctx)
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestGetMemberCountByMonth_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	month := time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC)
@@ -55,7 +55,7 @@ func TestGetMemberCountByMonth_Success(t *testing.T) {
 		WithArgs(month).
 		WillReturnRows(pgxmock.NewRows(cols).AddRow(10, 20, 30, 40))
 
-	got, err := db.GetMemberCountByMonth(month)
+	got, err := db.GetMemberCountByMonth(ctx, month)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -65,7 +65,7 @@ func TestGetMemberCountByMonth_Success(t *testing.T) {
 }
 
 func TestGetMemberChurn_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	jan := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -76,7 +76,7 @@ func TestGetMemberChurn_Success(t *testing.T) {
 			AddRow(feb, 95).
 			AddRow(jan, 100))
 
-	churn, err := db.GetMemberChurn()
+	churn, err := db.GetMemberChurn(ctx)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -86,20 +86,20 @@ func TestGetMemberChurn_Success(t *testing.T) {
 }
 
 func TestGetMemberChurn_QueryError(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.member_counts`).
 		WillReturnError(errors.New("db down"))
 
-	_, err := db.GetMemberChurn()
+	_, err := db.GetMemberChurn(ctx)
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestGetAccessStats_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	day := time.Date(2025, 3, 15, 0, 0, 0, 0, time.UTC)
@@ -108,7 +108,7 @@ func TestGetAccessStats_Success(t *testing.T) {
 		WillReturnRows(pgxmock.NewRows(cols).
 			AddRow(day, "front", 12))
 
-	got, err := db.GetAccessStats(day, "front")
+	got, err := db.GetAccessStats(ctx, day, "front")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

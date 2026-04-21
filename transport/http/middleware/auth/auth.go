@@ -55,7 +55,7 @@ func New(dataStore datastore.DataStore) *AuthController {
 func (a *AuthController) buildValidator() func(ctx context.Context, r *http.Request, userName, password string) (auth.Info, error) {
 	return func(ctx context.Context, r *http.Request, userName, password string) (auth.Info, error) {
 		log.Errorf("signing in: %s", userName)
-		err := a.store.UserSignin(userName, password)
+		err := a.store.UserSignin(ctx, userName, password)
 		if err != nil {
 			log.Errorf("error signing in: %s", err)
 			return nil, fmt.Errorf("invalid credentials")
@@ -64,7 +64,7 @@ func (a *AuthController) buildValidator() func(ctx context.Context, r *http.Requ
 		// we could attach some of their privledges to this return val I think
 
 		// get the user's resources/roles from the db
-		user, _ := a.store.GetMemberByEmail(userName)
+		user, _ := a.store.GetMemberByEmail(ctx, userName)
 		var resources []string
 		for _, resource := range user.Resources {
 			resources = append(resources, resource.Name)
@@ -200,7 +200,7 @@ func (a *AuthController) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = a.store.RegisterUser(models.Credentials{
+	err = a.store.RegisterUser(r.Context(), models.Credentials{
 		Email:    strings.ToLower(creds.Email),
 		Password: creds.Password,
 	})

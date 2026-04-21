@@ -10,14 +10,14 @@ import (
 )
 
 func TestGetUser_Success(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`SELECT email from membership\.users where email=\$1`).
 		WithArgs("alice@example.com").
 		WillReturnRows(pgxmock.NewRows([]string{"email"}).AddRow("alice@example.com"))
 
-	got, err := db.GetUser("Alice@Example.com")
+	got, err := db.GetUser(ctx, "Alice@Example.com")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -27,48 +27,48 @@ func TestGetUser_Success(t *testing.T) {
 }
 
 func TestUserSignin_UnauthorizedOnNoRows(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`SELECT password from membership\.users where email=\$1`).
 		WithArgs("alice@example.com").
 		WillReturnError(pgx.ErrNoRows)
 
-	err := db.UserSignin("Alice@Example.com", "password")
+	err := db.UserSignin(ctx, "Alice@Example.com", "password")
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestRegisterUser_EmptyPassword(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
-	err := db.RegisterUser(models.Credentials{Email: "alice@example.com", Password: ""})
+	err := db.RegisterUser(ctx, models.Credentials{Email: "alice@example.com", Password: ""})
 	if err == nil {
 		t.Fatal("expected error for empty password")
 	}
 }
 
 func TestRegisterUser_EmptyEmail(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
-	err := db.RegisterUser(models.Credentials{Email: "", Password: "secret"})
+	err := db.RegisterUser(ctx, models.Credentials{Email: "", Password: "secret"})
 	if err == nil {
 		t.Fatal("expected error for empty email")
 	}
 }
 
 func TestRegisterUser_MemberLookupFails(t *testing.T) {
-	db, mock := newTestStore(t)
+	db, mock, ctx := newTestStore(t)
 	defer mock.Close()
 
 	mock.ExpectQuery(`FROM membership\.members\s+WHERE LOWER\(email\) = LOWER\(\$1\)`).
 		WithArgs("ghost@example.com").
 		WillReturnError(pgx.ErrNoRows)
 
-	err := db.RegisterUser(models.Credentials{Email: "ghost@example.com", Password: "secret"})
+	err := db.RegisterUser(ctx, models.Credentials{Email: "ghost@example.com", Password: "secret"})
 	if err == nil {
 		t.Fatal("expected error -- member must exist before register")
 	}

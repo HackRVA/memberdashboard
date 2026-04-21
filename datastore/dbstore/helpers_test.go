@@ -7,11 +7,11 @@ import (
 	"github.com/pashagolub/pgxmock"
 )
 
-func newTestStore(t *testing.T) (*DatabaseStore, pgxmock.PgxPoolIface) {
+func newTestStore(t *testing.T) (*DatabaseStore, pgxmock.PgxPoolIface, context.Context) {
 	t.Helper()
 	mock, err := pgxmock.NewPool()
 	if err != nil {
 		t.Fatalf("pgxmock.NewPool: %v", err)
 	}
-	return &DatabaseStore{ctx: context.Background(), pool: mock}, mock
+	return &DatabaseStore{pool: mock}, mock, context.Background()
 }

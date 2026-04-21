@@ -1,6 +1,7 @@
 package jobs
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -41,23 +42,25 @@ func New(db datastore.DataStore, logger logger, member services.Member, resource
 }
 
 func (j JobController) CheckMemberSubscriptions() {
+	ctx := context.Background()
 	j.logger.Infof("[scheduled-job] checking member subscription status")
 	if len(j.config.PaypalURL) == 0 {
 		j.logger.Debug("paypal url isn't set")
 		return
 	}
-	members := j.DataStore.GetMembers()
+	members := j.DataStore.GetMembers(ctx)
 
 	for _, member := range members {
-		if _, err := j.member.CheckStatus(member.SubscriptionID); err != nil {
+		if _, err := j.member.CheckStatus(ctx, member.SubscriptionID); err != nil {
 			j.logger.Errorf("unable to check member status: ", err)
 		}
 	}
 }
 
 func (j JobController) CheckActiveMembersWithoutSubscription() {
+	ctx := context.Background()
 	j.logger.Infof("[scheduled-job] checking active members without subscription")
-	membersWithoutSubscription := j.member.GetActiveMembersWithoutSubscription()
+	membersWithoutSubscription := j.member.GetActiveMembersWithoutSubscription(ctx)
 	if len(membersWithoutSubscription) == 0 {
 		return
 	}
@@ -76,9 +79,10 @@ func (j JobController) CheckActiveMembersWithoutSubscription() {
 }
 
 func (j JobController) CheckResourceInit() {
+	ctx := context.Background()
 	j.logger.Infof("[scheduled-job] setup mqtt subscriptions to resources")
 
-	resources := j.DataStore.GetResources()
+	resources := j.DataStore.GetResources(ctx)
 
 	config, _ := config.Load()
 
@@ -93,9 +97,10 @@ func (j JobController) CheckResourceInit() {
 }
 
 func (j JobController) CheckResourceInterval() {
+	ctx := context.Background()
 	j.logger.Infof("[scheduled-job] checking resource status")
 
-	resources := j.DataStore.GetResources()
+	resources := j.DataStore.GetResources(ctx)
 
 	for _, r := range resources {
 		j.resourceManager.CheckStatus(r)
@@ -105,6 +110,7 @@ func (j JobController) CheckResourceInterval() {
 var IPAddressCache string
 
 func (j JobController) CheckIPAddressInterval() {
+	ctx := context.Background()
 	j.logger.Infof("[scheduled-job] checking ip address")
 
 	resp, err := http.Get("https://icanhazip.com/")
@@ -162,7 +168,7 @@ func (j JobController) CheckIPAddressInterval() {
 	}
 
 	mailer := mail.NewMailer(j.DataStore, j.mailAPI, j.config)
-	if _, err := mailer.SendCommunication(mail.IpChanged, j.config.AdminEmail, ipModel); err != nil {
+	if _, err := mailer.SendCommunication(ctx, mail.IpChanged, j.config.AdminEmail, ipModel); err != nil {
 		j.logger.Error(err)
 	}
 }
@@ -183,6 +189,6 @@ func (j JobController) UpdateResources() {
 }
 
 func (j JobController) UpdateMemberCounts() {
+	j.DataStore.UpdateMemberCounts(context.Background())
 	j.logger.Infof("[scheduled-job] updating member counts")
-	j.DataStore.UpdateMemberCounts()
 }

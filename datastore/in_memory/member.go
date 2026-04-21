@@ -1,6 +1,7 @@
 package in_memory
 
 import (
+	"context"
 	"errors"
 	"sort"
 	"strconv"
@@ -14,11 +15,11 @@ func (i *In_memory) allocMembers() {
 	}
 }
 
-func (i *In_memory) GetTiers() []models.Tier {
+func (i *In_memory) GetTiers(ctx context.Context) []models.Tier {
 	return i.Tiers
 }
 
-func (i *In_memory) GetMembersPaginated(limit int, offset int, active bool) ([]models.Member, error) {
+func (i *In_memory) GetMembersPaginated(ctx context.Context, limit int, offset int, active bool) ([]models.Member, error) {
 	members := MemberMapToSlice(i.Members)
 	var filteredMembers []models.Member
 
@@ -42,11 +43,11 @@ func (i *In_memory) GetMembersPaginated(limit int, offset int, active bool) ([]m
 	return filteredMembers[start:end], nil
 }
 
-func (i *In_memory) GetMembers() []models.Member {
+func (i *In_memory) GetMembers(ctx context.Context) []models.Member {
 	return MemberMapToSlice(i.Members)
 }
 
-func (i *In_memory) GetMemberByEmail(email string) (models.Member, error) {
+func (i *In_memory) GetMemberByEmail(ctx context.Context, email string) (models.Member, error) {
 	println("Member len: ", len(i.Members))
 	for _, k := range i.Members {
 		println(k.Email)
@@ -57,11 +58,11 @@ func (i *In_memory) GetMemberByEmail(email string) (models.Member, error) {
 	return models.Member{}, errors.New("error getting user: not found")
 }
 
-func (i *In_memory) GetMemberByRFID(rfid string) (models.Member, error) {
+func (i *In_memory) GetMemberByRFID(ctx context.Context, rfid string) (models.Member, error) {
 	return models.Member{}, nil
 }
 
-func (i *In_memory) AssignRFID(email string, rfid string) (models.Member, error) {
+func (i *In_memory) AssignRFID(ctx context.Context, email string, rfid string) (models.Member, error) {
 	if len(rfid) == 0 {
 		return models.Member{}, errors.New("not a valid rfid")
 	}
@@ -77,7 +78,7 @@ func (i *In_memory) AssignRFID(email string, rfid string) (models.Member, error)
 	return models.Member{}, errors.New("user not found")
 }
 
-func (i *In_memory) UpdateMember(update models.Member) error {
+func (i *In_memory) UpdateMember(ctx context.Context, update models.Member) error {
 	if len(update.Name) == 0 {
 		return errors.New("fullname is required")
 	}
@@ -94,7 +95,7 @@ func (i *In_memory) UpdateMember(update models.Member) error {
 	return nil
 }
 
-func (i *In_memory) UpdateMemberByID(memberID string, update models.Member) error {
+func (i *In_memory) UpdateMemberByID(ctx context.Context, memberID string, update models.Member) error {
 	for key, m := range i.Members {
 		if m.ID != memberID {
 			continue
@@ -110,7 +111,7 @@ func (i *In_memory) UpdateMemberByID(memberID string, update models.Member) erro
 	return errors.New("unable to update member info")
 }
 
-func (i *In_memory) UpdateMemberBySubscriptionID(subscriptionID string, update models.Member) error {
+func (i *In_memory) UpdateMemberBySubscriptionID(ctx context.Context, subscriptionID string, update models.Member) error {
 	for _, m := range i.Members {
 		if m.SubscriptionID != subscriptionID {
 			continue
@@ -124,7 +125,7 @@ func (i *In_memory) UpdateMemberBySubscriptionID(subscriptionID string, update m
 	return errors.New("unable to update member info")
 }
 
-func (i *In_memory) AddNewMember(newMember models.Member) (models.Member, error) {
+func (i *In_memory) AddNewMember(ctx context.Context, newMember models.Member) (models.Member, error) {
 	i.allocMembers()
 	if newMember.ID == "" {
 		newMember.ID = strconv.Itoa(len(i.Members) + 1)
@@ -133,7 +134,7 @@ func (i *In_memory) AddNewMember(newMember models.Member) (models.Member, error)
 	return newMember, nil
 }
 
-func (i *In_memory) AddMembers(members []models.Member) error {
+func (i *In_memory) AddMembers(ctx context.Context, members []models.Member) error {
 	i.allocMembers()
 	for _, m := range members {
 		if m.ID == "" {
@@ -144,15 +145,15 @@ func (i *In_memory) AddMembers(members []models.Member) error {
 	return nil
 }
 
-func (i *In_memory) GetMembersWithCredit() []models.Member {
+func (i *In_memory) GetMembersWithCredit(ctx context.Context) []models.Member {
 	return []models.Member{}
 }
 
-func (i *In_memory) ProcessMember(newMember models.Member) error {
+func (i *In_memory) ProcessMember(ctx context.Context, newMember models.Member) error {
 	return nil
 }
 
-func (i *In_memory) SetMemberLevel(memberId string, level models.MemberLevel) error {
+func (i *In_memory) SetMemberLevel(ctx context.Context, memberId string, level models.MemberLevel) error {
 	for _, member := range i.Members {
 		if member.ID != memberId {
 			continue
@@ -167,14 +168,14 @@ func (i *In_memory) SetMemberLevel(memberId string, level models.MemberLevel) er
 	}
 	return nil
 }
-func (i *In_memory) ApplyMemberCredits() {}
-func (i *In_memory) UpdateMemberTiers()  {}
+func (i *In_memory) ApplyMemberCredits(ctx context.Context) {}
+func (i *In_memory) UpdateMemberTiers(ctx context.Context)  {}
 
-func (i *In_memory) GetActiveMembersWithoutSubscription() []models.Member {
+func (i *In_memory) GetActiveMembersWithoutSubscription(ctx context.Context) []models.Member {
 	return nil
 }
 
-func (i *In_memory) GetMemberCount(isActive bool) (int, error) {
+func (i *In_memory) GetMemberCount(ctx context.Context, isActive bool) (int, error) {
 	count := 0
 	for _, member := range i.Members {
 		if isActive && member.Level != 1 {

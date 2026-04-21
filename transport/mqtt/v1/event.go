@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -40,7 +41,8 @@ func (v1 mqttHandler) ReceiveHandler(client mqtt.Client, msg mqtt.Message) {
 
 // OnAccessEvent - post the event to slack. This could also get shoved in the DB eventually
 func (v1 mqttHandler) OnAccessEventHandler(payload models.LogMessage) {
-	m, err := v1.GetMemberByRFID(payload.RFID)
+	ctx := context.Background()
+	m, err := v1.GetMemberByRFID(ctx, payload.RFID)
 	if err != nil {
 		logger.Debugf("error with access event: %s \n %v %v", err.Error(), m, payload)
 		// logger.Errorf("swipe on %s of unknown fob: %s", payload.Door, payload.RFID)
@@ -50,7 +52,7 @@ func (v1 mqttHandler) OnAccessEventHandler(payload models.LogMessage) {
 	func(m models.Member, p models.LogMessage) {
 		go v1.notifier.Send(fmt.Sprintf("name: %s, rfid: %s, door: %s, time: %d", m.Name, p.RFID, p.Door, p.EventTime))
 		go func() {
-			if err := v1.LogAccessEvent(models.LogMessage{
+			if err := v1.LogAccessEvent(ctx, models.LogMessage{
 				Type:      p.Type,
 				EventTime: p.EventTime,
 				IsKnown:   p.IsKnown,
