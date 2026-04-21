@@ -187,8 +187,8 @@ func (db *DatabaseStore) AddUserToDefaultResources(email string) ([]models.Membe
 	return memberResources, nil
 }
 
-// GetMemberResourceRelation retrieves a relation of a member and a resource
-func (db *DatabaseStore) GetMemberResourceRelation(m models.Member, r models.Resource) (models.MemberResourceRelation, error) {
+// getMemberResourceRelation retrieves a relation of a member and a resource
+func (db *DatabaseStore) getMemberResourceRelation(m models.Member, r models.Resource) (models.MemberResourceRelation, error) {
 	mr := models.MemberResourceRelation{}
 
 	row := db.pool.QueryRow(db.ctx, resourceDbMethod.getMemberResource(), m.ID, r.ID).Scan(&mr.ID, &mr.MemberID, &mr.ResourceID)
@@ -213,7 +213,7 @@ func (db *DatabaseStore) RemoveUserFromResource(email string, resourceID string)
 		return err
 	}
 
-	memberResource, err = db.GetMemberResourceRelation(m, r)
+	memberResource, err = db.getMemberResourceRelation(m, r)
 	if err != nil {
 		return err
 	}

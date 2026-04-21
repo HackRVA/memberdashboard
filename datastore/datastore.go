@@ -50,7 +50,6 @@ type (
 		DeleteResource(id string) error
 		AddMultipleMembersToResource(emails []string, resourceID string) ([]models.MemberResourceRelation, error)
 		AddUserToDefaultResources(email string) ([]models.MemberResourceRelation, error)
-		GetMemberResourceRelation(m models.Member, r models.Resource) (models.MemberResourceRelation, error)
 		RemoveUserFromResource(email string, resourceID string) error
 		GetResourceACL(r models.Resource) ([]string, error)
 		GetResourceACLWithMemberInfo(r models.Resource) ([]models.Member, error)

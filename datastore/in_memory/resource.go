@@ -69,10 +69,6 @@ func (store *In_memory) AddUserToDefaultResources(email string) ([]models.Member
 	return []models.MemberResourceRelation{}, nil
 }
 
-func (store *In_memory) GetMemberResourceRelation(m models.Member, r models.Resource) (models.MemberResourceRelation, error) {
-	return models.MemberResourceRelation{}, nil
-}
-
 func (store *In_memory) RemoveUserFromResource(email string, resourceID string) error {
 	return nil
 }
