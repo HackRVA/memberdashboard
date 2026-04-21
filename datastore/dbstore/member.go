@@ -11,21 +11,13 @@ import (
 	"github.com/HackRVA/memberserver/models"
 
 	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 )
 
 func (db *DatabaseStore) GetMemberCount(isActive bool) (int, error) {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Errorf("failed to connect to database: %v", err)
-		return 0, err
-	}
-	defer dbPool.Close()
-
 	var count int
 	query := memberDbMethod.getMemberCount(isActive)
-	err = dbPool.QueryRow(db.ctx, query).Scan(&count)
+	err := db.pool.QueryRow(db.ctx, query).Scan(&count)
 	if err != nil {
 		log.Errorf("GetMemberCount query failed: %v", err)
 		return 0, err
@@ -35,16 +27,9 @@ func (db *DatabaseStore) GetMemberCount(isActive bool) (int, error) {
 }
 
 func (db *DatabaseStore) GetMembersPaginated(limit int, page int, active bool) ([]models.Member, error) {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Errorf("failed to connect to database: %v", err)
-		return nil, err
-	}
-	defer dbPool.Close()
-
 	var members []models.Member
 	query := memberDbMethod.getMembersPaginated(active)
-	rows, err := dbPool.Query(db.ctx, query, limit, page*limit)
+	rows, err := db.pool.Query(db.ctx, query, limit, page*limit)
 	if err != nil {
 		log.Errorf("GetMembersPaginated query failed: %v", err)
 		return nil, err
@@ -94,14 +79,8 @@ func (db *DatabaseStore) GetMembersPaginated(limit int, page int, active bool) (
 }
 
 func (db *DatabaseStore) GetMembers() []models.Member {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
 	var members []models.Member
-	rows, err := dbPool.Query(db.ctx, memberDbMethod.getMember())
+	rows, err := db.pool.Query(db.ctx, memberDbMethod.getMember())
 	if err != nil {
 		log.Errorf("GetMembers failed: %v", err)
 	}
@@ -159,16 +138,10 @@ func (db *DatabaseStore) getMemberBySubscriptionID(subscriptionID string) (model
 
 // GetMemberByEmail - lookup a member by their email address
 func (db *DatabaseStore) GetMemberByEmail(memberEmail string) (models.Member, error) {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
 	var member models.Member
 	var rIDs []string
 
-	err = dbPool.QueryRow(context.Background(), memberDbMethod.getMemberByEmail(), memberEmail).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
+	err := db.pool.QueryRow(context.Background(), memberDbMethod.getMemberByEmail(), memberEmail).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
 	if err == pgx.ErrNoRows {
 		return member, err
 	}
@@ -203,16 +176,10 @@ func (db *DatabaseStore) GetMemberByEmail(memberEmail string) (models.Member, er
 }
 
 func (db *DatabaseStore) GetMemberByRFID(rfid string) (models.Member, error) {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
 	var member models.Member
 	var rIDs []string
 
-	err = dbPool.QueryRow(context.Background(), memberDbMethod.getMemberByRFID(), rfid).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
+	err := db.pool.QueryRow(context.Background(), memberDbMethod.getMemberByRFID(), rfid).Scan(&member.ID, &member.Name, &member.Email, &member.RFID, &member.Level, &rIDs)
 	if err == pgx.ErrNoRows {
 		return member, err
 	}
@@ -225,19 +192,13 @@ func (db *DatabaseStore) GetMemberByRFID(rfid string) (models.Member, error) {
 }
 
 func (db *DatabaseStore) AssignRFID(email string, rfid string) (models.Member, error) {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
 	member, err := db.GetMemberByEmail(email)
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())
 		return member, err
 	}
 
-	err = dbPool.QueryRow(context.Background(), memberDbMethod.setMemberRFIDTag(), email, encodeRFID(rfid)).Scan(&member.RFID)
+	err = db.pool.QueryRow(context.Background(), memberDbMethod.setMemberRFIDTag(), email, encodeRFID(rfid)).Scan(&member.RFID)
 	if err != nil {
 		return member, fmt.Errorf("AssignRFID failed: %v", err)
 	}
@@ -246,12 +207,6 @@ func (db *DatabaseStore) AssignRFID(email string, rfid string) (models.Member, e
 }
 
 func (db *DatabaseStore) UpdateMember(update models.Member) error {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
 	member, err := db.GetMemberByEmail(update.Email)
 	if err != nil {
 		log.Errorf("error retrieving a member with that email address %s", err.Error())
@@ -263,7 +218,7 @@ func (db *DatabaseStore) UpdateMember(update models.Member) error {
 		subID = update.SubscriptionID
 	}
 
-	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.updateMemberByEmail(), update.Name, subID, member.Email)
+	commandTag, err := db.pool.Exec(context.Background(), memberDbMethod.updateMemberByEmail(), update.Name, subID, member.Email)
 	if err != nil {
 		return fmt.Errorf("UpdateMemberByEmail failed: %v", err)
 	}
@@ -276,13 +231,7 @@ func (db *DatabaseStore) UpdateMember(update models.Member) error {
 }
 
 func (db *DatabaseStore) UpdateMemberByID(memberID string, update models.Member) error {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.updateMemberByID(), update.Name, update.Email, update.SubscriptionID, memberID)
+	commandTag, err := db.pool.Exec(context.Background(), memberDbMethod.updateMemberByID(), update.Name, update.Email, update.SubscriptionID, memberID)
 	if err != nil {
 		return fmt.Errorf("UpdateMemberByID failed: %v", err)
 	}
@@ -295,13 +244,7 @@ func (db *DatabaseStore) UpdateMemberByID(memberID string, update models.Member)
 }
 
 func (db *DatabaseStore) UpdateMemberBySubscriptionID(subscriptionID string, update models.Member) error {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.updateMemberBySubscriptionID(), update.Name, update.Email, subscriptionID)
+	commandTag, err := db.pool.Exec(context.Background(), memberDbMethod.updateMemberBySubscriptionID(), update.Name, update.Email, subscriptionID)
 	if err != nil {
 		return fmt.Errorf("UpdateMemberBySubscriptionID failed: %v", err)
 	}
@@ -323,13 +266,7 @@ func (db *DatabaseStore) AddNewMember(newMember models.Member) (models.Member, e
 
 // GetMemberTiers - gets the member tiers from DB
 func (db *DatabaseStore) GetTiers() []models.Tier {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	rows, err := dbPool.Query(context.Background(), tierDbMethod.getMemberTiers())
+	rows, err := db.pool.Query(context.Background(), tierDbMethod.getMemberTiers())
 	if err != nil {
 		log.Errorf("GetTiers failed: %v", err)
 	}
@@ -356,13 +293,7 @@ var memberDbMethod MemberDatabaseMethod
 //	if a member exists in the member_credits table
 //	they are credited a membership
 func (db *DatabaseStore) GetMembersWithCredit() []models.Member {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	rows, err := dbPool.Query(db.ctx, memberDbMethod.getMembersWithCredit())
+	rows, err := db.pool.Query(db.ctx, memberDbMethod.getMembersWithCredit())
 	if err != nil {
 		log.Errorf("error getting credited members: %v", err)
 	}
@@ -386,12 +317,6 @@ func (db *DatabaseStore) GetMembersWithCredit() []models.Member {
 
 // AddMembers adds multiple members to the DatabaseStore
 func (db *DatabaseStore) AddMembers(members []models.Member) error {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
 	sqlStr := `INSERT INTO membership.members(
 name, email, member_tier_id, subscription_id)
 VALUES `
@@ -412,7 +337,7 @@ VALUES `
 
 	str := strings.Join(valStr, ",")
 
-	commandTag, err := dbPool.Exec(context.Background(), sqlStr+str+"ON CONFLICT DO NOTHING;")
+	commandTag, err := db.pool.Exec(context.Background(), sqlStr+str+"ON CONFLICT DO NOTHING;")
 	if err != nil {
 		return fmt.Errorf("add members query failed: %v", err)
 	}
@@ -452,16 +377,10 @@ func (db *DatabaseStore) ProcessMember(newMember models.Member) error {
 }
 
 func (db *DatabaseStore) updateMemberName(memberID string, newMember models.Member) error {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
 	var member models.Member
 
 	// if the member already exists, we might want to update their name.
-	err = dbPool.QueryRow(context.Background(), memberDbMethod.updateMemberName(), memberID, newMember.Name).Scan(&member.Name)
+	err := db.pool.QueryRow(context.Background(), memberDbMethod.updateMemberName(), memberID, newMember.Name).Scan(&member.Name)
 	if err != nil {
 		return fmt.Errorf("updateMemberName failed: %v", err)
 	}
@@ -470,16 +389,10 @@ func (db *DatabaseStore) updateMemberName(memberID string, newMember models.Memb
 }
 
 func (db *DatabaseStore) updateSubscriptionID(memberID string, newMember models.Member) error {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
 	var member models.Member
 
 	// if the member already exists, we might want to update their name.
-	err = dbPool.QueryRow(context.Background(), memberDbMethod.updateMemberSubscriptionID(), memberID, newMember.SubscriptionID).Scan(&member.SubscriptionID)
+	err := db.pool.QueryRow(context.Background(), memberDbMethod.updateMemberSubscriptionID(), memberID, newMember.SubscriptionID).Scan(&member.SubscriptionID)
 	if err != nil {
 		return fmt.Errorf("updateSubscriptionID failed: %v", err)
 	}
@@ -489,13 +402,7 @@ func (db *DatabaseStore) updateSubscriptionID(memberID string, newMember models.
 
 // SetMemberLevel sets a member's membership tier
 func (db *DatabaseStore) SetMemberLevel(memberId string, level models.MemberLevel) error {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	rows, err := dbPool.Query(context.Background(), memberDbMethod.updateMembershipLevel(), memberId, level)
+	rows, err := db.pool.Query(context.Background(), memberDbMethod.updateMembershipLevel(), memberId, level)
 	if err != nil {
 		log.Errorf("Set member level failed: %v", err)
 		return err
@@ -518,13 +425,7 @@ func (db *DatabaseStore) ApplyMemberCredits() {
 
 // UpdateMemberTiers updates member tiers based on the most recent payment amount
 func (db *DatabaseStore) UpdateMemberTiers() {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	commandTag, err := dbPool.Exec(context.Background(), memberDbMethod.updateMemberTiers())
+	commandTag, err := db.pool.Exec(context.Background(), memberDbMethod.updateMemberTiers())
 	if err != nil {
 		log.Errorf("add members query failed: %v", err)
 	}
@@ -534,14 +435,8 @@ func (db *DatabaseStore) UpdateMemberTiers() {
 }
 
 func (db *DatabaseStore) GetActiveMembersWithoutSubscription() []models.Member {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
 	var members []models.Member
-	rows, err := dbPool.Query(db.ctx, memberDbMethod.getActiveMembersWithoutSubscription())
+	rows, err := db.pool.Query(db.ctx, memberDbMethod.getActiveMembersWithoutSubscription())
 	if err != nil {
 		log.Errorf("GetMembers failed: %v", err)
 	}

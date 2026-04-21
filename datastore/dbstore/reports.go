@@ -7,20 +7,13 @@ import (
 
 	"github.com/HackRVA/memberserver/models"
 
-	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 )
 
 var reportsDbMethod ReportsDatabaseMethod
 
 func (db *DatabaseStore) UpdateMemberCounts() {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	err = dbPool.QueryRow(context.Background(), reportsDbMethod.updateMemberCounts()).Scan()
+	err := db.pool.QueryRow(context.Background(), reportsDbMethod.updateMemberCounts()).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
 			log.Errorf("updateMemberCounts failed: %v", err)
@@ -31,13 +24,7 @@ func (db *DatabaseStore) UpdateMemberCounts() {
 func (db *DatabaseStore) GetMemberCounts() ([]models.MemberCount, error) {
 	var memberCounts []models.MemberCount
 
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	rows, err := dbPool.Query(db.ctx, reportsDbMethod.getMemberCounts())
+	rows, err := db.pool.Query(db.ctx, reportsDbMethod.getMemberCounts())
 	if err != nil {
 		log.Errorf("error getting member counts: %v", err)
 		return memberCounts, err
@@ -61,13 +48,7 @@ func (db *DatabaseStore) GetMemberCounts() ([]models.MemberCount, error) {
 func (db *DatabaseStore) GetMemberCountByMonth(month time.Time) (models.MemberCount, error) {
 	var memberCount models.MemberCount
 
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	err = dbPool.QueryRow(context.Background(), reportsDbMethod.getMemberCountByMonth(), month).Scan(&memberCount.Classic, &memberCount.Standard, &memberCount.Premium, &memberCount.Credited)
+	err := db.pool.QueryRow(context.Background(), reportsDbMethod.getMemberCountByMonth(), month).Scan(&memberCount.Classic, &memberCount.Standard, &memberCount.Premium, &memberCount.Credited)
 	if err != nil {
 		log.Errorf("etMemberCountByMonth failed: %v", err)
 	}
@@ -78,13 +59,7 @@ func (db *DatabaseStore) GetMemberCountByMonth(month time.Time) (models.MemberCo
 func (db *DatabaseStore) GetAccessStats(date time.Time, resourceName string) ([]models.AccessStats, error) {
 	var stats []models.AccessStats
 
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-	}
-	defer dbPool.Close()
-
-	rows, err := dbPool.Query(db.ctx, reportsDbMethod.getAccessStats(date, resourceName))
+	rows, err := db.pool.Query(db.ctx, reportsDbMethod.getAccessStats(date, resourceName))
 	if err != nil {
 		log.Errorf("error getting member counts: %v", err)
 		return stats, err
@@ -106,14 +81,7 @@ func (db *DatabaseStore) GetAccessStats(date time.Time, resourceName string) ([]
 }
 
 func (db *DatabaseStore) GetMemberChurn() (int, error) {
-	dbPool, err := pgxpool.Connect(db.ctx, db.connectionString)
-	if err != nil {
-		log.Printf("got error: %v\n", err)
-		return -1, fmt.Errorf("error connecting to DB: %s", err)
-	}
-	defer dbPool.Close()
-
-	rows, err := dbPool.Query(db.ctx, reportsDbMethod.getMemberChurn())
+	rows, err := db.pool.Query(db.ctx, reportsDbMethod.getMemberChurn())
 	if err != nil {
 		return -1, fmt.Errorf("error running query: %s", err)
 	}
