@@ -134,17 +134,6 @@ func (i *In_memory) AddNewMember(ctx context.Context, newMember models.Member) (
 	return newMember, nil
 }
 
-func (i *In_memory) AddMembers(ctx context.Context, members []models.Member) error {
-	i.allocMembers()
-	for _, m := range members {
-		if m.ID == "" {
-			m.ID = strconv.Itoa(len(i.Members) + 1)
-		}
-		i.Members[m.Email] = m
-	}
-	return nil
-}
-
 func (i *In_memory) GetMembersWithCredit(ctx context.Context) []models.Member {
 	return []models.Member{}
 }

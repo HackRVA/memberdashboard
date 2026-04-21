@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/HackRVA/memberserver/services/logger"
 
@@ -257,10 +256,25 @@ func (db *DatabaseStore) UpdateMemberBySubscriptionID(ctx context.Context, subsc
 }
 
 func (db *DatabaseStore) AddNewMember(ctx context.Context, newMember models.Member) (models.Member, error) {
-	err := db.AddMembers(ctx, []models.Member{newMember})
-	if err != nil {
-		return models.Member{}, err
+	// Give new members standard access at first; their actual status will be
+	// evaluated on the next scheduled status check.
+	if newMember.Level == 0 {
+		newMember.Level = uint8(models.Standard)
 	}
+
+	commandTag, err := db.pool.Exec(ctx, memberDbMethod.insertMember(),
+		newMember.Name, newMember.Email, newMember.Level, newMember.SubscriptionID)
+	if err != nil {
+		return models.Member{}, fmt.Errorf("AddNewMember query failed: %v", err)
+	}
+	if commandTag.RowsAffected() == 0 {
+		return models.Member{}, errors.New("no row affected")
+	}
+
+	if _, err := db.AddUserToDefaultResources(ctx, newMember.Email); err != nil {
+		log.Error(err)
+	}
+
 	return newMember, nil
 }
 
@@ -315,52 +329,13 @@ func (db *DatabaseStore) GetMembersWithCredit(ctx context.Context) []models.Memb
 	return members
 }
 
-// AddMembers adds multiple members to the DatabaseStore
-func (db *DatabaseStore) AddMembers(ctx context.Context, members []models.Member) error {
-	sqlStr := `INSERT INTO membership.members(
-name, email, member_tier_id, subscription_id)
-VALUES `
-
-	var valStr []string
-	for _, m := range members {
-		// postgres doesn't like apostrophes
-		memberName := strings.ReplaceAll(m.Name, "'", "''")
-
-		// Give new members standard access at first
-		//   Their actual status will be evaluated the next day
-		if m.Level == 0 {
-			m.Level = uint8(models.Standard)
-		}
-
-		valStr = append(valStr, fmt.Sprintf("('%s', '%s', %d, '%s')", memberName, m.Email, m.Level, m.SubscriptionID))
-	}
-
-	str := strings.Join(valStr, ",")
-
-	commandTag, err := db.pool.Exec(ctx, sqlStr+str+"ON CONFLICT DO NOTHING;")
-	if err != nil {
-		return fmt.Errorf("add members query failed: %v", err)
-	}
-	if commandTag.RowsAffected() == 0 {
-		return errors.New("no row affected")
-	}
-
-	for _, m := range members {
-		log.Info("Adding default resource")
-		if _, err := db.AddUserToDefaultResources(ctx, m.Email); err != nil {
-			log.Error(err)
-		}
-	}
-
-	return err
-}
-
 // ProcessMember - add them member if they don't already exist.  Otherwise, make sure we have their name
 func (db *DatabaseStore) ProcessMember(ctx context.Context, newMember models.Member) error {
 	member, err := db.GetMemberByEmail(ctx, newMember.Email)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return db.AddMembers(ctx, []models.Member{newMember})
+			_, addErr := db.AddNewMember(ctx, newMember)
+			return addErr
 		}
 		return err
 	}

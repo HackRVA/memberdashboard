@@ -29,7 +29,6 @@ type (
 		GetMemberByEmail(ctx context.Context, email string) (models.Member, error)
 		AssignRFID(ctx context.Context, email string, rfid string) (models.Member, error)
 		AddNewMember(ctx context.Context, newMember models.Member) (models.Member, error)
-		AddMembers(ctx context.Context, members []models.Member) error
 		GetMembersWithCredit(ctx context.Context) []models.Member
 		ProcessMember(ctx context.Context, newMember models.Member) error
 		GetMemberByRFID(ctx context.Context, rfid string) (models.Member, error)

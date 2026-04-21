@@ -62,6 +62,12 @@ func (member *MemberDatabaseMethod) getMembersWithCredit() string {
 	return getMembersWithCreditQuery
 }
 
+func (member *MemberDatabaseMethod) insertMember() string {
+	return `INSERT INTO membership.members(name, email, member_tier_id, subscription_id)
+	VALUES ($1, $2, $3, $4)
+	ON CONFLICT DO NOTHING;`
+}
+
 func (member *MemberDatabaseMethod) getMemberByEmail() string {
 	const getMemberByEmailQuery = `SELECT id, name, LOWER(email), COALESCE(rfid,'notset'), member_tier_id,
 	ARRAY(

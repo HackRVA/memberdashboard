@@ -19,13 +19,13 @@ func Seed(db datastore.DataStore, numMembers int) {
 
 	FakeResources(db)
 
-	if err := db.AddMembers(ctx, []models.Member{TestMember()}); err != nil {
+	if _, err := db.AddNewMember(ctx, TestMember()); err != nil {
 		log.Errorf("error adding test members: %s", err)
 	}
 
 	for i := 0; i < numMembers; i++ {
 		member := FakeMember(rng)
-		if err := db.AddMembers(ctx, []models.Member{member}); err != nil {
+		if _, err := db.AddNewMember(ctx, member); err != nil {
 			log.Errorf("error adding test members: %s", err)
 		}
 		log.Printf("Added member %v", member.Name)
