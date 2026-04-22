@@ -99,4 +99,5 @@ func (r API) SetupRoutes() {
 	r.authedRouter.HandleFunc("/auth/logout", r.Logout).Methods(http.MethodDelete)
 	r.unAuthedRouter.HandleFunc("/api/auth/register", r.RegisterUser)
 	r.unAuthedRouter.HandleFunc("/api/version", r.Version)
+	r.unAuthedRouter.HandleFunc("/api/resource/status/{name}", r.ResourceStatus).Methods(http.MethodGet)
 }

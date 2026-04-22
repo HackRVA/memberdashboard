@@ -3,12 +3,17 @@ package v1
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	config "github.com/HackRVA/memberserver/configs"
 	"github.com/HackRVA/memberserver/datastore"
+	"github.com/HackRVA/memberserver/datastore/dbstore"
 	"github.com/HackRVA/memberserver/models"
 	"github.com/HackRVA/memberserver/services"
+	"github.com/gorilla/mux"
 )
+
+const resourceHeartbeatTTL = 30 * time.Minute
 
 type resourceAPI struct {
 	db              datastore.DataStore
@@ -212,4 +217,30 @@ func (rs resourceAPI) DeleteResourceACL(w http.ResponseWriter, req *http.Request
 	ok(w, models.EndpointSuccess{
 		Ack: true,
 	})
+}
+
+// ResourceStatus is an unauthenticated monitoring endpoint that reports
+// whether a named resource has heartbeated recently. Body is "ok" on 200
+// and "offline" on 503 so it's friendly to simple uptime-style probes.
+func (rs resourceAPI) ResourceStatus(w http.ResponseWriter, req *http.Request) {
+	name := mux.Vars(req)["name"]
+	if name == "" {
+		http.Error(w, "resource name required", http.StatusBadRequest)
+		return
+	}
+
+	resource, err := rs.db.GetResourceByName(req.Context(), name)
+	if err != nil {
+		http.Error(w, "resource not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	if time.Since(dbstore.GetLastHeartbeat(resource)) > resourceHeartbeatTTL {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_, _ = w.Write([]byte("offline"))
+		return
+	}
+
+	_, _ = w.Write([]byte("ok"))
 }

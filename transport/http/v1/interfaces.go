@@ -54,6 +54,7 @@ type ResourceHTTPHandler interface {
 	RemoveMember(w http.ResponseWriter, req *http.Request)
 	Register(w http.ResponseWriter, req *http.Request)
 	Status(w http.ResponseWriter, req *http.Request)
+	ResourceStatus(w http.ResponseWriter, req *http.Request)
 	UpdateResourceACL(w http.ResponseWriter, req *http.Request)
 	Open(w http.ResponseWriter, req *http.Request)
 	DeleteResourceACL(w http.ResponseWriter, req *http.Request)
