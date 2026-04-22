@@ -84,8 +84,16 @@ func (m memberService) AssignRFID(ctx context.Context, email string, rfid string
 		return models.Member{}, errors.New("not a valid rfid")
 	}
 
+	// PushOne reads the RFID from the DB and broadcasts it to the door
+	// resources over MQTT
+	// the DB write must land first or the doors
+	// will be told the old RFID and the new fob won't open anything.
+	member, err := m.store.AssignRFID(ctx, email, rfid)
+	if err != nil {
+		return models.Member{}, err
+	}
 	m.resourceManager.PushOne(models.Member{Email: email})
-	return m.store.AssignRFID(ctx, email, rfid)
+	return member, nil
 }
 
 func (ms memberService) GetMemberBySubscriptionID(ctx context.Context, subscriptionID string) (models.Member, error) {
