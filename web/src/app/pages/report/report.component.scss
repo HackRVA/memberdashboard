@@ -1,36 +1,268 @@
 @import "colors";
 @import "breakpoints";
 
-h2 {
-  text-align: center;
-  padding-top: 24px;
-  padding-bottom: 24px;
+:host {
+  display: block;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 36px clamp(16px, 4vw, 48px) 56px;
   color: var(--text-color);
+}
 
-  .pos {
-    color: $md-success;
-  }
+.report-header {
+  margin-bottom: 28px;
 
-  .neg {
-    color: $md-error;
+  h1 {
+    margin: 2px 0 6px;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
   }
 }
 
-.chart-container {
+.eyebrow {
+  margin: 0;
+  color: $md-primary-dark;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.subtitle,
+.summary-detail {
+  color: color-mix(in srgb, var(--text-color) 62%, transparent);
+}
+
+.subtitle {
+  margin: 0;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.summary-card,
+.chart-card {
+  border: 1px solid color-mix(in srgb, var(--text-color) 12%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--text-color) 3%, transparent);
+}
+
+.summary-card {
+  display: grid;
+  gap: 5px;
+  padding: 22px 24px;
+
+  strong {
+    font-size: 2.15rem;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.summary-label {
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.positive {
+  color: $md-success;
+}
+
+.negative {
+  color: $md-error;
+}
+
+.chart-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.chart-card {
+  min-width: 0;
+  padding: 24px;
+}
+
+.chart-heading {
   display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  min-height: 58px;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+
+  h2 {
+    margin: 4px 0 0;
+    font-size: 1.2rem;
+  }
 
   button {
-    float: right;
-    margin-bottom: 24px;
+    flex: 0 0 auto;
+    border-radius: 999px;
   }
 }
 
-::ng-deep button.mat-mdc-menu-item {
-  display: flex;
-  place-content: center;
-  width: 143px;
+.chart {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+:host ::ng-deep {
+  .donut-slice {
+    cursor: pointer;
+    stroke: color-mix(in srgb, var(--text-color) 8%, transparent);
+    stroke-width: 1.5px;
+
+    &.active,
+    &:focus {
+      outline: none;
+      filter: brightness(1.12);
+      stroke: var(--text-color);
+    }
+  }
+
+  .donut-total {
+    fill: var(--text-color);
+    font-size: 1.9rem;
+    font-weight: 750;
+  }
+
+  .donut-caption,
+  .chart-legend,
+  .chart-axis,
+  .empty-chart {
+    fill: color-mix(in srgb, var(--text-color) 66%, transparent);
+    font-size: 0.76rem;
+  }
+
+  .chart-axis path,
+  .chart-axis line {
+    stroke: color-mix(in srgb, var(--text-color) 14%, transparent);
+  }
+
+  .grid-lines path {
+    display: none;
+  }
+
+  .grid-lines line {
+    stroke: color-mix(in srgb, var(--text-color) 7%, transparent);
+  }
+
+  .total-line {
+    fill: none;
+    stroke: color-mix(in srgb, var(--text-color) 58%, $md-primary-dark);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2.5px;
+  }
+
+  .latest-point {
+    fill: white;
+    stroke: $md-primary-dark;
+    stroke-width: 2px;
+  }
+
+  .latest-label {
+    fill: color-mix(in srgb, var(--text-color) 76%, $md-primary-dark);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .tier-segment {
+    cursor: pointer;
+    stroke: color-mix(in srgb, var(--body-background-color) 70%, transparent);
+    stroke-width: 1px;
+
+    &.active,
+    &:focus {
+      outline: none;
+      filter: brightness(1.16);
+      stroke: var(--text-color);
+      stroke-width: 2px;
+    }
+  }
+
+  .tier-legend text {
+    fill: color-mix(in srgb, var(--text-color) 72%, transparent);
+  }
+
+  .zero-line {
+    stroke: color-mix(in srgb, var(--text-color) 48%, transparent);
+    stroke-width: 1.5px;
+  }
+
+  .net-change-bar {
+    cursor: pointer;
+
+    &.gain {
+      fill: color-mix(in srgb, $md-success 86%, white);
+    }
+
+    &.loss {
+      fill: color-mix(in srgb, $md-error 88%, white);
+    }
+
+    &.flat {
+      fill: #7c8796;
+    }
+
+    &.active,
+    &:focus {
+      outline: none;
+      filter: brightness(1.12);
+      stroke: var(--text-color);
+      stroke-width: 2px;
+    }
+  }
+
+  .chart-tooltip {
+    position: absolute;
+    z-index: 2;
+    max-width: 180px;
+    padding: 9px 11px;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 9px;
+    background: #1c2430;
+    color: white;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%);
+    transition: opacity 100ms ease;
+  }
+}
+
+@media #{$XSmall} {
+  :host {
+    padding-top: 24px;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    padding: 18px 14px;
+  }
+
+  .chart-heading {
+    align-items: center;
+
+    h2 {
+      font-size: 1.05rem;
+    }
+  }
 }

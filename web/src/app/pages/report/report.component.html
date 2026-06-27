@@ -1,32 +1,70 @@
-<h2>
-  Member Churn: @if (memberChurn > 0) {
-  <span class="pos"> {{ memberChurn }} </span>
-  } @else if(memberChurn < 0) {
-  <span class="neg"> {{ memberChurn }} </span>
-  } @else {
-  {{ memberChurn }}
-  }
-</h2>
-<div class="chart-container">
-  <section>
-    <button mat-raised-button [matMenuTriggerFor]="menu">Select a month</button>
-    <div #distribution></div>
-    <mat-menu #menu="matMenu">
-      <ng-template matMenuContent>
-        @for (monthlyDistributionData of membershipDistributionData; track
-        $index) {
+<header class="report-header">
+  <div>
+    <p class="eyebrow">Membership analytics</p>
+    <h1>Reports</h1>
+    <p class="subtitle">
+      These figures are rough estimates. The treasurer account is typically more accurate.
+    </p>
+  </div>
+</header>
 
-        <button
-          mat-menu-item
-          (click)="updateMembershipDistributionChart(monthlyDistributionData)"
-        >
+<section class="summary-grid" aria-label="Membership summary">
+  <article class="summary-card">
+    <span class="summary-label">Current members</span>
+    <strong>{{ currentMemberCount }}</strong>
+    <span class="summary-detail">Latest recorded month</span>
+  </article>
+  <article class="summary-card">
+    <span class="summary-label">Monthly net change</span>
+    <strong [class.positive]="memberChurn > 0" [class.negative]="memberChurn < 0">
+      {{ memberChurn > 0 ? '+' : '' }}{{ memberChurn }}
+    </strong>
+    <span class="summary-detail">
+      @if (memberChurn > 0) { Membership grew } @else if (memberChurn < 0) {
+      Membership declined } @else { No change }
+    </span>
+  </article>
+</section>
+
+<div class="chart-grid">
+  <section class="chart-card distribution-card">
+    <div class="chart-heading">
+      <div>
+        <p class="eyebrow">Composition</p>
+        <h2>Membership distribution</h2>
+      </div>
+      <button mat-stroked-button [matMenuTriggerFor]="menu">
+        {{ selectedMonth }}
+        <span aria-hidden="true">⌄</span>
+      </button>
+    </div>
+    <div #distribution class="chart" aria-live="polite"></div>
+    <mat-menu #menu="matMenu">
+      @for (monthlyDistributionData of membershipDistributionData; track monthlyDistributionData.options.title) {
+        <button mat-menu-item (click)="updateMembershipDistributionChart(monthlyDistributionData)">
           {{ monthlyDistributionData.options.title }}
         </button>
-        }
-      </ng-template>
+      }
     </mat-menu>
   </section>
-  <section>
-    <div #trend></div>
+
+  <section class="chart-card tier-history-card">
+    <div class="chart-heading">
+      <div>
+        <p class="eyebrow">Tier history</p>
+        <h2>Membership mix and total over time</h2>
+      </div>
+    </div>
+    <div #tierHistory class="chart tier-history-chart" aria-live="polite"></div>
+  </section>
+
+  <section class="chart-card net-change-card">
+    <div class="chart-heading">
+      <div>
+        <p class="eyebrow">Monthly movement</p>
+        <h2>Net membership change</h2>
+      </div>
+    </div>
+    <div #netChange class="chart net-change-chart" aria-live="polite"></div>
   </section>
 </div>

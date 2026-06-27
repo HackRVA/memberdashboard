@@ -16,9 +16,8 @@ export type ChartCols = {
 };
 
 export type ReportChartResponse = {
-  id: string;
   type: string;
   options: ChartOptions;
-  rows: any[]; // returns an array of arrays of string and number
+  rows: [string, number][];
   cols: ChartCols[];
 };
