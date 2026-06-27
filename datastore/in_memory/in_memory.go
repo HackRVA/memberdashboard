@@ -2,16 +2,18 @@ package in_memory
 
 import (
 	"sync"
+	"time"
 
 	"github.com/HackRVA/memberserver/models"
 	"github.com/HackRVA/memberserver/test/generators"
 )
 
 type In_memory struct {
-	mu        sync.RWMutex
-	Members   map[string]models.Member
-	Tiers     []models.Tier
-	resources map[string]models.Resource
+	mu           sync.RWMutex
+	Members      map[string]models.Member
+	Tiers        []models.Tier
+	resources    map[string]models.Resource
+	memberCounts []models.MemberCount
 }
 
 func Setup() (*In_memory, error) {
@@ -21,5 +23,6 @@ func Setup() (*In_memory, error) {
 	}
 
 	generators.Seed(db, 20)
+	db.memberCounts = demoMemberCounts(time.Now(), db.Members)
 	return db, nil
 }
